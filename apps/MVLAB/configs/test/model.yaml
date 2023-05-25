@@ -27,10 +27,6 @@ net:
             start_dim: 1
         - torch.nn.Softmax:
             dim: 1
-        - BB.Print:
-            msg: ----->
-            shape: True
-            input: False
       pop_supernode: 2
       supernode:
         - torch.nn.ConvTranspose2d:
