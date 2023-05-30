@@ -1,7 +1,9 @@
-Genie-ML
+ML
 ==============================
 
 A short description of the project.
+
+
 
 Project Organization
 ------------
