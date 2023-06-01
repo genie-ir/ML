@@ -5,7 +5,7 @@ A short description of the project.
 
 
 
-Project Organization
+(Project Organization)
 ------------
 
     ├── LICENSE
