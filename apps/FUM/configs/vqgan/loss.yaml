@@ -1,0 +1,4 @@
+target: apps.FUM.modules.losses.loss.Loss
+
+params:
+  prefix: mse

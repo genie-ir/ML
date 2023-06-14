@@ -1,0 +1,2 @@
+signal_key: X # Tensor name in batch
+nclass: 5

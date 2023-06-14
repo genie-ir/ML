@@ -1,0 +1,43 @@
+app: 
+  name: VQGAN
+
+model:
+  name: 'vqgan'
+  base_learning_rate: 0.0625
+  target: apps.VQGAN.models.modelName.clsName
+  params: None
+
+metrics: [
+  'loss',
+  'val_loss',
+  'FID'
+]
+
+# outdir: None
+
+data:
+  name: 'IDRiD'
+  trainSet: 
+    fundus: '/media/alihejrati/3E3009073008C83B/Code/Genie-ML/data/raw/IDRiD/1. Original Images/a. Training Set'
+    # vasl: '/media/alihejrati/3E3009073008C83B/Code/Genie-ML/data/raw/IDRiD/1. Original Images/a. Training Set'
+  testSet:
+    fundus: '/media/alihejrati/3E3009073008C83B/Code/Genie-ML/data/raw/IDRiD/1. Original Images/b. Testing Set'
+    # vasl: '/media/alihejrati/3E3009073008C83B/Code/Genie-ML/data/raw/IDRiD/1. Original Images/b. Testing Set'
+  valSet:
+    fundus: '/media/alihejrati/3E3009073008C83B/Code/Genie-ML/data/raw/IDRiD/1. Original Images/b. Testing Set'
+    # vasl: '/media/alihejrati/3E3009073008C83B/Code/Genie-ML/data/raw/IDRiD/1. Original Images/b. Testing Set'
+
+  target: main.DataModuleFromConfig
+  params:
+    batch_size: 2
+    wrap: false
+    train:
+      target: taming.data.imagenet.ImageNetTrain
+      params:
+        config:
+          size: 256
+    validation:
+      target: taming.data.imagenet.ImageNetValidation
+      params:
+        config:
+          size: 256

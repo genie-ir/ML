@@ -1,0 +1,5 @@
+class_0     no apparent retinopathy
+class_1     mild NPDR
+class_2     moderate NPDR
+class_3     severe NPDR
+class_4     PDR

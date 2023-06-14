@@ -1,0 +1,83 @@
+model:
+  base_learning_rate: 0.0625
+  target: apps.VQGAN.models.cond_transformer.Net2NetTransformer
+  params:
+    first_stage_key: image
+    cond_stage_key: class_label
+    transformer_config:
+      target: apps.VQGAN.modules.transformer.mingpt.GPT
+      params:
+        vocab_size: 16384
+        block_size: 256
+        n_layer: 48
+        n_head: 24
+        n_embd: 1536
+    first_stage_config:
+      target: apps.VQGAN.models.vqgan.VQModel
+      params:
+        # ckpt_path: /content/drive/MyDrive/storage/Genie_ML/D_V/logs/2022-12-14T19-46-35_eyepacs_vqgan/checkpoints/last.ckpt
+        embed_dim: 256
+        n_embed: 16384 #1024 #16384 (default) # my model have 1024!!
+        ddconfig:
+          double_z: false
+          z_channels: 256
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 1
+          - 2
+          - 2
+          - 4
+          num_res_blocks: 2
+          attn_resolutions:
+          - 16
+          dropout: 0.0
+        lossconfig:
+          target: apps.VQGAN.modules.losses.vqperceptual.DummyLoss
+    cond_stage_config:
+      target: apps.VQGAN.modules.util.Labelator
+      params:
+        n_classes: 5 #1000 # MY MODEL HAVE 5 CLASS!!
+
+
+
+data:
+  target: apps.VQGAN.modules.dataset.DataModuleFromConfig
+  params:
+    batch_size: 1
+    num_workers: 1
+    wrap: false
+    train:
+      target: apps.VQGAN.data.eyepacs.eyepacsTrain
+      params:
+        config:
+          MODE_VAL: 300 #25 #(asli) # optianal
+          EXT: jpeg
+          SIZE: 256
+          HOST_DIR: $KAGGLE_PATH
+          NAME: eyepacs_all
+          URL:
+            synset: //data/config/eyepacs/synset_human.txt
+            iSynset: //data/config/eyepacs/index_synset.yaml
+            iSynsetTest: //data/config/eyepacs/index_synsetTest.yaml
+          FILES:
+            - eyepacs.zip
+
+    validation:
+      target: apps.VQGAN.data.eyepacs.eyepacsValidation
+      params:
+        config:
+          MODE_VAL: 300 #10 #(asli) # optianal
+          EXT: jpeg
+          SIZE: 256
+          HOST_DIR: $KAGGLE_PATH
+          NAME: eyepacs_all
+          URL:
+            synset: //data/config/eyepacs/synset_human.txt
+            iSynset: //data/config/eyepacs/index_synset.yaml
+            iSynsetTest: //data/config/eyepacs/index_synsetTest.yaml
+          FILES:
+            - eyepacs.zip

@@ -1,0 +1,74 @@
+target: utils.pl.tools.dataset.DataModuleFromConfig
+params:
+  batch_size: 64
+  num_workers: 2
+  train:
+    target: data.config.clusters.D.Train
+    params:
+      config:
+        dspec: [16, 16, 0, 1023]
+        api: kaggle datasets download -d scolianni/mnistasjpg -p $real_fdir
+        txt_filelist: train_filelist.txt
+        N_WSTAR: -1
+        S_WSTAR: 'trainingSample/trainingSample/**'
+        PATH_TO_CLASS_MAP:
+          /trainingSample/trainingSample/0: 0
+          /trainingSample/trainingSample/1: 1
+          /trainingSample/trainingSample/2: 2
+          /trainingSample/trainingSample/3: 3
+          /trainingSample/trainingSample/4: 4
+          /trainingSample/trainingSample/5: 5
+          /trainingSample/trainingSample/6: 6
+          /trainingSample/trainingSample/7: 7
+          /trainingSample/trainingSample/8: 8
+          /trainingSample/trainingSample/9: 9
+        DF_NAME: train_mnist.csv
+        DF_KEY: image_id # select row inside dataframe
+        DF_VAL: class # class value -> It can be exact one of this: int, float, str
+        DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+        DF_CANDIDATE:
+          # MAX_N_IN_CAT: 500
+        MODE_VAL: 1
+        EXT: jpg
+        HOST_DIR: //data/external
+        NAME: MNIST
+        URL:
+          synset: //data/config/mnist/synset_human.txt
+          iSynset: $10 # or we can write this -> //data/config/eyepacs/index_synset.yaml
+        FILES:
+          - mnistasjpg.zip
+  validation:
+    target: data.config.clusters.D.Validation
+    params:
+      config:
+        dspec: [16, 16, 0, 1023]
+        api: kaggle datasets download -d scolianni/mnistasjpg -p $real_fdir
+        txt_filelist: val_filelist.txt
+        N_WSTAR: -1
+        S_WSTAR: 'trainingSample/trainingSample/**'
+        PATH_TO_CLASS_MAP:
+          /trainingSample/trainingSample/0: 0
+          /trainingSample/trainingSample/1: 1
+          /trainingSample/trainingSample/2: 2
+          /trainingSample/trainingSample/3: 3
+          /trainingSample/trainingSample/4: 4
+          /trainingSample/trainingSample/5: 5
+          /trainingSample/trainingSample/6: 6
+          /trainingSample/trainingSample/7: 7
+          /trainingSample/trainingSample/8: 8
+          /trainingSample/trainingSample/9: 9
+        DF_NAME: val_mnist.csv
+        DF_KEY: image_id # select row inside dataframe
+        DF_VAL: class # class value -> It can be exact one of this: int, float, str
+        DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+        DF_CANDIDATE:
+          MAX_N_IN_CAT: 100
+        MODE_VAL: 1
+        EXT: jpg
+        HOST_DIR: $KAGGLE_PATH
+        NAME: MNIST
+        URL:
+          synset: //data/config/mnist/synset_human.txt
+          iSynset: $10 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
+        FILES:
+          - mnistasjpg.zip

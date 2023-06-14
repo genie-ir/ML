@@ -1,0 +1,9 @@
+bestCKPT:
+  '@off': True
+
+signal_logger:
+  '@off': True
+  batch_frequency: 50
+  max_signals: 4
+  ignoreFlag_on_train_batch_end: True
+  ignoreFlag_on_validation_batch_end: True

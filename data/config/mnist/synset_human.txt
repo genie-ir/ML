@@ -1,0 +1,10 @@
+class_0     zero
+class_1     one
+class_2     two
+class_3     three
+class_4     four
+class_5     five
+class_6     six
+class_7     seven
+class_8     eight
+class_9     nine

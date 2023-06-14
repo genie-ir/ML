@@ -1,0 +1,4 @@
+target: apps.{{@APP}}.modules.losses.loss.Loss
+
+params:
+  prefix: mse
