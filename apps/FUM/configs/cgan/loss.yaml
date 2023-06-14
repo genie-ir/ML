@@ -1,4 +1,0 @@
-target: apps.FUM.modules.losses.loss.CGANLoss
-
-params:
-  prefix: mse
