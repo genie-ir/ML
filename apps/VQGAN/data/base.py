@@ -24,7 +24,7 @@ class ConcatDatasetWithIndex(ConcatDataset):
 
 class D(Dataset):
     """custom Dataset"""
-    def __init__(self, size=None, random_crop=False, labels=None):
+    def __init__(self, size=None, random_crop=False, labels=None, **kw):
         self.size = size
         self.random_crop = random_crop
 
