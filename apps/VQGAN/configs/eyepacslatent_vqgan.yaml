@@ -1,0 +1,65 @@
+model:
+  base_learning_rate: 4.5e-6
+  target: apps.VQGAN.models.vqgan.VQModel
+  params:
+    image_key: latentcode
+    Rfn: syn #'' # _D2E
+    embed_dim: 256
+    n_embed: 1024
+    ddconfig:
+      double_z: False
+      z_channels: 256
+      resolution: 256
+      in_channels: 3
+      out_ch: 3
+      ch: 128
+      ch_mult: [ 1,1,2,2,4]  # num_down = len(ch_mult)-1
+      num_res_blocks: 2
+      attn_resolutions: [16]
+      dropout: 0.0
+
+    lossconfig:
+      target: apps.VQGAN.modules.losses.vqperceptual.VQLPIPSWithDiscriminator
+      params:
+        disc_conditional: True #False
+        disc_in_channels: 3 #6 #3
+        # disc_start: 250001
+        disc_start: True
+        disc_weight: 0.8 #2.0 #0.8
+        codebook_weight: 1.0
+
+data:
+  target: apps.VQGAN.modules.dataset.DataModuleFromConfig
+  params:
+    batch_size: 1 # It must be one
+    num_workers: 2 #24
+    validation:
+      target: apps.VQGAN.data.eyepacs.eyepacsLatentValidation
+      params:
+        config:
+          txt_filelist: val_filelist.txt
+          FULL_SRC: /content/pretrained_0_1DsignalOfEyepacs.zip #/content/generated.zip #/content/pretrained_0_1DsignalOfEyepacs.zip #/content/synthesis.zip # New Dataset Path
+          N_WSTAR: -1
+          S_WSTAR: '**/train/**'
+          PATH_TO_CLASS_MAP:
+            /1DsignalOfEyepacs/train/Grade_0: 0
+            /1DsignalOfEyepacs/train/Grade_1: 1
+            /1DsignalOfEyepacs/train/Grade_2: 2
+            /1DsignalOfEyepacs/train/Grade_3: 3
+            /1DsignalOfEyepacs/train/Grade_4: 4
+          DF_NAME: val_eyepacslatent.csv
+          DF_KEY: image_id # select row inside dataframe
+          DF_VAL: dr # class value -> It can be exact one of this: int, float, str
+          DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+          # DF_CANDIDATE:
+          #   MAX_N_IN_CAT: 100
+          MODE_VAL: 1
+          EXT: npy
+          SIZE: 256
+          HOST_DIR: $KAGGLE_PATH
+          NAME: eyepacslatent
+          URL:
+            synset: //data/config/eyepacs/synset_human.txt
+            iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
+          FILES:
+            - datasetfile.zip

@@ -1,0 +1,68 @@
+generator_step:
+  forward:
+    - input: [z, randn, [$zdim, 1, 1]]     # input z
+    - input: [y, randint, 0, $nclass, []]  # input y
+    - seq0
+    - Return: GLOSS
+  
+  seq0:
+    input:
+    output: GLOSS
+    head:
+      - BB.Self:
+          fn: generator
+          input: [[y, y], [z, z]]
+      - BB.Self:
+          fn: discriminator
+          input: [[x], [y, y]]
+      - .squeeze
+      - BB.Self:
+          fn: generatorLoss
+          input: [[d_fake]]
+          params:
+            Real: $R_VAL
+
+
+
+discriminator_step:
+  forward:
+    - input: [z, randn, [$zdim, 1, 1]]         # input z
+    - input: [yfake, randint, 0, $nclass, []]  # input yfake
+    - seq0
+    - seq1
+    - Return: DLOSS
+  
+  seq0:
+    input: image # tensor name in batch
+    output: dr_output
+    head:
+      - .long
+      - ..F.one_hot:
+          num_classes: $ncluster
+      - ..einops.rearrange:
+          pattern: b h w c -> b c h w
+      - .contiguous
+      - .float
+      - BB.Self:
+          fn: discriminator
+          input: [[x], [y, y]]
+      - .squeeze
+  
+  seq1:
+    input:
+    output: DLOSS
+    head:
+      - BB.Self:
+          fn: generator
+          input: [[z, z], [y, yfake]]
+      - .detach
+      - BB.Self:
+          fn: discriminator
+          input: [[x], [y, yfake]]
+      - .squeeze
+      - BB.Self:
+          fn: discriminatorLoss
+          input: [[d_real, dr_output], [d_fake]]
+          params: 
+            Real: $R_VAL
+            Fake: $G_VAL

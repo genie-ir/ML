@@ -1,0 +1,20 @@
+# logger_ml:
+#   wandb:
+#       target: pytorch_lightning.loggers.WandbLogger,
+#       params:
+#         name: $nowname,
+#         save_dir: $logdir,
+#         offline: $opt.debug,
+#         id: $nowname,
+#   testtube:
+#       target: pytorch_lightning.loggers.TestTubeLogger,
+#       params:
+#         name: testtube,
+#         save_dir: $logdir,
+#   tensorboard:
+#       target: pytorch_lightning.loggers.TensorBoardLogger,
+#       params:
+#         name: $nowname,
+#         save_dir: $logdir,
+      
+  
