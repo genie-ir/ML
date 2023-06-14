@@ -103,6 +103,7 @@ class VQModel(pl.LightningModule):
 
     def forward_syn(self, input):
         print('forward_syn')
+        return
         zshape = [-1,16,16,256]
         input, y = input['x'], input['y']
         # I = R[2].view(zshape[:-1]) # comes from CGAN
