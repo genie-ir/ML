@@ -10,7 +10,7 @@ class FUM(plModuleBase):
     
     def generator_step(self, batch):
         print('generator step')
-        return None, {'gloss': -1}
+        return None, {'loss': -1}
     
     def discriminator_step(self, batch):
         print('discriminator step')
