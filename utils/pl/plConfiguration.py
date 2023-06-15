@@ -73,6 +73,8 @@ class ConfigBase:
                     cowsay.cow('NotImplementedError:\nplease define `APP={} | NET={}`'.format(app_name_master, _cfg))
                     sys.exit()
             cfg_read = OmegaConf.create(readBIO(cfg, dotdictFlag=False, instantiate_from_config=instantiate_from_config_base))
+            print(cfg_read)
+            print('-'*30)
             configs.append(cfg_read)
         cli = OmegaConf.from_dotlist(unknown)
         config = OmegaConf.merge(*configs, cli)
