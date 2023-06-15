@@ -1,0 +1,16 @@
+generator:
+  params:
+    forward:
+      - seq0
+      - Return: x
+    
+    seq0:
+      input: x
+      output: x
+      head:
+        - torch.nn.Conv2d:
+            in_channels: $in_ch
+            out_channels: 1
+            kernel_size: 4
+            stride: 2
+            padding: 1
