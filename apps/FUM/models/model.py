@@ -6,6 +6,9 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 
 class FUM(plModuleBase):
+    def start(self):
+        assert False, 'hooooooooo!!'
+    
     def generator_step(self, batch):
         print('generator step')
         return None, {'loss': -1}
