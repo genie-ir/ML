@@ -72,6 +72,7 @@ class ConfigBase:
                 if not os.path.exists(cfg):
                     cowsay.cow('NotImplementedError:\nplease define `APP={} | NET={}`'.format(app_name_master, _cfg))
                     sys.exit()
+            print('!'*30)
             cfg_read = OmegaConf.create(readBIO(cfg, dotdictFlag=False, instantiate_from_config=instantiate_from_config_base))
             print(cfg_read)
             print('-'*30)
