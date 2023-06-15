@@ -353,7 +353,7 @@ class plModuleBase(pl.LightningModule):
     def get_pretrained_model(self, config=None, model=None, freezeFlag=True):
         if isinstance(config, str):
             print('-->', config)
-            config = instantiate_from_config({'target': config})
+            config = instantiate_from_config({'target': config}, kwargs={'dotdictFlag': False})
             print('++>', config)
             assert False
         if model is None and config is not None:
