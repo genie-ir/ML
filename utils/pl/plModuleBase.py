@@ -13,7 +13,7 @@ from torchsummary import summary
 from stringcase import pascalcase
 from utils.pl.plPlot import fwd_plot
 from libs.dyimport import instantiate_from_config
-from libs.basicIO import signal_save, compressor, puml, fwrite, pathBIO, readBIO
+from libs.basicIO import signal_save, compressor, puml, fwrite
 
 def disabled_train(self, mode=True):
     """Overwrite model.train with this function to make sure train/eval mode does not change anymore."""
@@ -353,7 +353,7 @@ class plModuleBase(pl.LightningModule):
     def get_pretrained_model(self, config=None, model=None, freezeFlag=True):
         if isinstance(config, str):
             print('-->', config)
-            config = instantiate_from_config(config)
+            config = instantiate_from_config({'target': config})
             print('++>', config)
             assert False
         if model is None and config is not None:
