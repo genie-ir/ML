@@ -202,7 +202,11 @@ class plModuleBase(pl.LightningModule):
         self.ckpt_path = str(kwargs.get('ckpt_path', ''))
         if bool(self.ckpt_path):
             self.init_from_ckpt(self.ckpt_path, ignore_keys=self.ignore_keys)
+        
+        self.start()
 
+    # def start(self):
+    #     pass
     def net2pipline(self, netname):
         return f'{netname}Step'
     
