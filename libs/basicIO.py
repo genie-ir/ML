@@ -170,9 +170,7 @@ def readBIO(fpath: str, **kwargs):
                 out = yaml.load(f, Loader=kwargs.get('Loader', YAML_Loader))
                 if (isinstance(out, dict)) and ('$vars' in out):
                     del out['$vars']
-                H= dotdict(out, flag=dotdictFlag)
-                print('-->', H)
-                return H
+                return dotdict(out, flag=dotdictFlag)
         except Exception as e:
             EHR(e)
     
