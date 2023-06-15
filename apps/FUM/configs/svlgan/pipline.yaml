@@ -1,4 +1,3 @@
-# {}
 # generator_step:
 #   forward:
 #     - input: [z, randn, [$zdim, 1, 1]]     # input z
