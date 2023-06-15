@@ -15,6 +15,10 @@ from utils.pl.plPlot import fwd_plot
 from libs.dyimport import instantiate_from_config
 from libs.basicIO import signal_save, compressor, puml, fwrite
 
+def disabled_train(self, mode=True):
+    """Overwrite model.train with this function to make sure train/eval mode does not change anymore."""
+    return self
+
 class plModuleBase(pl.LightningModule):
     def __init__(self,
         pipconfig=None,
@@ -246,11 +250,12 @@ class plModuleBase(pl.LightningModule):
             if (self.current_epoch+1) % self.optconfig['epoch_learning_frequency'].get(optimizer_idx, 1) != 0:
                 continue
             
+            optimizers_list[optimizer_idx].zero_grad()
             cnet = self.optconfig['map'][optimizer_idx] # current network
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
             log_dict = {**log_dict, **ld}
-            optimizers_list[optimizer_idx].zero_grad()
+            # optimizers_list[optimizer_idx].zero_grad()
             self.manual_backward(loss)
             optimizers_list[optimizer_idx].step()
         
@@ -294,6 +299,21 @@ class plModuleBase(pl.LightningModule):
         sys.exit()
     ######################################################################
 
+    ##################[only once at end of val epoch]#################### [overwrite]
+    def forward_synthesis(self): # only once at end of val epoch
+        dirname = getattr(self, 'synthesis_dirname', 'synthesis')
+        for c in range(getattr(self, 'nclass', 1)): # TODO
+            N = int(getattr(self, 'nsynthesis', dict()).get(c, 200))
+            for n in range(N):
+                B = 1
+                y = torch.zeros((B,), device=self.device).long() + c
+                generated_signal = self.legacy_forward(B=B, y=y).argmax(dim=1, keepdim=True).squeeze()
+                spath = os.path.join(os.getenv('GENIE_ML_CACHEDIR'), dirname, f'class_{c}', f'{n}.npy')
+                signal_save(generated_signal, spath)
+        dpath = os.path.join(os.getenv('GENIE_ML_CACHEDIR'), dirname)
+        compressor(dpath, f'{dpath}.zip', mode='zip')
+    ######################################################################
+
     ##################[every step - one period]#################### [plot]
     def forward_plot(self, batch):
         return fwd_plot(batch=batch, plot_params=getattr(self, 'plot', dict()), sigkey=self.signal_key)
@@ -312,18 +332,7 @@ class plModuleBase(pl.LightningModule):
             sys.exit()
     ################################################################
 
-    def forward_synthesis(self): # only once at end of val epoch
-        dirname = getattr(self, 'synthesis_dirname', 'synthesis')
-        for c in range(getattr(self, 'nclass', 1)): # TODO
-            N = int(getattr(self, 'nsynthesis', dict()).get(c, 200))
-            for n in range(N):
-                B = 1
-                y = torch.zeros((B,), device=self.device).long() + c
-                generated_signal = self.legacy_forward(B=B, y=y).argmax(dim=1, keepdim=True).squeeze()
-                spath = os.path.join(os.getenv('GENIE_ML_CACHEDIR'), dirname, f'class_{c}', f'{n}.npy')
-                signal_save(generated_signal, spath)
-        dpath = os.path.join(os.getenv('GENIE_ML_CACHEDIR'), dirname)
-        compressor(dpath, f'{dpath}.zip', mode='zip')
+    
     
     # def training_step_lab(self, batch, batch_idx, split='train'):
     #     return
@@ -335,6 +344,15 @@ class plModuleBase(pl.LightningModule):
     # def on_validation_epoch_end_lab(self):
     #     self._lab()
     #     assert False, 'END'
+
+    def get_pretrained_model(self, config=None, model=None, freezeFlag=True):
+        if model is None and config is not None:
+            model = instantiate_from_config(config)
+        if freezeFlag:
+            # model = model.eval()
+            # model.train = disabled_train
+            model.requires_grad_(False)
+        return model
     
     def log_signal(self, batch, **kwargs):
         """
