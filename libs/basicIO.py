@@ -168,6 +168,7 @@ def readBIO(fpath: str, **kwargs):
             YAML_Loader.addifc(kwargs.get('instantiate_from_config', None))
             with open(fpath, 'r') as f:
                 out = yaml.load(f, Loader=kwargs.get('Loader', YAML_Loader))
+                print(type(out))
                 if '$vars' in out:
                     del out['$vars']
                 return dotdict(out, flag=dotdictFlag)
