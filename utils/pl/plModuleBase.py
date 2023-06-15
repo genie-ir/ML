@@ -205,8 +205,9 @@ class plModuleBase(pl.LightningModule):
         
         self.start()
 
-    # def start(self):
-    #     pass
+    def start(self):
+        pass
+    
     def net2pipline(self, netname):
         return f'{netname}Step'
     
