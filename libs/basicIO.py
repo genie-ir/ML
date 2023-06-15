@@ -168,10 +168,11 @@ def readBIO(fpath: str, **kwargs):
             YAML_Loader.addifc(kwargs.get('instantiate_from_config', None))
             with open(fpath, 'r') as f:
                 out = yaml.load(f, Loader=kwargs.get('Loader', YAML_Loader))
-                print(type(out))
-                if '$vars' in out:
+                if (isinstance(out, dict)) and ('$vars' in out):
                     del out['$vars']
-                return dotdict(out, flag=dotdictFlag)
+                H= dotdict(out, flag=dotdictFlag)
+                print('-->', H)
+                return H
         except Exception as e:
             EHR(e)
     
