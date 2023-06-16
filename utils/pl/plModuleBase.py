@@ -44,8 +44,9 @@ class plModuleBase(pl.LightningModule):
         self.automatic_optimization = False
         
         ##############################[pretrained models]##################################
-        print(self.preconfig)
-        assert False
+        for pre_model_name, pre_model_cfg in self.preconfig.items():
+            assert isinstance(pre_model_cfg, dict), '`type(pre_model_cfg)={}` | It must be `dict` | pre_model_name=`{}`'.format(type(pre_model_cfg), pre_model_name)
+            setattr(self, pre_model_name, self.get_pretrained_model(**pre_model_cfg))
 
         ##############################[network&optimizer configuration]##################################
         if len(self.netconfig) == 0:
