@@ -358,9 +358,10 @@ class plModuleBase(pl.LightningModule):
     #     self._lab()
     #     assert False, 'END'
 
-    def get_pretrained_model(self, config=None, model=None, freezeFlag=True):
+    def get_pretrained_model(self, config=None, model=None, freezeFlag=True, keys=None):
+        keys = str('' if keys is None else keys)
+        print(keys)
         if isinstance(config, str):
-            print(os.path.split(config)[1].split('.')[-2])
             config = instantiate_from_config({'target': config}, kwargs={'dotdictFlag': False})
             
         if model is None and config is not None:
