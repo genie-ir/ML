@@ -365,6 +365,7 @@ class plModuleBase(pl.LightningModule):
             for k in keys:
                 if isinstance(k, str) and k.strip() != '':
                     config = config[k]
+            config['target'] = str(config.get('target', 'utils.pt.nnModuleBase.nnModuleBase'))
 
         if model is None and config is not None:
             print('------->', config)
