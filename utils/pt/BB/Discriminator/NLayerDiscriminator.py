@@ -16,7 +16,7 @@ class NLayerDiscriminator(BB):
             n_layers (int)  -- the number of conv layers in the discriminator
             norm_layer      -- normalization layer
         """
-        input_nc=self.kwargs.get('input_nc', 3)
+        input_nc=self.kwargs.get('input_nc', 13)
         ndf=self.kwargs.get('ndf', 64)
         n_layers=self.kwargs.get('n_layers', 3)
         use_actnorm=self.kwargs.get('use_actnorm', False)
