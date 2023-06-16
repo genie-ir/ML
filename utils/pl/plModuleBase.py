@@ -360,10 +360,11 @@ class plModuleBase(pl.LightningModule):
 
     def get_pretrained_model(self, config=None, model=None, freezeFlag=True):
         if isinstance(config, str):
+            print(os.path.split(config)[1])
             config = instantiate_from_config({'target': config}, kwargs={'dotdictFlag': False})
-        
+            
+
         if model is None and config is not None:
-            assert isinstance(config, dict) and isinstance(config.get('model', None), dict) and isinstance(config['model'].get('target', None), str), 'get_pretrained_model function got invalid config'
             model = instantiate_from_config(config)
         
         if freezeFlag:
