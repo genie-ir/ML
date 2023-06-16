@@ -44,7 +44,7 @@ class plModuleBase(pl.LightningModule):
         self.automatic_optimization = False
         
         ##############################[pretrained models]##################################
-        print(preconfig)
+        print(self.preconfig)
         assert False
 
         ##############################[network&optimizer configuration]##################################
