@@ -121,8 +121,6 @@ class ConfigBase:
         if bool(str(opt.Rfn)):
             config.model['params']['Rfn'] = opt.Rfn
         
-        print('opt.resume_from_checkpoint', opt.resume_from_checkpoint, type(opt.resume_from_checkpoint))
-        assert False
         config.model['params']['ckpt'] = str(opt.resume_from_checkpoint or config.model['params'].get('ckpt', ''))
         model = cls.instantiate_from_config(config.model)
 
