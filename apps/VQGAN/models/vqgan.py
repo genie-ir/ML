@@ -111,9 +111,12 @@ class VQModel(pl.LightningModule):
         I2 = I.flatten() # Good
         _quant, _diff, _R = self.quantize(None, I2=I2)
         _dec = self.decode(_quant)
-        afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
-        signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
         return _dec
+    def save_phi(self, _dec, pathdir=None):
+        print(_dec.shape[0].sqrt())
+        pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir
+        afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
+        signal_save(_dec, os.path.join(pathdir, 'syn', f'{random_string()}.png'), stype='img', sparams={'fn': afn})
     
     
     def forward_syn(self, input):
