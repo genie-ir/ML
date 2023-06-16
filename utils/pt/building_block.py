@@ -30,7 +30,6 @@ class BB(nn.Module):
         sys.exit()
     
     def weights_init(self, m):
-        print('ok')
         classname = m.__class__.__name__
         if classname.find('Conv') != -1 and hasattr(m, 'weight'):
             nn.init.normal_(m.weight.data, 0.0, 0.02)
