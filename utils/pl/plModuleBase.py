@@ -360,11 +360,14 @@ class plModuleBase(pl.LightningModule):
 
     def get_pretrained_model(self, config=None, model=None, freezeFlag=True, keys=None):
         keys = str('' if keys is None else keys).split('.')
-        print('---->', keys)
         if isinstance(config, str):
             config = instantiate_from_config({'target': config}, kwargs={'dotdictFlag': False})
-            
+            for k in keys:
+                if isinstance(k, str) and k.strip() != '':
+                    config = config[k]
+
         if model is None and config is not None:
+            print('------->', config)
             model = instantiate_from_config(config)
         
         if freezeFlag:
