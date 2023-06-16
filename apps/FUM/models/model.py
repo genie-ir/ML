@@ -15,6 +15,7 @@ class FUM(plModuleBase):
             'y': batch['y']
         })
         print(phi.shape)
+        self.vqgan.save_phi(phi, pathdir='/content')
 
         assert False
         return None, {'loss': -1}
