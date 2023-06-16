@@ -10,9 +10,11 @@ class FUM(plModuleBase):
         print('generator step')
 
         print(batch.keys())
-        # self.vqgan.forward_syn({
-        #     'x': batch['']
-        # })
+        phi = self.vqgan.rec_phi({
+            'x': batch[self.signal_key],
+            'y': batch['y']
+        })
+        print(phi.shape)
 
         assert False
         return None, {'loss': -1}

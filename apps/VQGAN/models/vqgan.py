@@ -101,6 +101,21 @@ class VQModel(pl.LightningModule):
         compressor(dpath, '/content/syn.zip', mode='zip')
         assert False, 'END'
 
+    
+    def rec_phi(self, input):
+        print('rec_phi')
+        zshape = [-1,16,16,256]
+        input, y = input['x'], input['y']
+        # I = R[2].view(zshape[:-1]) # comes from CGAN
+        I = input.squeeze().long()
+        I2 = I.flatten() # Good
+        _quant, _diff, _R = self.quantize(None, I2=I2)
+        _dec = self.decode(_quant)
+        afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
+        signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
+        return _dec
+    
+    
     def forward_syn(self, input):
         print('forward_syn')
         return
