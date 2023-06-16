@@ -120,6 +120,7 @@ class ConfigBase:
         # model
         if bool(str(opt.Rfn)):
             config.model['params']['Rfn'] = opt.Rfn
+        print('------->', config.model['params']['ckpt_path'])
         config.model['params']['ckpt_path'] = opt.resume_from_checkpoint or ''
         model = cls.instantiate_from_config(config.model)
 
