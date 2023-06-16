@@ -2,6 +2,6 @@ bestCKPT:
   '@off': True
 
 signal_logger:
-  '@off': False
+  '@off': True
   batch_frequency: 10
   max_signals: 4
