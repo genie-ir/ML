@@ -368,7 +368,6 @@ class plModuleBase(pl.LightningModule):
                 if isinstance(k, str) and k.strip() != '':
                     config = config[k]
             config['target'] = str(config.get('target', 'utils.pt.nnModuleBase.nnModuleBase'))
-            print('------->', config)
             model = instantiate_from_config(config)
         
         if freezeFlag:
