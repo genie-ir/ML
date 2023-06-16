@@ -1,3 +1,2 @@
 in_ch: 3
 signal_key: image
-VQGAN_PATH: apps.VQGAN.configs.eyepacs_vqgan.yaml

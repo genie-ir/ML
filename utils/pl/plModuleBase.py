@@ -21,6 +21,7 @@ def disabled_train(self, mode=True):
 
 class plModuleBase(pl.LightningModule):
     def __init__(self,
+        preconfig=None,
         pipconfig=None,
         netconfig=None,
         optconfig=None,
@@ -34,12 +35,18 @@ class plModuleBase(pl.LightningModule):
         
         self.signal_key = str(kwargs.get('signal_key', 'X'))
 
+        self.preconfig = OmegaConf.to_container(preconfig or OmegaConf.create())
         self.pipconfig = OmegaConf.to_container(pipconfig or OmegaConf.create())
         self.netconfig = OmegaConf.to_container(netconfig or OmegaConf.create())
         self.optconfig = OmegaConf.to_container(optconfig or OmegaConf.create())
         self.lossconfig = OmegaConf.to_container(lossconfig or OmegaConf.create())
+
         self.automatic_optimization = False
         
+        ##############################[pretrained models]##################################
+        print(preconfig)
+        assert False
+
         ##############################[network&optimizer configuration]##################################
         if len(self.netconfig) == 0:
             self.netconfig['lab'] = {'target': '.ignore'}

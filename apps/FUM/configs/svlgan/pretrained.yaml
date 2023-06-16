@@ -1,0 +1,2 @@
+vqgan: 
+  config: apps.VQGAN.configs.eyepacs_vqgan.yaml
