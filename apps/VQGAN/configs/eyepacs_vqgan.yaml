@@ -1,6 +1,6 @@
 model:
   base_learning_rate: 4.5e-6
-  # target: apps.VQGAN.models.vqgan.VQModel
+  target: apps.VQGAN.models.vqgan.VQModel
   params:
     Rfn: '_syn' # _D2E
     embed_dim: 256
