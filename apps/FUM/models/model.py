@@ -14,12 +14,13 @@ class FUM(plModuleBase):
         # self.vqgan.save_phi(phi, pathdir='/content')
 
         print(phi.shape)
+        phi = torch.randn(phi.shape)
         print(self.vqgan.loss.discriminator(phi).shape)
 
         logits_fake = self.vqgan.loss.discriminator(phi.contiguous())
         g_loss = -torch.mean(logits_fake)
 
-        print('logits_fake', logits_fake.shape, logits_fake)
+        # print('logits_fake', logits_fake.shape, logits_fake)
         print('g_loss', g_loss.shape, g_loss)
         assert False
         return None, {'loss': -1}
