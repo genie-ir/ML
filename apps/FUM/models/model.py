@@ -7,14 +7,10 @@ from libs.basicIO import signal_save, compressor
 
 class FUM(plModuleBase):
     def generator_step(self, batch):
-        print('generator step')
-
-        print(batch.keys())
         phi = self.vqgan.rec_phi({
             'x': batch[self.signal_key],
             'y': batch['y']
         })
-        print(phi.shape)
         self.vqgan.save_phi(phi, pathdir='/content')
 
         assert False

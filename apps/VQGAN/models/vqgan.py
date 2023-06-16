@@ -103,7 +103,6 @@ class VQModel(pl.LightningModule):
 
     
     def rec_phi(self, input):
-        print('rec_phi')
         zshape = [-1,16,16,256]
         input, y = input['x'], input['y']
         # I = R[2].view(zshape[:-1]) # comes from CGAN
@@ -113,10 +112,9 @@ class VQModel(pl.LightningModule):
         _dec = self.decode(_quant)
         return _dec
     def save_phi(self, _dec, pathdir=None):
-        print(_dec.shape[0].sqrt())
         pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir
         afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
-        signal_save(_dec, os.path.join(pathdir, 'syn', f'{random_string()}.png'), stype='img', sparams={'fn': afn})
+        signal_save(_dec, os.path.join(pathdir, 'syn', f'{random_string()}.png'), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5)})
     
     
     def forward_syn(self, input):
