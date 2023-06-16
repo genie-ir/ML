@@ -23,7 +23,7 @@ class VQModel(pl.LightningModule):
         lossconfig,
         n_embed,
         embed_dim,
-        ckpt_path=None,
+        ckpt=None,
         ignore_keys=[],
         image_key="image", # this `key` is defined in //apps/VQGAN/data/base.py > __getitem__ function
         colorize_nlabels=None,
@@ -44,8 +44,8 @@ class VQModel(pl.LightningModule):
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
         
-        if bool(ckpt_path):
-            self.init_from_ckpt(ckpt_path, ignore_keys=ignore_keys)
+        if bool(ckpt):
+            self.init_from_ckpt(ckpt, ignore_keys=ignore_keys)
         self.image_key = image_key
         if colorize_nlabels is not None:
             assert type(colorize_nlabels)==int
