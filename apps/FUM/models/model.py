@@ -6,10 +6,13 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 
 class FUM(plModuleBase):
-    def start(self):
-        print(self.vqgan.decoder.conv_in.weight[0,0])
-        assert False
-    
     def generator_step(self, batch):
         print('generator step')
+
+        print(batch.keys())
+        # self.vqgan.forward_syn({
+        #     'x': batch['']
+        # })
+
+        assert False
         return None, {'loss': -1}
