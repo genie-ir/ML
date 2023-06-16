@@ -3,7 +3,7 @@ import torch.nn as nn
 from loguru import logger
 import torch.nn.functional as F
 from apps.VQGAN.modules.losses.lpips import LPIPS
-from apps.VQGAN.modules.discriminator.model import NLayerDiscriminator, weights_init
+from apps.VQGAN.modules.discriminator.model import NLayerDiscriminator
 
 
 class DummyLoss(nn.Module):
@@ -45,7 +45,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.perceptual_loss = LPIPS().eval()
         self.perceptual_weight = perceptual_weight
 
-        self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf).apply(weights_init)
+        self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf)
         self.discriminator_iter_start = disc_start
         if disc_loss == "hinge":
             self.disc_loss = hinge_d_loss
