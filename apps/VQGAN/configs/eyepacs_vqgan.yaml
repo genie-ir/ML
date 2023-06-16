@@ -2,7 +2,8 @@ model:
   base_learning_rate: 4.5e-6
   target: apps.VQGAN.models.vqgan.VQModel
   params:
-    Rfn: '' # _D2E
+    Rfn: '' # _syn
+    ckpt_path: /content/drive/MyDrive/storage/Pretrained_1024cluster_0.ckpt
     embed_dim: 256
     n_embed: 1024
     ddconfig:
