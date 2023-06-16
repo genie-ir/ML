@@ -7,7 +7,7 @@ from libs.basicIO import signal_save, compressor
 
 class FUM(plModuleBase):
     def start(self):
-        print(self.vqgan)
+        print(self.vqgan.decode)
         assert False
     
     def generator_step(self, batch):
