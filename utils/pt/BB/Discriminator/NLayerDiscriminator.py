@@ -21,9 +21,6 @@ class NLayerDiscriminator(BB):
         n_layers=self.kwargs.get('n_layers', 3)
         use_actnorm=self.kwargs.get('use_actnorm', False)
 
-        print(input_nc, ndf, n_layers, use_actnorm)
-        assert False
-
         if not use_actnorm:
             norm_layer = nn.BatchNorm2d
         else:
