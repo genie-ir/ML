@@ -360,7 +360,7 @@ class plModuleBase(pl.LightningModule):
 
     def get_pretrained_model(self, config=None, model=None, freezeFlag=True, keys=None):
         keys = str('' if keys is None else keys)
-        print(keys)
+        print('---->', keys)
         if isinstance(config, str):
             config = instantiate_from_config({'target': config}, kwargs={'dotdictFlag': False})
             
