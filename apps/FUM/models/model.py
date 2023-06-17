@@ -7,9 +7,11 @@ from libs.basicIO import signal_save, compressor
 
 class FUM(plModuleBase):
     def generator_step(self, batch):
+        x = batch[self.signal_key]
+        y = batch['y']
         phi = self.vqgan.rec_phi({
-            'x': batch[self.signal_key],
-            'y': batch['y']
+            'x': x,
+            'y': y
         })
         # self.vqgan.save_phi(phi, pathdir='/content')
 
@@ -19,6 +21,9 @@ class FUM(plModuleBase):
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+
+        print('-'*30)
+        print(x.shape, phi.shape)
 
         # for i in range(30):
         #     logits_fake = self.vqgan.loss.discriminator(phi.contiguous())
