@@ -10,6 +10,9 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         y = batch['y']
         xf0 = batch[self.signal_key]
+        print(xf0[xf0>0].shape)
+        print(xf0[xf0<0].shape)
+        assert False
         xfN = torch.randn(xf0.shape, device=self.device) / 600
         print(xf0.min().item(), xf0.max().item())
         print(xfN.min().item(), xfN.max().item())
