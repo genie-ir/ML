@@ -106,10 +106,9 @@ class VQModel(pl.LightningModule):
         zshape = [-1,16,16,256]
         input, y = input['x'], input['y']
 
-        print('vqgan', input.requires_grad)
-
         # I = R[2].view(zshape[:-1]) # comes from CGAN
         I = input.squeeze().long()
+        print('vqgan', I.requires_grad)
         I2 = I.flatten() # Good
         _quant, _diff, _R = self.quantize(None, I2=I2)
         _dec = self.decode(_quant)
