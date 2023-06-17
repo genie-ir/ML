@@ -11,7 +11,10 @@ def normalizing(signal):
     return (signal +50) / 600
 
 def denormalizing(signal):
-    return fr2x((signal * 600 - 50) * 512).round().astype(np.int32)
+    x = fr2x((signal * 600 - 50) * 512).round().astype(np.int32)
+    x[x<0] = 0
+    x[x>1023] = 1023
+    return x
 
 class D(D_Base):
     def fetch(self, signal_path):
