@@ -16,6 +16,10 @@ class FUM(plModuleBase):
         # print(phi.shape)
         # print(self.vqgan.loss.discriminator(phi).shape)
 
+
+        g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
+        print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+
         # for i in range(30):
         #     logits_fake = self.vqgan.loss.discriminator(phi.contiguous())
         #     g_loss = -torch.mean(logits_fake)
