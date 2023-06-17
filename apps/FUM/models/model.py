@@ -12,14 +12,14 @@ class FUM(plModuleBase):
         self.counter = -1
 
     def generator_step(self, batch):
-        self.counter += 1
-        if self.counter == 2:
-            assert False
         y = batch['y']
         # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
         xf = error_grade(batch[self.signal_key], 3)
         
         print(self.generator)
+        self.counter += 1
+        if self.counter == 2:
+            assert False
         
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
         phi = self.vqgan.rec_phi({
