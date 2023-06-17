@@ -37,6 +37,8 @@ def fr2x_torch(fr: torch.tensor):
         fr is a `effective values` of `fft` taken from `even version` of `real time space signal x`
         [function output] is a `time space` `real` signal.
     """
+    print(fr.shape, fr.dtype)
+    assert False
     N = fr.shape[1] - 1
     z = torch.cat([fr, fr[:, ::-1][:, 1:-1]], 1)
     xt = torch.fft.ifftshift(torch.fft.ifft(torch.fft.fftshift(z)))
