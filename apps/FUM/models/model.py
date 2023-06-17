@@ -8,17 +8,25 @@ from apps.FUM.data.eyepacs import denormalizing
 from utils.pt.tricks.error_grade import error_grade
 
 class FUM(plModuleBase):
+    def start(self):
+        self.counter = 0
+
     def generator_step(self, batch):
+        self.counter += 1
+        if self.counter == 2:
+            assert False
         y = batch['y']
-        xf0 = batch[self.signal_key]
-        print(xf0.min().item(), xf0.max().item())
-        xf = error_grade(xf0, 3)
+        # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
+        xf = error_grade(batch[self.signal_key], 3)
+        
+        print(self.generator)
+        
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
         phi = self.vqgan.rec_phi({
             'x': xt,
             'y': y
         })
-        self.vqgan.save_phi(phi, pathdir='/content')
+        # self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
