@@ -89,9 +89,9 @@ class VectorQuantizer2(BB):
             _zShape = z.shape
         else:
             _zShape = [-1,16,16,256]
-            min_encoding_indices = I2
+            min_encoding_indices = I2.round().long()
 
-            print(I2.round().long())
+            print(min_encoding_indices.requires_grad)
             assert False
         
         z_q = self.embedding(min_encoding_indices).view(_zShape)
