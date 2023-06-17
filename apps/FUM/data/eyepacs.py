@@ -6,12 +6,14 @@ from os import system, getenv, makedirs
 from utils.analysis.fourier.basic import x2fr, fr2x
 from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValidation as eyepacsValidationBase
 
+N0, N1, B0 = 1, 512, 0
+
 def normalizing(signal):
-    signal = x2fr(np.reshape(signal, (1, -1))).squeeze() / 512
-    return (signal +50) / 600
+    signal = x2fr(np.reshape(signal, (1, -1))).squeeze() / N1
+    return (signal + B0) / N0
 
 def denormalizing(signal):
-    x = fr2x((signal * 600 - 50) * 512).round().astype(np.int32)
+    x = fr2x((signal * N0 - B0) * N1).round().astype(np.int32)
     x[x<0] = 0
     x[x>1023] = 1023
     return x

@@ -11,8 +11,8 @@ class FUM(plModuleBase):
         y = batch['y']
         xf0 = batch[self.signal_key]
         xfN = torch.randn(xf0.shape, device=self.device)
-        print(xf0.min(), xf0.max())
-        print(xfN.min(), xfN.max())
+        print(xf0.min().item(), xf0.max().item())
+        print(xfN.min().item(), xfN.max().item())
         xf = xf0 + xfN
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
         phi = self.vqgan.rec_phi({
