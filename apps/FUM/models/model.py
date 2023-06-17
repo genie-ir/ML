@@ -23,11 +23,9 @@ class FUM(plModuleBase):
         xf = error_grade(batch[self.signal_key], 3)
         xf = self.generator(x=xf)
 
-        xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
-        phi = self.vqgan.rec_phi({
-            'x': xt,
-            'y': y
-        })
+        xt = denormalizing(xf)
+        print(xt.shape, xt.dtype)
+        phi = self.vqgan.rec_phi({'x': xt, 'y': y})
         # self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))

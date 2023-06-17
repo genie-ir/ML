@@ -1,3 +1,4 @@
+import torch
 import numpy as np
 from numpy.fft import fft, ifft, fftshift, ifftshift
 
@@ -29,6 +30,16 @@ def fr2x(fr: np.ndarray):
     N = fr.shape[1] - 1
     z = np.concatenate([fr, fr[:, ::-1][:, 1:-1]], 1)
     xt = ifftshift(ifft(fftshift(z)))
+    return xt[:, :N][:, ::-1].real
+
+def fr2x_torch(fr: torch.tensor):
+    """
+        fr is a `effective values` of `fft` taken from `even version` of `real time space signal x`
+        [function output] is a `time space` `real` signal.
+    """
+    N = fr.shape[1] - 1
+    z = torch.cat([fr, fr[:, ::-1][:, 1:-1]], 1)
+    xt = torch.fft.ifftshift(torch.fft.ifft(torch.fft.fftshift(z)))
     return xt[:, :N][:, ::-1].real
 
 # Example:
