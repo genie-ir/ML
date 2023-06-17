@@ -9,7 +9,7 @@ from utils.pt.tricks.error_grade import error_grade
 
 class FUM(plModuleBase):
     def start(self):
-        self.counter = 0
+        self.counter = -1
 
     def generator_step(self, batch):
         self.counter += 1
