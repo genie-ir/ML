@@ -19,7 +19,7 @@ class FUM(plModuleBase):
         # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
         xf = error_grade(batch[self.signal_key], 3)
         
-        print(self.generator.net_seq0[0].weight.shape)
+        print(self.generator.net_seq0[0].weight[0,0])
         
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
         phi = self.vqgan.rec_phi({
