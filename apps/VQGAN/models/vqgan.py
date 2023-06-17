@@ -107,10 +107,7 @@ class VQModel(pl.LightningModule):
         input, y = input['x'], input['y']
 
         # I = R[2].view(zshape[:-1]) # comes from CGAN
-        I = input.squeeze().long()
-        print('vqgan', I.requires_grad)
-        I2 = I.flatten() # Good
-        _quant, _diff, _R = self.quantize(None, I2=I2)
+        _quant, _diff, _R = self.quantize(None, I2=input.squeeze().flatten())
         _dec = self.decode(_quant)
         return _dec
     def save_phi(self, _dec, pathdir=None):
