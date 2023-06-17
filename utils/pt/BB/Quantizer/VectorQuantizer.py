@@ -90,6 +90,9 @@ class VectorQuantizer2(BB):
         else:
             _zShape = [-1,16,16,256]
             min_encoding_indices = I2
+
+            print(I2.round().long())
+            assert False
         
         z_q = self.embedding(min_encoding_indices).view(_zShape)
         perplexity = None
