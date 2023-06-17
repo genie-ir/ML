@@ -11,8 +11,8 @@ class FUM(plModuleBase):
         y = batch['y']
         xf0 = batch[self.signal_key]
         xfN = torch.randn(xf0.shape, device=self.device)
-        xfN = xfN[xfN>0] + 5.5/1e5
-        xfN = xfN[xfN<0] - 5.5/1e5
+        xfN[xfN>0] = xfN[xfN>0] + 5.5/1e5
+        xfN[xfN<0] = xfN[xfN<0] - 5.5/1e5
         print(xf0.min().item(), xf0.max().item())
         print(xfN.min().item(), xfN.max().item())
         xf = xf0 + xfN
