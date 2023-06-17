@@ -105,6 +105,9 @@ class VQModel(pl.LightningModule):
     def rec_phi(self, input):
         zshape = [-1,16,16,256]
         input, y = input['x'], input['y']
+
+        print('vqgan', input.requires_grad)
+
         # I = R[2].view(zshape[:-1]) # comes from CGAN
         I = input.squeeze().long()
         I2 = I.flatten() # Good
