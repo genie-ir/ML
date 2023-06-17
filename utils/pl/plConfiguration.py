@@ -1,3 +1,4 @@
+import torch
 from os.path import join
 from loguru import logger
 import os, cowsay, sys, argparse
@@ -122,6 +123,11 @@ class ConfigBase:
             config.model['params']['Rfn'] = opt.Rfn
         
         config.model['params']['ckpt'] = str(opt.resume_from_checkpoint or config.model['params'].get('ckpt', ''))
+        
+        config.model['params']['set_default_tensor_type'] = str(config.model['params'].get('set_default_tensor_type', 'float32'))
+        if config.model['params']['set_default_tensor_type'] == 'float64':
+            torch.set_default_tensor_type(torch.DoubleTensor) # change default from torch.float32 -> torch.float64
+        
         model = cls.instantiate_from_config(config.model)
 
         # trainer and callbacks
