@@ -13,5 +13,5 @@ generator:
       head:
         - torch.nn.Linear:
             in_features: 257
-            out_features: 256
+            out_features: 257
             bias: True
