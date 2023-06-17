@@ -40,7 +40,7 @@ def fr2x_torch(fr: torch.tensor):
     N = fr.shape[1] - 1
     z = torch.cat([fr, fr.fliplr()[:, 1:-1]], 1)
     xt = torch.fft.ifftshift(torch.fft.ifft(torch.fft.fftshift(z)))
-    return xt[:, :N][:, ::-1].real
+    return xt[:, :N].fliplr().real
 
 # Example:
 # FR = x2fr(x)
