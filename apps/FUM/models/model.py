@@ -8,6 +8,8 @@ from apps.FUM.data.eyepacs import denormalizing
 from utils.pt.tricks.error_grade import error_grade
 
 class FUM(plModuleBase):
+    def validation_step(self, batch, batch_idx, split='val'):
+        pass
     def generator_step(self, batch):
         y = batch['y']
         xf0 = batch[self.signal_key]
