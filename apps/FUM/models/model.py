@@ -21,8 +21,6 @@ class FUM(plModuleBase):
         y = batch['y']
         # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
         xf = error_grade(batch[self.signal_key], 3)
-        print(xf.dtype)
-        assert False
         xf = self.generator(x=xf)
 
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
