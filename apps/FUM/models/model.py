@@ -13,7 +13,7 @@ class FUM(plModuleBase):
             'x': x,
             'y': y
         })
-        # self.vqgan.save_phi(phi, pathdir='/content')
+        self.vqgan.save_phi(phi, pathdir='/content')
 
         # print(phi.shape)
         # print(self.vqgan.loss.discriminator(phi).shape)
