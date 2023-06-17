@@ -8,31 +8,20 @@ from apps.FUM.data.eyepacs import denormalizing
 
 class FUM(plModuleBase):
     def generator_step(self, batch):
-        xf = batch[self.signal_key]
-        x = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
-        print(x.shape)
         y = batch['y']
+        xf = batch[self.signal_key]
+        xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
+        
         phi = self.vqgan.rec_phi({
-            'x': x,
+            'x': xt,
             'y': y
         })
         self.vqgan.save_phi(phi, pathdir='/content')
 
-        # print(phi.shape)
-        # print(self.vqgan.loss.discriminator(phi).shape)
-
-
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
 
-        print('-'*30)
-        print(x.shape, phi.shape)
+        print(xf.shape, xt.shape, phi.shape)
 
-        # for i in range(30):
-        #     logits_fake = self.vqgan.loss.discriminator(phi.contiguous())
-        #     g_loss = -torch.mean(logits_fake)
-        #     # print('logits_fake', logits_fake.shape, logits_fake)
-        #     print('g_loss', g_loss.shape, g_loss)
-        #     phi = torch.randn(phi.shape, device=self.device)
         assert False
         return None, {'loss': -1}
