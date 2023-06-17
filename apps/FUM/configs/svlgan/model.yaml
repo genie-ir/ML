@@ -11,9 +11,7 @@ generator:
       input: x
       output: x
       head:
-        - torch.nn.Conv2d:
-            in_channels: $in_ch
-            out_channels: 1
-            kernel_size: 4
-            stride: 2
-            padding: 1
+        - torch.nn.Linear:
+            in_features: 257
+            out_features: 256
+            bias: True
