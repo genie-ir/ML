@@ -31,7 +31,5 @@ class FUM(plModuleBase):
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
 
-        print(xf.shape, xt.shape, phi.shape)
-
         assert False
         return None, {'loss': -1}
