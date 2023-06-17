@@ -12,7 +12,7 @@ M0, M1 = 100, 50
 
 def normalizing(signal):
     signal = x2fr(np.reshape(signal, (1, -1))).squeeze() / N1
-    return (((signal + B0) / N0) * M0) - M1
+    return ((((signal + B0) / N0) * M0) - M1).astype(np.float32)
 
 def denormalizing(signal):
     x = fr2x((((signal + M1) / M0) * N0 - B0) * N1).round().astype(np.int32)
