@@ -8,7 +8,8 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 
 class D(D_Base):
     def fetch(self, signal_path):
-        signal = x2fr(np.reshape(np.load(signal_path), (1, -1))) / 512 #.astype(np.float32)
+        signal = x2fr(np.reshape(np.load(signal_path), (1, -1))) / 512
+        signal = (signal +50) / 600
         print(signal.shape, signal.min(), signal.max())
         assert False
         return {
