@@ -8,6 +8,9 @@ from libs.basicIO import signal_save, compressor
 class FUM(plModuleBase):
     def generator_step(self, batch):
         x = batch[self.signal_key]
+        print(x.shape)
+        assert False
+        
         y = batch['y']
         phi = self.vqgan.rec_phi({
             'x': x,
