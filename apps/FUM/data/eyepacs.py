@@ -9,7 +9,7 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 class D(D_Base):
     def fetch(self, signal_path):
         signal = x2fr(np.reshape(np.load(signal_path), (1, -1))) #.astype(np.float32)
-        print(signal.shape, signal)
+        print(signal.shape, signal.min(), signal.max())
         assert False
         return {
             'image': signal
