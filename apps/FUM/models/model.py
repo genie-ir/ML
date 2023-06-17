@@ -4,13 +4,13 @@ import torch.nn.functional as F
 from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
+from apps.FUM.data.eyepacs import denormalizing
 
 class FUM(plModuleBase):
     def generator_step(self, batch):
-        x = batch[self.signal_key]
+        xf = batch[self.signal_key]
+        x = denormalizing(xf)
         print(x.shape)
-        assert False
-        
         y = batch['y']
         phi = self.vqgan.rec_phi({
             'x': x,
