@@ -28,7 +28,7 @@ class FUM(plModuleBase):
         print('+++++++++++++++++++', xf.requires_grad, xf.shape)
 
         xt = denormalizing(xf)
-        print(xt.shape, xt.dtype, xt.requires_grad)
+        print('!!!!!!!!!!!', xt.shape, xt.dtype, xt.requires_grad)
         phi = self.vqgan.rec_phi({'x': xt, 'y': y})
         # self.vqgan.save_phi(phi, pathdir='/content')
 
