@@ -30,6 +30,7 @@ class FUM(plModuleBase):
         xt = denormalizing(xf)
         print('!!!!!!!!!!!', xt.shape, xt.dtype, xt.requires_grad)
         phi = self.vqgan.rec_phi({'x': xt, 'y': y})
+        print('phi', phi.shape, phi.dtype, phi.requires_grad)
         # self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
