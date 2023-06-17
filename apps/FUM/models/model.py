@@ -5,16 +5,14 @@ from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 from apps.FUM.data.eyepacs import denormalizing
+from utils.pt.tricks.error_grade import error_grade
 
 class FUM(plModuleBase):
     def generator_step(self, batch):
         y = batch['y']
         xf0 = batch[self.signal_key]
-        xfN = (torch.randint(0,2,xf0.shape, device=self.device)-.5) * 2
-        xfN = xfN * (1/1e5) #torch.randn(xf0.shape, device=self.device) / 1e5
         print(xf0.min().item(), xf0.max().item())
-        print(xfN.min().item(), xfN.max().item())
-        xf = xf0 + xfN
+        xf = error_grade(xf0, 4)
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
         phi = self.vqgan.rec_phi({
             'x': xt,
