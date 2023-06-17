@@ -9,7 +9,7 @@ from apps.FUM.data.eyepacs import denormalizing
 class FUM(plModuleBase):
     def generator_step(self, batch):
         xf = batch[self.signal_key]
-        x = denormalizing(xf.detach().cup().numpy())
+        x = denormalizing(xf.detach().cpu().numpy())
         print(x.shape)
         y = batch['y']
         phi = self.vqgan.rec_phi({
