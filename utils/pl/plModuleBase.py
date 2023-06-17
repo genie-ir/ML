@@ -255,7 +255,6 @@ class plModuleBase(pl.LightningModule):
         """It can be overwrite in child class"""
         batch = self.getbatch(batch)
         optimizers_list = self.optimizers()
-        print('---->', optimizers_list)
         if not isinstance(optimizers_list, (list, tuple)):
             optimizers_list = [optimizers_list]
         
@@ -392,8 +391,6 @@ class plModuleBase(pl.LightningModule):
         return log
     
     def configure_optimizers(self):
-        print(self.optconfig)
-        
         __real_scl_list = []
         __real_opt_list = []
         for opt_i in range(len(self.optconfig['map'])):
