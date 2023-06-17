@@ -22,7 +22,7 @@ class FUM(plModuleBase):
         # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
         xf = error_grade(batch[self.signal_key], 3)
         xf = self.generator(x=xf)
-        print('+++++++++++++++++++', xf.requires_grad)
+        print('+++++++++++++++++++', xf.requires_grad, xf.shape)
 
         xt = denormalizing(xf)
         print(xt.shape, xt.dtype, xt.requires_grad)
