@@ -255,6 +255,7 @@ class plModuleBase(pl.LightningModule):
         """It can be overwrite in child class"""
         batch = self.getbatch(batch)
         optimizers_list = self.optimizers()
+        print('---->', optimizers_list)
         if not isinstance(optimizers_list, (list, tuple)):
             optimizers_list = [optimizers_list]
         
@@ -391,6 +392,8 @@ class plModuleBase(pl.LightningModule):
         return log
     
     def configure_optimizers(self):
+        print(self.optconfig)
+        
         __real_scl_list = []
         __real_opt_list = []
         for opt_i in range(len(self.optconfig['map'])):
@@ -398,7 +401,7 @@ class plModuleBase(pl.LightningModule):
             if getattr(self, net_name) is None:
                 __real_opt_list.append(None)
             else:
-                __real_opt_list.append(instantiate_from_config(self.netconfig[net_name]['optimizer'])(getattr(self, net_name).parameters(), **self.netconfig[net_name]['optimizer']['params']))
+                __real_opt_list.append(instantiate_from_config(self.netconfig[net_name]['optimizer'])(getattr(self, net_name).parameters(), **self.netconfig[net_name]['optimizer']['params'])) # `.dont` dynamically appended at the end of `target`.
         if len(__real_scl_list) == 0 and len(__real_opt_list) == 1 and __real_opt_list[0] is None:
             return None
         

@@ -1,5 +1,8 @@
 generator:
   params:
+    optimizer:
+      params:
+        lr: 0.001
     forward:
       - seq0
       - Return: x
