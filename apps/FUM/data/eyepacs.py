@@ -8,8 +8,8 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 
 class D(D_Base):
     def fetch(self, signal_path):
-        signal = np.reshape(np.load(signal_path), (1, -1)).astype(np.float32)
-        print(signal.shape)
+        signal = np.reshape(np.load(signal_path), (1, -1)) #.astype(np.float32)
+        print(signal.shape, signal)
         assert False
         return {
             'image': signal
