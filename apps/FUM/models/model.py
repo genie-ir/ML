@@ -11,6 +11,9 @@ class FUM(plModuleBase):
     def start(self):
         self.counter = -1
 
+    def validation_step(self, batch, batch_idx, split='val'):
+        pass
+
     def generator_step(self, batch):
         self.counter += 1
         if self.counter == 2:
