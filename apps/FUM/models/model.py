@@ -10,9 +10,11 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         y = batch['y']
         xf0 = batch[self.signal_key]
-        xf = xf0 + torch.randn(xf0.shape, device=self.device)
+        xfN = torch.randn(xf0.shape, device=self.device)
+        print(xf0.min(), xf0.max())
+        print(xfN.min(), xfN.max())
+        xf = xf0 + xfN
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
-        print(xt)
         phi = self.vqgan.rec_phi({
             'x': xt,
             'y': y
