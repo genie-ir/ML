@@ -2,7 +2,7 @@ generator:
   params:
     optimizer:
       params:
-        lr: 12 #0.001
+        lr: 100 #0.001
     forward:
       - seq0
       - Return: x
