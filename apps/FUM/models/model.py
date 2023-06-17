@@ -16,12 +16,12 @@ class FUM(plModuleBase):
         if self.counter == 2:
             assert False
         else:
-            print(self.generator.net_seq0[0].weight[0])
+            print(self.generator.net_seq0[0].weight[0, :10])
 
         y = batch['y']
         # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
         xf = error_grade(batch[self.signal_key], 3)
-        xf = self.generator(xf)
+        xf = self.generator(x=xf)
 
         xt = torch.tensor(denormalizing(xf.detach().cpu().numpy()), device=self.device, dtype=torch.float)
         phi = self.vqgan.rec_phi({
