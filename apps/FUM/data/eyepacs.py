@@ -7,9 +7,11 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 
 class D(D_Base):
     def fetch(self, signal_path):
-        print('hoooooooooooooo!!')
+        signal = np.load(signal_path).astype(np.float32)
+        print(signal.shape)
+        assert False
         return {
-            'image': np.load(signal_path).astype(np.float32)
+            'image': signal
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
