@@ -14,8 +14,6 @@ class D(D_Base):
 
 class eyepacsTrain(ImageNetTrain):
     def download_dataset(self, **kwargs):
-        makedirs(kwargs['real_fdir'], exist_ok=True)
-        makedirs(getenv('GENIE_ML_STORAGE0'), exist_ok=True)
         src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         if not exists(src):
             src = join('/content', self.config.get('SRC'))
@@ -29,8 +27,6 @@ class eyepacsTrain(ImageNetTrain):
     
 class eyepacsValidation(ImageNetValidation):
     def download_dataset(self, **kwargs):
-        makedirs(kwargs['real_fdir'], exist_ok=True)
-        makedirs(getenv('GENIE_ML_STORAGE0'), exist_ok=True)
         src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         if not exists(src):
             src = join('/content', self.config.get('SRC'))
