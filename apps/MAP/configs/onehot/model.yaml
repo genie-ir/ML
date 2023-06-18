@@ -18,5 +18,3 @@ OH:
             out_features: $out_dim
             bias: True
         - torch.nn.Sigmoid
-        - torch.nn.Softmax:
-            dim: 1
