@@ -10,6 +10,6 @@ class MAP(plModuleBase):
         return self.OHLoss(
             batch['Yi'], 
             batch['Yip1'],
-            self.OH(x=batch['Xi']), 
+            self.OH(x=batch['Xi']),
             self.OH(x=batch['Xip1']),
         )
