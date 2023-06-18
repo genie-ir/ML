@@ -25,10 +25,8 @@ class LossBase(nn.Module):
             'target': self.loss_codebook.get(self.prefix, self.prefix),
             'params': self.kwargs.get('params', dict())
         })
-        print('!!!!!!!!!!!!!', self.criterion)
     
     def lossfn(self, y, t):
-        print('@@@@@@@@@@@@@@@', y.shape, t.shape)
         loss = self.criterion(y, t)
         log = {
             'loss': loss.clone().detach().mean(),

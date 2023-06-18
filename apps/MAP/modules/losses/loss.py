@@ -4,7 +4,7 @@ class Loss(LossBase):
     pass
 
 class OHLoss(LossBase):
-    # def ce_OH_loss(self, y, t):
-    #     print('*******************', y.shape, t.shape)
+    def lossfn(self, Yi, Yip1, yi, yip1):
+        print('*******************', Yi.shape, Yip1.shape, yi.shape, yip1.shape)
     
     pass

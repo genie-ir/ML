@@ -11,5 +11,5 @@ class MAP(plModuleBase):
             batch['Yi'], 
             batch['Yip1'],
             self.OH(x=batch['Xi']), 
-            self.OH(x=batch['Xip1']), 
+            self.OH(x=batch['Xip1']),
         )
