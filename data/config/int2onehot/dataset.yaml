@@ -1,6 +1,6 @@
 target: utils.pl.tools.dataset.DataModuleFromConfig
 params:
-  batch_size: 2
+  batch_size: 64
   num_workers: 2
   train:
     target: data.config.int2onehot.D.D
