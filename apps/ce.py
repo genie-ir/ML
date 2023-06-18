@@ -1,0 +1,2 @@
+class MMD():
+    pass
