@@ -1,4 +1,4 @@
 target: apps.MAP.modules.losses.loss.Loss
 
 params:
-  criterion: ce
+  criterion: mse
