@@ -12,9 +12,9 @@ class D(D_Base):
         Xi = np.random.uniform(0, .5, (self.M, 1)) + i
         Xip1 = np.random.uniform(.5, 1, (self.M, 1)) + i + 1
 
-        print(Xi, self.oh[i])
+        print(Xi, self.oh[i], self.oh[i].dtype)
         print('-'*30)
-        print(Xip1, self.oh[i+1])
+        print(Xip1, self.oh[i+1], self.oh[i+1].dtype)
         assert False
 
         return {
