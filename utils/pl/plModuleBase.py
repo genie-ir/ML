@@ -235,7 +235,7 @@ class plModuleBase(pl.LightningModule):
     def predefined_net_step_master0(self, net):
         pipline_name = f'{net}_step'
         def predefined_net_step(batch):
-            cowsay.cow('NotImplementedError:\nplease define `{}` in pipline.'.format(pipline_name))
+            cowsay.cow('NotImplementedError:\nplease define `{}` in `{}:pipline`.'.format(pipline_name, self.__class__.__name__))
             sys.exit()
         return predefined_net_step
     
