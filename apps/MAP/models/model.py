@@ -7,6 +7,6 @@ from libs.basicIO import signal_save, compressor
 
 class MAP(plModuleBase):
     def OH_step(self, batch):
-        print(batch.keys())
+        print('Xi', batch['Xi'])
 
         assert False
