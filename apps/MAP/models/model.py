@@ -11,8 +11,8 @@ class MAP(plModuleBase):
         # print('Yi', batch['Yi'].shape)
         # print(batch['Xi'][0,0,0], batch['Yi'][0])
         
-        yi = self.OH(batch['Xi'])
-        yip1 = self.OH(batch['Xip1'])
+        yi = self.OH(x=batch['Xi'])
+        yip1 = self.OH(x=batch['Xip1'])
 
         print(yi.shape, yip1.shape)
 
