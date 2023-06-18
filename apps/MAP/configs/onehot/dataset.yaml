@@ -1,2 +1,1 @@
-!include data.config.mnist.dataset
-# !include data.config.eyepacs.dataset
+!include data.config.indices.dataset

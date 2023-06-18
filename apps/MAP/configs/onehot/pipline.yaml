@@ -1,6 +1,5 @@
 net_step:
   forward:
-    - input: [z, randn, [1, 4, 4]]  # input z
     - seq0
     - Return: LOSS_VALUE
   
@@ -9,8 +8,8 @@ net_step:
     output: LOSS_VALUE
     head:
       - BB.Self:
-          fn: net
-          input: [[x, z]]
+          fn: OH
+          input: [[x, X]]
       - BB.Self:
-          fn: netLoss
-          input: [[y], [t]]
+          fn: OHLoss
+          input: [[y], [t, X]]

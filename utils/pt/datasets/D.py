@@ -10,6 +10,9 @@ class D_Base(Dataset):
     def __init__(self, labels=None, **kwargs):
         self.kwargs = kwargs
         self.labels = dict() if labels is None else labels
+        self.start()
+    
+    def start(self):
         self._length = len(self.labels['x'])
 
     def __len__(self):

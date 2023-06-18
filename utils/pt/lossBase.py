@@ -28,6 +28,7 @@ class LossBase(nn.Module):
         print('!!!!!!!!!!!!!', self.criterion)
     
     def lossfn(self, y, t):
+        print('@@@@@@@@@@@@@@@', y.shape, t.shape)
         loss = self.criterion(y, t)
         log = {
             'loss': loss.clone().detach().mean(),
