@@ -6,7 +6,7 @@ class LossBase(nn.Module):
     def __init__(self, **kwargs):
         super().__init__()
         self.kwargs = kwargs
-        self.prefix = str(self.kwargs.get('prefix', ''))
+        self.prefix = str(self.kwargs.get('criterion', ''))
         self.prefixExtended = ''
 
         if self.prefix:
@@ -21,10 +21,9 @@ class LossBase(nn.Module):
         self.start()
     
     def start(self):
-        assert (not(self.loss_codebook.get(self.prefix, None) is None)), '`self.prefix={}` | does not defined in `configs.loss.yaml`'.format(self.prefix)
         self.criterion = instantiate_from_config({
-            'target': self.loss_codebook[self.prefix],
-            'params': self.kwargs.get('criterion', dict())
+            'target': self.loss_codebook.get(self.prefix, self.prefix),
+            'params': self.kwargs.get('params', dict())
         })
         print('!!!!!!!!!!!!!', self.criterion)
         assert False
