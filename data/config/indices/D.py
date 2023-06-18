@@ -7,7 +7,7 @@ class D(D_Base):
         self._length = int(self.kwargs.get('N', -1))
 
     def __getitem__(self, i):
-        X = np.zeros((self.M)) + i
+        X = np.zeros((self.M, 1)) + i
 
         print(X)
         assert False
