@@ -5,10 +5,8 @@ params:
   train:
     target: data.config.indices.D.D
     params:
-      config:
-        ncluster: 1024
+      ncluster: 1024
   validation:
     target: data.config.indices.D.D
     params:
-      config:
-        ncluster: 1024
+      ncluster: 1024
