@@ -90,6 +90,7 @@ class plModuleBase(pl.LightningModule):
         self.networks = dict()
         self.lossconfig['target'] = str(self.lossconfig.get('target', 'apps.{}.modules.losses.loss.Loss'.format(self.__class__.__name__)))
         self.lossconfig['params'] = self.lossconfig.get('params', dict())
+        self.lossconfig['params']['criterion'] = str(self.lossconfig['params'].get('criterion', 'mse'))
 
         visualize_vars = [{}, {}]         # first: for network | second: for pipline
         visualize_flags = [False, False]  # first: for network | second: for pipline
