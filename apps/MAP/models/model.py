@@ -6,4 +6,7 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 
 class MAP(plModuleBase):
-    pass
+    def OH_step(self, batch):
+        print(batch.keys())
+
+        assert False
