@@ -10,6 +10,10 @@ class MAP(plModuleBase):
         # print('Xi', batch['Xi'].shape)
         # print('Yi', batch['Yi'].shape)
         # print(batch['Xi'][0,0,0], batch['Yi'][0])
-        print(self.OH)
+        
+        yi = self.OH(batch['Xi'])
+        yip1 = self.OH(batch['Xip1'])
+
+        print(yi.shape, yip1.shape)
 
         assert False
