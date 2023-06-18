@@ -7,6 +7,9 @@ from libs.basicIO import signal_save, compressor
 
 class MAP(plModuleBase):
     def OH_step(self, batch):
+        print(
+            '--->', self.OH[0].weight[0,0]
+        )
         return self.OHLoss(
             batch['Yi'].long(), 
             batch['Yip1'].long(),
