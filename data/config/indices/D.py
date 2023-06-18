@@ -4,8 +4,10 @@ from utils.pt.datasets.imageNet import ImageNetTrain, ImageNetValidation
 
 class D(D_Base):
     def start(self):
-        print('###############', self.kwargs)
-        self._length = 1024
+        self._length = int(self.kwargs.get('N', -1))
+
+    def __getitem__(self, i):
+        print(i)
         assert False
 
     def fetch(self, signal_path):
