@@ -5,7 +5,7 @@ class D(D_Base):
     def start(self):
         self.M = int(self.kwargs.get('M', 1))
         self.N = int(self.kwargs.get('N', -1))
-        self.oh = np.eye(self.N, dtype=np.float32)
+        self.oh = np.eye(self.N).astype(np.float32)
         self._length = self.N - 1
 
     def __getitem__(self, i):
