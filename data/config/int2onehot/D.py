@@ -10,7 +10,7 @@ class D(D_Base):
 
     def __getitem__(self, i):
         Xi = np.random.uniform(0, .5, (self.M, 1)).astype(np.float32) + i
-        Xip1 = np.random.uniform(.5, 1, (self.M, 1)).astype(np.float32) + i + 1
+        Xip1 = np.random.uniform(.5, 1, (self.M, 1)).astype(np.float32) + i
 
         print(Xi, self.oh[i], self.oh[i].dtype)
         print('-'*30)
