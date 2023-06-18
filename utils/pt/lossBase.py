@@ -26,7 +26,6 @@ class LossBase(nn.Module):
             'params': self.kwargs.get('params', dict())
         })
         print('!!!!!!!!!!!!!', self.criterion)
-        assert False
     
     def lossfn(self, y, t):
         loss = self.criterion(y, t)
