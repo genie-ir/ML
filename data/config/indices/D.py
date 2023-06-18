@@ -7,7 +7,7 @@ class D(D_Base):
         self._length = int(self.kwargs.get('N', -1))
 
     def __getitem__(self, i):
-        print(i)
+        print('$$$$$$$$$$$$$$$$$$$', i)
         assert False
 
     def fetch(self, signal_path):
