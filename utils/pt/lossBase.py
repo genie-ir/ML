@@ -21,7 +21,7 @@ class LossBase(nn.Module):
         self.start()
     
     def start(self):
-        assert self.loss_codebook.get(self.prefix, None) is None, '`self.prefix={}` | does not defined in `configs.loss.yaml`'.format(self.prefix)
+        assert (not(self.loss_codebook.get(self.prefix, None) is None)), '`self.prefix={}` | does not defined in `configs.loss.yaml`'.format(self.prefix)
         self.criterion = instantiate_from_config({
             'target': self.loss_codebook[self.prefix],
             'params': self.kwargs.get('criterion', dict())
