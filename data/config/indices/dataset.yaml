@@ -6,7 +6,9 @@ params:
     target: data.config.indices.D.D
     params:
       N: 1024
+      M: 10
   validation:
     target: data.config.indices.D.D
     params:
       N: 1024
+      M: 10
