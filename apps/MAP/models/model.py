@@ -8,8 +8,8 @@ from libs.basicIO import signal_save, compressor
 class MAP(plModuleBase):
     def OH_step(self, batch):
         return self.OHLoss(
-            batch['Yi'], 
-            batch['Yip1'],
+            batch['Yi'].long(), 
+            batch['Yip1'].long(),
             self.OH(x=batch['Xi']),
             self.OH(x=batch['Xip1']),
         )
