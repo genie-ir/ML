@@ -18,8 +18,6 @@ class LossBase(nn.Module):
                                                  getattr(self, 'lossfn', None))))
         
         self.loss_codebook = instantiate_from_config({'target': 'configs.loss.yaml'}, kwargs={'dotdictFlag': False})
-        print('--->', self.loss_codebook)
-        assert False
         self.start()
     
     def start(self):
