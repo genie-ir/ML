@@ -6,9 +6,9 @@ params:
     target: data.config.int2onehot.D.D
     params:
       N: 1024
-      M: 100
+      M: 1000
   validation:
     target: data.config.int2onehot.D.D
     params:
       N: 1024
-      M: 100
+      M: 1000
