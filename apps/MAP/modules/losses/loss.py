@@ -1,8 +1,4 @@
-import torch
-import numpy as np
-import torch.nn as nn
-import torch.nn.functional as F
-from utils.pt.losses.mse import MSE_Loss
+from utils.pt.lossBase import LossBase
 
-class Loss(MSE_Loss):
+class Loss(LossBase):
     pass

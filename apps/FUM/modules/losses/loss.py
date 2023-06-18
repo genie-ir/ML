@@ -1,12 +1,8 @@
-import torch
-import numpy as np
-import torch.nn as nn
-import torch.nn.functional as F
-from utils.pt.losses.mse import MSE_Loss
-from utils.pt.losses.cgan import CGAN_Loss
+from utils.pt.lossBase import LossBase
+from utils.pt.losses.cgan import CGANLossBase
 
-class Loss(MSE_Loss):
+class Loss(LossBase):
     pass
 
-class CGANLoss(CGAN_Loss):
+class CGANLoss(CGANLossBase):
     pass
