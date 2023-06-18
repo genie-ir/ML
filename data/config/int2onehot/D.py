@@ -9,17 +9,10 @@ class D(D_Base):
         self._length = self.N - 1
 
     def __getitem__(self, i):
-        Xi = np.random.uniform(0, .5, (self.M, 1)).astype(np.float32) + i
-        Xip1 = np.random.uniform(.5, 1, (self.M, 1)).astype(np.float32) + i
-
-        print(Xi, self.oh[i], self.oh[i].dtype)
-        print('-'*30)
-        print(Xip1, self.oh[i+1], self.oh[i+1].dtype)
-        assert False
 
         return {
-            'Xi': Xi,
-            'Xip1': Xip1,
+            'Xi': np.random.uniform(0, .5, (self.M, 1)).astype(np.float32) + i,
+            'Xip1': np.random.uniform(.5, 1, (self.M, 1)).astype(np.float32) + i,
             'Yi': self.oh[i],
-            'Yi+1': self.oh[i+1]
+            'Yip1': self.oh[i+1]
         }
