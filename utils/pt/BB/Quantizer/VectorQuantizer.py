@@ -92,6 +92,7 @@ class VectorQuantizer2(BB):
             # min_encoding_indices = torch.tensor(I2.round().long())
 
             print('hoooo!!', I2.requires_grad, I2.round().requires_grad, I2.round().long().requires_grad)
+            print(I2)
             assert False
         
         z_q = self.embedding(min_encoding_indices).view(_zShape)
