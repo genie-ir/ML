@@ -6,8 +6,6 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 
 class MAP(plModuleBase):
-    def validation_step(self, batch, batch_idx, split='val'):
-        return
     def OH_step(self, batch):
         print(
             '--->', self.OH.net_seq0[0].weight[0,0]
