@@ -6,10 +6,19 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 
 class MAP(plModuleBase):
-    def OH_step(self, batch):
+    def validation_step(self, batch, batch_idx, split='val'):
         print(
-            '--->', self.OH.net_seq0[0].weight[0,0]
+            'val --->', self.OH.net_seq0[0].weight[0,0]
         )
+        return super().validation_step(batch, batch_idx, split)
+    
+    def training_step(self, batch, batch_idx, split='train'):
+        print(
+            'train --->', self.OH.net_seq0[0].weight[0,0]
+        )
+        return super().training_step(batch, batch_idx, split)
+    
+    def OH_step(self, batch):
         return self.OHLoss(
             batch['Yi'].long(), 
             batch['Yip1'].long(),
