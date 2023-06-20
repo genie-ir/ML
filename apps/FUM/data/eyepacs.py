@@ -10,7 +10,8 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 class D(D_Base):
     def start(self):
         self._length = 0
-        df = dfread(self.kwargs['df_candidate_path'])
+        df_candidate = dfread(self.kwargs['df_candidate_path'])
+        df = [dfc_row.image for dfc_row in df_candidate]
         print(df)
 
     def fetch(self, signal_path):
