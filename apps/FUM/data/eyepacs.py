@@ -20,7 +20,9 @@ class D(D_Base):
                 self.kwargs['UPPER_PATH'],
                 STATIC_PATH + str(dfc_dr),
                 df_candidate_dr.iloc[dfc_idx].image_id)).flatten() for dfc_idx in range(len(df_candidate_dr))])
-        print(self.init_clusters, self.init_clusters.shape)
+        
+        
+        print(self.init_clusters, [self.init_clusters[k].shape for k in self.init_clusters])
         assert False
 
     def fetch(self, signal_path):
