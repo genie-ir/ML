@@ -9,9 +9,14 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 
 class D(D_Base):
     def start(self):
+        STATIC_PATH = join('1DsignalOfEyepacs', self.kwargs['DATASET_CATEGORY'], 'Grade_')
+        print('------>', STATIC_PATH)
         self._length = 0
         df_candidate = dfread(self.kwargs['DF_CANDIDATE_PATH'])
-        self.init_clusters = np.array([np.load(join(self.kwargs['UPPER_PATH'], dfc_row_imgid)) for dfc_row_imgid in df_candidate.image_id])
+        self.init_clusters = np.array([np.load(join(
+            self.kwargs['UPPER_PATH'],
+            STATIC_PATH + df_candidate.iloc[dfc_idx].dr,
+            df_candidate.iloc[dfc_idx].image_id)) for dfc_idx in range(len(df_candidate))])
         print(self.init_clusters, self.init_clusters.shape)
         assert False
 

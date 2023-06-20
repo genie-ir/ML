@@ -21,6 +21,8 @@ class ImageNetBase(Dataset):
 
     """
     def __init__(self, config=None):
+        self.dataset_category = str(getattr(self, 'dataset_category', '')) # train | val | test  (it determines in child class)
+        
         self.config = config or OmegaConf.create()
         
         if not type(self.config)==dict:
@@ -312,7 +314,8 @@ class ImageNetBase(Dataset):
             labels=labels,
             **{
                 'df_candidate_path'.upper(): self.df_candidate_path,
-                'upper_path'.upper(): self.datadir
+                'upper_path'.upper(): self.datadir,
+                'dataset_category'.upper(): self.dataset_category,
             },
             **self.config,
             size=retrieve(self.config, 'SIZE', default=0)
@@ -323,6 +326,10 @@ class ImageNetTrain(ImageNetBase):
     it useful to overide functions below in creation of custom dataset:
         `download_dataset`, `extract_dataset`, ``preparation` of parrent class`
     """
+    def __init__(self, config=None):
+        self.dataset_category = 'train'
+        super().__init__(config)
+
     def extract_dataset(self, **kwargs):
         fake_fpath = kwargs['fake_fpath']
         datadir = kwargs['datadir']
@@ -335,6 +342,10 @@ class ImageNetValidation(ImageNetBase):
     it useful to overide functions below in creation of custom dataset:
         `download_dataset`, `extract_dataset`, `preparation of parrent class`
     """
+    def __init__(self, config=None):
+        self.dataset_category = 'val'
+        super().__init__(config)
+    
     def extract_dataset(self, **kwargs):
         fake_fpath = kwargs['fake_fpath']
         datadir = kwargs['datadir']
