@@ -20,10 +20,9 @@ class D(D_Base):
                 self.kwargs['UPPER_PATH'],
                 STATIC_PATH + str(dfc_dr),
                 df_candidate_dr.iloc[dfc_idx].image_id)).flatten() for dfc_idx in range(len(df_candidate_dr))])
+        self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
-        
-        print(self.init_clusters, [len(np.unique(self.init_clusters[k])) for k in self.init_clusters])
-        print('all unique', len(np.unique(np.array([self.init_clusters[k] for k in self.init_clusters]))))
+        print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
         assert False
 
     def fetch(self, signal_path):
