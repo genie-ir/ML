@@ -19,7 +19,7 @@ class FUM(plModuleBase):
         if self.counter == 4:
             assert False
         else:
-            print(self.generator.net_seq0[0].weight[0, :10])
+            print(self.generator.net_seq0[0].weight.shape)
 
         y = batch['y']
         xf = error_grade(batch[self.signal_key], 3)
