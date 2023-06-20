@@ -17,7 +17,7 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         y = batch['y']
         xf = error_grade(batch[self.signal_key], 3)
-        xf = self.generator(x=xf)
+        # xf = self.generator(x=xf)
 
         xt = denormalizing(xf)
         phi = self.vqgan.rec_phi({'x': xt, 'y': y})
