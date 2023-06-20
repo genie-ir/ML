@@ -10,8 +10,8 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 class D(D_Base):
     def start(self):
         self._length = 0
-        # dfread()
-        print('@@@@@@@@@@@@', self.kwargs['df_candidate_path'])
+        df = dfread(self.kwargs['df_candidate_path'])
+        print(df)
 
     def fetch(self, signal_path):
         assert False
