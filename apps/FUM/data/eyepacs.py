@@ -13,10 +13,12 @@ class D(D_Base):
         print('------>', STATIC_PATH)
         self._length = 0
         df_candidate = dfread(self.kwargs['DF_CANDIDATE_PATH'])
-        self.init_clusters = np.array([np.load(join(
-            self.kwargs['UPPER_PATH'],
-            STATIC_PATH + str(df_candidate.iloc[dfc_idx].dr),
-            df_candidate.iloc[dfc_idx].image_id)).flatten() for dfc_idx in range(len(df_candidate))])
+        self.init_clusters = dict()
+        for dfc_dr in df_candidate.dr.unique():
+            self.init_clusters['class_' + dfc_dr] = np.array([np.load(join(
+                self.kwargs['UPPER_PATH'],
+                STATIC_PATH + str(dfc_dr),
+                df_candidate.iloc[dfc_idx].image_id)).flatten() for dfc_idx in range(len(df_candidate[df_candidate.dr == dfc_dr]))])
         print(self.init_clusters, self.init_clusters.shape)
         assert False
 
