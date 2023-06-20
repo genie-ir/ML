@@ -92,7 +92,7 @@ class VectorQuantizer2(BB):
         else:
             _zShape = [-1,16,16,256]
             min_encoding_indices = I2.long()
-            print(min_encoding_indices)
+            # print(min_encoding_indices)
 
             # print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
             z_q = (onehot_with_grad(I2, self.n_e) @ self.embedding.weight).view(_zShape)

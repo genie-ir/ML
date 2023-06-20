@@ -16,7 +16,7 @@ class FUM(plModuleBase):
 
     def generator_step(self, batch):
         self.counter += 1
-        if self.counter == 2:
+        if self.counter == 4:
             assert False
         else:
             print(self.generator.net_seq0[0].weight[0, :10])
@@ -27,7 +27,6 @@ class FUM(plModuleBase):
 
         xt = denormalizing(xf)
         phi = self.vqgan.rec_phi({'x': xt, 'y': y})
-        print('phi', phi.shape, phi.dtype, phi.requires_grad)
         self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
