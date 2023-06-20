@@ -23,6 +23,7 @@ class D(D_Base):
         
         
         print(self.init_clusters, [len(np.unique(self.init_clusters[k])) for k in self.init_clusters])
+        print('all unique', len(np.unique(np.array([self.init_clusters[k] for k in self.init_clusters]))))
         assert False
 
     def fetch(self, signal_path):
