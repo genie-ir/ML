@@ -95,8 +95,7 @@ class VectorQuantizer2(BB):
 
             # print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
             z_q = (onehot_with_grad(I2, self.n_e) @ self.embedding.weight).view(_zShape)
-            print(z_q, z_q.shape, z_q.dtype, z_q.requires_grad)
-            assert False
+            print('------>', self.embedding.weight[0,0])
         
         # z_q = self.embedding(min_encoding_indices).view(_zShape)
         perplexity = None
