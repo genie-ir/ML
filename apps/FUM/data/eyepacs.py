@@ -10,10 +10,10 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 class D(D_Base):
     def start(self):
         self._length = 0
-        print('#############', self.kwargs['UPPER_PATH'])
-        # df_candidate = dfread(self.kwargs['DF_CANDIDATE_PATH'])
-        # self.init_clusters = np.array([np.load(join(, dfc_row_imgid)) for dfc_row_imgid in df_candidate.image_id])
-        # print(self.init_clusters)
+        df_candidate = dfread(self.kwargs['DF_CANDIDATE_PATH'])
+        self.init_clusters = np.array([np.load(join(self.kwargs['UPPER_PATH'], dfc_row_imgid)) for dfc_row_imgid in df_candidate.image_id])
+        print(self.init_clusters, self.init_clusters.shape)
+        assert False
 
     def fetch(self, signal_path):
         assert False
