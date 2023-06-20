@@ -15,7 +15,7 @@ class D(D_Base):
         df_candidate = dfread(self.kwargs['DF_CANDIDATE_PATH'])
         self.init_clusters = np.array([np.load(join(
             self.kwargs['UPPER_PATH'],
-            STATIC_PATH + df_candidate.iloc[dfc_idx].dr,
+            STATIC_PATH + str(df_candidate.iloc[dfc_idx].dr),
             df_candidate.iloc[dfc_idx].image_id)) for dfc_idx in range(len(df_candidate))])
         print(self.init_clusters, self.init_clusters.shape)
         assert False
