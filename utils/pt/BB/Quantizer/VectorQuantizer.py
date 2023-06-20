@@ -24,8 +24,6 @@ class VectorQuantizer2(BB):
         legacy = self.kwargs.get('legacy', True)
 
         self.n_e = n_e
-        print('~~~~~~~~~~~~~~~~~~~', self.n_e)
-        assert False
         self.e_dim = e_dim
         self.beta = beta
         self.legacy = legacy
@@ -95,7 +93,7 @@ class VectorQuantizer2(BB):
             # min_encoding_indices = torch.tensor(I2.round().long())
 
             # print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
-            # print(onehot_with_grad(I2, ))
+            print(onehot_with_grad(I2, self.n_e))
             assert False
         
         z_q = self.embedding(min_encoding_indices).view(_zShape)
