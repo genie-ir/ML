@@ -15,12 +15,6 @@ class FUM(plModuleBase):
         pass
 
     def generator_step(self, batch):
-        self.counter += 1
-        if self.counter == 4:
-            assert False
-        else:
-            print(self.generator.net_seq0[0].weight.shape)
-
         y = batch['y']
         xf = error_grade(batch[self.signal_key], 3)
         xf = self.generator(x=xf)
