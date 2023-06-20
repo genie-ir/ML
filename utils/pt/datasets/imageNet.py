@@ -311,7 +311,8 @@ class ImageNetBase(Dataset):
         self.data = self.D(
             labels=labels,
             **{
-                'df_candidate_path': self.df_candidate_path
+                'df_candidate_path'.upper(): self.df_candidate_path,
+                'upper_path'.upper(): self.datadir
             },
             **self.config,
             size=retrieve(self.config, 'SIZE', default=0)
