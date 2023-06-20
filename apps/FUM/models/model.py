@@ -21,6 +21,6 @@ class FUM(plModuleBase):
         self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
-        # print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+        print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
 
         return g_loss, {'loss': g_loss.item()}
