@@ -22,16 +22,13 @@ class FUM(plModuleBase):
             print(self.generator.net_seq0[0].weight[0, :10])
 
         y = batch['y']
-        # print(batch[self.signal_key].min().item(), batch[self.signal_key].max().item())
         xf = error_grade(batch[self.signal_key], 3)
         xf = self.generator(x=xf)
-        print('+++++++++++++++++++', xf.requires_grad, xf.shape)
 
         xt = denormalizing(xf)
-        print('!!!!!!!!!!!', xt.shape, xt.dtype, xt.requires_grad)
         phi = self.vqgan.rec_phi({'x': xt, 'y': y})
         print('phi', phi.shape, phi.dtype, phi.requires_grad)
-        # self.vqgan.save_phi(phi, pathdir='/content')
+        self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)

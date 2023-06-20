@@ -16,9 +16,7 @@ def normalizing(signal: np.ndarray):
     return ((((signal + B0) / N0) * M0) - M1).astype(np.float32)
 
 def denormalizing(signal: torch.tensor):
-    print('................', signal.requires_grad)
-    x = fr2x_torch((((signal + M1) / M0) * N0 - B0) * N1) #.round().astype(np.int32)
-    return x.clamp(0, 1023)
+    return fr2x_torch((((signal + M1) / M0) * N0 - B0) * N1) 
 
 class D(D_Base):
     def fetch(self, signal_path):
