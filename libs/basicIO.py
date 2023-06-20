@@ -78,8 +78,12 @@ def dfwrite(dst: str, df, **kwargs):
         df.to_csv(dst, sep=kwargs.get('sep', ','), encoding=kwargs.get('encoding', 'utf-8'), index=kwargs.get('index', False))
 
 def dfread(src: str, **kwargs):
-    if src.endswith('.csv'):
-        return pd.read_csv(src)
+    pattern = str(kwargs.get('pattern', ''))
+    if pattern:
+        print(ls(src, pattern, full_path=True))
+    else:
+        if src.endswith('.csv'):
+            return pd.read_csv(src)
 
 def dfshuffle(df, frac=1.0, resetIndexFlag=True):
     random_state = int(int(round(time.time() * 1000)) % 10000)

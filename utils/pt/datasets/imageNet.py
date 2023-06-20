@@ -310,6 +310,9 @@ class ImageNetBase(Dataset):
         
         self.data = self.D(
             labels=labels,
+            **{
+                'df_candidate_path': self.df_candidate_path
+            },
             **self.config,
             size=retrieve(self.config, 'SIZE', default=0)
         )
