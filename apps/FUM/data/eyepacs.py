@@ -12,9 +12,9 @@ class D(D_Base):
         self._length = 0
         # dfread()
         print('@@@@@@@@@@@@', self.kwargs['df_candidate_path'])
-        assert False
 
     def fetch(self, signal_path):
+        assert False
         return {
             # 'latentcode': np.load(signal_path)
             # 'noisecode': 
