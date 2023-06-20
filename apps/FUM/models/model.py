@@ -16,7 +16,7 @@ class FUM(plModuleBase):
         # xf = error_grade(batch[self.signal_key], 3)
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
-        xt = batch[self.signal_key]
+        xt = batch[self.signal_key].float()
         phi = self.vqgan.rec_phi({'x': xt, 'y': y})
         self.vqgan.save_phi(phi, pathdir='/content')
 
