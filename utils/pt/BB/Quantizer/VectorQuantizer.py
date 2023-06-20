@@ -4,6 +4,7 @@ from torch import nn
 from einops import rearrange
 from utils.pt.distance import L2S_VQ
 from utils.pt.building_block import BB
+from utils.pt.tricks.gradfns import onehot_with_grad
 
 class VectorQuantizer2(BB):
     '''
@@ -23,6 +24,8 @@ class VectorQuantizer2(BB):
         legacy = self.kwargs.get('legacy', True)
 
         self.n_e = n_e
+        print('~~~~~~~~~~~~~~~~~~~', self.n_e)
+        assert False
         self.e_dim = e_dim
         self.beta = beta
         self.legacy = legacy
@@ -91,7 +94,8 @@ class VectorQuantizer2(BB):
             _zShape = [-1,16,16,256]
             # min_encoding_indices = torch.tensor(I2.round().long())
 
-            print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
+            # print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
+            # print(onehot_with_grad(I2, ))
             assert False
         
         z_q = self.embedding(min_encoding_indices).view(_zShape)
