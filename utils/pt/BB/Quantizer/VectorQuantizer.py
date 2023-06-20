@@ -88,15 +88,17 @@ class VectorQuantizer2(BB):
                 return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
             
             _zShape = z.shape
+            z_q = self.embedding(min_encoding_indices).view(_zShape)
         else:
             _zShape = [-1,16,16,256]
             # min_encoding_indices = torch.tensor(I2.round().long())
 
             # print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
-            print(onehot_with_grad(I2, self.n_e))
+            z_q = (onehot_with_grad(I2, self.n_e) @ self.embedding.weight).view(_zShape)
+            print(z_q, z_q.shape, z_q.dtype, z_q.requires_grad)
             assert False
         
-        z_q = self.embedding(min_encoding_indices).view(_zShape)
+        # z_q = self.embedding(min_encoding_indices).view(_zShape)
         perplexity = None
         min_encodings = None
 
