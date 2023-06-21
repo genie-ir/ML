@@ -7,6 +7,8 @@ from utils.pt.datasets.D import D_Base
 from os import system, getenv, makedirs
 from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValidation as eyepacsValidationBase
 
+from utils.pt.distance import L2S_VQ
+
 class D(D_Base):
     def start(self):
         STATIC_PATH = join('1DsignalOfEyepacs', self.kwargs['DATASET_CATEGORY'], 'Grade_')
@@ -24,7 +26,8 @@ class D(D_Base):
         
         for k in self.init_clusters:
             n = np.corrcoef(self.init_clusters[k])
-            print(k, n, n.shape, n.dtype)
+            m = L2S_VQ(torch.tensor(n))
+            print(k, m, m.shape, m.min())
 
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
 
