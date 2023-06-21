@@ -43,6 +43,7 @@ class D(D_Base):
             # print()
 
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
+        assert False
 
     def fetch(self, signal_path):
         assert False
