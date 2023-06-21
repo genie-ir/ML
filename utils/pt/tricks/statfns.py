@@ -11,5 +11,5 @@ def correlation(x, y=None, kill_itself=False):
     # Not diffrantiable (currently)
     out = []
     for i in range(x.shape[0]):
-        out.append(torch.corrcoef(torch.cat([x[i:i+1, :], y], dim=0))[0, :].detach().numpy())
+        out.append(torch.corrcoef(torch.cat([x[i:i+1, :], y], dim=0))[0, :][1:].detach().numpy())
     return torch.tensor(np.array(out))
