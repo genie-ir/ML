@@ -25,8 +25,8 @@ class D(D_Base):
         self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
         for k in self.init_clusters:
-            n = np.corrcoef(self.init_clusters[k])
-            m = L2S_VQ(torch.tensor(n))
+            n = torch.tensor(np.corrcoef(self.init_clusters[k]))
+            m = L2S_VQ(n, n)
             print(k, m, m.shape, m.min())
 
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
