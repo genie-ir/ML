@@ -22,7 +22,11 @@ class D(D_Base):
                 df_candidate_dr.iloc[dfc_idx].image_id)).flatten() for dfc_idx in range(len(df_candidate_dr))])
         self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
-        print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
+        for k in self.init_clusters:
+            n = np.corrcoef(self.init_clusters[k])
+            print(k, n, n.shape, n.dtype)
+
+        # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
 
     def fetch(self, signal_path):
         assert False
