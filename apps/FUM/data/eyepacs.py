@@ -36,7 +36,7 @@ class D(D_Base):
             for kj in self.init_clusters:
                 _n = torch.tensor(self.init_clusters[kj])
                 m = correlation(n, _n)
-                print('class {} -> {}'.format(k, kj), m.min(), m.max(), m.dtype())
+                print('class {} -> {}'.format(k, kj), m.min(), m.max(), m.dtype(), m.shape)
 
 
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
