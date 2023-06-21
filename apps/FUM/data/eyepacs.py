@@ -26,7 +26,7 @@ class D(D_Base):
         
         for k in self.init_clusters:
             n = torch.tensor(np.corrcoef(self.init_clusters[k]))
-            m = L2S_VQ(n, n)
+            m = torch.topk(L2S_VQ(n, n), 2, largest=False)
             print(k, m, m.shape)
             assert False
 
