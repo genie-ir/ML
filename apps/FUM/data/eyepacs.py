@@ -8,7 +8,7 @@ from os import system, getenv, makedirs
 from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValidation as eyepacsValidationBase
 
 from utils.pt.distance import L2S_VQ
-from utils.pt.tricks.statfns import correlation
+from utils.np.statfns import correlation
 
 class D(D_Base):
     def start(self):
@@ -30,7 +30,7 @@ class D(D_Base):
             # m = n.unique()
             # print(k, m.shape)
             # m = n.corrcoef()
-            m = correlation(n, kill_itself=True).abs()
+            m = correlation(n.detach().numpy(), kill_itself=True).abs()
             # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
             print(k, m.min(), m.max(), m.dtype)
             
@@ -38,7 +38,7 @@ class D(D_Base):
             #     if k == kj:
             #         continue
             #     _n = torch.tensor(self.init_clusters[kj])
-            #     m = correlation(n, _n).abs()
+            #     m = correlation(n.detach().numpy(), _n.detach().numpy()).abs()
             #     print('class {} -> {}'.format(k, kj), m.min(), m.max(), m.dtype, m.shape)
             # print()
 
