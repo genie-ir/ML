@@ -37,7 +37,7 @@ class D(D_Base):
                 if k == kj:
                     continue
                 _n = torch.tensor(self.init_clusters[kj])
-                m = correlation(n, _n)
+                m = correlation(n, _n).abs()
                 print('class {} -> {}'.format(k, kj), m.min(), m.max(), m.dtype, m.shape)
             print()
 
