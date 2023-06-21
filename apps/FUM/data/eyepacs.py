@@ -21,7 +21,7 @@ class D(D_Base):
             self.init_clusters['class_' + str(dfc_dr)] = np.array([np.load(join(
                 self.kwargs['UPPER_PATH'],
                 STATIC_PATH + str(dfc_dr),
-                df_candidate_dr.iloc[dfc_idx].image_id)).flatten() for dfc_idx in range(len(df_candidate_dr))])
+                df_candidate_dr.iloc[dfc_idx].image_id)).flatten().astype(np.float32) for dfc_idx in range(len(df_candidate_dr))])
         self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
         for k in self.init_clusters:
