@@ -32,8 +32,8 @@ class D(D_Base):
             # m = n.corrcoef()
             m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
             # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
-            M = m[m<1e-6].astype(np.float32).sum()
-            print(k, m.min(), m.max(), m.dtype, m.shape, M)
+            M = m[m<1e-6]
+            print(k, m.min(), m.max(), m.dtype, m.shape, M.shape, M)
             
             # for kj in self.init_clusters:
             #     if k == kj:
