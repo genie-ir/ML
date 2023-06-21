@@ -34,10 +34,12 @@ class D(D_Base):
             # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
             # print(k, m.min(), m.max(), m.dtype)
             for kj in self.init_clusters:
+                if k == kj:
+                    continue
                 _n = torch.tensor(self.init_clusters[kj])
                 m = correlation(n, _n)
                 print('class {} -> {}'.format(k, kj), m.min(), m.max(), m.dtype, m.shape)
-                print()
+            print()
 
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
 
