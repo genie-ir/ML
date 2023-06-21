@@ -30,11 +30,13 @@ class D(D_Base):
             # m = n.unique()
             # print(k, m.shape)
             # m = n.corrcoef()
-            m = correlation(n, kill_dig=True)
+            # m = correlation(n, kill_itself=True)
             # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
-            print(k, m.min(), m.max(), m.dtype)
-            # for kj in self.init_clusters:
-            #     a = 
+            # print(k, m.min(), m.max(), m.dtype)
+            for kj in self.init_clusters:
+                _n = torch.tensor(self.init_clusters[kj])
+                m = correlation(n, _n)
+                print('class {} -> {}'.format(k, kj), m.min(), m.max(), m.dtype())
 
 
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
