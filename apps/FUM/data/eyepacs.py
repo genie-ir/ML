@@ -25,16 +25,16 @@ class D(D_Base):
                 df_candidate_dr.iloc[dfc_idx].image_id)).flatten().astype(np.float32) for dfc_idx in range(len(df_candidate_dr))])
         self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
-        for k in self.init_clusters:
-            n = torch.tensor(self.init_clusters[k])
+        # for k in self.init_clusters:
+            # n = torch.tensor(self.init_clusters[k])
             # m = n.unique()
             # print(k, m.shape)
             # m = n.corrcoef()
-            m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
+            # m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
             # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
-            M = m[m<1e-2]
-            M = M[M>0]
-            print(k, m.min(), m.max(), m.dtype, m.shape, M.shape[0]/2)
+            # M = m[m<1e-2]
+            # M = M[M>0]
+            # print(k, m.min(), m.max(), m.dtype, m.shape, M.shape[0]/2)
             
             # for kj in self.init_clusters:
             #     if k == kj:
