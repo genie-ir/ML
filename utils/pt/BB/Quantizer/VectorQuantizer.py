@@ -90,7 +90,7 @@ class VectorQuantizer2(BB):
             _zShape = z.shape
             print('!!!!!!!!!!!!!!!', _zShape)
             z_q = self.embedding(min_encoding_indices).view(_zShape)
-            print('##############', z_q)
+            print('##############', z_q.shape)
             assert False
         else:
             _zShape = [-1,16,16,256]
