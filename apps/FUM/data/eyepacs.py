@@ -32,7 +32,7 @@ class D(D_Base):
             # m = n.corrcoef()
             m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
             # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
-            M = m[m<1e-6]
+            M = m[m<1e-2]
             M = M[M>0]
             print(k, m.min(), m.max(), m.dtype, m.shape, M.shape[0]/2)
             
