@@ -2,12 +2,15 @@ import torch
 import torch.nn.functional as F
 from torch.cuda.amp import custom_bwd, custom_fwd
 
-def preserve_grad(z, z_q):
+def dzq_dz_eq1(zq, z):
     """
-        transfer gradients from `z_q` to `z`
-        `z_q` and `z` must be the same shape
+        transfer gradients from `zq` to `z`  | (zq -> z)
+        `zq` and `z` must be the same shape
+        (Notic): zq not change in terms of numberically but here we define a drevative path from zq to z such that (dzq/dz = 1)
+        Example: 
+            zq = dzq_dz_eq1(zq, z)
     """
-    return z + (z_q - z).detach()
+    return z + (zq - z).detach()
 
 ######################################################################################
 
@@ -52,6 +55,10 @@ def onehot_with_grad(x, num_classes: int):
             y = t1 @ e # t1 * 6
             y.retain_grad()
             print(y, y.grad, t1, t1.grad, x, x.grad)
+        
+        Example(usecase for embedding layer):
+            y = onehot_with_grad(x, number_of_classes) @ e.weight          # insetead of this  -> [  y = e(x) #here only dy/de.weight is available ]
+            but here dy/dx is available and dy/de.weight is available
     """
     t = round_with_grad(x).unsqueeze(-1)
     t1 = clamp_with_grad(t, 1, num_classes-1) * F.one_hot(t.squeeze().round().long().abs().clamp(0, num_classes-1), num_classes=num_classes).detach() 

@@ -13,7 +13,7 @@ def L2S(a, b):
 
 def L2S_VQ(a, b, argminFlag=False):
     d = torch.sum(a ** 2, dim=1, keepdim=True) + \
-        torch.sum(b**2, dim=1) - 2 * \
+        torch.sum(b ** 2, dim=1) - 2 * \
         torch.einsum('bd,dn->bn', a, rearrange(b, 'n d -> d n'))
     
     if argminFlag:

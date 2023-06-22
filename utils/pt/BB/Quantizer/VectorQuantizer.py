@@ -4,7 +4,7 @@ from torch import nn
 from einops import rearrange
 from utils.pt.distance import L2S_VQ
 from utils.pt.building_block import BB
-from utils.pt.tricks.gradfns import onehot_with_grad
+from utils.pt.tricks.gradfns import onehot_with_grad, dzq_dz_eq1
 
 class VectorQuantizer2(BB):
     '''
@@ -77,11 +77,6 @@ class VectorQuantizer2(BB):
             z = rearrange(z, 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
             z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
 
-            # d = torch.sum(z_flattened ** 2, dim=1, keepdim=True) + \
-            #     torch.sum(self.embedding.weight**2, dim=1) - 2 * \
-            #     torch.einsum('bd,dn->bn', z_flattened, rearrange(self.embedding.weight, 'n d -> d n'))
-            # min_encoding_indices = torch.argmin(d, dim=1)
-            
             min_encoding_indices = L2S_VQ(z_flattened, self.embedding.weight, argminFlag=True)
             
             if vetoFlag:
@@ -92,12 +87,8 @@ class VectorQuantizer2(BB):
         else:
             _zShape = [-1,16,16,256]
             min_encoding_indices = I2.long()
-            # print(min_encoding_indices)
-
-            # print('hoooooooooooo!!', I2, I2.shape, I2.dtype, I2.requires_grad)
             z_q = (onehot_with_grad(I2, self.n_e) @ self.embedding.weight).view(_zShape)
         
-        # z_q = self.embedding(min_encoding_indices).view(_zShape)
         perplexity = None
         min_encodings = None
 
@@ -109,8 +100,8 @@ class VectorQuantizer2(BB):
             else:
                 loss = torch.mean((z_q.detach()-z)**2) + self.beta * \
                     torch.mean((z_q - z.detach()) ** 2)
-            # preserve gradients
-            z_q = z + (z_q - z).detach()
+            # preserve gradients 
+            z_q = dzq_dz_eq1(z_q, z)
         else:
             loss = None
         
