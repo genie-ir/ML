@@ -30,7 +30,8 @@ class VQModel(pl.LightningModule):
         monitor=None,
         remap=None,
         sane_index_shape=False,  # tell vector quantizer to return indices as bhw
-        Rfn='' # replace functions
+        Rfn='', # replace functions
+        **kwargs
         ):
         super().__init__()
         self.counter_control = 0
