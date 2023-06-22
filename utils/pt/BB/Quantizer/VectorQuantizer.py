@@ -88,7 +88,10 @@ class VectorQuantizer2(BB):
                 return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
             
             _zShape = z.shape
+            print('!!!!!!!!!!!!!!!', _zShape)
             z_q = self.embedding(min_encoding_indices).view(_zShape)
+            print('##############', z_q)
+            assert False
         else:
             _zShape = [-1,16,16,256]
             min_encoding_indices = I2.long()
