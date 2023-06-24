@@ -17,10 +17,11 @@ from torch import nn
 from utils.plots.plot1d import Plot1D
 from utils.pt.BB.KDE.base import GenerativeModel
 
-def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=False, mplstyle=None, path=None):
+def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=None, mplstyle=None, path=None):
     import torch
     import numpy as np
-    import matplotlib.pyplot as plt
+
+    flag = (path != None)
 
     D = D if D is not None else torch.randn((N, d))
     X = torch.tensor(np.arange(D.min().item()-r, D.max().item()+r, s)).float().view(-1, 1)
@@ -31,6 +32,7 @@ def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=False, mplstyle=No
 
 
     if not flag:
+        import matplotlib.pyplot as plt
         plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
         plt.scatter(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), c='r')
     else:
