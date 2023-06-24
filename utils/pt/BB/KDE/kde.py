@@ -17,28 +17,32 @@ from torch import nn
 from utils.plots.plot1d import Plot1D
 from utils.pt.BB.KDE.base import GenerativeModel
 
-def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=None, mplstyle=None, path=None):
+def plot_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, mplstyle=None, path=None):
     import torch
     import numpy as np
 
-    flag = (path != None)
-
     D = D if D is not None else torch.randn((N, d))
     X = torch.tensor(np.arange(D.min().item()-r, D.max().item()+r, s)).float().view(-1, 1)
+
 
     kde = KernelDensityEstimator(
         kernel=GaussianKernel(bandwidth=h), train_Xs=D
     )(X).exp()
 
 
-    if not flag:
+    X_kde = X[:, 0].detach().numpy()
+    Y_kde = kde.detach().numpy()
+    X_dataset = D[:, 0].detach().numpy()
+    Y_dataset = torch.zeros_like(D)[:,0].detach().numpy()
+
+    if path is None:
         import matplotlib.pyplot as plt
-        plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
-        plt.scatter(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), c='r')
+        plt.plot(X_kde, Y_kde, '-')
+        plt.scatter(X_dataset, Y_dataset, c='r')
     else:
         plot1d = Plot1D(xlabel='x', ylabel='KDE(x; h)', mplstyle=mplstyle)
-        plot1d.plot(X[:, 0].detach().numpy(), kde.detach().numpy())
-        plot1d.plot(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), linestyle='dotted')
+        plot1d.plot(X_kde, Y_kde)
+        plot1d.plot(X_dataset, Y_dataset, linestyle='dotted')
         plot1d.savefig(path)
 
 class Kernel(abc.ABC, nn.Module):
