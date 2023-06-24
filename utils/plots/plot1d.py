@@ -84,6 +84,8 @@ class Plot1D:
         
         y = psvfn(y, passive_fn)
         
+        print('###############', y)
+        
         if ax is None:
             ax = self.fig.gca() # ax = plt.gca()
         # ax.patch.set_facecolor('#3498db')
