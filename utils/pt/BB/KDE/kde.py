@@ -38,7 +38,7 @@ def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=None, mplstyle=Non
     else:
         plot1d = Plot1D(xlabel='x', ylabel='KDE(x; h)', mplstyle=mplstyle)
         plot1d.plot(X[:, 0].detach().numpy(), kde.detach().numpy())
-        plot1d.plot(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), linestyle='dotted', plt_show=True)
+        plot1d.plot(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), linestyle='dotted')
         plot1d.savefig(path)
 
 class Kernel(abc.ABC, nn.Module):
