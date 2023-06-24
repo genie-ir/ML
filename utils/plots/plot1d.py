@@ -82,11 +82,7 @@ class Plot1D:
             if ffty_div2N:
                 y = y / y.shape[0]
         
-        print('!!!!!!!!!!!!!!!!!', psvfn)
-        
         y = psvfn(y, passive_fn)
-        
-        print('###############', y)
         
         if ax is None:
             ax = self.fig.gca() # ax = plt.gca()
