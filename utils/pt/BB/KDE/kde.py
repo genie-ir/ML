@@ -30,7 +30,7 @@ def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None):
 
     plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
     plt.scatter(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), c='r')
-    plt.plot()
+    plt.show()
 
 
 class Kernel(abc.ABC, nn.Module):
