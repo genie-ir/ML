@@ -9,6 +9,7 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 
 from utils.pt.distance import L2S_VQ
 from utils.np.statfns import correlation
+from utils.pt.BB.KDE.kde import example_kde
 
 class D(D_Base):
     def start(self):
@@ -25,8 +26,11 @@ class D(D_Base):
                 df_candidate_dr.iloc[dfc_idx].image_id)).flatten().astype(np.float32) for dfc_idx in range(len(df_candidate_dr))])
         self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
-        # for k in self.init_clusters:
-            # n = torch.tensor(self.init_clusters[k])
+        for k in self.init_clusters:
+            n = torch.tensor(self.init_clusters[k]) / 1024
+            example_kde(D=n, h=1e2, r=1, s=.01)
+            assert False
+
             # m = n.unique()
             # print(k, m.shape)
             # m = n.corrcoef()

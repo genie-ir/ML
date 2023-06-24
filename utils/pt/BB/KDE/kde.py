@@ -16,19 +16,16 @@ import numpy as np
 from torch import nn
 from utils.pt.BB.KDE.base import GenerativeModel
 
-def example_kde():
+def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None):
     import torch
     import numpy as np
     import matplotlib.pyplot as plt
 
-    d = 10
-    N = 512
-
-    D = torch.randint(0,1024, (N, d))
-    X = torch.tensor(np.arange(D.min().item()-100, D.max().item()+100, .01)).float().view(-1, 1)
+    D = D if D is not None else torch.randn((N, d))
+    X = torch.tensor(np.arange(D.min().item()-r, D.max().item()+r, s)).float().view(-1, 1)
 
     kde = KernelDensityEstimator(
-        kernel=GaussianKernel(bandwidth=1e2), train_Xs=D
+        kernel=GaussianKernel(bandwidth=h), train_Xs=D
     )(X).exp()
 
     plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
