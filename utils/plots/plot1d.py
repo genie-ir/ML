@@ -1,7 +1,7 @@
 import os
 import numpy as np
-from utils.np import psvfn
 import matplotlib.pyplot as plt
+from utils.np.psvfn import psvfn
 from libs.basicIO import pathBIO
 from utils.preprocessing.timeseries.basicTS import smoothing as smoothing_function
 
