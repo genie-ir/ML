@@ -2,6 +2,10 @@ import numpy as np
 
 def psvfn(t: np.ndarray, passive_fns):
     """apply passive_fns to np.array: `t` step by step"""
+    
+    if passive_fns is None:
+        return t
+    
     if not isinstance(passive_fns, (list, tuple)):
         passive_fns = [passive_fns]
     
