@@ -14,9 +14,10 @@ import abc
 import torch
 import numpy as np
 from torch import nn
+from utils.plots.plot1d import Plot1D
 from utils.pt.BB.KDE.base import GenerativeModel
 
-def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=False):
+def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=False, mplstyle=None, path=None):
     import torch
     import numpy as np
     import matplotlib.pyplot as plt
@@ -28,12 +29,15 @@ def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=False):
         kernel=GaussianKernel(bandwidth=h), train_Xs=D
     )(X).exp()
 
-    plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
-    plt.scatter(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), c='r')
-    if flag:
-        plt.show()
-        plt.savefig('/content/kde.png')
 
+    if not flag:
+        plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
+        plt.scatter(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), c='r')
+    else:
+        plot = Plot1D(xlabel='x', ylabel='KDE(x; h)', mplstyle=mplstyle)
+        plot.plot(X[:, 0].detach().numpy(), kde.detach().numpy())
+        plot.plot(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), linestyle='loosely dotted')
+        plot.savefig(path)
 
 class Kernel(abc.ABC, nn.Module):
     """Base class which defines the interface for all kernels."""

@@ -72,7 +72,7 @@ class Plot1D:
         plt.close(self.fig)
         return savefig_result
 
-    def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None):
+    def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None, **kwargs_plot):
         if (x is None) and (not (y is None)):
             x = range(y.shape[0])
         assert (not ((x is None) or (y is None))), '`x`, `y` both of this must be `not None` | (`x` is `None` == `{}`) | (`y` is `None` == `{}`)'.format(x is None, y is None)
@@ -95,7 +95,7 @@ class Plot1D:
         if smoothing:
             x, y = smoothing_function(x, y, smooth_dpi=smooth_dpi, smooth_k=smooth_k)
         
-        line, = ax.plot(x, y, lw=1, zorder=6, label=label)
+        line, = ax.plot(x, y, lw=1, zorder=6, label=label, **kwargs_plot)
         for cont in range(6, 1, -1):
             ax.plot(x, y, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
         ax.legend()
