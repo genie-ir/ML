@@ -16,7 +16,7 @@ import numpy as np
 from torch import nn
 from utils.pt.BB.KDE.base import GenerativeModel
 
-def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None):
+def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, flag=False):
     import torch
     import numpy as np
     import matplotlib.pyplot as plt
@@ -30,7 +30,9 @@ def example_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None):
 
     plt.plot(X[:, 0].detach().numpy(), kde.detach().numpy(), '-')
     plt.scatter(D[:, 0].detach().numpy(), torch.zeros_like(D)[:,0].detach().numpy(), c='r')
-    plt.show()
+    if flag:
+        plt.show()
+        plt.savefig('/content/kde.png')
 
 
 class Kernel(abc.ABC, nn.Module):
