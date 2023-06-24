@@ -28,7 +28,7 @@ class D(D_Base):
         
         for k in self.init_clusters:
             # n = torch.tensor(self.init_clusters[k]) / 100
-            example_kde(D=None, h=1e-2, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
+            example_kde(D=None, h=1e-1, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
             assert False
 
             # m = n.unique()
