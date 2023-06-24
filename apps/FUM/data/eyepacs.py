@@ -9,7 +9,7 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 
 from utils.pt.distance import L2S_VQ
 from utils.np.statfns import correlation
-from utils.pt.BB.KDE.kde import example_kde
+from utils.pt.BB.KDE.kde import plot_kde
 
 class D(D_Base):
     def start(self):
@@ -28,7 +28,7 @@ class D(D_Base):
         
         for k in self.init_clusters:
             # n = torch.tensor(self.init_clusters[k]) / 100
-            example_kde(D=None, h=1e-1, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
+            plot_kde(D=None, h=1e-1, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
             assert False
 
             # m = n.unique()
