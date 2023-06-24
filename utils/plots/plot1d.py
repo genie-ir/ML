@@ -82,6 +82,8 @@ class Plot1D:
             if ffty_div2N:
                 y = y / y.shape[0]
         
+        print('!!!!!!!!!!!!!!!!!', psvfn)
+        
         y = psvfn(y, passive_fn)
         
         print('###############', y)
