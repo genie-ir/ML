@@ -4,6 +4,7 @@ def psvfn(t: np.ndarray, passive_fns):
     """apply passive_fns to np.array: `t` step by step"""
     
     if passive_fns is None:
+        print('p'*30)
         return t
     
     print('????????????????????')
