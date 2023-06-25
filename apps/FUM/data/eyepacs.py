@@ -27,18 +27,18 @@ class D(D_Base):
         self.all_unique_init_clusters = np.unique(np.array([self.init_clusters[k] for k in self.init_clusters])) 
         
         for k in self.init_clusters:
-            # n = torch.tensor(self.init_clusters[k]) / 100
-            plot_kde(D=None, h=1e-1, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
-            assert False
+            n = torch.tensor(self.init_clusters[k]) / 1024
+            # plot_kde(D=n, h=1e-1, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
+            # assert False
 
             # m = n.unique()
             # print(k, m.shape)
             # m = n.corrcoef()
             # m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
-            # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
+            m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
             # M = m[m<1e-2]
             # M = M[M>0]
-            # print(k, m.min(), m.max(), m.dtype, m.shape, M.shape[0]/2)
+            print(k, m.min(), m.max(), m.dtype, m.shape, M.shape[0]/2)
             
             # for kj in self.init_clusters:
             #     if k == kj:
