@@ -28,17 +28,17 @@ class D(D_Base):
         
         for k in self.init_clusters:
             n = torch.tensor(self.init_clusters[k]) / 1024
-            # plot_kde(D=n, h=1e-1, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
+            plot_kde(D=n, h=30, r=1, s=.01, path='/content/KDE/{}.png'.format(k))
             # assert False
 
             # m = n.unique()
             # print(k, m.shape)
             # m = n.corrcoef()
             # m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
-            m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
+            # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
             # M = m[m<1e-2]
             # M = M[M>0]
-            print(k, m.min(), m.max(), m.dtype, m.shape)
+            # print(k, m.min(), m.max(), m.dtype, m.shape)
             
             # for kj in self.init_clusters:
             #     if k == kj:
