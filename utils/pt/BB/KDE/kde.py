@@ -18,9 +18,6 @@ from utils.plots.plot1d import Plot1D
 from utils.pt.BB.KDE.base import GenerativeModel
 
 def plot_kde(d=1, N=512, h=1e2, r=100, s=.01, D=None, mplstyle=None, path=None):
-    import torch
-    import numpy as np
-
     D = D if D is not None else torch.randn((N, d))
     X = torch.tensor(np.arange(D.min().item()-r, D.max().item()+r, s)).float().view(-1, 1)
 
