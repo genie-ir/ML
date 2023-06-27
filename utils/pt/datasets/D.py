@@ -2,8 +2,17 @@ import cowsay, sys
 import numpy as np
 from PIL import Image
 from os.path import join, exists
-from torch.utils.data import Dataset
 from os import system, getenv, makedirs
+from torch.utils.data import Dataset, TensorDataset
+
+# Example: -> TensorDataset <-
+# x1 = torch.randint(0,1023, (10, 4))
+# x2 = torch.randint(0,1023, (10, 3, 4))
+# x3 = torch.randint(0,1023, (10, 4))
+# x4 = torch.randint(0,1023, (10, 4))
+# for single_row_of_data in TensorDataset(x1,x2,x3,x4):
+#     print(single_row_of_data)
+
 
 class D_Base(Dataset):
     """custom Dataset"""

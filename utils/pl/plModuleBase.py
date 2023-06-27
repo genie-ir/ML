@@ -264,12 +264,14 @@ class plModuleBase(pl.LightningModule):
             if (self.current_epoch+1) % self.optconfig['epoch_learning_frequency'].get(optimizer_idx, 1) != 0:
                 continue
             
-            optimizers_list[optimizer_idx].zero_grad()
             cnet = self.optconfig['map'][optimizer_idx] # current network
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
             log_dict = {**log_dict, **ld}
             # optimizers_list[optimizer_idx].zero_grad()
+            for opt in optimizers_list:
+                print('------------>', opt)
+                opt.zero_grad()
             self.manual_backward(loss)
             optimizers_list[optimizer_idx].step()
         
