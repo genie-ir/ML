@@ -4,14 +4,16 @@ import torch.nn.functional as F
 from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
-# from apps.FUM.data.eyepacs import denormalizing
-# from utils.pt.tricks.error_grade import error_grade
 
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
 
     def generator_step(self, batch):
+        print('------>', batch)
+        assert False
+
+    def generator_step2(self, batch):
         y = batch['y']
         # xf = error_grade(batch[self.signal_key], 3)
         # xf = self.generator(x=xf)

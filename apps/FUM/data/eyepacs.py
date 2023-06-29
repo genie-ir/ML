@@ -13,6 +13,8 @@ from utils.pt.BB.KDE.kde import plot_kde
 
 class D(D_Base):
     def start(self):
+        self._length = 10
+        return
         STATIC_PATH = join('1DsignalOfEyepacs', self.kwargs['DATASET_CATEGORY'], 'Grade_')
         print('------>', STATIC_PATH)
         self._length = 0
@@ -51,8 +53,12 @@ class D(D_Base):
         # print('all unique', self.all_unique_init_clusters, len(self.all_unique_init_clusters))
         assert False
 
+    def __getitem__(self, i):
+        return {
+            'latentcode': i
+        }
+    
     def fetch(self, signal_path):
-        assert False
         return {
             # 'latentcode': np.load(signal_path)
             # 'noisecode': 
