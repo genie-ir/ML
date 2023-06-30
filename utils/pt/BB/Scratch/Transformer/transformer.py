@@ -48,7 +48,7 @@ class Encoder(BB):
         ])
 
     def forward(self, x, mask):
-        print('.....................', x.shape)
+        print('.....................', x.shape, x.device, torch.arange(seqlen).expand(N, -1).device)
         N, seqlen = x.shape
         outs = []
         x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen).expand(N, -1)))
@@ -56,7 +56,7 @@ class Encoder(BB):
             x = layer(v=x, k=x, q=x, mask=mask)
             outs.append(x)
 
-        return x, outs
+        return outs
 
 class DecoderBlock(BB):
     def start(self):
