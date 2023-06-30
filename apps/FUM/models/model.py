@@ -31,8 +31,8 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         print('++>', batch[self.signal_key])
 
-        src = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen, self.seqdim))
-        trg = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen, self.seqdim))
+        src = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen))
+        trg = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen))
         print('@@@@@@@@@@@@@@', trg.shape, trg[:, :-1].shape)
         print('++++++++>', self.transformer(src, trg[:, :-1]))
         assert False
