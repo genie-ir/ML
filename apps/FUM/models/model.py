@@ -33,6 +33,7 @@ class FUM(plModuleBase):
 
         src = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen))
         trg = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen))
+        print('$$$$$$$$$$$$$$', src.device, trg.device)
         print('@@@@@@@@@@@@@@', trg.shape, trg[:, :-1].shape)
         print('++++++++>', self.transformer(src, trg[:, :-1]))
         assert False
