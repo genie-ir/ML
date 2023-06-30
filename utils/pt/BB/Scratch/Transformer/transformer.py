@@ -16,7 +16,7 @@ class TransformerBlock(BB):
         self.norm2 = nn.LayerNorm(self.embed_size)
         self.feedfwd = nn.Sequential(
             nn.Linear(self.embed_size, self.fwd_expan * self.embed_size),
-            nn.RelU(),
+            nn.ReLU(),
             nn.Linear(self.fwd_expan * self.embed_size, self.embed_size)
         )
 
