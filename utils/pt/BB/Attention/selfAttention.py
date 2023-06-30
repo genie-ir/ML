@@ -28,7 +28,10 @@ class SelfAttention(BB):
         k = self.K(k.reshape(N, klen, self.heads, self.head_dim))
         q = self.Q(q.reshape(N, qlen, self.heads, self.head_dim))
 
+
+        print('********', k.shape,v.shape,q.shape, k.device,v.device,q.device)
         energy = torch.einsum('nqhd,nkhd->nhqk', q, k) # TODO this shoude be Q x K.T
+        print('$$$$', energy.shape, energy.device)
 
         if mask:
             energy = energy.masked_fill(self.tri_bool_mask(energy), self.ninf)
