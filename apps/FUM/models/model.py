@@ -4,13 +4,37 @@ import torch.nn.functional as F
 from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
+from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
+    
+    def start(self):
+        self.seqnum = 5
+        self.seqlen = 3 # 256
+        self.seqdim = 2 # 1
+        self.vocab_size = 451
+        self.transformer = Transformer(
+            heads=8,
+            maxlen=self.seqlen,
+            dropout=0,
+            fwd_expan=4,
+            num_layers=8,
+            embed_size=self.seqdim,
+            src_mask=False,
+            trg_mask=True,
+            src_vocab_size=self.vocab_size,
+            trg_vocab_size=self.vocab_size
+        )
 
     def generator_step(self, batch):
-        print('------>', batch)
+        print('++>', batch[self.signal_key])
+
+        src = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen, self.seqdim))
+        trg = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen, self.seqdim))
+        print('@@@@@@@@@@@@@@', trg.shape, trg[:, :-1].shape)
+        print('++++++++>', self.transformer(src, trg[:, :-1]))
         assert False
 
     def generator_step2(self, batch):
