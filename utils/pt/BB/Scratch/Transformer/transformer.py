@@ -49,9 +49,11 @@ class Encoder(BB):
 
     def forward(self, x, mask):
         N, seqlen = x.shape
-        print('.....................', x.shape, x.device, torch.arange(seqlen).expand(N, -1).device)
         outs = []
-        x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen).expand(N, -1)))
+        x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen, device=x.device).expand(N, -1)))
+        
+        print('############', x.shape, x.device)
+        
         for layer in self.layers:
             x = layer(v=x, k=x, q=x, mask=mask)
             outs.append(x)
