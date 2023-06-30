@@ -16,7 +16,7 @@ class FUM(plModuleBase):
         self.seqdim = 2 # 1
         self.vocab_size = 451
         self.transformer = Transformer(
-            heads=8,
+            heads=1,
             maxlen=self.seqlen,
             dropout=0,
             fwd_expan=4,
