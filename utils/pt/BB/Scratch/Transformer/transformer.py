@@ -44,7 +44,7 @@ class Encoder(BB):
                 fwd_expan=self.fwd_expan,
                 embed_size=self.embed_size
             )
-            for n in range(len(self.num_layers))
+            for n in range(self.num_layers)
         ])
 
     def forward(self, x, mask):
@@ -100,7 +100,7 @@ class Decoder(BB):
                 fwd_expan=self.fwd_expan,
                 embed_size=self.embed_size
             )
-            for n in range(len(self.num_layers))
+            for n in range(self.num_layers)
         ])
 
     def forward(self, x, encoder_out, src_mask, trg_mask):
