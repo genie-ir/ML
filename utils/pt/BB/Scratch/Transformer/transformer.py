@@ -48,6 +48,7 @@ class Encoder(BB):
         ])
 
     def forward(self, x, mask):
+        print('.....................', x.shape)
         N, seqlen = x.shape
         outs = []
         x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen).expand(N, -1)))
