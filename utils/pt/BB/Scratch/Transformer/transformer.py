@@ -49,11 +49,8 @@ class Encoder(BB):
 
     def forward(self, x, mask):
         N, seqlen = x.shape
-        outs = []
         x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen, device=x.device).expand(N, -1)))
-        
-        print('############', x.shape, x.device)
-        
+        outs = []
         for layer in self.layers:
             x = layer(v=x, k=x, q=x, mask=mask)
             outs.append(x)
@@ -152,5 +149,5 @@ class Transformer(BB):
         )
 
     def forward(self, src, trg):
-        return self.decoder(trg, self.encoder(src, self.src_mask), self.src_mask, self.trg_mask)
+        return self.decoder(trg[:, :-1], self.encoder(src, self.src_mask), self.src_mask, self.trg_mask)
 
