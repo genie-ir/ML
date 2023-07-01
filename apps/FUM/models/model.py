@@ -5,12 +5,18 @@ from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 from utils.pt.BB.Scratch.Transformer.transformer import Transformer
+from utils.preprocessing.text.tokenizer import Tokenizer
 
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
     
     def start(self):
+        r = Tokenizer('de', 'en').get_vocabs()
+        print(r)
+        assert False
+
+    def start2(self):
         self.seqnum = 5
         self.seqlen = 3 # 256
         self.seqdim = 2 # 1
