@@ -30,8 +30,9 @@ class SelfAttention(BB):
 
 
         print('********', k.shape,v.shape,q.shape, k.device,v.device,q.device)
-        energy = torch.einsum('nqhd,nkhd->nhqk', q, k) # TODO this shoude be Q x K.T
+        energy = torch.einsum('nqhd,nkhd->nhqk', q, k)
         print('$$$$', energy.shape, energy.device)
+        assert False
 
         if mask:
             energy = energy.masked_fill(self.tri_bool_mask(energy), self.ninf)
