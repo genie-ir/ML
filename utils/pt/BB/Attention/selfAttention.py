@@ -29,15 +29,13 @@ class SelfAttention(BB):
         q = self.Q(q.reshape(N, qlen, self.heads, self.head_dim))
 
         energy = torch.einsum('nqhd,nkhd->nhqk', q, k)
-        print('$$$$', energy.shape, energy.device, energy[0,0])
 
         if mask:
             energy = energy.masked_fill(self.tri_bool_mask(energy), self.ninf)
 
-        print('0 ------->', energy.shape, energy[0,0])
         self_attention = torch.softmax(energy / self.normalizer_fraction, dim=-1) # dim=3
-        print('1 ------->', self_attention.shape, self_attention[0,0])
-        assert False
 
         out = torch.einsum('nhql,nlhd->nqhd', self_attention, v).reshape(N, qlen, self.head * self.head_dim)
+        
+        print(out.shape)
         return self.fc_out(out)
