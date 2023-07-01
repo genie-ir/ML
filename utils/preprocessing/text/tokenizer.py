@@ -1,6 +1,6 @@
 import spacy
 from torchtext.datasets import Multi30k
-from torchtext.legacy.data import Field, BucketIterator
+from torchtext.data import Field, BucketIterator
 
 class Tokenizer:
     """
