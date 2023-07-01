@@ -106,8 +106,7 @@ class Decoder(BB):
     def forward(self, x, encoder_out, src_mask, trg_mask):
         N, seqlen = x.shape
 
-        print('11111111111111111111')
-        x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen).expand(N, -1)))
+        x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen, device=x.device).expand(N, -1)))
         print('22222222222222222222')
         assert False
 
