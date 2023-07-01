@@ -104,10 +104,13 @@ class Decoder(BB):
         ])
 
     def forward(self, x, encoder_out, src_mask, trg_mask):
-        print('!!!!!!!!!!!', len(encoder_out), encoder_out[0].shape)
         N, seqlen = x.shape
+
+        print('11111111111111111111')
         x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen).expand(N, -1)))
-        
+        print('22222222222222222222')
+        assert False
+
         for idx, layer in enumerate(self.layers):
             x = layer(x=x, v=encoder_out[idx], k=encoder_out[idx], src_mask=src_mask, trg_mask=trg_mask)
 
