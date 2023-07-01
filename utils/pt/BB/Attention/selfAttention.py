@@ -24,17 +24,12 @@ class SelfAttention(BB):
         N = q.shape[0]
         vlen, klen, qlen = v.shape[1], k.shape[1], q.shape[1]
 
-        
-        print('before ********', k.shape,v.shape,q.shape, k.device,v.device,q.device)
-        print('------>', N, vlen, klen, qlen)
         v = self.V(v.reshape(N, vlen, self.heads, self.head_dim))
         k = self.K(k.reshape(N, klen, self.heads, self.head_dim))
         q = self.Q(q.reshape(N, qlen, self.heads, self.head_dim))
 
-
-        print('after ********', k.shape,v.shape,q.shape, k.device,v.device,q.device)
         energy = torch.einsum('nqhd,nkhd->nhqk', q, k)
-        print('$$$$', energy.shape, energy.device)
+        print('$$$$', energy.shape, energy.device, energy[0,0])
         assert False
 
         if mask:
