@@ -37,6 +37,6 @@ class SelfAttention(BB):
 
         out = torch.einsum('nhql,nlhd->nqhd', self_attention, v).reshape(N, qlen, self.heads * self.head_dim)
         
-        print(out.shape)
+        print(self_attention.shape, v.shape, out.shape)
         assert False
         return self.fc_out(out)
