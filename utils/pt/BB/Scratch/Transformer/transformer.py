@@ -107,8 +107,6 @@ class Decoder(BB):
         N, seqlen = x.shape
 
         x = self.dropout(self.word_embedding(x) + self.pos_encoding(torch.arange(seqlen, device=x.device).expand(N, -1)))
-        print('22222222222222222222')
-        assert False
 
         for idx, layer in enumerate(self.layers):
             x = layer(x=x, v=encoder_out[idx], k=encoder_out[idx], src_mask=src_mask, trg_mask=trg_mask)
