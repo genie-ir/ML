@@ -17,7 +17,7 @@ class FUM(plModuleBase):
         self.vocab_size = 451
         self.transformer = Transformer(
             heads=1,
-            maxlen=self.seqlen,
+            maxlen=10,#self.seqlen,
             dropout=0,
             fwd_expan=4,
             num_layers=8,
@@ -31,8 +31,8 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         print('++>', batch[self.signal_key])
 
-        src = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen), device=self.device)
-        trg = torch.randint(0, self.vocab_size, (self.seqnum, self.seqlen), device=self.device)
+        src = torch.randint(0, self.vocab_size, (self.seqnum, 2), device=self.device)
+        trg = torch.randint(0, self.vocab_size, (self.seqnum, 3), device=self.device)
         out = self.transformer(src, trg)
         print('++++++++>', out, out.shape)
         assert False
