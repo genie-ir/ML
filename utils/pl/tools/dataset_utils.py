@@ -1,7 +1,10 @@
 import torch
 import collections
+print('-------------------------------------------')
 from torch._six import string_classes
+print('+++++++++++++++++++++++++++++++++++++++++++')
 from torch.utils.data._utils.collate import np_str_obj_array_pattern, default_collate_err_msg_format
+print('*******************************')
 
 def custom_collate(batch):
     r"""source: pytorch 1.9.0, only one modification to original code """
