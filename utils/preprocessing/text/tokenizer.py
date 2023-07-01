@@ -13,10 +13,16 @@ class Tokenizer:
         self.D = dict()
         self.vocabs = dict()
 
+        self.map_lang = {
+            'en': 'en_core_web_sm',
+            'de': 'de_core_news_sm',
+            'it': 'it_core_news_sm',
+        }
+
         for _lang in langs:
             lang = str(_lang).lower()
             print('!!!!!!!!!!!!!!!!', lang)
-            setattr(self, f'spacy_{lang}', spacy.load(lang))
+            setattr(self, f'spacy_{lang}', spacy.load(self.map_lang.get(lang, lang)))
             setattr(self, lang, Field(tokenize=self.tokenizer_lang(lang), lower=True, init_token='<sos>', eos_token='<eos>'))
             self.exts.append(f'.{lang}')
             self.fields.append(getattr(self, lang, None))
