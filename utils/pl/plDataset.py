@@ -69,7 +69,7 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
     
     def _dataloader(self, **kwargs):
         print('##############', kwargs, self.datasets[kwargs['memory']['DCK']])
-        return DataLoader(self.datasets[self.datasets[kwargs['memory']['DCK']]], batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True, collate_fn=self.custom_collate)
+        return DataLoader(self.datasets[kwargs['memory']['DCK']], batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True, collate_fn=self.custom_collate)
     
     # def _train_dataloader(self):
     #     # logger.warning('_train_dataloader is called!!!!!!!!!')
