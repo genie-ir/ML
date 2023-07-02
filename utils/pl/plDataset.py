@@ -36,7 +36,7 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         self.wrap_cls = wrap_cls or WrappedDatasetBase
         self.instantiate_from_config = instantiate_from_config
         
-        self.dataset_configs = dict((self.dck_mapper(dck), self.kwargs.get(dck, None)) for dck in self.kwargs.dataset_category)
+        self.dataset_configs = dict((self.dck_mapper(dck), self.kwargs.get(dck, None)) for dck in self.kwargs['dataset_category'])
         
         print('----------------------->', self.dataset_configs, list(self.dataset_configs.keys()))
 
