@@ -4,6 +4,13 @@ import collections
 string_classes = str
 from torch.utils.data._utils.collate import np_str_obj_array_pattern, default_collate_err_msg_format
 
+
+# Note: This passage is aboute `transformer data pipline` but It can clearly tell the idea of `collate` function.
+# As seen in the ``Data Sourcing and Processing`` section, our data iterator yields a pair of raw strings.
+# We need to convert these string pairs into the batched tensors that can be processed by our ``Seq2Seq`` network
+# defined previously. Below we define our `collate function` that `converts` a `batch of raw strings` into `batch tensors` that
+# can be fed directly into our model.
+
 def custom_collate(batch):
     r"""source: pytorch 1.9.0, only one modification to original code """
 

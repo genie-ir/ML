@@ -1,11 +1,33 @@
+import functools
 import numpy as np
 import pandas as pd
-from dotted_dict import DottedDict
-# from attrdict import AttrDict # Not work in python 3.10
 from argparse import Namespace
+from dotted_dict import DottedDict # from attrdict import AttrDict # Not work in python 3.10
 from functools import partial, wraps
 from libs.basicEX import KeyNotFoundError
+from types import MethodType, FunctionType
 from typing import Any, Callable, Optional, Union
+
+def decorator(func, **memory):
+    def inner(*args, **kwargs):
+        if len(memory) > 0:
+            return func(*args, **kwargs, memory=memory)
+        else:
+            return func(*args, **kwargs)
+    return inner
+
+def def_instance_method(Self, fnName: str, fn, **memory):
+    fnType = fn.__class__.__name__.lower()
+    assert fnType in ['function', 'method'], '`fnType={}` | does not supported currently you must do code for it'.format(fnType)
+    assert fn.__code__.co_varnames[0] == 'self', 'we need to have `self` as `first` parameter in parameter list of `fnName={}` for define it as `instance method` of `class={}`'.format(fnName, Self.__class__)
+    fn = decorator(fn, **memory)
+
+    if fnType == 'function': # fn is defined `outside` of the class
+        setattr(Self, fnName, MethodType(fn, Self))
+    elif fnType == 'method': # fn is  defined `inside` of the class
+        setattr(Self, fnName, fn)
+
+    return getattr(Self, fnName)
 
 # def ns_add(ns: Namespace, *posargs: Union[Namespace, dict]):
 #     pass
@@ -19,8 +41,6 @@ def dotdict(d: dict, flag=None):
 def dict2ns(d: dict):
     if isinstance(d, dict):
         return Namespace(**d)
-
-
 
 # Example: d does not contain dict in list!! (like below) d['d'][3] is not support By this function!!
 # d = {'a': 1,
