@@ -103,7 +103,6 @@ class ConfigBase:
         
         # data
         data = cls.instantiate_from_config(config.data)
-        data.setup()
         
         dataTrainDataloader = data._train_dataloader()
         if dataTrainDataloader is None:
