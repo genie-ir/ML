@@ -10,6 +10,9 @@ from argparse import ArgumentParser, ArgumentTypeError
 from abc import ABC, abstractmethod
 from pytorch_lightning.trainer import Trainer
 
+
+from pytorch_lightning.utilities.argparse import add_argparse_args
+
 def str2bool(v):
     if isinstance(v, bool):
         return v
@@ -29,7 +32,8 @@ class ParserBasic(ABC):
     @classmethod
     def nondefault_trainer_args(cls, opt):
         parser = ArgumentParser()
-        parser = Trainer.add_argparse_args(parser)
+        # parser = Trainer.add_argparse_args(parser)
+        parser = add_argparse_args(parser)
         args = parser.parse_args([]) # this is specefic syntax and its mean only return know params[Trainer params] with default values.
         return sorted(k for k in vars(args) if getattr(opt, k) != getattr(args, k))
 
@@ -178,7 +182,8 @@ class ParserBasic(ABC):
         if predefFlag:
             parser = cls.predefined_args(parser)
         if trainerFlag:
-            parser = Trainer.add_argparse_args(parser)
+            # parser = Trainer.add_argparse_args(parser)
+            parser = add_argparse_args(parser)
         opt, unknown = parser.parse_known_args()
         
         if ctlFlag:
