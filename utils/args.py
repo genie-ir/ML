@@ -10,11 +10,8 @@ from argparse import ArgumentParser, ArgumentTypeError
 from abc import ABC, abstractmethod
 from pytorch_lightning.trainer import Trainer
 
-try:
-    from pytorch_lightning.trainer.Trainer import add_argparse_args
-except Exception as e:
-    print(e)
-    assert False
+add_argparse_args = Trainer.add_argparse_args
+
 # from pytorch_lightning.utilities.argparse import add_argparse_args
 
 def str2bool(v):
