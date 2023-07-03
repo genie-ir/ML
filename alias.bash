@@ -251,8 +251,8 @@ gdown-folder ()
 
 # projects -> P
 alias Pinit="iprettyerrors && iipython && igdown" # run inside venv (isolated)
-alias Pgmli="Pinit && wget 'https://raw.githubusercontent.com/mvlabfum/ML_Framework/main/index.bash' -O - | bash /dev/stdin"
-alias Pgml="wget 'https://raw.githubusercontent.com/mvlabfum/ML_Framework/main/index.bash' -O - | bash /dev/stdin"
+alias Pgmli="Pinit && wget 'https://raw.githubusercontent.com/genie-ir/ML/main/index.bash' -O - | bash /dev/stdin"
+alias Pgml="wget 'https://raw.githubusercontent.com/genie-ir/ML/main/index.bash' -O - | bash /dev/stdin"
 alias Pgsi="Pinit && ..." # TODO
 alias Pgs="..." # TODO
 Pmake ()
