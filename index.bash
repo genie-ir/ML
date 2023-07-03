@@ -35,8 +35,8 @@ fi
 cd "$projectpath/$projectname"
 
 if [[ $1 == *"i"* ]]; then
-    # pip install -r Requirements.txt
-    pip-upgrade Requirements.txt
+    sed -i s/\=\=/\>\=/g Requirements.txt > Requirements_GE.txt
+    pip install -r Requirements_GE.txt
 fi
 
 # python -m pytorch_lightning.utilities.upgrade_checkpoint --file "/content/drive/MyDrive/storage/Genie_ML/VQGAN/logs/2022-12-14T14-24-22_eyepacs_vqgan/checkpoints/last.ckpt"
