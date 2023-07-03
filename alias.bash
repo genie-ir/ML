@@ -13,6 +13,7 @@ fi
 # install -> i
 alias ipy3="sudo apt-get update && sudo apt install python3-pip -y && iipython"
 alias ipipenv="pip install pipenv"
+alias ipipupgrader="pip install pip-upgrader"
 alias icowsay="sudo apt install cowsay -y"
 alias iftpserver='sudo apt install vsftpd -y'
 alias isshserver='sudo apt-get install openssh-server -y'
@@ -430,7 +431,7 @@ alias init-fum="init-vps"
 init-colab-i ()
 {
 	set -- "${1:-Pgmli Pi}"
-	eval "icowsay && iunzip && $1"
+	eval "ipipupgrader && icowsay && iunzip && $1"
 }
 init-colab ()
 {
