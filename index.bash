@@ -35,7 +35,7 @@ fi
 cd "$projectpath/$projectname"
 
 if [[ $1 == *"i"* ]]; then
-    sed -i s/\=\=/\>\=/g Requirements.txt > Requirements_GE.txt
+    sed s/\=\=/\>\=/g Requirements.txt > Requirements_GE.txt
     pip install -r Requirements_GE.txt
 fi
 
