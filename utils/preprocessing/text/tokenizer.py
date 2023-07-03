@@ -17,7 +17,7 @@ class Tokenizer:
         self.D = dict()
         self.vocabs = dict()
 
-        self.map_lang = {
+        self.map_lang = { # python -m spacy download `lang-name`
             'en': 'en_core_web_sm',
             'de': 'de_core_news_sm',
             'it': 'it_core_news_sm',

@@ -16,6 +16,7 @@ class AppBase:
     @classmethod
     def validate(cls):
         if not cls.opt.no_validate and not cls.trainer.interrupted:
+            print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
             cls.trainer.validate(cls.model, cls.data)
 
     @classmethod
