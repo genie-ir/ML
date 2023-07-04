@@ -32,8 +32,6 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         
         self.dataset_configs = dict((self.dck_mapper(dck), self.kwargs.get(dck, None)) for dck in self.kwargs['dataset_category'])
         
-        print('----------------------->', self.dataset_configs, list(self.dataset_configs.keys()))
-
         for DCK, _DCV in self.dataset_configs.items():
             if isinstance(_DCV, type(OmegaConf.create())):
                 DCV = OmegaConf.to_container(_DCV)
