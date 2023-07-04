@@ -67,7 +67,7 @@ class Tokenizer:
             out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX)
             print(out[idx_outi])
             out[idx_outi] = out[idx_outi].view(-1, out[idx_outi].shape[0])
-            out[idx_outi]
+            print(out[idx_outi])
             print('!!!!!!!!!!!!', out[idx_outi].shape)
             assert False
         return out
