@@ -50,7 +50,10 @@ class Tokenizer:
     
     def tensor_transform(self, token_ids: List[int]):
         """function to add BOS/EOS and create tensor for input sequence indices"""
-        return torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
+        j = torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
+        print(j, j.shape)
+        assert False
+        return j
 
     def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
         """helper function to yield list of tokens. this used once to generate a mapping from each unique string_token to coresponding int number"""
