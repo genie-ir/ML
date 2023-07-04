@@ -33,7 +33,10 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         
         print('----------------------->', self.dataset_configs, list(self.dataset_configs.keys()))
 
-        for DCK, DCV in self.dataset_configs.items():
+        for DCK, _DCV in self.dataset_configs.items():
+            _DCV['aaaaaaaaaaaaaa'] = 1
+            print(_DCV)
+            assert False
             print('^^^^^^^^^^^^', type(DCV), isinstance(DCV, dict))
             if isinstance(DCV, dict):
                 # DCV['target'] = DCV.get('target', '') # It can be set later!
