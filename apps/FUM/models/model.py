@@ -16,9 +16,11 @@ class FUM(plModuleBase):
         pass
     
     def start(self):
-        r = Tokenizer('de', 'en').dataloaders
-        print(r)
-        assert False
+        D = Tokenizer('de', 'en').dataloaders
+        print('!!!!!!!!', len(D))
+        for B in D:
+            print(B, len(B), len(B[0]))
+            assert False
 
     def start2(self):
         self.seqnum = 5
