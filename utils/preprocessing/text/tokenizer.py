@@ -27,12 +27,6 @@ class Tokenizer:
         for iss, ss in enumerate(self.special_symbols):
             setattr(self, ss.replace('<', '').replace('>', '').upper() + '_IDX', iss)
         
-        print('self.UNK_IDX', self.UNK_IDX)
-        print('self.PAD_IDX', self.PAD_IDX) 
-        print('self.BOS_IDX', self.BOS_IDX) 
-        print('self.EOS_IDX', self.EOS_IDX)
-        assert False
-
         self.langs = []
         for _lang in langs:
             lang = str(_lang).lower()
@@ -64,9 +58,13 @@ class Tokenizer:
             return txt_input
         return func
     
+    def numericalization_transform(self, token_strs: List[str]):
+        print('hoooo!!!!!!!!!!!!!!!!', token_strs)
+        assert False
+
     def tensor_transform(self, token_ids: List[int]):
         """function to add BOS/EOS and create tensor for input sequence indices"""
-        return torch.cat((torch.tensor([self.BOS_IDX]), torch.tensor(token_ids), torch.tensor([self.EOS_IDX])))
+        return torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
@@ -105,7 +103,8 @@ class Tokenizer:
                 self.__vocabs[DiterKey][lang].set_default_index(self.UNK_IDX)
                 self.__text_transform[DiterKey][lang] = self.sequential_transforms(
                     getattr(self, f'spacy_{lang}', None), #Tokenization
-                    self.__vocabs[DiterKey][lang], #Numericalization -> `build_vocab_from_iterator`
+                    # self.__vocabs[DiterKey][lang], #Numericalization -> `build_vocab_from_iterator`
+                    self.numericalization_transform, #Numericalization 
                     self.tensor_transform # Add BOS/EOS and create tensor
                 )
             self.__dataloaders[DiterKey] = getattr(DataModuleFromConfig(
