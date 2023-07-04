@@ -43,14 +43,8 @@ class Tokenizer:
     def sequential_transforms(self, *transforms):
         """helper function to club together sequential operations"""
         def func(txt_input):
-            print('*'*30)
             for transform in transforms:
-                print(txt_input)
-                print(transform)
                 txt_input = transform(txt_input)
-                print(txt_input)
-                print('-'*30)
-            assert False
             return txt_input
         return func
     
@@ -59,12 +53,9 @@ class Tokenizer:
         return torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
 
     def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
-        """helper function to yield list of tokens"""
+        """helper function to yield list of tokens. this used once to generate a mapping from each unique string_token to coresponding int number"""
         for data_sample in data_iter: # raw data iterator with help of yield technic
-            j = getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
-            print(lang, j)
-            yield j
-            # yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
+            yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
@@ -74,18 +65,8 @@ class Tokenizer:
                 out[idx].append(self.__text_transform[kwargs['memory']['DiterKey']][self.langs[idx]](b.rstrip('\n')))
         for idx_outi, outi in enumerate(out):
             out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX)
-        assert False
         return out
 
-        src_batch, tgt_batch = [], []
-        for src_sample, tgt_sample in batch:
-            src_batch.append(self.__text_transform[SRC_LANGUAGE](src_sample.rstrip('\n')))
-            tgt_batch.append(self.__text_transform[TGT_LANGUAGE](tgt_sample.rstrip('\n')))
-
-        src_batch = pad_sequence(src_batch, padding_value=self.PAD_IDX)
-        tgt_batch = pad_sequence(tgt_batch, padding_value=self.PAD_IDX)
-        return src_batch, tgt_batch
-    
     def __build_vocab(self, DiterList, DiterFunc):
         assert isinstance(getattr(self, 'build_vocab_params', None), dict)
         self.__dataloaders =  dict()
