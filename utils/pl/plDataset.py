@@ -53,6 +53,9 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
                 if self.wrap:
                     self.datasets[DCK] = self.wrap_cls(self.datasets[DCK])
 
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        assert False
+
         # if train is not None:
         #     self.dataset_configs['train'] = train
         #     self.train_dataloader = self._train_dataloader # meaningfull name
