@@ -39,7 +39,7 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
                 DCV = OmegaConf.to_container(_DCV)
             else:
                 DCV = _DCV
-            print('^^^^^^^^^^^^', type(DCV), isinstance(DCV, dict))
+            
             if isinstance(DCV, dict):
                 # DCV['target'] = DCV.get('target', '') # It can be set later!
                 DCV['params'] = DCV.get('params', dict())
@@ -53,9 +53,6 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
                     self.datasets[DCK] = self.instantiate_from_config(DCV)
                 if self.wrap:
                     self.datasets[DCK] = self.wrap_cls(self.datasets[DCK])
-
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        assert False
 
         # if train is not None:
         #     self.dataset_configs['train'] = train
