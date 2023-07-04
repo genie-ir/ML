@@ -27,20 +27,18 @@ class Tokenizer:
         self.UNK_IDX, self.PAD_IDX, self.BOS_IDX, self.EOS_IDX = 0, 1, 2, 3
 
         self.langs = []
-
         for _lang in langs:
             lang = str(_lang).lower()
             self.langs.append(lang)
             setattr(self, f'spacy_{lang}', get_tokenizer('spacy', language=self.map_lang.get(lang, lang)))
+        self.idxlangs = dict((lang, idx) for idx, lang in enumerate(self.langs))
 
         self.build_vocab(**build_vocab_params)
 
     def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
         """helper function to yield list of tokens"""
-        language_index = {SRC_LANGUAGE: 0, TGT_LANGUAGE: 1}
-
-        for data_sample in data_iter:
-            yield getattr(self, f'spacy_{lang}')(data_sample[language_index[language]])
+        for data_sample in data_iter: # raw data iterator with help of yield technic
+            yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
 
     @property
     def dataloaders(self):
