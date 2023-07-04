@@ -62,7 +62,10 @@ class Tokenizer:
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
-        out = [[] for lang in self.langs]
+        print('$$$$$$$$$$$$$$$$$$', batch, type(batch))
+        assert False
+        
+        out = [[] for lang in self.langs] # output batch is a tensor version of input batch
         for B in batch:
             for idx, b in enumerate(B):
                 out[idx].append(self.__text_transform[kwargs['memory']['DiterKey']][self.langs[idx]](b.rstrip('\n')))
