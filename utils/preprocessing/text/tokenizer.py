@@ -59,7 +59,10 @@ class Tokenizer:
     
     def tensor_transform(self, token_ids: List[int]):
         """function to add BOS/EOS and create tensor for input sequence indices"""
-        return torch.cat((torch.tensor([self.BOS_IDX]), torch.tensor(token_ids), torch.tensor([self.EOS_IDX])))
+        print('!!', token_ids)
+        j = torch.cat((torch.tensor([self.BOS_IDX]), torch.tensor(token_ids), torch.tensor([self.EOS_IDX])))
+        print('!!!', j)
+        return j
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
