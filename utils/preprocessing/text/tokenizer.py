@@ -61,7 +61,10 @@ class Tokenizer:
     def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
         """helper function to yield list of tokens"""
         for data_sample in data_iter: # raw data iterator with help of yield technic
-            yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
+            j = getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
+            print('hooooooooooooo', j)
+            yield j
+            # yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
