@@ -93,7 +93,7 @@ class Tokenizer:
                         'params': {'dataset': self.__D[DiterKey]}
                     }
                 },
-                batch_size=2,
+                batch_size=3,
                 use_dck_mapper=False,
                 dataset_category=[DiterKey],
                 custom_collate=def_instance_method(self, f'_{DiterKey}_collate_fn', self.collate_fn, DiterKey=DiterKey)
