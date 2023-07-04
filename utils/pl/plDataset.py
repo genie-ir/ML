@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+from omegaconf import OmegaConf
 from libs.basicDS import def_instance_method
 from torch.utils.data import DataLoader, Dataset
 
@@ -34,10 +35,11 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         print('----------------------->', self.dataset_configs, list(self.dataset_configs.keys()))
 
         for DCK, _DCV in self.dataset_configs.items():
-            _DCV['aaaaaaaaaaaaaa'] = 1
-            print(_DCV)
-            assert False
-            print('^^^^^^^^^^^^', type(DCV), isinstance(DCV, dict))
+            if isinstance(_DCV, type(OmegaConf.create())):
+                DCV = OmegaConf.to_container(_DCV)
+            else:
+                DCV = _DCV
+            print('^^^^^^^^^^^^', type(DCV))
             if isinstance(DCV, dict):
                 # DCV['target'] = DCV.get('target', '') # It can be set later!
                 DCV['params'] = DCV.get('params', dict())
