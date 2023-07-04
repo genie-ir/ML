@@ -62,15 +62,14 @@ class Tokenizer:
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
-        print('$$$$$$$$$$$$$$$$$$', batch, type(batch))
-        assert False
-        
+        print('@@@@@@@', batch)
         out = [[] for lang in self.langs] # output batch is a tensor version of input batch
         for B in batch:
             for idx, b in enumerate(B):
                 out[idx].append(self.__text_transform[kwargs['memory']['DiterKey']][self.langs[idx]](b.rstrip('\n')))
         for idx_outi, outi in enumerate(out):
             out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX)
+        assert False
         return out
 
         src_batch, tgt_batch = [], []
@@ -108,6 +107,7 @@ class Tokenizer:
                         'params': {'dataset': self.__D[DiterKey]}
                     }
                 },
+                batch_size=2,
                 use_dck_mapper=False,
                 dataset_category=[DiterKey],
                 custom_collate=def_instance_method(self, f'_{DiterKey}_collate_fn', self.collate_fn, DiterKey=DiterKey)
