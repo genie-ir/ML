@@ -106,7 +106,7 @@ class Tokenizer:
                 use_dck_mapper=False,
                 dataset_category=[DiterKey],
                 custom_collate=def_instance_method(self, f'_{DiterKey}_collate_fn', self.collate_fn, DiterKey=DiterKey)
-            ), f'{DiterKey}_dataloader')()
+            ), f'_{DiterKey}_dataloader')()
     
     def build_vocab(self, **build_vocab_params):
         """this function can be overwrite in child class"""
