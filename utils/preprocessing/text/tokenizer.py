@@ -100,8 +100,10 @@ class Tokenizer:
                     self.tensor_transform # Add BOS/EOS and create tensor
                 )
             self.__dataloaders[DiterKey] = getattr(DataModuleFromConfig(
-                DiterKey={
-                    'params': {'dataset': self.__D[DiterKey]}
+                **{
+                    DiterKey: {
+                        'params': {'dataset': self.__D[DiterKey]}
+                    }
                 },
                 use_dck_mapper=False,
                 dataset_category=[DiterKey],
