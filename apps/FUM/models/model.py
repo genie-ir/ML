@@ -16,7 +16,7 @@ class FUM(plModuleBase):
         pass
     
     def start(self):
-        r = Tokenizer('de', 'en').get_vocabs()
+        r = Tokenizer('de', 'en').dataloaders
         print(r)
         assert False
 
