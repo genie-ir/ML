@@ -102,8 +102,7 @@ class Tokenizer:
             self.__dataloaders[DiterKey] = getattr(DataModuleFromConfig(
                 **{
                     DiterKey: {
-                        # 'params': {'dataset': self.__D[DiterKey]}
-                        'params': {'dataset': self.__D['train']}
+                        'params': {'dataset': self.__D[DiterKey]}
                     }
                 },
                 use_dck_mapper=False,
