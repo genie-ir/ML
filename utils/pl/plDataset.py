@@ -46,9 +46,6 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
                 assert isinstance(DCV['params'], dict)
                 SPECIFIC_PL_FN = f'{DCK}_dataloader' # automaticaly call by pytorch_lightning
                 setattr(self, SPECIFIC_PL_FN, getattr(self, f'_{SPECIFIC_PL_FN}', def_instance_method(self, f'_{SPECIFIC_PL_FN}', self._dataloader, DCK=DCK))) # this is called by pytorch_lightning automatically.
-                
-                print('$$$$$$$', getattr(self, f'_{SPECIFIC_PL_FN}'))
-                
                 bind_dataset = DCV['params'].get('dataset', None)
                 if bind_dataset is not None:
                     self.datasets[DCK] = bind_dataset
@@ -80,7 +77,6 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         return dck
     
     def _dataloader(self, **kwargs):
-        print('##############', kwargs, self.datasets[kwargs['memory']['DCK']])
         return DataLoader(self.datasets[kwargs['memory']['DCK']], batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True, collate_fn=self.custom_collate)
     
     # def _train_dataloader(self):
