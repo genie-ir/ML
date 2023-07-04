@@ -1,13 +1,6 @@
-from loguru import logger
 import pytorch_lightning as pl
-from libs.dyimport import Import
 from libs.basicDS import def_instance_method
-from torch.utils.data import random_split, DataLoader, Dataset
-
-# def instantiate_from_config(config):
-#     if not 'target' in config:
-#         raise KeyError('Expected key `target` to instantiate.')
-#     return Import(config['target'])(**config.get('params', dict()))
+from torch.utils.data import DataLoader, Dataset
 
 class WrappedDatasetBase(Dataset):
     """Wraps an arbitrary object with __len__ and __getitem__ into a pytorch dataset"""
@@ -21,30 +14,37 @@ class WrappedDatasetBase(Dataset):
         return self.D[idx]
 
 class DataModuleFromConfigBase(pl.LightningDataModule):
-    def __init__(self, batch_size, wrap=False, num_workers=None, instantiate_from_config=None, custom_collate=None, wrap_cls=None, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
 
         kwargs['dataset_category'] = list(kwargs.get('dataset_category', ['train', 'test', 'validation']))
 
         self.kwargs = kwargs
         self.datasets = dict()
-        self.batch_size = batch_size
-        self.num_workers = num_workers if num_workers is not None else batch_size*2
+        self.batch_size = int(kwargs.get('batch_size', 1))
+        self.num_workers = int(kwargs.get('num_workers', self.batch_size*2))
         
-        self.wrap = bool(wrap)
-        self.custom_collate = custom_collate
-        self.wrap_cls = wrap_cls or WrappedDatasetBase
-        self.instantiate_from_config = instantiate_from_config
+        self.wrap = bool(kwargs.get('wrap', False))
+        self.custom_collate = kwargs.get('custom_collate', None)
+        self.wrap_cls = kwargs.get('wrap_cls', None) or WrappedDatasetBase
+        self.instantiate_from_config = kwargs.get('instantiate_from_config')
         
         self.dataset_configs = dict((self.dck_mapper(dck), self.kwargs.get(dck, None)) for dck in self.kwargs['dataset_category'])
         
         print('----------------------->', self.dataset_configs, list(self.dataset_configs.keys()))
 
         for DCK, DCV in self.dataset_configs.items():
-            if DCV is not None:
+            if isinstance(DCV, dict):
+                # DCV['target'] = DCV.get('target', '') # It can be set later!
+                DCV['params'] = DCV.get('params', dict())
+                assert isinstance(DCV['params'], dict)
                 SPECIFIC_PL_FN = f'{DCK}_dataloader' # automaticaly call by pytorch_lightning
                 setattr(self, SPECIFIC_PL_FN, getattr(self, f'_{SPECIFIC_PL_FN}', def_instance_method(self, f'_{SPECIFIC_PL_FN}', self._dataloader, DCK=DCK))) # this is called by pytorch_lightning automatically.
-                self.datasets[DCK] = self.instantiate_from_config(DCV)
+                bind_dataset = DCV['params'].get('dataset', None)
+                if bind_dataset is not None:
+                    self.datasets[DCK] = bind_dataset
+                else:
+                    self.datasets[DCK] = self.instantiate_from_config(DCV)
                 if self.wrap:
                     self.datasets[DCK] = self.wrap_cls(self.datasets[DCK])
 
@@ -60,6 +60,9 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         
 
     def dck_mapper(self, dck):
+        if bool(self.kwargs.get('use_dck_mapper', True)) == False:
+            return dck
+
         dck = str(dck).lower()
         for _category in ['train', 'test', 'val']:
             category = str(_category).lower()
