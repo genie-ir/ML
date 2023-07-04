@@ -36,11 +36,6 @@ class Tokenizer:
 
         self.build_vocab(**build_vocab_params)
 
-    def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
-        """helper function to yield list of tokens"""
-        for data_sample in data_iter: # raw data iterator with help of yield technic
-            yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
-
     @property
     def dataloaders(self):
         return self.__dataloaders
@@ -55,16 +50,18 @@ class Tokenizer:
                 txt_input = transform(txt_input)
                 print(txt_input)
                 print('-'*30)
+            assert False
             return txt_input
         return func
     
-    def numericalization_transform(self, token_strs: List[str]):
-        print('hoooo!!!!!!!!!!!!!!!!', token_strs)
-        assert False
-
     def tensor_transform(self, token_ids: List[int]):
         """function to add BOS/EOS and create tensor for input sequence indices"""
         return torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
+
+    def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
+        """helper function to yield list of tokens"""
+        for data_sample in data_iter: # raw data iterator with help of yield technic
+            yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
@@ -103,8 +100,7 @@ class Tokenizer:
                 self.__vocabs[DiterKey][lang].set_default_index(self.UNK_IDX)
                 self.__text_transform[DiterKey][lang] = self.sequential_transforms(
                     getattr(self, f'spacy_{lang}', None), #Tokenization
-                    # self.__vocabs[DiterKey][lang], #Numericalization -> `build_vocab_from_iterator`
-                    self.numericalization_transform, #Numericalization 
+                    self.__vocabs[DiterKey][lang], #Numericalization -> `build_vocab_from_iterator`
                     self.tensor_transform # Add BOS/EOS and create tensor
                 )
             self.__dataloaders[DiterKey] = getattr(DataModuleFromConfig(
