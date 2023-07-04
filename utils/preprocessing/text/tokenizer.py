@@ -50,10 +50,7 @@ class Tokenizer:
     
     def tensor_transform(self, token_ids: List[int]):
         """function to add BOS/EOS and create tensor for input sequence indices"""
-        j = torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
-        print(j, j.shape)
-        assert False
-        return j
+        return torch.tensor([self.BOS_IDX] + token_ids + [self.EOS_IDX])
 
     def yield_tokens(self, data_iter: Iterable, lang: str) -> List[str]:
         """helper function to yield list of tokens. this used once to generate a mapping from each unique string_token to coresponding int number"""
@@ -68,6 +65,8 @@ class Tokenizer:
                 out[idx].append(self.__text_transform[kwargs['memory']['DiterKey']][self.langs[idx]](b.rstrip('\n')))
         for idx_outi, outi in enumerate(out):
             out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX)
+            print('!!!!!!!!!!!!', out[idx_outi].shape)
+        assert False
         return out
 
     def __build_vocab(self, DiterList, DiterFunc):
