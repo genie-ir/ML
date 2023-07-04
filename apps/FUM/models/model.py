@@ -18,7 +18,9 @@ class FUM(plModuleBase):
     def start(self):
         D = Tokenizer('en', 'de').dataloaders['train']
         for B in D:
-            print(B, B.shape)
+            for b in B:
+                print(b, b.shape)
+            print('='*30)
             assert False
 
     def start2(self):
