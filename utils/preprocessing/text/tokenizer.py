@@ -65,6 +65,7 @@ class Tokenizer:
                 out[idx].append(self.__text_transform[kwargs['memory']['DiterKey']][self.langs[idx]](b.rstrip('\n')))
         for idx_outi, outi in enumerate(out):
             out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX)
+            out[idx_outi] = out[idx_outi].view(-1, out[idx_outi].shape[0])
             print('!!!!!!!!!!!!', out[idx_outi].shape)
         assert False
         return out
