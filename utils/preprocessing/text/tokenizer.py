@@ -47,6 +47,7 @@ class Tokenizer:
     def sequential_transforms(self, *transforms):
         """helper function to club together sequential operations"""
         def func(txt_input):
+            print('*'*30)
             for transform in transforms:
                 print(txt_input)
                 print(transform)
@@ -62,7 +63,6 @@ class Tokenizer:
 
     def collate_fn(self, batch, **kwargs):
         """function to collate data samples into batch tensors"""
-        print('@@@@@@@', batch)
         out = [[] for lang in self.langs] # output batch is a tensor version of input batch
         for B in batch:
             for idx, b in enumerate(B):
@@ -98,7 +98,7 @@ class Tokenizer:
                 self.__vocabs[DiterKey][lang].set_default_index(self.UNK_IDX)
                 self.__text_transform[DiterKey][lang] = self.sequential_transforms(
                     getattr(self, f'spacy_{lang}', None), #Tokenization
-                    self.__vocabs[DiterKey][lang], #Numericalization
+                    self.__vocabs[DiterKey][lang], #Numericalization -> `build_vocab_from_iterator`
                     self.tensor_transform # Add BOS/EOS and create tensor
                 )
             self.__dataloaders[DiterKey] = getattr(DataModuleFromConfig(
