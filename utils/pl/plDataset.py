@@ -1,3 +1,4 @@
+import os
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
 from libs.basicDS import def_instance_method
@@ -23,7 +24,7 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         self.kwargs = kwargs
         self.datasets = dict()
         self.batch_size = int(kwargs.get('batch_size', 1))
-        self.num_workers = int(kwargs.get('num_workers', self.batch_size*2))
+        self.num_workers = int(kwargs.get('num_workers', os.cpu_count()))
         
         self.wrap = bool(kwargs.get('wrap', False))
         self.custom_collate = kwargs.get('custom_collate', None)
