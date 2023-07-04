@@ -24,7 +24,14 @@ class Tokenizer:
         }
         
         self.special_symbols = ['<unk>', '<pad>', '<bos>', '<eos>']
-        self.UNK_IDX, self.PAD_IDX, self.BOS_IDX, self.EOS_IDX = 0, 1, 2, 3
+        for iss, ss in enumerate(self.special_symbols):
+            setattr(self, ss.replace('<', '').replace('>', '').upper() + '_IDX', iss)
+        
+        print('self.UNK_IDX', self.UNK_IDX)
+        print('self.PAD_IDX', self.PAD_IDX) 
+        print('self.BOS_IDX', self.BOS_IDX) 
+        print('self.EOS_IDX', self.EOS_IDX)
+        assert False
 
         self.langs = []
         for _lang in langs:
