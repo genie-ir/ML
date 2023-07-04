@@ -39,7 +39,7 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
                 DCV = OmegaConf.to_container(_DCV)
             else:
                 DCV = _DCV
-            print('^^^^^^^^^^^^', type(DCV))
+            print('^^^^^^^^^^^^', type(DCV), isinstance(DCV, dict))
             if isinstance(DCV, dict):
                 # DCV['target'] = DCV.get('target', '') # It can be set later!
                 DCV['params'] = DCV.get('params', dict())
