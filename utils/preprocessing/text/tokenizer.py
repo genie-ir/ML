@@ -62,7 +62,7 @@ class Tokenizer:
         """helper function to yield list of tokens"""
         for data_sample in data_iter: # raw data iterator with help of yield technic
             j = getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
-            print('hooooooooooooo', j)
+            print(lang, j)
             yield j
             # yield getattr(self, f'spacy_{lang}')(data_sample[self.idxlangs[lang]])
 
