@@ -64,15 +64,7 @@ class Tokenizer:
             for idx, b in enumerate(B):
                 out[idx].append(self.__text_transform[kwargs['memory']['DiterKey']][self.langs[idx]](b.rstrip('\n')))
         for idx_outi, outi in enumerate(out):
-            out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX)
-            
-            print('!!', out[idx_outi], out[idx_outi].shape)
-            
-            out[idx_outi] = out[idx_outi].transpose(0, 1)
-
-            print('@@', out[idx_outi], out[idx_outi].shape)
-
-
+            out[idx_outi] = pad_sequence(outi, padding_value=self.PAD_IDX).transpose(0, 1)
         return out
 
     def __build_vocab(self, DiterList, DiterFunc):
