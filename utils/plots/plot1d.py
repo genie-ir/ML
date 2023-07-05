@@ -118,7 +118,7 @@ class Plot1D:
             for gx in range(grid[0]):
                 gx_list = []
                 for gy in range(grid[1]):
-                    batch_index = gx * grid[0] + gy
+                    batch_index = (gx * grid[0] + gy) +1
                     try:
                         X_DATA = x
                         Y_DATA = y[batch_index, :]
