@@ -30,8 +30,8 @@ class PositionalEncoding(BB):
             for i in torch.arange(L):
                 denominator = self.n_scalar ** ((2*i)/self.embed_size)
                 P[k, 2*i] = math.sin(k/denominator) # original in paper
-                # P[k, 2*i+1] = math.sin(k/denominator)
-                P[k, 2*i+1] = math.cos(k/denominator) # original in paper
+                P[k, 2*i+1] = math.sin(k/denominator)
+                # P[k, 2*i+1] = math.cos(k/denominator) # original in paper
         return P
  
     def forward(self, x):
