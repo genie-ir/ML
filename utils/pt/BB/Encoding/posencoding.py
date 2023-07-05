@@ -19,7 +19,7 @@ class PositionalEncoding(BB):
         
         PE = self.getPositionEncoding()
         from utils.plots.plot1d import Plot1D
-        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='plot1D:neon')
+        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon')
         plot1d.plot(y=PE, grid=True, label='bacth plot')
         plot1d.savefig('/content/a.png')
         assert False
