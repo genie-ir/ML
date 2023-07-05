@@ -111,7 +111,6 @@ class Tokenizer:
         """this function can be overwrite in child class"""
         build_vocab_params['min_freq'] = int(build_vocab_params.get('min_freq', 1))
         build_vocab_params['special_first'] = bool(build_vocab_params.get('special_first', True))
-        # build_vocab_params['max_size'] = int(build_vocab_params.get('max_size', 10000))
         self.build_vocab_params = build_vocab_params
         DiterList = ['train', 'valid', 'test']
         def DiterFunc(DiterKey):
