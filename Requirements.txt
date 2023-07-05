@@ -129,3 +129,4 @@ en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_
 spacy==3.5.3
 spacy-legacy==3.0.12
 spacy-loggers==1.0.4
+portalocker==2.0.0
