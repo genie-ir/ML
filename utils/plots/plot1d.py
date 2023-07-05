@@ -75,7 +75,13 @@ class Plot1D:
 
     def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None, grid=None, **kwargs_plot):
         if (x is None) and (not (y is None)):
-            x = range(y.shape[0])
+            len_y_shape = len(y.shape)
+            if len_y_shape == 1:
+                x = range(y.shape[0])
+            elif len_y_shape == 2:
+                x = range(y.shape[1])
+            else:
+                assert False, '`len_y_shape={}` | please do code for heare to decide which dim shoulde be used'.format(len_y_shape)
         assert (not ((x is None) or (y is None))), '`x`, `y` both of this must be `not None` | (`x` is `None` == `{}`) | (`y` is `None` == `{}`)'.format(x is None, y is None)
         
         if ffty:
@@ -103,18 +109,18 @@ class Plot1D:
         print(x.shape, y.shape)
 
 
-        if grid is not None:
+        if (grid is not None) and (len(y.shape) == 2):
             grid_map = []
             if isinstance(grid, (list, tuple)) and len(grid) == 2:
                 pass
             else:
-                grid = [ceil(x.shape[0] ** .5), ceil(x.shape[0] ** .5)]
+                grid = [ceil(y.shape[0] ** .5), ceil(y.shape[0] ** .5)]
             for gx in range(grid[0]):
                 gx_list = []
                 for gy in range(grid[1]):
                     batch_index = gx * grid[0] + gy
                     try:
-                        X_DATA = x[batch_index, :]
+                        X_DATA = x
                         Y_DATA = y[batch_index, :]
                     except Exception as e:
                         break
