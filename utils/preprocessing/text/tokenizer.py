@@ -39,6 +39,10 @@ class Tokenizer:
     @property
     def dataloaders(self):
         return self.__dataloaders
+    
+    @property
+    def len(self):
+        return self.__vocabs_len
 
     def sequential_transforms(self, *transforms):
         """helper function to club together sequential operations"""
@@ -73,15 +77,18 @@ class Tokenizer:
 
         self.__D = dict()
         self.__vocabs = dict()
+        self.__vocabs_len = dict()
         self.__text_transform = dict()
         
         for DiterKey in DiterList:
             self.__vocabs[DiterKey] = dict()
+            self.__vocabs_len[DiterKey] = dict()
             self.__text_transform[DiterKey] = dict()
             self.__D[DiterKey] = DiterFunc(DiterKey=DiterKey)
             for lang in self.langs:
                 self.__vocabs[DiterKey][lang] = build_vocab_from_iterator(self.yield_tokens(self.__D[DiterKey], lang), specials=self.special_symbols, **self.build_vocab_params)
                 self.__vocabs[DiterKey][lang].set_default_index(self.UNK_IDX)
+                self.__vocabs_len[DiterKey][lang] = len(self.__vocabs[DiterKey][lang])
                 self.__text_transform[DiterKey][lang] = self.sequential_transforms(
                     getattr(self, f'spacy_{lang}', None), #Tokenization
                     self.__vocabs[DiterKey][lang], #Numericalization -> `build_vocab_from_iterator`

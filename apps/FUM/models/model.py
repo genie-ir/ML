@@ -16,8 +16,9 @@ class FUM(plModuleBase):
         pass
     
     def start(self):
-        D = Tokenizer('en', 'de').dataloaders['train']
-        print('!!!!!!!!!!!!!!!', len(D))
+        T = Tokenizer('en', 'de')
+        D = T.dataloaders['train']
+        print('!!!!!!!!!!!!!!!', T.len)
         for B in D:
             print(B[0].shape, B[1].shape)
         assert False
