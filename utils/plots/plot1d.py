@@ -118,13 +118,13 @@ class Plot1D:
             for gx in range(grid[0]):
                 gx_list = []
                 for gy in range(grid[1]):
-                    batch_index = (gx * grid[0] + gy) +1
+                    batch_index = gx * grid[0] + gy
                     try:
                         X_DATA = x
                         Y_DATA = y[batch_index, :]
                     except Exception as e:
                         break
-                    gax = self.fig.add_subplot(grid[0], grid[1], batch_index)
+                    gax = self.fig.add_subplot(grid[0], grid[1], batch_index+1)
                     gx_list.append(internal_plot(gax, X_DATA, Y_DATA))
                 grid_map.append(gx_list)
             return grid_map
