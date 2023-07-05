@@ -14,7 +14,7 @@ class Plot1D:
         plot: plot1D:@Solarize_Light2
         plot: plot1D:@ggplot
     """
-    def __init__(self, xlabel='x', ylabel='y', color='#D9D9D9', font=None, title_fontdict=None, labels_fontdict=None, grid_args_dict=None, mplstyle=None):
+    def __init__(self, xlabel='x', ylabel='y', color='#D9D9D9', font=None, title_fontdict=None, labels_fontdict=None, grid_args_dict=None, mplstyle=None, figsize=None):
         self.mplstyle = str('neon' if mplstyle is None else mplstyle)
         self.title_fontdict = title_fontdict if title_fontdict else dict(family=[font, 'Purisa', 'sans-serif', 'serif'], color=color, weight='ultralight')
         self.labels_fontdict = labels_fontdict if labels_fontdict else dict(family=[font, 'Purisa', 'sans-serif', 'serif'], color=color, weight='bold', fontsize='x-large')
@@ -25,7 +25,8 @@ class Plot1D:
         else:
             style = pathBIO('//utils/plots/style/{}.mplstyle'.format(self.mplstyle))
         plt.style.use(style)
-        self.fig = plt.figure(figsize=(6, 4), facecolor=None)
+        figsize = figsize if figsize is not None else (6, 4)
+        self.fig = plt.figure(figsize=figsize, facecolor=None)
         # self.fig.patch.set_alpha(.08)
         # plt.suptitle('suptitle', fontdict=self.title_fontdict)
         # plt.title('title', fontdict=self.title_fontdict)
