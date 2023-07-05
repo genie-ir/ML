@@ -19,6 +19,7 @@ class FUM(plModuleBase):
         T = Tokenizer('en', 'de')
         D = T.dataloaders['train']
         print('!!!!!!!!!!!!!!!', T.len)
+        print('#############', T.get_mapping('train', 'en'))
         for B in D:
             print(B[0].shape, B[1].shape)
             assert False

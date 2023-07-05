@@ -44,6 +44,9 @@ class Tokenizer:
     def len(self):
         return self.__vocabs_len
 
+    def get_mapping(self, DiterKey, lang):
+        return self.__vocabs[DiterKey][lang].get_stoi()
+
     def sequential_transforms(self, *transforms):
         """helper function to club together sequential operations"""
         def func(txt_input):
