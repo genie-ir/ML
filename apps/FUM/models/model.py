@@ -20,7 +20,11 @@ class FUM(plModuleBase):
         print('!!!!!!!!!!!!!!!', T.len)
         for B in T.dataloaders['train']:
             print(B[0], B[0].shape, B[1].shape)
-            print('-------->', T.idx2token('train', 'en', B[0][0][1]), T.token2idx('train', 'en', T.idx2token('train', 'en', B[0][0][1])))
+            i = 1
+            tok = T.idx2token('train', 'en', B[0][0][i])
+            idx = T.token2idx('train', 'en', tok)
+            rectok = T.idx2token('train', 'en', idx)
+            print('-------->', tok, rectok, idx)
             assert False
 
     def start2(self):
