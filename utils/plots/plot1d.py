@@ -105,9 +105,9 @@ class Plot1D:
                 pass
             else:
                 grid = [ceil(x.shape[0] ** .5), ceil(x.shape[0] ** .5)]
-            for gx in grid[0]:
+            for gx in range(grid[0]):
                 gx_list = []
-                for gy in grid[1]:
+                for gy in range(grid[1]):
                     batch_index = gx * grid[0] + gy
                     try:
                         X_DATA = x[batch_index, :]
