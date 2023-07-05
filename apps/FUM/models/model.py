@@ -17,14 +17,8 @@ class FUM(plModuleBase):
     
     def start(self):
         T = Tokenizer('en', 'de')
-        print('!!!!!!!!!!!!!!!', T.len)
         for B in T.dataloaders['train']:
             print(B[0], B[0].shape, B[1].shape)
-            for i in B[0][0]:
-                tok = T.idx2token('train', 'en', i)
-                idx = T.token2idx('train', 'en', tok)
-                rectok = T.idx2token('train', 'en', idx)
-                print(f'----{i}---->', tok, rectok, idx)
             assert False
 
     def start2(self):
