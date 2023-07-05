@@ -16,7 +16,7 @@ class PositionalEncoding(BB):
         self.pe = self.getPositionEncoding()
         print('----------->', self.pe.shape, self.pe.requires_grad)
         from utils.plots.plot1d import Plot1D
-        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon', figsize=(10,10))
+        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='@Solarize_Light2', figsize=(10,10))
         plot1d.plot(y=self.pe, grid=True, label='k={{batch_index}}')
         plot1d.savefig('/content/a.png')
         assert False
