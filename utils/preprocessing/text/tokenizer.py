@@ -86,7 +86,7 @@ class Tokenizer:
             self.__text_transform[DiterKey] = dict()
             self.__D[DiterKey] = DiterFunc(DiterKey=DiterKey)
 
-            print('----->', DiterKey, self.__D[DiterKey])
+            print('----->', DiterKey, len(self.__D[DiterKey]))
             assert False
 
             for lang in self.langs:
