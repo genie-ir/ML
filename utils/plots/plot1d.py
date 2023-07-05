@@ -107,9 +107,6 @@ class Plot1D:
         x = np.array(x)
         y = np.array(y)
 
-        print(x.shape, y.shape)
-
-
         if (grid is not None) and (len(y.shape) == 2):
             grid_map = []
             if isinstance(grid, (list, tuple)) and len(grid) == 2:
