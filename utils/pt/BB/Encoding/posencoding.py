@@ -19,8 +19,8 @@ class PositionalEncoding(BB):
         
         PE = self.getPositionEncoding()
         from utils.plots.plot1d import Plot1D
-        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon')
-        plot1d.plot(y=PE, grid=True, label='k={{batch_index}}', figsize=(15,10))
+        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon', figsize=(15,10))
+        plot1d.plot(y=PE, grid=True, label='k={{batch_index}}')
         plot1d.savefig('/content/a.png')
         assert False
 

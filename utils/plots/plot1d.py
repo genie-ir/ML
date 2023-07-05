@@ -121,7 +121,13 @@ class Plot1D:
                 for gy in range(grid[1]):
                     batch_index = gx * grid[0] + gy
                     try:
-                        X_DATA = x
+                        len_xshape = len(x.shape)
+                        if len_xshape == 1:
+                            X_DATA = x
+                        elif len_xshape == 2:
+                            X_DATA = x[batch_index, :]
+                        else:
+                            assert False, '`len_xshape={}` | does not support currently please do code for it'.format(len_xshape)
                         Y_DATA = y[batch_index, :]
                     except Exception as e:
                         break
