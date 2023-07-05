@@ -25,7 +25,7 @@ class FUM(plModuleBase):
         # for B in T.dataloaders['train']:
         #     print(B[0], B[0].shape, B[1].shape)
         #     assert False
-        self.pe = PositionalEncoding(max_len=4, embed_size=256)
+        self.pe = PositionalEncoding(max_len=32, embed_size=256)
         assert False, 'ok!'
 
     def start2(self):
