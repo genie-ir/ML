@@ -3,8 +3,6 @@ import torch
 from torch import nn
 from utils.pt.building_block import BB
 
-
-
 class PositionalEncoding(BB):
     """
         PositionalEncoding module injects some information about the relative or absolute position of the tokens in the sequence. 
@@ -15,18 +13,21 @@ class PositionalEncoding(BB):
         self.max_len = int(self.kwargs.get('max_len', 1e3))
         self.n_scalar = int(self.kwargs.get('n_scalar', 1e4))
         self.embed_size = int(self.kwargs.get('embed_size', 256))
-        
-        PE = self.getPositionEncoding()
+        self.pe = self.getPositionEncoding()
+        print('----------->', self.pe.shape, self.pe.requires_grad)
         from utils.plots.plot1d import Plot1D
         plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon', figsize=(10,10))
-        plot1d.plot(y=PE, grid=True, label='k={{batch_index}}', smoothing=True)
+        plot1d.plot(y=self.pe, grid=True, label='k={{batch_index}}')
         plot1d.savefig('/content/a.png')
         assert False
 
     def getPositionEncoding(self):
         P = torch.zeros((self.max_len, self.embed_size))
+        L = int(self.embed_size/2)
+        if self.embed_size % 2 != 0:
+            L = L + 1
         for k in range(self.max_len):
-            for i in torch.arange(int(self.embed_size/2)):
+            for i in torch.arange(L):
                 denominator = self.n_scalar ** ((2*i)/self.embed_size)
                 P[k, 2*i] = math.sin(k/denominator) # original in paper
                 # P[k, 2*i+1] = math.sin(k/denominator)
