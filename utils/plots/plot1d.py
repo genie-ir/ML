@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from math import ceil
 import matplotlib.pyplot as plt
 from utils.np.psvfn import psvfn
 from libs.basicIO import pathBIO
@@ -72,7 +73,7 @@ class Plot1D:
         plt.close(self.fig)
         return savefig_result
 
-    def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None, **kwargs_plot):
+    def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None, grid=None, **kwargs_plot):
         if (x is None) and (not (y is None)):
             x = range(y.shape[0])
         assert (not ((x is None) or (y is None))), '`x`, `y` both of this must be `not None` | (`x` is `None` == `{}`) | (`y` is `None` == `{}`)'.format(x is None, y is None)
@@ -84,24 +85,43 @@ class Plot1D:
         
         y = psvfn(y, passive_fn)
         
-        if ax is None:
-            ax = self.fig.gca() # ax = plt.gca()
-        # ax.patch.set_facecolor('#3498db')
-        # ax.patch.set_alpha(.08)
-        # y_ticks=['y tick 1','y tick 2','y tick 3']
-        # ax.set_yticklabels(y_ticks, rotation=0, fontsize=8)
+        def internal_plot(axis, X_data, Y_data):
+            if smoothing:
+                X_data, Y_data = smoothing_function(X_data, Y_data, smooth_dpi=smooth_dpi, smooth_k=smooth_k)
+            
+            line, = axis.plot(X_data, Y_data, lw=1, zorder=6, label=label, **kwargs_plot)
+            for cont in range(6, 1, -1):
+                axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
+            axis.legend()
+            if plt_show:
+                plt.show()
+            return axis
+        
         x = np.array(x)
         y = np.array(y)
-        if smoothing:
-            x, y = smoothing_function(x, y, smooth_dpi=smooth_dpi, smooth_k=smooth_k)
-        
-        line, = ax.plot(x, y, lw=1, zorder=6, label=label, **kwargs_plot)
-        for cont in range(6, 1, -1):
-            ax.plot(x, y, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
-        ax.legend()
-        if plt_show:
-            plt.show()
-        return ax     
+        if grid is not None:
+            grid_map = []
+            if isinstance(grid, (list, tuple)) and len(grid) == 2:
+                pass
+            else:
+                grid = [ceil(x.shape[0] ** .5), ceil(x.shape[0] ** .5)]
+            for gx in grid[0]:
+                gx_list = []
+                for gy in grid[1]:
+                    batch_index = gx * grid[0] + gy
+                    try:
+                        X_DATA = x[batch_index, :]
+                        Y_DATA = y[batch_index, :]
+                    except Exception as e:
+                        break
+                    gax = self.fig.add_subplot(grid[0], grid[1], batch_index)
+                    gx_list.append(internal_plot(gax, X_DATA, Y_DATA))
+                grid_map.append(gx_list)
+            return grid_map
+        else:
+            if ax is None:
+                ax = self.fig.gca()
+            return internal_plot(ax)
         
 
 if __name__ == '__main__':

@@ -11,15 +11,22 @@ except Exception as e:
     print(e)
     assert False
 
+
+
+from utils.pt.BB.Encoding.posencoding import PositionalEncoding
+
+
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
     
     def start(self):
-        T = Tokenizer('en', 'de')
-        for B in T.dataloaders['train']:
-            print(B[0], B[0].shape, B[1].shape)
-            assert False
+        # T = Tokenizer('en', 'de')
+        # for B in T.dataloaders['train']:
+        #     print(B[0], B[0].shape, B[1].shape)
+        #     assert False
+        self.pe = PositionalEncoding(max_len=4, embed_size=100)
+        assert False, 'ok!'
 
     def start2(self):
         self.seqnum = 5
