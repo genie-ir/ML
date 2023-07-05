@@ -86,9 +86,6 @@ class Tokenizer:
             self.__text_transform[DiterKey] = dict()
             self.__D[DiterKey] = DiterFunc(DiterKey=DiterKey)
 
-            print('----->', DiterKey, len(self.__D[DiterKey]))
-            assert False
-
             for lang in self.langs:
                 self.__vocabs[DiterKey][lang] = build_vocab_from_iterator(self.yield_tokens(self.__D[DiterKey], lang), specials=self.special_symbols, **self.build_vocab_params)
                 self.__vocabs[DiterKey][lang].set_default_index(self.UNK_IDX)

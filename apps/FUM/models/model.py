@@ -16,12 +16,12 @@ class FUM(plModuleBase):
         pass
     
     def start(self):
-        T = Tokenizer('en', 'de')
+        T = Tokenizer('en', 'de', max_size=10)
         D = T.dataloaders['train']
         print('!!!!!!!!!!!!!!!', T.len)
         for B in D:
             print(B[0].shape, B[1].shape)
-            assert False
+        assert False
 
     def start2(self):
         self.seqnum = 5
