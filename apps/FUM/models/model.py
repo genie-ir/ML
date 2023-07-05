@@ -21,7 +21,7 @@ class FUM(plModuleBase):
         print('!!!!!!!!!!!!!!!', T.len)
         for B in D:
             print(B[0].shape, B[1].shape)
-        assert False
+            assert False
 
     def start2(self):
         self.seqnum = 5
