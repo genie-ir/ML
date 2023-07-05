@@ -20,7 +20,7 @@ class FUM(plModuleBase):
         print('!!!!!!!!!!!!!!!', T.len)
         for B in T.dataloaders['train']:
             print(B[0], B[0].shape, B[1].shape)
-            for i in B[0, 0]:
+            for i in B[0][0]:
                 tok = T.idx2token('train', 'en', i)
                 idx = T.token2idx('train', 'en', tok)
                 rectok = T.idx2token('train', 'en', idx)
