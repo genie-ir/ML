@@ -44,8 +44,17 @@ class Tokenizer:
     def len(self):
         return self.__vocabs_len
 
-    def get_mapping(self, DiterKey, lang):
-        return self.__vocabs[DiterKey][lang].get_stoi()
+    def token2idx(self, DiterKey, lang, token=None):
+        if token is not None:
+            return self.__vocabs[DiterKey][lang].get_stoi()[token]
+        else:
+            return self.__vocabs[DiterKey][lang].get_stoi()
+    
+    def idx2token(self, DiterKey, lang, idx=None):
+        if idx is not None:
+            return self.__vocabs[DiterKey][lang].get_itos()[idx]
+        else:
+            return self.__vocabs[DiterKey][lang].get_itos()
 
     def sequential_transforms(self, *transforms):
         """helper function to club together sequential operations"""
