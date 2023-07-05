@@ -24,7 +24,7 @@ class FUM(plModuleBase):
                 tok = T.idx2token('train', 'en', i)
                 idx = T.token2idx('train', 'en', tok)
                 rectok = T.idx2token('train', 'en', idx)
-                print('-------->', tok, rectok, idx)
+                print(f'----{i}---->', tok, rectok, idx)
             assert False
 
     def start2(self):
