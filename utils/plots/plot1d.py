@@ -91,11 +91,11 @@ class Plot1D:
         
         y = psvfn(y, passive_fn)
         
-        def internal_plot(axis, X_data, Y_data):
+        def internal_plot(axis, X_data, Y_data, lbl=None):
             if smoothing:
                 X_data, Y_data = smoothing_function(X_data, Y_data, smooth_dpi=smooth_dpi, smooth_k=smooth_k)
             
-            line, = axis.plot(X_data, Y_data, lw=1, zorder=6, label=label, **kwargs_plot)
+            line, = axis.plot(X_data, Y_data, lw=1, zorder=6, label=(lbl or label), **kwargs_plot)
             for cont in range(6, 1, -1):
                 axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
             axis.legend()
@@ -125,7 +125,7 @@ class Plot1D:
                     except Exception as e:
                         break
                     gax = self.fig.add_subplot(grid[0], grid[1], batch_index+1)
-                    gx_list.append(internal_plot(gax, X_DATA, Y_DATA))
+                    gx_list.append(internal_plot(gax, X_DATA, Y_DATA, lbl=label.replace('{{batch_index}}', batch_index)))
                 grid_map.append(gx_list)
             return grid_map
         else:
