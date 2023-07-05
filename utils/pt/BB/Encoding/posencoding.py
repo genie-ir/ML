@@ -14,12 +14,11 @@ class PositionalEncoding(BB):
     def start(self):
         self.max_len = int(self.kwargs.get('max_len', 1e3))
         self.n_scalar = int(self.kwargs.get('n_scalar', 1e4))
-        self.dropout_p = float(self.kwargs.get('dropout', 0))
         self.embed_size = int(self.kwargs.get('embed_size', 256))
         
         PE = self.getPositionEncoding()
         from utils.plots.plot1d import Plot1D
-        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon', figsize=(15,10))
+        plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='neon', figsize=(15,4))
         plot1d.plot(y=PE, grid=True, label='k={{batch_index}}')
         plot1d.savefig('/content/a.png')
         assert False
