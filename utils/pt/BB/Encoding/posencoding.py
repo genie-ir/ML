@@ -17,7 +17,7 @@ class PositionalEncoding(BB):
         print('----------->', self.pe.shape, self.pe.requires_grad)
         from utils.plots.plot1d import Plot1D
         plot1d = Plot1D(xlabel='x', ylabel='y', mplstyle='@Solarize_Light2', grid_args_dict={}, figsize=(10,10))
-        plot1d.plot(y=self.pe, grid=True, label='k={{batch_index}}')
+        plot1d.plot(y=self.pe, grid=True, label='')
         plot1d.savefig('/content/a.png')
         assert False
 
@@ -29,8 +29,8 @@ class PositionalEncoding(BB):
                 if i % 2 == 0:
                     P[k, i] = (k/denominator).sin() # original in paper
                 else:
-                    P[k, i] = (k/denominator).sin()
-                    # P[k, i] = (k/denominator).cos() # original in paper
+                    # P[k, i] = (k/denominator).sin()
+                    P[k, i] = (k/denominator).cos() # original in paper
         return P
  
     def forward(self, x):
