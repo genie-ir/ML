@@ -14,12 +14,12 @@ class Plot1D:
         plot: plot1D:@Solarize_Light2
         plot: plot1D:@ggplot
     """
-    def __init__(self, xlabel='x', ylabel='y', color='#D9D9D9', font=None, title_fontdict=None, hide_degree=False, labels_fontdict=None, grid_args_dict=None, mplstyle=None, figsize=None):
+    def __init__(self, xlabel='x', ylabel='y', color='#D9D9D9', font=None, title_fontdict=None, hide_axis=False, labels_fontdict=None, grid_args_dict=None, mplstyle=None, figsize=None):
         self.mplstyle = str('neon' if mplstyle is None else mplstyle)
         self.title_fontdict = title_fontdict if title_fontdict else dict(family=[font, 'Purisa', 'sans-serif', 'serif'], color=color, weight='ultralight')
         self.labels_fontdict = labels_fontdict if labels_fontdict else dict(family=[font, 'Purisa', 'sans-serif', 'serif'], color=color, weight='bold', fontsize='x-large')
         self.grid_args_dict = grid_args_dict if grid_args_dict else dict(zorder=0.5, alpha=.02, color=color)
-        self.hide_degree = bool(hide_degree)
+        self.hide_axis = bool(hide_axis)
 
         if self.mplstyle.startswith('@'):
             style = self.mplstyle[1:]
@@ -28,7 +28,7 @@ class Plot1D:
         plt.style.use(style)
         figsize = figsize if figsize is not None else (6, 4)
         self.fig = plt.figure(figsize=figsize, facecolor=None)
-        if self.hide_degree:
+        if self.hide_axis:
             plt.axis('off')
         # self.fig.patch.set_alpha(.08)
         # plt.suptitle('suptitle', fontdict=self.title_fontdict)
@@ -105,12 +105,8 @@ class Plot1D:
                 axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
             if _label:
                 axis.legend()
-            if self.hide_degree:
-                # axis.axes.xaxis.set_ticklabels([])
-                # axis.axes.yaxis.set_ticklabels([])
-                # axis.set_axis_off()
+            if self.hide_axis:
                 axis.axis('off')
-                # axis.axison = False
             if plt_show:
                 plt.show()
             return axis
