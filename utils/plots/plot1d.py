@@ -14,11 +14,12 @@ class Plot1D:
         plot: plot1D:@Solarize_Light2
         plot: plot1D:@ggplot
     """
-    def __init__(self, xlabel='x', ylabel='y', color='#D9D9D9', font=None, title_fontdict=None, labels_fontdict=None, grid_args_dict=None, mplstyle=None, figsize=None):
+    def __init__(self, xlabel='x', ylabel='y', color='#D9D9D9', font=None, title_fontdict=None, hide_degree=False, labels_fontdict=None, grid_args_dict=None, mplstyle=None, figsize=None):
         self.mplstyle = str('neon' if mplstyle is None else mplstyle)
         self.title_fontdict = title_fontdict if title_fontdict else dict(family=[font, 'Purisa', 'sans-serif', 'serif'], color=color, weight='ultralight')
         self.labels_fontdict = labels_fontdict if labels_fontdict else dict(family=[font, 'Purisa', 'sans-serif', 'serif'], color=color, weight='bold', fontsize='x-large')
         self.grid_args_dict = grid_args_dict if grid_args_dict else dict(zorder=0.5, alpha=.02, color=color)
+        self.hide_degree = bool(hide_degree)
 
         if self.mplstyle.startswith('@'):
             style = self.mplstyle[1:]
@@ -102,9 +103,10 @@ class Plot1D:
                 axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
             if _label:
                 axis.legend()
-            if True:
-                axis.axes.xaxis.set_ticklabels([])
-                axis.axes.yaxis.set_ticklabels([])
+            if self.hide_degree:
+                # axis.axes.xaxis.set_ticklabels([])
+                # axis.axes.yaxis.set_ticklabels([])
+                axis.axis('off')
             if plt_show:
                 plt.show()
             return axis
@@ -134,7 +136,7 @@ class Plot1D:
                     except Exception as e:
                         break
                     gax = self.fig.add_subplot(grid[0], grid[1], batch_index+1)
-                    gx_list.append(internal_plot(gax, X_DATA, Y_DATA, lbl=label.replace('{{batch_index}}', str(batch_index))))
+                    gx_list.append(internal_plot(gax, X_DATA, Y_DATA, lbl=(label or '').replace('{{batch_index}}', str(batch_index))))
                 grid_map.append(gx_list)
             return grid_map
         else:
