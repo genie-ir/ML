@@ -21,29 +21,20 @@ class FUM(plModuleBase):
         pass
     
     def start(self):
-        # T = Tokenizer('en', 'de')
-        # for B in T.dataloaders['train']:
-        #     print(B[0], B[0].shape, B[1].shape)
-        #     assert False
-        self.pe = PositionalEncoding(max_len=256, embed_size=256)
-        assert False, 'ok!'
-
-    def start2(self):
-        self.seqnum = 5
         self.seqlen = 3 # 256
         self.seqdim = 2 # 1
         self.vocab_size = 451
         self.transformer = Transformer(
-            heads=1,
-            maxlen=10,#self.seqlen,
-            dropout=0,
-            fwd_expan=4,
-            num_layers=8,
-            embed_size=self.seqdim,
-            src_mask=False,
-            trg_mask=True,
-            src_vocab_size=self.vocab_size,
-            trg_vocab_size=self.vocab_size
+            heads=getattr(self, 'heads', 1),
+            maxlen=getattr(self, 'maxlen', 10),
+            dropout=getattr(self, 'dropout', 0),
+            fwd_expan=getattr(self, 'fwd_expan', 4),
+            num_layers=getattr(self, 'num_layers', 8),
+            trg_mask=getattr(self, 'trg_mask', True),
+            src_mask=getattr(self, 'src_mask', False),
+            embed_size=getattr(self, 'embed_size', 256),
+            trg_vocab_size=getattr(self, 'trg_vocab_size', 1e3),
+            src_vocab_size=getattr(self, 'src_vocab_size', 1e3)
         )
 
     def generator_step(self, batch):
