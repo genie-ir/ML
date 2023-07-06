@@ -28,7 +28,9 @@ class PositionalEncoding(BB):
 
         from utils.plots.plot1d import Plot1D
         plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
-        plot1d.plot(y=self.pe(torch.arange(256)), grid=True)
+        y = self.pe(torch.arange(256))
+        print('!!!!!!!! y.shape', y.shape)
+        plot1d.plot(y=y, grid=True)
         plot1d.savefig('/content/a.png')
         assert False
 
