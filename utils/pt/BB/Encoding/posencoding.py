@@ -15,9 +15,9 @@ class PositionalEncoding(BB):
         self.embed_size = int(self.kwargs.get('embed_size', 256))
         self.pe = nn.Embedding(self.max_len, self.embed_size)
         self.pe.weight = nn.Parameter(self.getPositionEncoding(), requires_grad=False)
-        print(self.pe.weight, self.pe.weight.requires_grad, self.pe.weight.shape)
-        assert False
         
+
+        print(self.pe(torch.randint(0,256, (4,))))
         # from utils.plots.plot1d import Plot1D
         # plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
         # plot1d.plot(y=self.pe, grid=True)
