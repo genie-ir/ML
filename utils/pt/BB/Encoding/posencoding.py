@@ -29,8 +29,8 @@ class PositionalEncoding(BB):
                 if i % 2 == 0:
                     P[k, i] = (k/denominator).sin() # original in paper
                 else:
-                    # P[k, i] = (k/denominator).sin()
-                    P[k, i] = (k/denominator).cos() # original in paper
+                    P[k, i] = (k/denominator).sin()
+                    # P[k, i] = (k/denominator).cos() # original in paper
         return P
  
     def forward(self, x):
