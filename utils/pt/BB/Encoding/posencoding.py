@@ -13,7 +13,7 @@ class PositionalEncoding(BB):
         self.max_len = int(self.kwargs.get('max_len', 1e3))
         self.n_scalar = int(self.kwargs.get('n_scalar', 1e4))
         self.embed_size = int(self.kwargs.get('embed_size', 256))
-        self.pe = self.getPositionEncoding()
+        self.pe = self.getPositionEncoding() * 1e4
         print('----------->', self.pe, self.pe.shape, self.pe.requires_grad)
         
         self.e = nn.Embedding(self.max_len, self.embed_size)
