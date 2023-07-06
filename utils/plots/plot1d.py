@@ -35,10 +35,8 @@ class Plot1D:
         plt.xlabel(xlabel, fontdict=self.labels_fontdict)
         plt.ylabel(ylabel, fontdict=self.labels_fontdict)
         plt.grid(**self.grid_args_dict)
-        # plt.xticks(fontname=font)
-        # plt.yticks(fontname=font)
-        plt.xticks([])
-        plt.yticks([])
+        plt.xticks(fontname=font)
+        plt.yticks(fontname=font)
     
     def plot_metrics(self, db, hash, col_names, index=0, label='', tbl='', plt_show=True, smoothing=True, smooth_dpi=300, smooth_k=3, smooth_both=False):
         from libs.coding import sha1
@@ -104,6 +102,9 @@ class Plot1D:
                 axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
             if _label:
                 axis.legend()
+            if True:
+                axis.axes.xaxis.set_ticklabels([])
+                axis.axes.yaxis.set_ticklabels([])
             if plt_show:
                 plt.show()
             return axis
