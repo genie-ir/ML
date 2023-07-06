@@ -14,11 +14,17 @@ class PositionalEncoding(BB):
         self.n_scalar = int(self.kwargs.get('n_scalar', 1e4))
         self.embed_size = int(self.kwargs.get('embed_size', 256))
         self.pe = self.getPositionEncoding()
-        print('----------->', self.pe.shape, self.pe.requires_grad)
-        from utils.plots.plot1d import Plot1D
-        plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
-        plot1d.plot(y=self.pe, grid=True)
-        plot1d.savefig('/content/a.png')
+        print('----------->', self.pe, self.pe.shape, self.pe.requires_grad)
+        
+        self.e = nn.Embedding(self.max_len, self.embed_size)
+        self.e.weight = nn.Parameter(self.pe, requires_grad=False)
+        print(self.e.weight.shape)
+        assert False
+        
+        # from utils.plots.plot1d import Plot1D
+        # plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
+        # plot1d.plot(y=self.pe, grid=True)
+        # plot1d.savefig('/content/a.png')
         assert False
 
     def getPositionEncoding(self):
