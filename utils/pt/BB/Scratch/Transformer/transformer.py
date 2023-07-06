@@ -166,3 +166,17 @@ class Transformer(BB):
     def forward(self, src, trg):
         return self.decoder(trg[:, :-1], self.encoder(src, self.src_mask), self.src_mask, self.trg_mask)
 
+
+# Example:
+# self.transformer = Transformer(
+#     heads=getattr(self, 'heads', 1),
+#     maxlen=getattr(self, 'maxlen', 1e3),
+#     dropout=getattr(self, 'dropout', 0),
+#     fwd_expan=getattr(self, 'fwd_expan', 4),
+#     num_layers=getattr(self, 'num_layers', 8),
+#     trg_mask=getattr(self, 'trg_mask', True),
+#     src_mask=getattr(self, 'src_mask', False),
+#     embed_size=getattr(self, 'embed_size', 256),
+#     trg_vocab_size=getattr(self, 'trg_vocab_size', 1e3),
+#     src_vocab_size=getattr(self, 'src_vocab_size', 1e3)
+# )

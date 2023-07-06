@@ -26,7 +26,7 @@ class FUM(plModuleBase):
         self.vocab_size = 451
         self.transformer = Transformer(
             heads=getattr(self, 'heads', 1),
-            maxlen=getattr(self, 'maxlen', 10),
+            maxlen=getattr(self, 'maxlen', 1e3),
             dropout=getattr(self, 'dropout', 0),
             fwd_expan=getattr(self, 'fwd_expan', 4),
             num_layers=getattr(self, 'num_layers', 8),
