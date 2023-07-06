@@ -15,7 +15,7 @@ class PositionalEncoding(BB):
         self.embed_size = int(self.kwargs.get('embed_size', 256))
         self.pe = nn.Embedding(self.max_len, self.embed_size)
         self.pe.weight = nn.Parameter(self.getPositionEncoding(), requires_grad=False)
-        print(self.pe.weight, self.pe.weight.shape)
+        print(self.pe.weight, self.pe.weight.requires_grad, self.pe.weight.shape)
         assert False
         
         # from utils.plots.plot1d import Plot1D
