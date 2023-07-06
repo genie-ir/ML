@@ -1,6 +1,7 @@
 import math
 import torch
 from torch import nn
+from utils.plots.plot1d import Plot1D
 from utils.pt.building_block import BB
 
 class PositionalEncoding(BB):
@@ -25,15 +26,15 @@ class PositionalEncoding(BB):
             self.embedding = nn.Embedding(self.vocabsize, self.embed_size)
         
         setattr(self, 'forward', getattr(self, f'forward_{self.fwd}'))
-
-        from utils.plots.plot1d import Plot1D
-        plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
-        y = self.pe(torch.arange(256))
-        print('!!!!!!!! y.shape', y.shape)
-        plot1d.plot(y=y, grid=True)
-        plot1d.savefig('/content/a.png')
+        self.plot('/content/pe.png')
         assert False
 
+    def plot(self, path, pe=None):
+        pe = self.pe(torch.arange(self.maxlen)) if pe is None else pe
+        plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
+        plot1d.plot(y=pe, grid=True)
+        plot1d.savefig(path)
+    
     def getPositionEncoding(self):
         P = torch.zeros((self.maxlen, self.embed_size))
         for k in range(self.maxlen):
