@@ -35,8 +35,10 @@ class Plot1D:
         plt.xlabel(xlabel, fontdict=self.labels_fontdict)
         plt.ylabel(ylabel, fontdict=self.labels_fontdict)
         plt.grid(**self.grid_args_dict)
-        plt.xticks(fontname=font)
-        plt.yticks(fontname=font)
+        # plt.xticks(fontname=font)
+        # plt.yticks(fontname=font)
+        plt.xticks([])
+        plt.yticks([])
     
     def plot_metrics(self, db, hash, col_names, index=0, label='', tbl='', plt_show=True, smoothing=True, smooth_dpi=300, smooth_k=3, smooth_both=False):
         from libs.coding import sha1
