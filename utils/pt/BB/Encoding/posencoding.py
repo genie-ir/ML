@@ -26,8 +26,6 @@ class PositionalEncoding(BB):
             self.embedding = nn.Embedding(self.vocabsize, self.embed_size)
         
         setattr(self, 'forward', getattr(self, f'forward_{self.fwd}'))
-        self.plot('/content/pe.png')
-        assert False
 
     def plot(self, path, pe=None):
         pe = self.pe(torch.arange(self.maxlen)) if pe is None else pe
