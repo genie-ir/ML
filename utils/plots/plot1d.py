@@ -107,7 +107,8 @@ class Plot1D:
                 # axis.axes.xaxis.set_ticklabels([])
                 # axis.axes.yaxis.set_ticklabels([])
                 # axis.set_axis_off()
-                axis.axison = False
+                axis.axis('off')
+                # axis.axison = False
             if plt_show:
                 plt.show()
             return axis
