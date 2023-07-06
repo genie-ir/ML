@@ -106,7 +106,8 @@ class Plot1D:
             if self.hide_degree:
                 # axis.axes.xaxis.set_ticklabels([])
                 # axis.axes.yaxis.set_ticklabels([])
-                axis.axis('off')
+                # axis.set_axis_off()
+                axis.axison = False
             if plt_show:
                 plt.show()
             return axis
