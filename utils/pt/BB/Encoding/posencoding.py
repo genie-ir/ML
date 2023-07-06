@@ -26,7 +26,7 @@ class PositionalEncoding(BB):
         
         setattr(self, 'forward', getattr(self, f'forward_{self.fwd}'))
 
-        print(self.pe(torch.randint(0,self.maxlen, (4,))))
+        print(self.pe(torch.randint(0,self.maxlen, (3,))))
         # from utils.plots.plot1d import Plot1D
         # plot1d = Plot1D(xlabel='x', ylabel='y', hide_axis=True, mplstyle='neon', figsize=(10,10))
         # plot1d.plot(y=self.pe, grid=True)
