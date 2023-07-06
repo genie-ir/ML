@@ -28,6 +28,8 @@ class Plot1D:
         plt.style.use(style)
         figsize = figsize if figsize is not None else (6, 4)
         self.fig = plt.figure(figsize=figsize, facecolor=None)
+        if self.hide_degree:
+            self.fig.axis('off')
         # self.fig.patch.set_alpha(.08)
         # plt.suptitle('suptitle', fontdict=self.title_fontdict)
         # plt.title('title', fontdict=self.title_fontdict)
