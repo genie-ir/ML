@@ -96,10 +96,12 @@ class Plot1D:
             if smoothing:
                 X_data, Y_data = smoothing_function(X_data, Y_data, smooth_dpi=smooth_dpi, smooth_k=smooth_k)
             
-            line, = axis.plot(X_data, Y_data, lw=1, zorder=6, label=(lbl or label or None), **kwargs_plot)
+            _label = (lbl or label or None)
+            line, = axis.plot(X_data, Y_data, lw=1, zorder=6, label=_label, **kwargs_plot)
             for cont in range(6, 1, -1):
                 axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
-            axis.legend()
+            if _label:
+                axis.legend()
             if plt_show:
                 plt.show()
             return axis
