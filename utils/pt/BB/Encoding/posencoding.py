@@ -10,12 +10,21 @@ class PositionalEncoding(BB):
         Here, we use sine and cosine functions of different frequencies.
     """
     def start(self):
-        self.max_len = int(self.kwargs.get('max_len', 1e3))
+        self.fwd = str(self.kwargs.get('fwd', 'epe'))
+        self.maxlen = int(self.kwargs.get('maxlen', 1e3))
         self.n_scalar = int(self.kwargs.get('n_scalar', 1e4))
+        self.dropout_p = float(self.kwargs.get('dropout', 0))
         self.embed_size = int(self.kwargs.get('embed_size', 256))
-        self.pe = nn.Embedding(self.max_len, self.embed_size)
-        self.pe.weight = nn.Parameter(self.getPositionEncoding(), requires_grad=False)
         
+        self.pe = nn.Embedding(self.maxlen, self.embed_size)
+        self.pe.weight = nn.Parameter(self.getPositionEncoding(), requires_grad=False)
+        self.dropout = nn.Dropout(self.dropout_p)
+
+        if self.fwd == 'epe':
+            self.vocabsize = int(self.kwargs.get('vocabsize', 1e3))
+            self.embedding = nn.Embedding(self.vocabsize, self.embed_size)
+        
+        setattr(self, 'forward', getattr(self, f'forward_{self.fwd}'))
 
         print(self.pe(torch.randint(0,256, (4,))))
         # from utils.plots.plot1d import Plot1D
@@ -25,8 +34,8 @@ class PositionalEncoding(BB):
         assert False
 
     def getPositionEncoding(self):
-        P = torch.zeros((self.max_len, self.embed_size))
-        for k in range(self.max_len):
+        P = torch.zeros((self.maxlen, self.embed_size))
+        for k in range(self.maxlen):
             for i in torch.arange(self.embed_size):
                 denominator = self.n_scalar ** ((2*i)/self.embed_size)
                 if i % 2 == 0:
@@ -36,13 +45,12 @@ class PositionalEncoding(BB):
                     P[k, i] = (k/denominator).cos() # original in paper
         return P
  
-    def forward(self, x):
-        """
-        Arguments:
-            x: Tensor, shape ``[seq_len, batch_size, embedding_dim]``
-        """
-        j= self.dropout(x + self.pe[:x.size(0)])
-
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@', j.shape)
-
-        return j
+    def forward_pe(self, x):
+        return self.pe(x)
+    
+    def forward_rpe(self, x):
+        return self.dropout(x + self.pe(x))
+    
+    def forward_epe(self, x):
+        print('epe @@@@@@@@@@@@@@@@@@', x.shape)
+        return self.dropout(self.embedding(x) + self.pe(x))
