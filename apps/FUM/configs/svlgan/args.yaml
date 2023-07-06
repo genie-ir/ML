@@ -1,4 +1,4 @@
 in_ch: 3
 maxlen: 1000
-embed_size: 256
+embed_size: 50
 signal_key: latentcode
