@@ -1,2 +1,3 @@
 in_ch: 3
+embed_size: 4
 signal_key: latentcode
