@@ -1,4 +1,4 @@
 in_ch: 3
 maxlen: 256
 embed_size: 256
-signal_key: X
+signal_key: index
