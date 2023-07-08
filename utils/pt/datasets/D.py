@@ -13,7 +13,6 @@ from torch.utils.data import Dataset, TensorDataset
 # for single_row_of_data in TensorDataset(x1,x2,x3,x4):
 #     print(single_row_of_data)
 
-
 class D_Base(Dataset):
     """custom Dataset"""
     def __init__(self, labels=None, **kwargs):
@@ -22,10 +21,16 @@ class D_Base(Dataset):
         self.start()
     
     def start(self):
-        self._length = len(self.labels['x'])
+        self.set_length()
+    
+    def set_length(self, length: int =None):
+        if length is None:
+            self.__length = len(self.labels['x'])
+        else:
+            self.__length = int(length)
 
     def __len__(self):
-        return self._length
+        return self.__length
 
     def fetch(self, signal_path):
         """It must be overwrite in child class"""
