@@ -22,7 +22,7 @@ class LossBase(nn.Module):
     
     def start(self):
         self.criterion = instantiate_from_config({
-            'target': self.loss_codebook.get(self.prefix, self.prefix),
+            'target': self.loss_codebook.get(self.prefix, self.prefix), # `criterion` in yaml file
             'params': self.kwargs.get('params', dict())
         })
     

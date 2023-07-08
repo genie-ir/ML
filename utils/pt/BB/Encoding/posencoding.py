@@ -1,4 +1,3 @@
-import math
 import torch
 from torch import nn
 from utils.plots.plot1d import Plot1D

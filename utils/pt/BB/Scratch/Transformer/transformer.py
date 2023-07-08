@@ -107,6 +107,7 @@ class Decoder(BB):
         )
 
         self.fc_out = nn.Linear(self.embed_size, self.trg_vocab_size)
+        self.relu = nn.ReLU()
         self.layers = nn.Sequential(*[
             DecoderBlock(
                 heads=self.heads,
@@ -125,7 +126,7 @@ class Decoder(BB):
         for idx, layer in enumerate(self.layers):
             x = layer(x=x, v=encoder_out[idx], k=encoder_out[idx], src_mask=src_mask, trg_mask=trg_mask)
 
-        return self.fc_out(x)
+        return -self.relu(self.fc_out(x))
 
 
 class Transformer(BB):
@@ -164,9 +165,9 @@ class Transformer(BB):
         )
 
     def forward(self, src, trg):
-        return self.decoder(trg[:, :-1], self.encoder(src, self.src_mask), self.src_mask, self.trg_mask)
-
-
+        logits = self.decoder(trg[:, :-1], self.encoder(src, self.src_mask), self.src_mask, self.trg_mask)
+        return logits, trg[:, 1:]
+    
 # Example:
 # self.transformer = Transformer(
 #     heads=getattr(self, 'heads', 1),
