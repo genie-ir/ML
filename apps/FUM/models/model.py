@@ -27,7 +27,7 @@ class FUM(plModuleBase):
             src_vocab_size=getattr(self, 'src_vocab_size', 1e3)
         )
 
-    def generator_step(self, batch):
+    def generator_step_3(self, batch):
         print('++>', batch[self.signal_key])
         B = 2
         src = torch.randint(0, self.vocab_size, (B, 3), device=self.device)
@@ -48,4 +48,12 @@ class FUM(plModuleBase):
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
 
+        return g_loss, {'loss': g_loss.item()}
+    
+    def generator_step(self, batch):
+        print('!!!!!!!!!!', batch['index'])
+
+        assert False
+
+        g_loss = torch.tensor(0.)
         return g_loss, {'loss': g_loss.item()}

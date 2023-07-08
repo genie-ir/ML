@@ -1,9 +1,7 @@
 from data.config.range.D import D as Drange
 
 class D(Drange):
-    def start(self):
-        print('###############', self.config)
-        return super().start()
+    pass
 
 # import yaml
 # import torch
