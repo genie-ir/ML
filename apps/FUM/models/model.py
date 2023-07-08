@@ -56,8 +56,10 @@ class FUM(plModuleBase):
     
     def generator_step(self, batch):
         x = self.codebook(batch[self.signal_key])
-        print(x.shape, x.requires_grad)
-        assert False
+        phi = self.vqgan.rec_phi({'x': x, 'y': batch['y']})
+        self.vqgan.save_phi(phi, pathdir='/content')
 
-        g_loss = torch.tensor(0.)
+        g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
+        print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+        assert False
         return g_loss, {'loss': g_loss.item()}
