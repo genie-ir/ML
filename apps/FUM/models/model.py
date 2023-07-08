@@ -55,6 +55,8 @@ class FUM(plModuleBase):
         self.codebook = nn.Embedding(self.ncluster, self.embed_size)
     
     def generator_step(self, batch):
+        x = self.codebook(batch[self.signal_key])
+        print(x.shape, x.requires_grad)
         assert False
 
         g_loss = torch.tensor(0.)
