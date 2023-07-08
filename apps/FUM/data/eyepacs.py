@@ -2,9 +2,8 @@ from data.config.range.D import D as Drange
 
 class D(Drange):
     def start(self):
-        super().start()
-        self.set_length(5e3)
-
+        print('###############', self.config)
+        return super().start()
 
 # import yaml
 # import torch

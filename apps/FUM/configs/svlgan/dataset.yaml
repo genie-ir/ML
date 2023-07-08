@@ -1,4 +1,28 @@
-!include data.config.range.dataset
+# !include data.config.range.dataset
+# overwrite field `params.train.params.config.range`
+
+target: utils.pl.tools.dataset.DataModuleFromConfig
+params:
+  batch_size: 6
+  num_workers: 2
+  train:
+    target: apps.FUM.data.eyepacs
+    params:
+      config:
+        range: 5000
+  validation:
+    target: apps.FUM.data.eyepacs
+    params:
+      config:
+        range: 5000
+
+
+
+
+
+
+
+
 
 # target: utils.pl.tools.dataset.DataModuleFromConfig
 # params:
