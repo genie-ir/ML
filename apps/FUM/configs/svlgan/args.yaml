@@ -1,6 +1,6 @@
 # in_ch: 3
 # maxlen: 256
 # embed_size: 256
-ncluster: 451
+ncluster: 5000
 embed_size: 256
 signal_key: index
