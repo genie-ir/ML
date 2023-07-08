@@ -10,7 +10,7 @@ class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
     
-    def start(self):
+    def __start(self):
         self.seqlen = 3 # 256
         self.seqdim = 2 # 1
         self.vocab_size = 451
@@ -50,9 +50,11 @@ class FUM(plModuleBase):
 
         return g_loss, {'loss': g_loss.item()}
     
+    def start(self):
+        print('!!!!!!!', self.ncluster, self.embed_size)
+        self.codebook = nn.Embedding(self.ncluster, self.embed_size)
+    
     def generator_step(self, batch):
-        print('!!!!!!!!!!', batch['index'])
-
         assert False
 
         g_loss = torch.tensor(0.)
