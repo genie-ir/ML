@@ -6,12 +6,12 @@ params:
   batch_size: 6
   num_workers: 2
   train:
-    target: apps.FUM.data.eyepacs
+    target: apps.FUM.data.eyepacs.D
     params:
       config:
         range: 5000
   validation:
-    target: apps.FUM.data.eyepacs
+    target: apps.FUM.data.eyepacs.D
     params:
       config:
         range: 5000
