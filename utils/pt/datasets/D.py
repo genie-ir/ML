@@ -17,6 +17,7 @@ class D_Base(Dataset):
     """custom Dataset"""
     def __init__(self, labels=None, **kwargs):
         self.kwargs = kwargs
+        self.config = self.kwargs.get('config', dict())
         self.labels = dict() if labels is None else labels
         self.start()
     

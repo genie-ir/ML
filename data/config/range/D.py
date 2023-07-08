@@ -2,7 +2,7 @@ from utils.pt.datasets.D import D_Base
 
 class D(D_Base):
     def start(self):
-        print('@@@@@@@@@@@@@@@@@@@@@@', self.kwargs)
+        print('@@@@@@@@@@@@@@@@@@@@@@', self.config)
         assert False
         self.set_length()
     
