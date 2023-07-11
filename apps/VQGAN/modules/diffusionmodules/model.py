@@ -447,9 +447,6 @@ class Decoder(nn.Module):
         self.in_channels = in_channels
         self.give_pre_end = give_pre_end
 
-        print('@@@@@@@@@@@@@ dropout=', dropout)
-        assert False
-
         # compute in_ch_mult, block_in and curr_res at lowest res
         in_ch_mult = (1,)+tuple(ch_mult)
         block_in = ch*ch_mult[self.num_resolutions-1]
