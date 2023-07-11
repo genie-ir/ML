@@ -36,13 +36,15 @@ class FUM(plModuleBase):
         print('++++++++>', out, out.shape)
         assert False
 
-    def generator_step2(self, batch):
+    def generator_step(self, batch):
         y = batch['y']
         # xf = error_grade(batch[self.signal_key], 3)
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
-        xt = batch[self.signal_key].float()
-        phi = self.vqgan.rec_phi({'x': xt, 'y': y})
+        latent = batch[self.signal_key].float()
+        phi = self.vqgan.rec_phi({'x': latent, 'y': y})
+        latent_rec = self.vqgan.rec_lat(phi)
+        print('--------------------->', (latent-latent_rec).abs().sum())
         self.vqgan.save_phi(phi, pathdir='/content')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
@@ -54,7 +56,7 @@ class FUM(plModuleBase):
         print('!!!!!!!', self.ncluster, self.embed_size)
         self.codebook = nn.Embedding(self.ncluster, self.embed_size)
     
-    def generator_step(self, batch):
+    def generator_step00(self, batch):
         x = self.codebook(batch[self.signal_key])
         phi = self.vqgan.rec_phi({'x': x, 'y': batch['y']})
         self.vqgan.save_phi(phi, pathdir='/content')
