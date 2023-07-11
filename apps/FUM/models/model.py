@@ -42,7 +42,7 @@ class FUM(plModuleBase):
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
         pathdir=f'/content/phi'
-        for i in range(20):
+        for i in range(50):
             phi = self.vqgan.rec_phi(x=latent)
             latent_rec = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
