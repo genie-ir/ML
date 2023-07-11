@@ -49,7 +49,7 @@ class FUM(plModuleBase):
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
-
+        assert False
         return g_loss, {'loss': g_loss.item()}
     
     def start(self):
