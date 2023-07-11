@@ -41,12 +41,14 @@ class FUM(plModuleBase):
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
+        pathdir=f'/content/phi'
         for i in range(20):
             phi = self.vqgan.rec_phi(x=latent)
             latent_rec = self.vqgan.rec_lat(phi).float()
             print('------>', (latent-latent_rec).abs().sum())
             latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=f'/content/phi', fname=f'{str(i)}.png')
+            self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
+        compressor(pathdir, pathdir + '/phi.zip')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
