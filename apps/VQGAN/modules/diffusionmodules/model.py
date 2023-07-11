@@ -344,6 +344,10 @@ class Encoder(nn.Module):
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
                  resolution, z_channels, double_z=True, **ignore_kwargs):
         super().__init__()
+
+        print('@@@@@@@@@@@@@@@@@@@@@@@ dropout=', dropout)
+        assert False
+
         self.ch = ch
         self.temb_ch = 0
         self.num_resolutions = len(ch_mult)

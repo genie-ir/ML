@@ -37,17 +37,22 @@ class FUM(plModuleBase):
         assert False
 
     def generator_step(self, batch):
-        y = batch['y']
         # xf = error_grade(batch[self.signal_key], 3)
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
-        phi = self.vqgan.rec_phi(x=latent, y=y)
+        phi = self.vqgan.rec_phi(x=latent)
         latent_rec = self.vqgan.rec_lat(phi)
         print('latent.shape', latent.shape)
         print('latent_rec.shape', latent_rec.shape)
-        print('--------------------->', (latent-latent_rec).abs().sum())
-        self.vqgan.save_phi(phi, pathdir='/content')
+        print('-----------mmd---------->', (latent-latent_rec).abs().sum())
+        phi2 = self.vqgan.rec_phi(x=latent_rec)
+        latent_rec2 = self.vqgan.rec_lat(phi2)
+        print('-----------ali---------->', (latent_rec2-latent_rec).abs().sum())
+        phi3 = self.vqgan.rec_phi(x=latent_rec2)
+        self.vqgan.save_phi(phi, pathdir='/content/phi')
+        self.vqgan.save_phi(phi2, pathdir='/content/phi2')
+        self.vqgan.save_phi(phi3, pathdir='/content/phi3')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
