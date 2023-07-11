@@ -49,8 +49,9 @@ class FUM(plModuleBase):
             print('------>', rec_metric)
             latent = latent_rec
             self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
-            if rec_metric < 1e-6:
+            if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
+            old_rec_metric = rec_metric
         compressor(pathdir, pathdir + '/phi.zip')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
