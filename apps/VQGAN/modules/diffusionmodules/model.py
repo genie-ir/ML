@@ -345,9 +345,6 @@ class Encoder(nn.Module):
                  resolution, z_channels, double_z=True, **ignore_kwargs):
         super().__init__()
 
-        print('@@@@@@@@@@@@@@@@@@@@@@@ dropout=', dropout)
-        assert False
-
         self.ch = ch
         self.temb_ch = 0
         self.num_resolutions = len(ch_mult)
@@ -449,6 +446,9 @@ class Decoder(nn.Module):
         self.resolution = resolution
         self.in_channels = in_channels
         self.give_pre_end = give_pre_end
+
+        print('@@@@@@@@@@@@@ dropout=', dropout)
+        assert False
 
         # compute in_ch_mult, block_in and curr_res at lowest res
         in_ch_mult = (1,)+tuple(ch_mult)
