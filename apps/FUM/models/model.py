@@ -45,9 +45,12 @@ class FUM(plModuleBase):
         for i in range(20):
             phi = self.vqgan.rec_phi(x=latent)
             latent_rec = self.vqgan.rec_lat(phi).float()
-            print('------>', (latent-latent_rec).abs().sum())
+            rec_metric = (latent-latent_rec).abs().sum()
+            print('------>', rec_metric)
             latent = latent_rec
             self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
+            if rec_metric < 1e-6:
+                break
         compressor(pathdir, pathdir + '/phi.zip')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
