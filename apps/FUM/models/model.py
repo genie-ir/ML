@@ -42,7 +42,7 @@ class FUM(plModuleBase):
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
-        phi = self.vqgan.rec_phi({'x': latent, 'y': y})
+        phi = self.vqgan.rec_phi(x=latent, y=y)
         latent_rec = self.vqgan.rec_lat(phi)
         print('latent.shape', latent.shape)
         print('latent_rec.shape', latent_rec.shape)

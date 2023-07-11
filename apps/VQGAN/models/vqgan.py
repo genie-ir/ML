@@ -104,11 +104,11 @@ class VQModel(pl.LightningModule):
 
     
     def rec_lat(self, input):
-        quant, diff, R = self.encode(input)
+        quant, diff, R = self.encode(input, vetoFlag=True)
         return quant
-    def rec_phi(self, input):
+    def rec_phi(self, **batch):
         zshape = [-1,16,16,256]
-        input, y = input['x'], input['y']
+        input, y = batch['x'], batch['y']
         # I = R[2].view(zshape[:-1]) # comes from CGAN
         _quant, _diff, _R = self.quantize(None, I2=input.squeeze().flatten())
         _dec = self.decode(_quant)
