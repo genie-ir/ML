@@ -104,8 +104,7 @@ class VQModel(pl.LightningModule):
 
     
     def rec_lat(self, input):
-        quant, diff, R = self.encode(input, vetoFlag=True)
-        return quant
+        return self.encode(input, vetoFlag=True)
     def rec_phi(self, **batch):
         zshape = [-1,16,16,256]
         input, y = batch['x'], batch['y']
