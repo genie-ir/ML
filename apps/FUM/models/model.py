@@ -44,6 +44,8 @@ class FUM(plModuleBase):
         latent = batch[self.signal_key].float()
         phi = self.vqgan.rec_phi({'x': latent, 'y': y})
         latent_rec = self.vqgan.rec_lat(phi)
+        print('latent.shape', latent.shape)
+        print('latent_rec.shape', latent_rec.shape)
         print('--------------------->', (latent-latent_rec).abs().sum())
         self.vqgan.save_phi(phi, pathdir='/content')
 
