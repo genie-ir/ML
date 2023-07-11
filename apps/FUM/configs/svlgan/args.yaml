@@ -3,4 +3,4 @@
 # embed_size: 256
 ncluster: 5000
 embed_size: 256
-signal_key: index
+signal_key: latentcode #index
