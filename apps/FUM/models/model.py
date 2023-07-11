@@ -50,7 +50,6 @@ class FUM(plModuleBase):
             latent = latent_rec
             self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
             if rec_metric < 1e-6:
-                self.vqgan.save_phi(self.vqgan.rec_phi(x=latent_rec), pathdir='/content/end', fname=f'{str(i)}.png')
                 break
         compressor(pathdir, pathdir + '/phi.zip')
 
