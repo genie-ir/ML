@@ -44,7 +44,7 @@ class FUM(plModuleBase):
         phi = self.vqgan.rec_phi(x=latent)
         latent_rec = self.vqgan.rec_lat(phi)
         print('latent.shape', latent.shape)
-        print('latent_rec.shape', latent_rec.shape)
+        print('latent_rec.shape', latent_rec.shape, latent_rec.dtype)
         print('-----------mmd---------->', (latent-latent_rec).abs().sum())
         phi2 = self.vqgan.rec_phi(x=latent_rec)
         latent_rec2 = self.vqgan.rec_lat(phi2)
