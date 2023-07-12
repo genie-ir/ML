@@ -48,9 +48,11 @@ class FUM(plModuleBase):
             latent_rec = self.vqgan.rec_lat(phi).float()
             latent_rec2 = self.vqgan.rec_lat(phi).float()
             latent_rec3 = self.vqgan.rec_lat(phi).float()
-            # rec_metric = (latent-latent_rec).abs().sum()
-            # print('---lm--->', rec_metric)
-            print('---lm--->', 
+            rec_metric = (latent-latent_rec).abs().sum()
+            print('---lm--->', rec_metric)
+            print('---lm2--->', (latent-latent_rec2).abs().sum())
+            print('---lm3--->', (latent-latent_rec3).abs().sum())
+            print('@@@@@@@@@@@@@@', 
             ((latent_rec-latent_rec2).abs() + (latent_rec-latent_rec3).abs() + (latent_rec2-latent_rec3).abs()).sum()
             )
             
