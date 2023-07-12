@@ -45,17 +45,14 @@ class FUM(plModuleBase):
         old_rec_metric = -1
         for i in range(50):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
-            phi2, q2 = self.vqgan.rec_phi(x=latent, flag=True)
-            phi3, q3 = self.vqgan.rec_phi(x=latent, flag=True)
             latent_rec = self.vqgan.rec_lat(phi).float()
-            latent_rec2 = self.vqgan.rec_lat(phi2).float()
-            latent_rec3 = self.vqgan.rec_lat(phi3).float()
-            rec_metric = (latent-latent_rec).abs().sum()
-            print('---lm--->', rec_metric)
-            print('---lm2--->', (latent-latent_rec2).abs().sum())
-            print('---lm3--->', (latent-latent_rec3).abs().sum())
-            print('---phim--->', ((phi-phi2).abs() + (phi-phi3).abs() + (phi2-phi3).abs()).sum())
-            print('---qm--->', ((q-q2).abs() + (q-q3).abs() + (q2-q3).abs()).sum())
+            latent_rec2 = self.vqgan.rec_lat(phi).float()
+            latent_rec3 = self.vqgan.rec_lat(phi).float()
+            # rec_metric = (latent-latent_rec).abs().sum()
+            # print('---lm--->', rec_metric)
+            print('---lm--->', 
+            ((latent_rec-latent_rec2).abs() + (latent_rec-latent_rec3).abs() + (latent_rec2-latent_rec3).abs()).sum()
+            )
             
             # phir, qr = self.vqgan.rec_phi(x=latent_rec, flag=True)
             # print('---qm--->', (q-qr).abs().sum())
