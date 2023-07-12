@@ -46,11 +46,19 @@ class FUM(plModuleBase):
         for i in range(50):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
             latent_rec = self.vqgan.rec_lat(phi).float()
-            phir, qr = self.vqgan.rec_phi(x=latent_rec, flag=True)
+            latent_rec2 = self.vqgan.rec_lat(phi).float()
+            latent_rec3 = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
+            rec_metric2 = (latent-latent_rec2).abs().sum()
+            rec_metric3 = (latent-latent_rec3).abs().sum()
             print('---lm--->', rec_metric)
-            print('---qm--->', (q-qr).abs().sum())
-            print('---phim--->', (phir-phi).abs().sum())
+            print('---lm2--->', rec_metric2)
+            print('---lm3--->', rec_metric3)
+            
+            # phir, qr = self.vqgan.rec_phi(x=latent_rec, flag=True)
+            # print('---qm--->', (q-qr).abs().sum())
+            # print('---phim--->', (phir-phi).abs().sum())
+            
             latent = latent_rec
             self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
