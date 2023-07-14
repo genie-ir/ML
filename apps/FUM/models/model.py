@@ -51,7 +51,7 @@ class FUM(plModuleBase):
             s2 = s2 + phi ** 2
             latent_rec = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
-            print('--lm-->', rec_metric)
+            # print('--lm-->', rec_metric)
             # print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
             # print('--phi-->', phi.shape, phi.requires_grad, phi.dtype)
             
@@ -66,7 +66,8 @@ class FUM(plModuleBase):
                 break
             old_rec_metric = rec_metric
         # compressor(pathdir, pathdir + '/phi.zip')
-        R = s1 / i
+        R = s1 / i # Mue
+        print('$$$$$$$$$$$$$$$$', R.shape)
         self.vqgan.save_phi(R, pathdir=pathdir, fname=f'{str(i)}.png')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
