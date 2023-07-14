@@ -41,7 +41,7 @@ class FUM(plModuleBase):
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
-        print('@@@@@@@@@@@@@@@@@', latent.shape)
+        print('##################', batch['batch_size'])
         assert False
         pathdir=f'/content/phi'
         old_rec_metric = -1
