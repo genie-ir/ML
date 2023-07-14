@@ -84,7 +84,7 @@ class FUM(plModuleBase):
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         # self.vqgan.save_phi(mue_rec, pathdir=pathdir, fname=f'mue_rec-{str(N)}.png')
         print('########', mue.shape, mue.dtype, sample.shape, sample.dtype)
-        print('########', mue.min, mue.max, std.min, std.max)
+        print('########', mue.min().item(), mue.max().item(), std.min().item(), std.max().item())
         print('######ms', (mue-sample).abs().sum().item())
         print('######ms2', (mue-sample2).abs().sum().item())
         print('######ms3', (mue-sample3).abs().sum().item())
