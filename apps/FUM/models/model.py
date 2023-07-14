@@ -41,14 +41,18 @@ class FUM(plModuleBase):
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
+        print('@@@@@@@@@@@@@@@@@', latent.shape)
+        assert False
         pathdir=f'/content/phi'
         old_rec_metric = -1
         for i in range(50):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
             latent_rec = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
-            print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
-            print('--phi-->', phi.shape, phi.requires_grad, phi.dtype)
+            # print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
+            # print('--phi-->', phi.shape, phi.requires_grad, phi.dtype)
+            
+            
             # phir, qr = self.vqgan.rec_phi(x=latent_rec, flag=True)
             # print('---qm--->', (q-qr).abs().sum())
             # print('---phim--->', (phir-phi).abs().sum())
