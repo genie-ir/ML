@@ -49,7 +49,7 @@ class FUM(plModuleBase):
         old_phi = None
         for N in range(1, self.phi_it + 1):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
-            if old_phi:
+            if old_phi is None:
                 print('!!!!!!!!', (phi-old_phi).abs().sum().item())
             old_phi = phi
 
