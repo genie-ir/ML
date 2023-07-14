@@ -83,11 +83,9 @@ class FUM(plModuleBase):
         sample3 = (std) * torch.randn(shape, device=self.device) + mue
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         # self.vqgan.save_phi(mue_rec, pathdir=pathdir, fname=f'mue_rec-{str(N)}.png')
-        print('########', mue.shape, mue.dtype, sample.shape, sample.dtype)
         print('########', mue.min().item(), mue.max().item(), std.min().item(), std.max().item())
-        print('######ms', (mue-sample).abs().sum().item())
-        print('######ms2', (mue-sample2).abs().sum().item())
-        print('######ms3', (mue-sample3).abs().sum().item())
+        print('######ms123', ((mue-sample).abs() + (mue-sample2).abs() + (mue-sample3).abs()).sum().item())
+        print('######S123', ((sample-sample2).abs() + (sample-sample3).abs() + (sample2-sample3).abs()).sum().item())
         self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
         self.vqgan.save_phi(sample2, pathdir=pathdir, fname=f'sample2-{str(N)}.png')
         self.vqgan.save_phi(sample3, pathdir=pathdir, fname=f'sample3-{str(N)}.png')
