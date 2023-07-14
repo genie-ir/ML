@@ -45,16 +45,12 @@ class FUM(plModuleBase):
         old_rec_metric = -1
         shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
         s1 = torch.zeros(shape, device=self.device)
-        s2 = torch.zeros(shape, device=self.device)
-        old_phi = None
+        # s2 = torch.zeros(shape, device=self.device)
         for N in range(1, self.phi_it + 1):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
-            if old_phi is not None:
-                print('!!!!!!!!', (phi-old_phi).abs().sum().item())
-            old_phi = phi
 
             s1 = s1 + phi
-            s2 = s2 + phi ** 2
+            # s2 = s2 + phi ** 2
             latent_rec = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric)
@@ -76,23 +72,11 @@ class FUM(plModuleBase):
         mue_latent_rec = self.vqgan.rec_lat(mue).float() # r
         # mue_rec, mue_q = self.vqgan.rec_phi(x=mue_latent_rec, flag=True)
         
-        std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
-        
-        sample = (std) * torch.randn(shape, device=self.device) + mue
-        sample2 = (std) * torch.randn(shape, device=self.device) + mue
-        sample3 = (std) * torch.randn(shape, device=self.device) + mue
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
+        # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
+        # sample = (std) * torch.randn(shape, device=self.device) + mue
         # self.vqgan.save_phi(mue_rec, pathdir=pathdir, fname=f'mue_rec-{str(N)}.png')
-        print('########', mue.min().item(), mue.max().item(), std.min().item(), std.max().item())
-        print('######ms1', ((mue-sample).abs()).sum().item())
-        print('######ms2', ((mue-sample2).abs()).sum().item())
-        print('######ms3', ((mue-sample3).abs()).sum().item())
-        print('######S12', ((sample-sample2).abs()).sum().item())
-        print('######S13', ((sample-sample3).abs()).sum().item())
-        print('######S23', ((sample2-sample3).abs()).sum().item())
-        self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
-        self.vqgan.save_phi(sample2, pathdir=pathdir, fname=f'sample2-{str(N)}.png')
-        self.vqgan.save_phi(sample3, pathdir=pathdir, fname=f'sample3-{str(N)}.png')
+        # self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
