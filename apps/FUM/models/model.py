@@ -43,14 +43,15 @@ class FUM(plModuleBase):
         latent = batch[self.signal_key].float()
         pathdir=f'/content/phi'
         old_rec_metric = -1
-        s1 = torch.zeros(batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
-        s2 = torch.zeros(batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
+        s1 = torch.zeros(batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh, device=self.device)
+        s2 = torch.zeros(batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh, device=self.device)
         for i in range(1, self.phi_it + 1):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
             s1 = s1 + phi
             s2 = s2 + phi ** 2
             latent_rec = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
+            print('--lm-->', rec_metric)
             # print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
             # print('--phi-->', phi.shape, phi.requires_grad, phi.dtype)
             
