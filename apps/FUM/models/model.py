@@ -78,13 +78,12 @@ class FUM(plModuleBase):
         
         std = (((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).log() * .5).exp()
         
-        print('NAN ---->', (std==float('nan')).float().sum().item())
-        
         sample = (std) * torch.randn(shape, device=self.device) + mue
         sample2 = (std) * torch.randn(shape, device=self.device) + mue
         sample3 = (std) * torch.randn(shape, device=self.device) + mue
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         # self.vqgan.save_phi(mue_rec, pathdir=pathdir, fname=f'mue_rec-{str(N)}.png')
+        print('########', mue.shape, mue.dtype, sample.shape, sample.dtype)
         print('######ms', (mue-sample).abs().sum().item())
         print('######ms2', (mue-sample2).abs().sum().item())
         print('######ms3', (mue-sample3).abs().sum().item())
