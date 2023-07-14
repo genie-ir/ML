@@ -51,7 +51,7 @@ class FUM(plModuleBase):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
             if old_phi:
                 print('!!!!!!!!', (phi-old_phi).abs().sum().item())
-                old_phi = phi
+            old_phi = phi
 
             s1 = s1 + phi
             s2 = s2 + phi ** 2
@@ -82,12 +82,12 @@ class FUM(plModuleBase):
         sample3 = (std) * torch.randn(shape, device=self.device) + mue
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         # self.vqgan.save_phi(mue_rec, pathdir=pathdir, fname=f'mue_rec-{str(N)}.png')
-        self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
-        self.vqgan.save_phi(sample2, pathdir=pathdir, fname=f'sample2-{str(N)}.png')
-        self.vqgan.save_phi(sample3, pathdir=pathdir, fname=f'sample3-{str(N)}.png')
         print('######ms', (mue-sample).abs().sum().item())
         print('######ms2', (mue-sample2).abs().sum().item())
         print('######ms3', (mue-sample3).abs().sum().item())
+        self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
+        self.vqgan.save_phi(sample2, pathdir=pathdir, fname=f'sample2-{str(N)}.png')
+        self.vqgan.save_phi(sample3, pathdir=pathdir, fname=f'sample3-{str(N)}.png')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
