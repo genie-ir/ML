@@ -41,12 +41,14 @@ class FUM(plModuleBase):
         # xf = self.generator(x=xf)
         # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
-        print('##################', batch['batch_size'])
-        assert False
         pathdir=f'/content/phi'
         old_rec_metric = -1
-        for i in range(50):
+        s1 = torch.zeros(batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
+        s2 = torch.zeros(batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
+        for i in range(1, self.phi_it + 1):
             phi, q = self.vqgan.rec_phi(x=latent, flag=True)
+            s1 = s1 + phi
+            s2 = s2 + phi ** 2
             latent_rec = self.vqgan.rec_lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
@@ -58,11 +60,13 @@ class FUM(plModuleBase):
             # print('---phim--->', (phir-phi).abs().sum())
             
             latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
+            # self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'{str(i)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
-        compressor(pathdir, pathdir + '/phi.zip')
+        # compressor(pathdir, pathdir + '/phi.zip')
+        R = s1 / i
+        self.vqgan.save_phi(R, pathdir=pathdir, fname=f'{str(i)}.png')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)

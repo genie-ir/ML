@@ -3,4 +3,7 @@
 # embed_size: 256
 ncluster: 5000
 embed_size: 256
+phi_ch: 3
+phi_wh: 256
+phi_it: 50
 signal_key: latentcode #index
