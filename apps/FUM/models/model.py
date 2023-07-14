@@ -57,7 +57,6 @@ class FUM(plModuleBase):
             # print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
             # print('--phi-->', phi.shape, phi.requires_grad, phi.dtype)
             
-            
             # phir, qr = self.vqgan.rec_phi(x=latent_rec, flag=True)
             # print('---qm--->', (q-qr).abs().sum())
             # print('---phim--->', (phir-phi).abs().sum())
