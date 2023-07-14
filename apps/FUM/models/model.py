@@ -76,10 +76,7 @@ class FUM(plModuleBase):
         mue_latent_rec = self.vqgan.rec_lat(mue).float() # r
         # mue_rec, mue_q = self.vqgan.rec_phi(x=mue_latent_rec, flag=True)
         
-        for s in range(10):
-            std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).sqrt()
-            print(f';;;;;;s={s};;;;;;;', std.min().item(), std.max().item())
-        assert False
+        std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
         
         sample = (std) * torch.randn(shape, device=self.device) + mue
         sample2 = (std) * torch.randn(shape, device=self.device) + mue
