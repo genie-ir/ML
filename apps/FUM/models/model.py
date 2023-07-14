@@ -70,9 +70,13 @@ class FUM(plModuleBase):
         mue = s1 / N # R
         std = ((s2 + ((mue ** 2) * N) + (2 * mue * s1)) / (N-1)) ** .5
         sample = (std/(N**.5)) * torch.randn(shape, device=self.device) + mue
+        sample2 = (std/(N**.5)) * torch.randn(shape, device=self.device) + mue
+        sample3 = (std/(N**.5)) * torch.randn(shape, device=self.device) + mue
         print(f'$$$$$$ N={N} $$$$$$$$$$', mue.shape, std.shape)
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
+        self.vqgan.save_phi(sample2, pathdir=pathdir, fname=f'sample2-{str(N)}.png')
+        self.vqgan.save_phi(sample3, pathdir=pathdir, fname=f'sample3-{str(N)}.png')
 
         g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
         print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
