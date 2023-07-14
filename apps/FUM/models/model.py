@@ -69,7 +69,7 @@ class FUM(plModuleBase):
         # compressor(pathdir, pathdir + '/phi.zip')
         mue = s1 / N # R
         std = ((s2 + ((mue ** 2) * N) + (2 * mue * s1)) / (N-1)) ** .5
-        sample = std * torch.randn(shape, device=self.device) + mue
+        sample = (std**.5) * torch.randn(shape, device=self.device) + mue
         print(f'$$$$$$ N={N} $$$$$$$$$$', mue.shape, std.shape)
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
