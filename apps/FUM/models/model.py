@@ -68,10 +68,10 @@ class FUM(plModuleBase):
             old_rec_metric = rec_metric
         # compressor(pathdir, pathdir + '/phi.zip')
         mue = s1 / N # R
-        std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N-1)) ** .5
-        sample = (std/(N**.5)) * torch.randn(shape, device=self.device) + mue
-        sample2 = (std/(N**.5)) * torch.randn(shape, device=self.device) + mue
-        sample3 = (std/(N**.5)) * torch.randn(shape, device=self.device) + mue
+        std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)) ** .5
+        sample = (std) * torch.randn(shape, device=self.device) + mue
+        sample2 = (std) * torch.randn(shape, device=self.device) + mue
+        sample3 = (std) * torch.randn(shape, device=self.device) + mue
         print(f'$$$$$$ N={N} $$$$$$$$$$', mue.shape, std.shape)
         self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
         self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
