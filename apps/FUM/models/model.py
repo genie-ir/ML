@@ -57,9 +57,9 @@ class FUM(plModuleBase):
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         mue = s1 / N
-        m = self.vqgan.phi2lat(mue).float().unsqueeze(1)
+        m = self.vqgan.phi2lat(mue).float().flatten()#.unsqueeze(1)
         print('!!!!!!!!!!!!!! m', m, m.shape, m.dtype, m.requires_grad)
-        s = self.scodebook(m)
+        s = self.scodebook(None, I2=m)
         print('###########', s.shape)
         sq = self.vqgan.lat2qua(s) # sq = w x sq + b
         sphi = self.vqgan.qua2phi(sq)
