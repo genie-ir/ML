@@ -21,7 +21,9 @@ class VectorQuantizer2(BB):
         self.remap = self.kwargs.get('remap', None)
         self.legacy = bool(self.kwargs.get('legacy', True))
         unknown_index = self.kwargs.get('unknown_index', 'random')
-        self.zshape = list(self.kwargs.get('zshape', [-1,16,16,256]))
+        self.zwh = int(self.kwargs.get('zwh', 16))
+        self.zch = int(self.kwargs.get('zch', 256))
+        self.zshape = [-1, self.zwh, self.zwh, self.zch]
         self.sane_index_shape = bool(self.kwargs.get('sane_index_shape', False))
 
         self.embedding = nn.Embedding(self.n_e, self.e_dim)
