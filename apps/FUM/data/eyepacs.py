@@ -17,7 +17,7 @@ from utils.pt.datasets.D import D_Base
 from os import system, getenv, makedirs
 from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValidation as eyepacsValidationBase
 
-from utils.pt.distance import L2S_VQ
+from utils.pt.distance import L2S
 from utils.np.statfns import correlation
 from utils.pt.BB.KDE.kde import plot_kde
 
@@ -52,7 +52,7 @@ class D(D_Base):
             # print(k, m.shape)
             # m = n.corrcoef()
             # m = np.abs(correlation(n.detach().numpy(), kill_itself=True))
-            # m = torch.topk(L2S_VQ(n, n), 2, largest=False).values[:, 1]
+            # m = torch.topk(L2S(n, n), 2, largest=False).values[:, 1]
             # M = m[m<1e-2]
             # M = M[M>0]
             # print(k, m.min(), m.max(), m.dtype, m.shape)
