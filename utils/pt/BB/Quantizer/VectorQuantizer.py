@@ -22,7 +22,7 @@ class VectorQuantizer2(BB):
         self.legacy = bool(self.kwargs.get('legacy', True))
         unknown_index = self.kwargs.get('unknown_index', 'random')
         self.zwh = int(self.kwargs.get('zwh', 16))
-        self.zch = int(self.kwargs.get('zch', 256))
+        self.zch = int(self.kwargs.get('zch', self.e_dim))
         self.zshape = [-1, self.zwh, self.zwh, self.zch]
         self.sane_index_shape = bool(self.kwargs.get('sane_index_shape', False))
 
