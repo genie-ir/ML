@@ -103,14 +103,17 @@ class VQModel(pl.LightningModule):
         assert False, 'END'
 
     
-    def rec_lat(self, input):
-        return self.encode(input, vetoFlag=True)
-    def rec_phi(self, x, flag=False): # x.shape: (-1, 16,16)
+    def phi2lat(self, x):
+        return self.encode(x, vetoFlag=True)
+    def lat2phi(self, x):
         _quant, _diff, _R = self.quantize(None, I2=x.squeeze().flatten())
         _dec = self.decode(_quant)
-        if flag:
-            return _dec, _quant
         return _dec
+    def lat2qua(self, x):
+        _quant, _diff, _R = self.quantize(None, I2=x.squeeze().flatten())
+        return _quant
+    def qua2phi(self, x):
+        return self.decode(x)
     def save_phi(self, _dec, pathdir=None, fname=None):
         fname = fname if fname else f'{random_string()}.png'
         pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir

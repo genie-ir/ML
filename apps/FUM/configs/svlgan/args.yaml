@@ -6,6 +6,6 @@ ncluster: 5000
 embed_size: 256
 phi_ch: 3
 phi_wh: 256
-phi_it: 50
+phi_steps: 50
 pathdir: /content/phi
 signal_key: latentcode #index

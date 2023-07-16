@@ -40,38 +40,32 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         latent = batch[self.signal_key].float()
         old_rec_metric = -1
-        shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
-        s1 = torch.zeros(shape, device=self.device)
-        # s2 = torch.zeros(shape, device=self.device)
-        for N in range(1, self.phi_it + 1):
-            phi, q = self.vqgan.rec_phi(x=latent, flag=True)
-
+        phi_shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
+        s1 = torch.zeros(phi_shape, device=self.device)
+        # s2 = torch.zeros(phi_shape, device=self.device)
+        for N in range(1, self.phi_steps + 1):
+            phi = self.vqgan.lat2phi(latent)
             s1 = s1 + phi
             # s2 = s2 + phi ** 2
-            latent_rec = self.vqgan.rec_lat(phi).float()
+            latent_rec = self.vqgan.phi2lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric)
-            # print('--lm-->', rec_metric, rec_metric.shape, rec_metric.requires_grad, rec_metric.dtype)
-            # print('--phi-->', phi.shape, phi.requires_grad, phi.dtype)
-            
-            # phir, qr = self.vqgan.rec_phi(x=latent_rec, flag=True)
-            # print('---qm--->', (q-qr).abs().sum())
-            # print('---phim--->', (phir-phi).abs().sum())
-            
             latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
-        mue = s1 / N # R
-        mue_l = self.vqgan.rec_lat(mue).float() # r
-        print('!!!!!!!!!!!!!! mue_l', mue_l, mue_l.shape, mue_l.dtype, mue_l.requires_grad)
-        assert False
-        mue_lq = self.scodebook(mue_l)
-        # mue_rec, mue_q = self.vqgan.rec_phi(x=mue_l, flag=True)
+        mue = s1 / N
+        m = self.vqgan.phi2lat(mue).float().unsqueeze(1)
+        print('!!!!!!!!!!!!!! m', m, m.shape, m.dtype, m.requires_grad)
+        s = self.scodebook(m)
+        print('###########', s.shape)
+        sq = self.vqgan.lat2qua(s) # sq = w x sq + b
+        sphi = self.vqgan.qua2phi(sq)
         
         self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
+        self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
         # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
         # sample = (std) * torch.randn(shape, device=self.device) + mue
         # self.vqgan.save_phi(mue_rec, pathdir=self.pathdir, fname=f'mue_rec-{str(N)}.png')
@@ -79,9 +73,6 @@ class FUM(plModuleBase):
 
         # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue.contiguous()))
         mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue))
-        
-        
-        
         # print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
         assert False
         return g_loss, {'loss': g_loss.item()}
@@ -91,12 +82,12 @@ class FUM(plModuleBase):
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.embed_size, beta=0.25)
         self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.embed_size, beta=0.25)
     
-    def generator_step00(self, batch):
-        x = self.codebook(batch[self.signal_key])
-        phi = self.vqgan.rec_phi({'x': x, 'y': batch['y']})
-        self.vqgan.save_phi(phi, pathdir='/content')
+    # def generator_step00(self, batch):
+    #     x = self.codebook(batch[self.signal_key])
+    #     phi = self.vqgan.rec_phi({'x': x, 'y': batch['y']})
+    #     self.vqgan.save_phi(phi, pathdir='/content')
 
-        g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
-        print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
-        assert False
-        return g_loss, {'loss': g_loss.item()}
+    #     g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
+    #     print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+    #     assert False
+    #     return g_loss, {'loss': g_loss.item()}
