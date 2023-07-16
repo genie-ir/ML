@@ -79,7 +79,7 @@ class FUM(plModuleBase):
     
     def start(self):
         print('!!!!!!!', self.ncluster, self.embed_size)
-        self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.embed_size, beta=0.25, zch=1)
+        self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=1, beta=0.25, zch=1)
         # self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.embed_size, beta=0.25, zch=1)
     
     # def generator_step00(self, batch):
