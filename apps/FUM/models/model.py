@@ -5,6 +5,7 @@ from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 from utils.pt.BB.Scratch.Transformer.transformer import Transformer
+from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
 
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
@@ -37,11 +38,7 @@ class FUM(plModuleBase):
         assert False
 
     def generator_step(self, batch):
-        # xf = error_grade(batch[self.signal_key], 3)
-        # xf = self.generator(x=xf)
-        # xt = denormalizing(xf)
         latent = batch[self.signal_key].float()
-        pathdir=f'/content/phi'
         old_rec_metric = -1
         shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
         s1 = torch.zeros(shape, device=self.device)
@@ -62,29 +59,37 @@ class FUM(plModuleBase):
             # print('---phim--->', (phir-phi).abs().sum())
             
             latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=pathdir, fname=f'phi-{str(N)}.png')
+            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
-        # compressor(pathdir, pathdir + '/phi.zip')
+        # compressor(self.pathdir, self.pathdir + '/phi.zip')
         mue = s1 / N # R
-        mue_latent_rec = self.vqgan.rec_lat(mue).float() # r
-        # mue_rec, mue_q = self.vqgan.rec_phi(x=mue_latent_rec, flag=True)
+        mue_l = self.vqgan.rec_lat(mue).float() # r
+        print('!!!!!!!!!!!!!! mue_l', mue_l, mue_l.shape, mue_l.dtype, mue_l.requires_grad)
+        assert False
+        mue_lq = self.scodebook(mue_l)
+        # mue_rec, mue_q = self.vqgan.rec_phi(x=mue_l, flag=True)
         
-        self.vqgan.save_phi(mue, pathdir=pathdir, fname=f'mue-{str(N)}.png')
+        self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
         # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
         # sample = (std) * torch.randn(shape, device=self.device) + mue
-        # self.vqgan.save_phi(mue_rec, pathdir=pathdir, fname=f'mue_rec-{str(N)}.png')
-        # self.vqgan.save_phi(sample, pathdir=pathdir, fname=f'sample-{str(N)}.png')
+        # self.vqgan.save_phi(mue_rec, pathdir=self.pathdir, fname=f'mue_rec-{str(N)}.png')
+        # self.vqgan.save_phi(sample, pathdir=self.pathdir, fname=f'sample-{str(N)}.png')
 
-        g_loss = -torch.mean(self.vqgan.loss.discriminator(phi.contiguous()))
-        print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+        # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue.contiguous()))
+        mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue))
+        
+        
+        
+        # print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
         assert False
         return g_loss, {'loss': g_loss.item()}
     
     def start(self):
         print('!!!!!!!', self.ncluster, self.embed_size)
-        self.codebook = nn.Embedding(self.ncluster, self.embed_size)
+        self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.embed_size, beta=0.25)
+        self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.embed_size, beta=0.25)
     
     def generator_step00(self, batch):
         x = self.codebook(batch[self.signal_key])
