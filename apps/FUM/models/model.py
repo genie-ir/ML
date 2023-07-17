@@ -58,7 +58,7 @@ class FUM(plModuleBase):
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         mue = s1 / N
         print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
-        m = self.vqgan.phi2lat(mue).float().flatten()#.unsqueeze(1)
+        m = self.vqgan.phi2lat(mue).float()#.flatten()#.unsqueeze(1)
         print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
         # s = self.scodebook(None, I2=m)[0]
         # print('###########', s.shape)
