@@ -109,11 +109,11 @@ class VQModel(pl.LightningModule):
     def phi2lat(self, x):
         return self.encode(x, vetoFlag=True)
     def lat2phi(self, x):
-        _quant = self.quantize.fwd_bpi(x.squeeze().flatten())
+        _quant = self.quantize.fwd_bpi(x)
         _dec = self.decode(_quant)
         return _dec
     def lat2qua(self, x):
-        return self.quantize.fwd_bpi(x.squeeze().flatten())
+        return self.quantize.fwd_bpi(x)
     def qua2phi(self, x):
         return self.decode(x)
     def save_phi(self, _dec, pathdir=None, fname=None):
@@ -123,19 +123,19 @@ class VQModel(pl.LightningModule):
         signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5)})
     
     
-    def forward_syn(self, input):
-        print('forward_syn')
-        return
-        zshape = [-1,16,16,256]
-        input, y = input['x'], input['y']
-        # I = R[2].view(zshape[:-1]) # comes from CGAN
-        I = input.squeeze().long()
-        I2 = I.flatten() # Good
-        _quant, _diff, _R = self.fwd_bpi(I2)
-        _dec = self.decode(_quant)
-        afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
-        signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
-        return None, None
+    # def forward_syn(self, input):
+    #     print('forward_syn')
+    #     return
+    #     zshape = [-1,16,16,256]
+    #     input, y = input['x'], input['y']
+    #     # I = R[2].view(zshape[:-1]) # comes from CGAN
+    #     I = input.squeeze().long()
+    #     I2 = I.flatten() # Good
+    #     _quant, _diff, _R = self.fwd_bpi(I2)
+    #     _dec = self.decode(_quant)
+    #     afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
+    #     signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
+    #     return None, None
     def forward(self, input):
         print('forward')
         quant, diff, R = self.encode(input)
