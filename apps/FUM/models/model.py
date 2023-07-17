@@ -40,8 +40,6 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         z = torch.randint(0, self.latent_range, (batch['batch_size'], self.latent_dim, 1, 1), device=self.device)
         latent, _loss = self.ccodebook(z)
-        print('@@@@@@@@@@@@ z', z.shape, latent.shape, (z-latent).abs().sum())
-        assert False
         # latent = batch[self.signal_key].float()
         old_rec_metric = -1
         phi_shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
@@ -55,7 +53,7 @@ class FUM(plModuleBase):
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric)
             latent = latent_rec
-            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
