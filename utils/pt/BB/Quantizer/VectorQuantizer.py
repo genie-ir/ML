@@ -64,49 +64,35 @@ class VectorQuantizer2(BB):
         back=torch.gather(used[None,:][inds.shape[0]*[0],:], 1, inds)
         return back.reshape(ishape)
 
-    def forward(self, z, vetoFlag=False, I2=None):
-        if z is not None:
-            z = rearrange(z, 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
-            z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
-            min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
-            if vetoFlag:
-                return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
-            z_q = self.embedding(min_encoding_indices).view(self.zshape)
-        else:
-            min_encoding_indices = I2.long()
-            z_q = (onehot_with_grad(I2, self.n_e) @ self.embedding.weight).view(self.zshape)
-        
-        perplexity = None
-        min_encodings = None
-
+    def fwd(self, z):
+        z = rearrange(z, 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
+        z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
+        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
+        z_q = self.embedding(min_encoding_indices).view(self.zshape)
         # compute loss for embedding
-        if z is not None:
-            if not self.legacy:
-                loss = self.beta * torch.mean((z_q.detach()-z)**2) + \
-                    torch.mean((z_q - z.detach()) ** 2)
-            else:
-                loss = torch.mean((z_q.detach()-z)**2) + self.beta * \
-                    torch.mean((z_q - z.detach()) ** 2)
-            # preserve gradients 
-            z_q = dzq_dz_eq1(z_q, z)
+        if not self.legacy:
+            loss = self.beta * torch.mean((z_q.detach()-z)**2) + \
+                torch.mean((z_q - z.detach()) ** 2)
         else:
-            loss = None
-        
+            loss = torch.mean((z_q.detach()-z)**2) + self.beta * \
+                torch.mean((z_q - z.detach()) ** 2)
+        # preserve gradients 
+        z_q = dzq_dz_eq1(z_q, z)
         # reshape back to match original input shape
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
-
-        if self.remap is not None:
-            assert False, 'self.remap is not None'
-            min_encoding_indices = min_encoding_indices.reshape(z.shape[0],-1) # add batch axis
-            min_encoding_indices = self.remap_to_used(min_encoding_indices)
-            min_encoding_indices = min_encoding_indices.reshape(-1,1) # flatten
-
-        if self.sane_index_shape:
-            assert False, 'self.sane_index_shape'
-            min_encoding_indices = min_encoding_indices.reshape(
-                z_q.shape[0], z_q.shape[2], z_q.shape[3])
-
-        return z_q, loss, (perplexity, min_encodings, min_encoding_indices)
+        return z_q, loss
+    
+    def fwd_idx(self, z):
+        z = rearrange(z, 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
+        z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
+        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
+        return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
+    
+    def fwd_bpi(self, idx):
+        z_q = (onehot_with_grad(idx, self.n_e) @ self.embedding.weight).view(self.zshape)
+        # reshape back to match original input shape
+        z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
+        return z_q
 
     def get_codebook_entry(self, indices, shape):
         # shape specifying (batch, height, width, channel)

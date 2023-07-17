@@ -51,21 +51,28 @@ class FUM(plModuleBase):
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric)
             latent = latent_rec
-            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         mue = s1 / N
-        m = self.vqgan.phi2lat(mue).float().flatten()#.unsqueeze(1)
-        print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
-        s = self.scodebook(None, I2=m)[0]
-        print('###########', s.shape)
-        sq = self.vqgan.lat2qua(s) # sq = w x sq + b
-        sphi = self.vqgan.qua2phi(sq)
+        # m = self.vqgan.phi2lat(mue).float().flatten()#.unsqueeze(1)
+        # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
+        # s = self.scodebook(None, I2=m)[0]
+        # print('###########', s.shape)
+        # sq = self.vqgan.lat2qua(s) # sq = w x sq + b
+        # sphi = self.vqgan.qua2phi(sq)
         
         self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
-        self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
+        # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
+        
+        
+        
+        
+        
+        
+        
         # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
         # sample = (std) * torch.randn(shape, device=self.device) + mue
         # self.vqgan.save_phi(mue_rec, pathdir=self.pathdir, fname=f'mue_rec-{str(N)}.png')
