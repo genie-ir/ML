@@ -5,6 +5,7 @@
 ncrosses: 100
 ncluster: 5000
 latent_dim: 256
+latent_range: 451
 
 phi_ch: 3
 phi_wh: 256

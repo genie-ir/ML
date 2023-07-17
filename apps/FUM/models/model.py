@@ -38,7 +38,11 @@ class FUM(plModuleBase):
         assert False
 
     def generator_step(self, batch):
-        latent = batch[self.signal_key].float()
+        z = torch.randint(0, self.latent_range, (batch['batch_size'], self.latent_dim, 1, 1))
+        latent = self.ccodebook(z)
+        print('@@@@@@@@@@@@ z', z.shape, latent.shape)
+        assert False
+        # latent = batch[self.signal_key].float()
         old_rec_metric = -1
         phi_shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
         s1 = torch.zeros(phi_shape, device=self.device)
@@ -91,7 +95,7 @@ class FUM(plModuleBase):
         self.qw = nn.Parameter(torch.randn(self.qshape))
         self.qb = nn.Parameter(torch.randn(self.qshape))
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
-        # self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.embed_size, beta=0.25, zch=1)
+        self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.latent_dim, beta=0.25, zwh=1)
     
     # def generator_step00(self, batch):
     #     x = self.codebook(batch[self.signal_key])
