@@ -51,12 +51,13 @@ class FUM(plModuleBase):
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric)
             latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         mue = s1 / N
+        print('!!!!!!!!!!!!!', mue.shape, mue.dtype, mue.requires_grad)
         # m = self.vqgan.phi2lat(mue).float().flatten()#.unsqueeze(1)
         # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
         # s = self.scodebook(None, I2=m)[0]
