@@ -60,13 +60,13 @@ class FUM(plModuleBase):
         print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
         m = self.vqgan.phi2lat(mue).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
         print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
-        # s = self.scodebook(None, I2=m)[0]
-        # print('###########', s.shape)
-        # sq = self.vqgan.lat2qua(s) # sq = w x sq + b
-        # sphi = self.vqgan.qua2phi(sq)
+        s = self.scodebook.fwd(m)
+        print('###########', s.shape)
+        sq = self.vqgan.lat2qua(s) # sq = w x sq + b
+        sphi = self.vqgan.qua2phi(sq)
         
         self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
-        # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
+        self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
         
         
         
