@@ -67,7 +67,7 @@ class VectorQuantizer2(BB):
         return back.reshape(ishape)
 
     def fwd(self, z):
-        z = rearrange(z, 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
+        z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
         min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
         assert False, f'hooooooooooooooo!! {z.dtype}'
@@ -86,7 +86,7 @@ class VectorQuantizer2(BB):
         return z_q, loss
     
     def fwd_idx(self, z):
-        z = rearrange(z, 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
+        z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
         min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
         return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
