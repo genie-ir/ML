@@ -60,9 +60,10 @@ class FUM(plModuleBase):
         # print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
         m = self.vqgan.phi2lat(mue).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
         # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
-        s, sloss = self.scodebook.fwd(m)
+        s, sloss = self.scodebook(m)
         # print('########### s', s.shape, s.dtype, s.requires_grad)
         sq = self.vqgan.lat2qua(s) # sq = w x sq + b
+        print('!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
         sphi = self.vqgan.qua2phi(sq)
         
         # self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
@@ -86,6 +87,8 @@ class FUM(plModuleBase):
         return g_loss, {'loss': g_loss.item()}
     
     def start(self):
+        # self.wq = nn.Parameter(torch.randn())
+        # self.bq = nn.Parameter(torch.randn())
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.embed_size, beta=0.25, zwh=1)
         # self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.embed_size, beta=0.25, zch=1)
     

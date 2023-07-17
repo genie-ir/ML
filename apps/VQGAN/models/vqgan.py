@@ -78,7 +78,7 @@ class VQModel(pl.LightningModule):
         if vetoFlag:
             return self.quantize.fwd_idx(h)
         else:
-            return self.quantize.fwd(h)
+            return self.quantize(h)
 
     def decode(self, quant):
         quant = self.post_quant_conv(quant)

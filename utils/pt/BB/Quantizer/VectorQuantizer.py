@@ -29,6 +29,8 @@ class VectorQuantizer2(BB):
         self.embedding = nn.Embedding(self.n_e, self.e_dim)
         self.embedding.weight.data.uniform_(-1.0 / self.n_e, 1.0 / self.n_e)
 
+        setattr(self, 'forward', self.fwd)
+
         if self.remap is not None:
             self.register_buffer('used', torch.tensor(np.load(self.remap)))
             self.re_embed = self.used.shape[0]
