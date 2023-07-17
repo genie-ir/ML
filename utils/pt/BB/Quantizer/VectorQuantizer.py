@@ -91,8 +91,9 @@ class VectorQuantizer2(BB):
     def fwd_bpi(self, idx):
         AA= onehot_with_grad(idx.squeeze().flatten(), self.n_e)
         print('@@@@@@@@@@@@@@', idx.shape, AA.shape, AA.dtype)
+        z_q = (AA @ self.embedding.weight)#.view(self.zshape)
+        print('2@@@@@@@@', z_q.shape, z_q.view(self.zshape).shape)
         assert False
-        z_q = (AA @ self.embedding.weight).view(self.zshape)
         # reshape back to match original input shape
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q
