@@ -39,7 +39,7 @@ class FUM(plModuleBase):
 
     def generator_step(self, batch):
         z = torch.randint(0, self.latent_range, (batch['batch_size'], self.latent_dim, 1, 1), device=self.device)
-        latent = self.ccodebook(z)
+        latent, _loss = self.ccodebook(z)
         print('@@@@@@@@@@@@ z', z.shape, latent.shape)
         assert False
         # latent = batch[self.signal_key].float()
