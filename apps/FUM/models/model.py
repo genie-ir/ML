@@ -51,22 +51,22 @@ class FUM(plModuleBase):
             rec_metric = (latent-latent_rec).abs().sum()
             # print('--lm-->', rec_metric)
             latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         mue = s1 / N
-        print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
+        # print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
         m = self.vqgan.phi2lat(mue).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
-        print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
+        # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
         s, sloss = self.scodebook.fwd(m)
-        print('###########', s.shape)
+        # print('########### s', s.shape, s.dtype, s.requires_grad)
         sq = self.vqgan.lat2qua(s) # sq = w x sq + b
         sphi = self.vqgan.qua2phi(sq)
         
-        self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
-        self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
+        # self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
+        # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
         
         
         
