@@ -70,7 +70,6 @@ class VectorQuantizer2(BB):
         z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
         min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
-        assert False, f'hooooooooooooooo!! {z.dtype}'
         z_q = self.embedding(min_encoding_indices).view(self.zshape)
         # compute loss for embedding
         if not self.legacy:
