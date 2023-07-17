@@ -60,7 +60,7 @@ class FUM(plModuleBase):
         print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
         m = self.vqgan.phi2lat(mue).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
         print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
-        s = self.scodebook.fwd(m)
+        s, sloss = self.scodebook.fwd(m)
         print('###########', s.shape)
         sq = self.vqgan.lat2qua(s) # sq = w x sq + b
         sphi = self.vqgan.qua2phi(sq)
