@@ -23,7 +23,7 @@ class FUM(plModuleBase):
             num_layers=getattr(self, 'num_layers', 8),
             trg_mask=getattr(self, 'trg_mask', True),
             src_mask=getattr(self, 'src_mask', False),
-            embed_size=getattr(self, 'embed_size', 256),
+            embed_size=getattr(self, 'latent_dim', 256),
             trg_vocab_size=getattr(self, 'trg_vocab_size', 1e3),
             src_vocab_size=getattr(self, 'src_vocab_size', 1e3)
         )
@@ -62,12 +62,12 @@ class FUM(plModuleBase):
         # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
         s, sloss = self.scodebook(m)
         # print('########### s', s.shape, s.dtype, s.requires_grad)
-        sq = self.vqgan.lat2qua(s) # sq = w x sq + b
+        sq = self.qw * self.vqgan.lat2qua(s) + self.qb # sq = w x sq + b
         print('!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
         sphi = self.vqgan.qua2phi(sq)
         
-        # self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
-        # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
+        self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
+        self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
         
         
         
@@ -87,9 +87,10 @@ class FUM(plModuleBase):
         return g_loss, {'loss': g_loss.item()}
     
     def start(self):
-        # self.wq = nn.Parameter(torch.randn())
-        # self.bq = nn.Parameter(torch.randn())
-        self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.embed_size, beta=0.25, zwh=1)
+        self.qshape = (self.qch, self.qwh, self.qwh)
+        self.qw = nn.Parameter(torch.randn(self.qshape))
+        self.qb = nn.Parameter(torch.randn(self.qshape))
+        self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
         # self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.embed_size, beta=0.25, zch=1)
     
     # def generator_step00(self, batch):

@@ -1,11 +1,17 @@
 # in_ch: 3
 # maxlen: 256
 # embed_size: 256
+
 ncrosses: 100
 ncluster: 5000
-embed_size: 256
+latent_dim: 256
+
 phi_ch: 3
 phi_wh: 256
 phi_steps: 50
+
+qwh: 16
+qch: 256
+
 pathdir: /content/phi
 signal_key: latentcode #index
