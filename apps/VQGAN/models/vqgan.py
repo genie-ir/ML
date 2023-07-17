@@ -76,7 +76,7 @@ class VQModel(pl.LightningModule):
         h = self.encoder(x)
         h = self.quant_conv(h)
         if vetoFlag:
-            return self.quantize.fwd_idx(h, vetoFlag=vetoFlag)
+            return self.quantize.fwd_idx(h)
         else:
             return self.quantize.fwd(h)
 
