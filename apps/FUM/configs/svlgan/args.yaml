@@ -15,4 +15,4 @@ qwh: 16
 qch: 256
 
 pathdir: /content/phi
-signal_key: index #latentcode #index
+signal_key: indices #latentcode #index

@@ -7,8 +7,12 @@ params:
     params:
       config:
         range: 100
+        length: 1000
+        shape: []
   validation:
     target: data.config.range.dataset.D
     params:
       config:
         range: 100
+        length: 1000
+        shape: []

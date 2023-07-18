@@ -10,11 +10,15 @@ params:
     params:
       config:
         range: 451
+        length: 1000
+        shape: [16, 16]
   validation:
     target: data.config.range.dataset.D
     params:
       config:
         range: 451
+        length: 1000
+        shape: [16, 16]
 
 
 
