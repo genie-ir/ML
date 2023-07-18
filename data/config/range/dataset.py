@@ -10,5 +10,5 @@ class D(D_Base):
     
     def __getitem__(self, i):
         return {
-            'indices': np.randint(0, self.range, self.shape)
+            'indices': np.random.randint(0, self.range, self.shape)
         }
