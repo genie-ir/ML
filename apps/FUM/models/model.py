@@ -38,6 +38,8 @@ class FUM(plModuleBase):
         assert False
 
     def generator_step(self, batch):
+        print(batch[self.signal_key], batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
+        assert False
         z = torch.randint(0, self.latent_range, (batch['batch_size'], self.latent_dim, 1, 1), device=self.device)
         latent = self.ccodebook(z)[0].view(-1, self.qwh, self.qwh)
         # latent = batch[self.signal_key].float()
