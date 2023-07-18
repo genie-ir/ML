@@ -30,6 +30,10 @@ class D_Base(Dataset):
         else:
             self.__length = int(length)
 
+    @property
+    def get_length(self):
+        return self.__length
+    
     def __len__(self):
         return self.__length
 
