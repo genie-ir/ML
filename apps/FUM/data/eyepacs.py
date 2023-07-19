@@ -1,3 +1,5 @@
+# NOTE: YOU SHOUDE DELETE THIS FILE LATER
+
 import yaml
 import torch
 import numpy as np
