@@ -232,8 +232,6 @@ class plModuleBase(pl.LightningModule):
                         callback = eval(callback)
                     except Exception as e:
                         callback = None
-                    print('@@@@@@@@@@@@', callback)
-                    assert False, 'hooooooooooo!!'
                 else:
                     callback = instantiate_from_config({
                         'target': callback,
