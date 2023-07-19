@@ -72,6 +72,7 @@ class FUM(plModuleBase):
         print('!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
         sphi = self.vqgan.qua2phi(sq)
         print('-------------->', self.drclassifire(sphi))
+        print('++++++++++++++>', batch['y'])
         self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
         # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
         
