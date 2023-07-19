@@ -51,6 +51,7 @@ class FUM(plModuleBase):
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
             s1 = s1 + phi
+            break
             # s2 = s2 + phi ** 2
             latent_rec = self.vqgan.phi2lat(phi).float()
             rec_metric = (latent-latent_rec).abs().sum()
