@@ -8,10 +8,9 @@ from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
 
 class FUM(plModuleBase):
-    def resnet50(self, model):
-        model.fc = nn.Linear(model.fc.in_features, 1)
-        print('################', model)
-        return model
+    # def resnet50(self, model):
+    #     model.fc = nn.Linear(model.fc.in_features, 1)
+    #     return model
 
     def validation_step(self, batch, batch_idx, split='val'):
         pass
@@ -98,6 +97,8 @@ class FUM(plModuleBase):
         self.qb = nn.Parameter(torch.randn(self.qshape))
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
         self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.latent_dim, beta=0.25, zwh=1)
+        print(self.drclassifire)
+        assert False
 
     # def generator_step00(self, batch):
     #     x = self.codebook(batch[self.signal_key])
