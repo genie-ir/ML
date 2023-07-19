@@ -42,12 +42,6 @@ class FUM(plModuleBase):
         assert False
 
     def generator_step(self, batch):
-        print(self.drclassifire, self.drclassifire.fc.weight.device, self.drclassifire.fc.weight.requires_grad, self.drclassifire.fc.weight.shape)
-        print(self.vqgan.quantize.embedding.weight.device)
-        assert False
-
-
-
         latent = self.ccodebook(batch[self.signal_key])[0].view(-1, self.qwh, self.qwh)
         # latent = batch[self.signal_key].float()
         old_rec_metric = -1
@@ -103,9 +97,6 @@ class FUM(plModuleBase):
         self.qb = nn.Parameter(torch.randn(self.qshape))
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
         self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.latent_dim, beta=0.25, zwh=1)
-        # print(self.drclassifire, self.drclassifire.fc.weight.device, self.drclassifire.fc.weight.requires_grad, self.drclassifire.fc.weight.shape)
-        # print(self.vqgan.quantize.embedding.weight.device)
-        # assert False
 
     # def generator_step00(self, batch):
     #     x = self.codebook(batch[self.signal_key])
