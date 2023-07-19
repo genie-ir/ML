@@ -65,7 +65,7 @@ class D(D_Base):
     
     def fetch(self, signal_path):
         return {
-            'latentcode': np.load(signal_path)
+            'indices': np.load(signal_path)
             # 'noisecode': 
         }
 
