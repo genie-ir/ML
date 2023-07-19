@@ -227,10 +227,13 @@ class plModuleBase(pl.LightningModule):
         model = getattr(eval(repo), name)()
         if callback is not None:
             if isinstance(callback, str):
-                callback = instantiate_from_config({
-                    'target': callback,
-                    'params': model_params.get('callback_params', dict())
-                })
+                if callback.startswith('self'):
+                    callback = eval(callback)
+                else:
+                    callback = instantiate_from_config({
+                        'target': callback,
+                        'params': model_params.get('callback_params', dict())
+                    })
             model = callback(model)
         if ckpt:
             model.load_state_dict(torch.load(ckpt), strict=strict)
