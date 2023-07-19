@@ -5,4 +5,5 @@ vqgan:
 drclassifire:
   model: resnet50
   config:
+    strict: False
     ckpt: /content/drive/MyDrive/storage/dr_classifire/resnet50_128_08_100.pt
