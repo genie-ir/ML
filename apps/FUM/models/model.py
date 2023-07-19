@@ -10,8 +10,6 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuan
 class FUM(plModuleBase):
     def resnet50(self, model):
         model.fc = nn.Linear(model.fc.in_features, 1)
-        print('!!!!!!!!!!!!!!', model, self.device, self.ncrosses)
-        assert False
         return model
 
     def validation_step(self, batch, batch_idx, split='val'):
@@ -99,7 +97,9 @@ class FUM(plModuleBase):
         self.qb = nn.Parameter(torch.randn(self.qshape))
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
         self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.latent_dim, beta=0.25, zwh=1)
-    
+        print(self.drclassifire, self.drclassifire.device)
+        assert False
+
     # def generator_step00(self, batch):
     #     x = self.codebook(batch[self.signal_key])
     #     phi = self.vqgan.rec_phi({'x': x, 'y': batch['y']})
