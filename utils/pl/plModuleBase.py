@@ -221,7 +221,7 @@ class plModuleBase(pl.LightningModule):
     def model_repository(self, **model_params):
         name = str(model_params.get('name', 'resnet50'))
         ckpt = str(model_params.get('ckpt', ''))
-        callback = model_params.get('callback', None)
+        callback = model_params.get('callback', f'self.{name}')
         strict = bool(model_params.get('strict', True))
         repo = str(model_params.get('repo', 'torchvision.models'))
         model = getattr(eval(repo), name)()
@@ -229,11 +229,14 @@ class plModuleBase(pl.LightningModule):
             if isinstance(callback, str):
                 if callback.startswith('self'):
                     callback = eval(callback)
+                    print('@@@@@@@@@@@@', callback)
+                    assert False, 'hooooooooooo!!'
                 else:
                     callback = instantiate_from_config({
                         'target': callback,
                         'params': model_params.get('callback_params', dict())
                     })
+        if callback is not None:
             model = callback(model)
         if ckpt:
             model.load_state_dict(torch.load(ckpt), strict=strict)
