@@ -6,4 +6,3 @@ drclassifire:
   model: resnet50
   config:
     ckpt: /content/drive/MyDrive/storage/dr_classifire/resnet50_128_08_100.pt
-    callback: self.resnet50
