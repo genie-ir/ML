@@ -42,8 +42,8 @@ class FUM(plModuleBase):
         assert False
 
     def generator_step(self, batch):
-        latent = self.ccodebook(batch[self.signal_key])[0].view(-1, self.qwh, self.qwh)
-        # latent = batch[self.signal_key].float()
+        # latent = self.ccodebook(batch[self.signal_key])[0].view(-1, self.qwh, self.qwh)
+        latent = batch[self.signal_key].float()
         old_rec_metric = -1
         phi_shape = (batch['batch_size'], self.phi_ch, self.phi_wh, self.phi_wh)
         s1 = torch.zeros(phi_shape, device=self.device)
@@ -67,11 +67,12 @@ class FUM(plModuleBase):
         # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
         s, sloss = self.scodebook(m)
         # print('########### s', s.shape, s.dtype, s.requires_grad)
-        sq = self.qw * self.vqgan.lat2qua(s) + self.qb # sq = w x sq + b
+        # sq = self.qw * self.vqgan.lat2qua(s) + self.qb
+        sq = self.vqgan.lat2qua(s)
         print('!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
         sphi = self.vqgan.qua2phi(sq)
-        
-        # self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
+        print('-------------->', self.drclassifire(sphi))
+        self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
         # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
         
         
