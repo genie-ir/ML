@@ -416,6 +416,8 @@ class plModuleBase(pl.LightningModule):
             assert isinstance(config, dict)
             model = self.model_repository(name=model, **config)
         
+        model = model.to(self.device)
+        
         if freeze:
             # model = model.eval()
             # model.train = disabled_train
