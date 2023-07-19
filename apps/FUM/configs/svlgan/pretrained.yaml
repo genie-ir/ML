@@ -1,3 +1,9 @@
 vqgan: 
   keys: model
-  config: apps.VQGAN.configs.eyepacs_vqgan.yaml
+  config: apps.VQGAN.configs.eyepacs_vqgan
+
+drclassifire:
+  model: resnet50
+  config:
+    ckpt: /content/drive/MyDrive/storage/dr_classifire/resnet50_128_08_100.pt
+    callback: apps.FUM.models.model.resnet50

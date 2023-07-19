@@ -7,6 +7,7 @@ import glob
 import torch
 import boto3
 import random
+import pickle
 import shutil
 import ftplib
 import pathlib
@@ -67,6 +68,16 @@ def puml(src_fname: str, dst_fname: str, **kwargs):
         ),
         join(kwargs.get('dst_dpath', getenv('GENIE_ML_REPORT')), dst_fname)
     ))
+
+def pklread(src: str):
+    if not src.endswith('.pkl'):
+        src = src + '.pkl'
+    return pickle.load(open(src, 'rb'))
+
+def pklwrite(dst: str, data):
+    if not dst.endswith('.pkl'):
+        dst = dst + '.pkl'
+    pickle.dump(data, open(dst, 'wb'))
 
 def fwrite(dst: str, content, mode='w'):
     f = open(dst, mode)

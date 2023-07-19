@@ -2,6 +2,7 @@ import os
 import sys
 import torch
 import cowsay
+import torchvision
 import numpy as np
 import torch.nn as nn
 from loguru import logger
@@ -217,6 +218,24 @@ class plModuleBase(pl.LightningModule):
     def start(self):
         pass
 
+    def model_repository(self, **model_params):
+        name = str(model_params.get('name', 'resnet50'))
+        ckpt = str(model_params.get('ckpt', ''))
+        callback = model_params.get('callback', None)
+        strict = bool(model_params.get('strict', True))
+        repo = str(model_params.get('repo', 'torchvision.models'))
+        model = getattr(eval(repo), name)()
+        if callback is not None:
+            if isinstance(callback, str):
+                callback = instantiate_from_config({
+                    'target': callback,
+                    'params': model_params.get('callback_params', dict())
+                })
+            model = callback(model)
+        if ckpt:
+            model.load_state_dict(torch.load(ckpt), strict=strict)
+        return model
+
     def net2pipline(self, netname):
         return f'{netname}Step'
     
@@ -374,19 +393,27 @@ class plModuleBase(pl.LightningModule):
     #     self._lab()
     #     assert False, 'END'
 
-    def get_pretrained_model(self, config=None, model=None, freezeFlag=True, keys=None):
+    def get_pretrained_model(self, config=None, model=None, freeze: bool =True, keys=None):
         keys = str('' if keys is None else keys).split('.')
         if isinstance(config, str):
+            if not (config.endswith('.yaml') or config.endswith('.json')):
+                config = config + '.yaml'
             config = instantiate_from_config({'target': config}, kwargs={'dotdictFlag': False})
 
         if model is None and isinstance(config, dict):
             for k in keys:
-                if isinstance(k, str) and k.strip() != '':
-                    config = config[k]
+                k_strip = k.strip()
+                if isinstance(k_strip, str) and k_strip != '':
+                    config = config[k_strip]
             config['target'] = str(config.get('target', 'utils.pt.nnModuleBase.nnModuleBase'))
             model = instantiate_from_config(config)
         
-        if freezeFlag:
+        if isinstance(model, str):
+            config = dict() if config is None else config
+            assert isinstance(config, dict)
+            model = self.model_repository(name=model, **config)
+        
+        if freeze:
             # model = model.eval()
             # model.train = disabled_train
             model.requires_grad_(False)

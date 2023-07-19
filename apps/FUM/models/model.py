@@ -7,6 +7,12 @@ from libs.basicIO import signal_save, compressor
 from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
 
+def resnet50(model):
+    model.fc = nn.Linear(model.fc.in_features, 1)
+    print('!!!!!!!!!!!!!!', model)
+    assert False
+    return model
+
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
