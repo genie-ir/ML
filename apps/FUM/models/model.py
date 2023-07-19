@@ -8,9 +8,9 @@ from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
 
 class FUM(plModuleBase):
-    # def resnet50(self, model):
-    #     model.fc = nn.Linear(model.fc.in_features, 1)
-    #     return model
+    def resnet50(self, model):
+        model.fc = nn.Linear(model.fc.in_features, 1)
+        return model
 
     def validation_step(self, batch, batch_idx, split='val'):
         pass
