@@ -228,7 +228,10 @@ class plModuleBase(pl.LightningModule):
         if callback is not None:
             if isinstance(callback, str):
                 if callback.startswith('self'):
-                    callback = eval(callback)
+                    try:
+                        callback = eval(callback)
+                    except Exception as e:
+                        callback = None
                     print('@@@@@@@@@@@@', callback)
                     assert False, 'hooooooooooo!!'
                 else:
