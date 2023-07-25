@@ -100,6 +100,10 @@ class FUM(plModuleBase):
         return g_loss, {'loss': g_loss.item()}
     
     def start(self):
+        print('gamma', self.gamma, type(self.gamma))
+        print('negative_slope', self.negative_slope, type(self.negative_slope))
+        assert False
+
         self.qshape = (self.qch, self.qwh, self.qwh)
         self.qw = nn.Parameter(torch.randn(self.qshape))
         self.qb = nn.Parameter(torch.randn(self.qshape))
