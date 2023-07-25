@@ -74,8 +74,8 @@ class FUM(plModuleBase):
         scphi = self.vqgan.qua2phi(sq)
         print('-------------->', self.drclassifire(scphi))
         print('++++++++++++++>', batch['y'])
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/final/phi-{str(N)}.png')
-        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'/final/scphi-{str(N)}.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/phi-{str(N)}.png')
+        self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{str(N)}.png')
         
         
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
