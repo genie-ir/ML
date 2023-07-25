@@ -62,25 +62,30 @@ class FUM(plModuleBase):
                 break
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
-        mue = s1 / N
+        phi = s1 / N
         # print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
-        m = self.vqgan.phi2lat(mue).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
+        p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
         # print('!!!!!!!!!!!!!! m', m.shape, m.dtype, m.requires_grad)
-        s, sloss = self.scodebook(m)
+        s, sloss = self.scodebook(p)
         # print('########### s', s.shape, s.dtype, s.requires_grad)
         # sq = self.qw * self.vqgan.lat2qua(s) + self.qb
         sq = self.vqgan.lat2qua(s)
         print('!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
-        sphi = self.vqgan.qua2phi(sq)
-        print('-------------->', self.drclassifire(sphi))
+        scphi = self.vqgan.qua2phi(sq)
+        print('-------------->', self.drclassifire(scphi))
         print('++++++++++++++>', batch['y'])
-        self.vqgan.save_phi(mue, pathdir=self.pathdir, fname=f'mue-{str(N)}.png')
-        # self.vqgan.save_phi(sphi, pathdir=self.pathdir, fname=f'sphi-{str(N)}.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/final/phi-{str(N)}.png')
+        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'/final/scphi-{str(N)}.png')
         
         
+        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
+        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         
+        loss_phi = self.LeakyReLU(dloss_phi) - self.gamma
+        loss_scphi = self.LeakyReLU(dloss_scphi) - self.gamma
         
-        
+        print('loss_phi', loss_phi.shape, loss_phi.mean())
+        print('loss_scphi', loss_scphi.shape, loss_scphi.mean())
         
         
         # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
@@ -89,7 +94,7 @@ class FUM(plModuleBase):
         # self.vqgan.save_phi(sample, pathdir=self.pathdir, fname=f'sample-{str(N)}.png')
 
         # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue.contiguous()))
-        mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue))
+        # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue))
         # print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
         assert False
         return g_loss, {'loss': g_loss.item()}
@@ -100,6 +105,7 @@ class FUM(plModuleBase):
         self.qb = nn.Parameter(torch.randn(self.qshape))
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
         self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.latent_dim, beta=0.25, zwh=1)
+        self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
 
     # def generator_step00(self, batch):
     #     x = self.codebook(batch[self.signal_key])
