@@ -84,8 +84,8 @@ class FUM(plModuleBase):
         loss_phi = self.LeakyReLU(dloss_phi) - self.gamma
         loss_scphi = self.LeakyReLU(dloss_scphi) - self.gamma
         
-        print('loss_phi', loss_phi.shape, loss_phi.mean())
-        print('loss_scphi', loss_scphi.shape, loss_scphi.mean())
+        print('loss_phi', loss_phi.shape, loss_phi)
+        print('loss_scphi', loss_scphi.shape, loss_scphi)
         
         
         # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
