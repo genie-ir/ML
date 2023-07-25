@@ -2,7 +2,7 @@
 # maxlen: 256
 # embed_size: 256
 
-gamma: -.1
+gamma: -0.1
 negative_slope: 0.01
 
 ncrosses: 100
