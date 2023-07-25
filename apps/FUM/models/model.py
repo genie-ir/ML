@@ -65,13 +65,12 @@ class FUM(plModuleBase):
         phi = s1 / N
         # print('!!!!!!!!!!!!! mue', mue.shape, mue.dtype, mue.requires_grad)
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
-        print('!!!!!!!!!!!!!! p', p.shape, p.dtype, p.requires_grad)
+        # print('!!!!!!!!!!!!!! p', p.shape, p.dtype, p.requires_grad)
         s, sloss = self.scodebook(p)
-        print('!!!!!!!!!!!!!! s', s.shape, s.dtype, s.requires_grad)
+        # print('!!!!!!!!!!!!!! s', s.shape, s.dtype, s.requires_grad)
         # sq = self.qw * self.vqgan.lat2qua(s) + self.qb
         sq = self.vqgan.lat2qua(s)
-        print('!!!!!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
-        assert False
+        # print('!!!!!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
         scphi = self.vqgan.qua2phi(sq)
         print('-------------->', self.drclassifire(scphi))
         print('++++++++++++++>', batch['y'])
@@ -82,8 +81,33 @@ class FUM(plModuleBase):
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         
-        loss_phi = self.LeakyReLU(dloss_phi) - self.gamma
-        loss_scphi = self.LeakyReLU(dloss_scphi) - self.gamma
+        loss_phi = self.LeakyReLU(dloss_phi - self.gamma)
+        loss_scphi = self.LeakyReLU(dloss_scphi - self.gamma)
+
+        drloss_scphi = self.drclassifire(scphi)
+
+        loss = loss_phi + loss_scphi + drloss_scphi
+
+        d = self.generatorLoss.lossdict(
+            loss=loss,
+            dloss_phi=dloss_phi,
+            dloss_scphi=dloss_scphi,
+            loss_phi=loss_phi,
+            loss_scphi=loss_scphi,
+            drloss_scphi=drloss_scphi,
+        )
+
+        print('@@@@@@@@@@@@@@@', d)
+
+        assert False
+        return loss, self.generatorLoss.lossdict(
+            loss=loss,
+            dloss_phi=dloss_phi,
+            dloss_scphi=dloss_scphi,
+            loss_phi=loss_phi,
+            loss_scphi=loss_scphi,
+            drloss_scphi=drloss_scphi,
+        )
         
         
         # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
@@ -94,8 +118,6 @@ class FUM(plModuleBase):
         # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue.contiguous()))
         # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue))
         # print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
-        assert False
-        return g_loss, {'loss': g_loss.item()}
     
     def start(self):
         self.qshape = (self.qch, self.qwh, self.qwh)

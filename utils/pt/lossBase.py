@@ -32,3 +32,6 @@ class LossBase(nn.Module):
             'loss': loss.clone().detach().mean(),
         }
         return loss, log
+    
+    def lossdict(self, **loss_items):
+        return dict((loss_name, loss_value.clone().detach().mean()) for loss_name, loss_value in loss_items.items())
