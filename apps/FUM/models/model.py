@@ -83,7 +83,7 @@ class FUM(plModuleBase):
             # print('!!!!!!!!!!!!!! sqc', sqc.shape, sqc.dtype, sqc.requires_grad)
             scphic = self.vqgan.qua2phi(sqc)
             # print('-------------->', self.drclassifire(scphic))
-            # self.vqgan.save_phi(scphic, pathdir=self.pathdir, fname=f'final/scphic-{str(N)}.png')
+            self.vqgan.save_phi(scphic, pathdir=self.pathdir, fname=f'final/scphic({c})-{str(N)}.png')
             dloss_scphic = -torch.mean(self.vqgan.loss.discriminator(scphic))
             loss_scphic = self.lambda_loss_scphic[c] * self.LeakyReLU(dloss_scphic - self.gamma)
             drloss_scphic = self.lambda_drloss_scphic[c] * self.drclassifire(scphic)
