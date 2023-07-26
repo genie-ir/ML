@@ -87,7 +87,7 @@ class FUM(plModuleBase):
             drloss_scphic = self.lambda_drloss_scphic[c] * self.drclassifire(scphic).mean()
             ld[f'loss_scphic_{c}'] = loss_scphic.clone().detach().mean()
             ld[f'drloss_scphic_{c}'] = drloss_scphic.clone().detach().mean()
-            loss = loss + loss_scphic + drloss_scphic
+            # loss = loss + loss_scphic + drloss_scphic
 
 
         lossdict = self.generatorLoss.lossdict(
