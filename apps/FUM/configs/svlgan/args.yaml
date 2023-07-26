@@ -5,6 +5,11 @@
 gamma: -0.1
 negative_slope: 0.01
 
+lambda_loss_phi: 1.0
+lambda_loss_scphic: 1.0
+lambda_drloss_scphic: 1.0
+
+nclasses: 5
 ncrosses: 100
 ncluster: 5000
 latent_dim: 256

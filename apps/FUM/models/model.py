@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
+from utils.pt.BB.Calculation.residual_block import MAC
 from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
 
@@ -69,60 +70,55 @@ class FUM(plModuleBase):
         s, sloss = self.scodebook(p)
         # print('!!!!!!!!!!!!!! s', s.shape, s.dtype, s.requires_grad)
         # sq = self.qw * self.vqgan.lat2qua(s) + self.qb
-        sq = self.vqgan.lat2qua(s)
-        # print('!!!!!!!!!!!!!! sq', sq.shape, sq.dtype, sq.requires_grad)
-        scphi = self.vqgan.qua2phi(sq)
-        print('-------------->', self.drclassifire(scphi))
-        print('++++++++++++++>', batch['y'])
+        # sq = self.vqgan.lat2qua(s)
+        # print('++++++++++++++>', batch['y'])
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/phi-{str(N)}.png')
-        self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{str(N)}.png')
-        
         
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
-        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
-        
         loss_phi = self.LeakyReLU(dloss_phi - self.gamma)
-        loss_scphi = self.LeakyReLU(dloss_scphi - self.gamma)
+        loss = self.lambda_loss_phi * loss_phi 
+        ld = dict()
+        for c in range(self.nclasses):
+            sqc = self.mac[c](s)
+            # print('!!!!!!!!!!!!!! sqc', sqc.shape, sqc.dtype, sqc.requires_grad)
+            scphic = self.vqgan.qua2phi(sqc)
+            # print('-------------->', self.drclassifire(scphic))
+            # self.vqgan.save_phi(scphic, pathdir=self.pathdir, fname=f'final/scphic-{str(N)}.png')
+            dloss_scphic = -torch.mean(self.vqgan.loss.discriminator(scphic))
+            loss_scphic = self.lambda_loss_scphic[c] * self.LeakyReLU(dloss_scphic - self.gamma)
+            drloss_scphic = self.lambda_drloss_scphic[c] * self.drclassifire(scphic)
+            ld[f'loss_scphic_{c}'] = loss_scphic.clone().detach().mean()
+            ld[f'drloss_scphic_{c}'] = drloss_scphic.clone().detach().mean()
+            loss = loss + loss_scphic + drloss_scphic
 
-        drloss_scphi = self.drclassifire(scphi)
 
-        loss = loss_phi + loss_scphi + drloss_scphi
-
-        d = self.generatorLoss.lossdict(
+        lossdict = self.generatorLoss.lossdict(
             loss=loss,
-            dloss_phi=dloss_phi,
-            dloss_scphi=dloss_scphi,
             loss_phi=loss_phi,
-            loss_scphi=loss_scphi,
-            drloss_scphi=drloss_scphi,
+            dloss_phi=dloss_phi,
+            ld=ld
         )
 
-        print('@@@@@@@@@@@@@@@', d)
+        print('@@@@@@@@@@@@@@@', lossdict)
 
         assert False
-        return loss, self.generatorLoss.lossdict(
-            loss=loss,
-            dloss_phi=dloss_phi,
-            dloss_scphi=dloss_scphi,
-            loss_phi=loss_phi,
-            loss_scphi=loss_scphi,
-            drloss_scphi=drloss_scphi,
-        )
-        
-        
-        # std = ((s2 + ((mue ** 2) * N) + (-2 * mue * s1)) / (N)).clamp(0).sqrt()
-        # sample = (std) * torch.randn(shape, device=self.device) + mue
-        # self.vqgan.save_phi(mue_rec, pathdir=self.pathdir, fname=f'mue_rec-{str(N)}.png')
-        # self.vqgan.save_phi(sample, pathdir=self.pathdir, fname=f'sample-{str(N)}.png')
-
-        # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue.contiguous()))
-        # mue_loss = -torch.mean(self.vqgan.loss.discriminator(mue))
-        # print('g_loss', g_loss.shape, g_loss, g_loss.requires_grad)
+        return loss, lossdict
     
     def start(self):
+        if not isinstance(self.lambda_loss_scphic, (list, tuple)):
+            lambda_loss_scphic = float(self.lambda_loss_scphic)
+            self.lambda_loss_scphic = [lambda_loss_scphic for c in range(self.nclasses)]
+        
+        if not isinstance(self.lambda_drloss_scphic, (list, tuple)):
+            lambda_drloss_scphic = float(self.lambda_drloss_scphic)
+            self.lambda_drloss_scphic = [lambda_drloss_scphic for c in range(self.nclasses)]
+
         self.qshape = (self.qch, self.qwh, self.qwh)
-        self.qw = nn.Parameter(torch.randn(self.qshape))
-        self.qb = nn.Parameter(torch.randn(self.qshape))
+        self.mac = nn.ParameterList([
+            MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+        ])
+        # self.qw = nn.Parameter(torch.randn(self.qshape))
+        # self.qb = nn.Parameter(torch.randn(self.qshape))
         self.scodebook = VectorQuantizer(n_e=self.ncluster, e_dim=self.latent_dim, beta=0.25, zwh=1)
         self.ccodebook = VectorQuantizer(n_e=(self.ncrosses * self.ncluster), e_dim=self.latent_dim, beta=0.25, zwh=1)
         self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
