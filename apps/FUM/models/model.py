@@ -80,14 +80,14 @@ class FUM(plModuleBase):
         ld = dict()
         for c in range(self.nclasses):
             scphic = self.vqgan.qua2phi(self.mac[c](self.vqgan.lat2qua(s)))
-            # print('-------------->', self.drclassifire(scphic))
+            print('-------------->', self.drclassifire(scphic))
             self.vqgan.save_phi(scphic, pathdir=self.pathdir, fname=f'final/scphic({c})-{str(N)}.png')
             dloss_scphic = -torch.mean(self.vqgan.loss.discriminator(scphic))
             loss_scphic = self.lambda_loss_scphic[c] * self.LeakyReLU(dloss_scphic - self.gamma)
             drloss_scphic = self.lambda_drloss_scphic[c] * self.drclassifire(scphic).mean()
             ld[f'loss_scphic_{c}'] = loss_scphic.clone().detach().mean()
             ld[f'drloss_scphic_{c}'] = drloss_scphic.clone().detach().mean()
-            # loss = loss + loss_scphic + drloss_scphic
+            loss = loss + loss_scphic + drloss_scphic
 
 
         lossdict = self.generatorLoss.lossdict(
