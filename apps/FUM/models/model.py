@@ -79,9 +79,7 @@ class FUM(plModuleBase):
         loss = self.lambda_loss_phi * loss_phi 
         ld = dict()
         for c in range(self.nclasses):
-            sqc = self.mac[c](s)
-            # print('!!!!!!!!!!!!!! sqc', sqc.shape, sqc.dtype, sqc.requires_grad)
-            scphic = self.vqgan.qua2phi(sqc)
+            scphic = self.vqgan.qua2phi(self.mac[c](self.vqgan.lat2qua(s)))
             # print('-------------->', self.drclassifire(scphic))
             self.vqgan.save_phi(scphic, pathdir=self.pathdir, fname=f'final/scphic({c})-{str(N)}.png')
             dloss_scphic = -torch.mean(self.vqgan.loss.discriminator(scphic))
