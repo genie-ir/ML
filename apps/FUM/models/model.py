@@ -95,7 +95,7 @@ class FUM(plModuleBase):
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
-            ld=ld
+            **ld
         )
 
         print('@@@@@@@@@@@@@@@', lossdict)
