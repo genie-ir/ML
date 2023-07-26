@@ -112,7 +112,7 @@ class FUM(plModuleBase):
             self.lambda_drloss_scphic = [lambda_drloss_scphic for c in range(self.nclasses)]
 
         self.qshape = (self.qch, self.qwh, self.qwh)
-        self.mac = nn.ParameterList([
+        self.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
         # self.qw = nn.Parameter(torch.randn(self.qshape))
