@@ -66,14 +66,14 @@ class FUM(plModuleBase):
         for C in range(self.nclasses):
             loss_scphi, drloss_scphi = self.generator_step_slave(sq, C)
             loss = loss + loss_scphi + drloss_scphi
-            ld[f'loss_scphi_{C}'] = loss_scphi.clone().detach().mean()
-            ld[f'drloss_scphi_{C}'] = drloss_scphi.clone().detach().mean()
+            # ld[f'loss_scphi_{C}'] = loss_scphi.clone().detach().mean()
+            # ld[f'drloss_scphi_{C}'] = drloss_scphi.clone().detach().mean()
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
-        ) + ld
+        ) #+ ld
 
         print('@@@@@@@@@@@@@@@', lossdict)
 
