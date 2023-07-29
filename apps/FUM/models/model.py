@@ -72,7 +72,7 @@ class FUM(plModuleBase):
         
         loss = loss_phi + loss_scphi + drloss_scphi
 
-        lossdict = self.generatorLoss._lossdict(
+        lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
