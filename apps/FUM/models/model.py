@@ -53,38 +53,44 @@ class FUM(plModuleBase):
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         return s1 / N
     
-    def generator_step(self, batch, C=0):
+    def generator_step(self, batch):
         c = batch[self.signal_key].float() # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
         s, sloss = self.scodebook(p)
         sq = self.vqgan.lat2qua(s)
-        scphi = self.vqgan.qua2phi(self.mac[C](sq))
-        
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
-        loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
-        drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
-        loss = loss_phi + loss_scphi + drloss_scphi
-        lossdict = self.generatorLoss.lossdict(
-            loss=loss,
-            loss_phi=loss_phi,
-            dloss_phi=dloss_phi,
-            loss_scphi=loss_scphi,
-            dloss_scphi=dloss_scphi,
-            drloss_scphi=drloss_scphi
-        )
 
-        print('@@@@@@@@@@@@@@@', lossdict)
-        for l in [loss, loss_phi, dloss_phi, loss_scphi, dloss_scphi, drloss_scphi]:
-            print(l.shape, l.requires_grad)
+        for C in range(self.nclasses):
+            self.generator_step_slave(sq, C)
+        
+        # loss = loss_phi + loss_scphi + drloss_scphi
+        # lossdict = self.generatorLoss.lossdict(
+        #     loss=loss,
+        #     loss_phi=loss_phi,
+        #     dloss_phi=dloss_phi,
+        #     loss_scphi=loss_scphi,
+        #     dloss_scphi=dloss_scphi,
+        #     drloss_scphi=drloss_scphi
+        # )
+
+        # print('@@@@@@@@@@@@@@@', lossdict)
+        # for l in [loss, loss_phi, dloss_phi, loss_scphi, dloss_scphi, drloss_scphi]:
+        #     print(l.shape, l.requires_grad)
 
         # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
 
-        # assert False
+        assert False
         return loss, lossdict
+
+    def generator_step_slave(self, sq, C):
+        scphi = self.vqgan.qua2phi(self.mac[C](sq))
+        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
+        loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
+        drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
+        return loss_scphi, drloss_scphi
 
 
 
