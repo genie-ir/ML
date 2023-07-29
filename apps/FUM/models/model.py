@@ -61,32 +61,30 @@ class FUM(plModuleBase):
         sq = self.vqgan.lat2qua(s)
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-
+        ld = dict()
+        loss = loss_phi
         for C in range(self.nclasses):
-            self.generator_step_slave(sq, C)
+            loss_scphi, drloss_scphi = self.generator_step_slave(sq, C)
+            loss = loss + loss_scphi + drloss_scphi
+            ld[f'loss_scphi_{C}'] = loss_scphi
+            ld[f'drloss_scphi_{C}'] = drloss_scphi
         
-        # loss = loss_phi + loss_scphi + drloss_scphi
-        # lossdict = self.generatorLoss.lossdict(
-        #     loss=loss,
-        #     loss_phi=loss_phi,
-        #     dloss_phi=dloss_phi,
-        #     loss_scphi=loss_scphi,
-        #     dloss_scphi=dloss_scphi,
-        #     drloss_scphi=drloss_scphi
-        # )
+        lossdict = self.generatorLoss.lossdict(
+            loss=loss,
+            loss_phi=loss_phi,
+            dloss_phi=dloss_phi,
+        ) + self.generatorLoss.lossdict(ld)
 
-        # print('@@@@@@@@@@@@@@@', lossdict)
-        # for l in [loss, loss_phi, dloss_phi, loss_scphi, dloss_scphi, drloss_scphi]:
-        #     print(l.shape, l.requires_grad)
+        print('@@@@@@@@@@@@@@@', lossdict)
 
-        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
-        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
 
         assert False
         return loss, lossdict
 
     def generator_step_slave(self, sq, C):
         scphi = self.vqgan.qua2phi(self.mac[C](sq))
+        self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
         dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
