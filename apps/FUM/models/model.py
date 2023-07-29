@@ -18,10 +18,10 @@ class FUM(plModuleBase):
 
     def start(self):
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
-        self.hp('lambda_drloss_scphic', (list, tuple), len=self.nclasses)
+        self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
 
         print('self.lambda_loss_scphi', self.lambda_loss_scphi)
-        print('self.lambda_drloss_scphic', self.lambda_drloss_scphic)
+        print('self.lambda_drloss_scphi', self.lambda_drloss_scphic)
 
         self.qshape = (self.qch, self.qwh, self.qwh)
         self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
