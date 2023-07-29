@@ -309,8 +309,9 @@ class plModuleBase(pl.LightningModule):
             log_dict = {**log_dict, **ld}
             # optimizers_list[optimizer_idx].zero_grad()
             for opt in optimizers_list:
-                print('------------>', opt)
+                # print('------------>', opt)
                 opt.zero_grad()
+            print('!!!!!!!!!!!!!!!!', loss.shape, loss.reuires_grad)
             self.manual_backward(loss)
             optimizers_list[optimizer_idx].step()
         
