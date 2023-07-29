@@ -61,17 +61,12 @@ class FUM(plModuleBase):
         sq = self.vqgan.lat2qua(s)
         scphi = self.vqgan.qua2phi(self.mac[C](sq))
         
-        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
-        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
-        
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((2,2), device=self.device) #* self.drclassifire(scphic).mean()
-        
         loss = loss_phi + loss_scphi + drloss_scphi
-
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
@@ -85,7 +80,10 @@ class FUM(plModuleBase):
         for ldik, ldiv in lossdict.items():
             print(f'--{ldik}--->', ldiv.shape, ldiv.requires_grad)
 
-        assert False
+        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
+        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
+
+        # assert False
         return loss, lossdict
 
 
