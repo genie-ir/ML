@@ -65,9 +65,9 @@ class FUM(plModuleBase):
         loss = loss_phi
         for C in range(self.nclasses):
             loss_scphi, drloss_scphi = self.generator_step_slave(sq, C)
-            loss = loss + loss_scphi + drloss_scphi
-            ld[f'loss_scphi_{C}'] = loss_scphi
-            ld[f'drloss_scphi_{C}'] = drloss_scphi
+            # loss = loss + loss_scphi + drloss_scphi
+            # ld[f'loss_scphi_{C}'] = loss_scphi
+            # ld[f'drloss_scphi_{C}'] = drloss_scphi
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
