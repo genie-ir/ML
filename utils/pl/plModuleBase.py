@@ -311,7 +311,7 @@ class plModuleBase(pl.LightningModule):
             for opt in optimizers_list:
                 # print('------------>', opt)
                 opt.zero_grad()
-            print('!!!!!!!!!!!!!!!!', loss.shape, loss.reuires_grad)
+            print('!!!!!!!!!!!!!!!!', loss.shape, loss.requires_grad)
             self.manual_backward(loss)
             optimizers_list[optimizer_idx].step()
         
