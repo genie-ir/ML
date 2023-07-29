@@ -181,3 +181,9 @@ class Transformer(BB):
 #     trg_vocab_size=getattr(self, 'trg_vocab_size', 1e3),
 #     src_vocab_size=getattr(self, 'src_vocab_size', 1e3)
 # )
+# 
+# B = 2
+# src = torch.randint(0, self.transformer.src_vocab_size, (B, 3), device=self.device)
+# trg = torch.randint(0, self.transformer.trg_vocab_size, (B, 8), device=self.device)
+# out = self.transformer(src, trg)
+# print(out, out.shape)

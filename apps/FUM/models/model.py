@@ -9,6 +9,122 @@ from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
 
 class FUM(plModuleBase):
+    def validation_step(self, batch, batch_idx, split='val'):
+        pass
+    
+    def resnet50(self, model):
+        model.fc = nn.Linear(model.fc.in_features, 1)
+        return model
+
+    def start(self):
+        self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
+        self.hp('lambda_drloss_scphic', (list, tuple), len=self.nclasses)
+
+        print('self.lambda_loss_scphi', self.lambda_loss_scphi)
+        print('self.lambda_drloss_scphic', self.lambda_drloss_scphic)
+
+        self.qshape = (self.qch, self.qwh, self.qwh)
+        self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
+        self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
+        self.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+        self.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+        self.mac = nn.Sequential(*[
+            MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+        ])
+
+    def __c2phi(self, c, batch_size):
+        latent = c
+        old_rec_metric = -1
+        s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
+        # s2 = torch.zeros(phi_shape, device=self.device)
+        for N in range(1, self.phi_steps + 1):
+            phi = self.vqgan.lat2phi(latent)
+            s1 = s1 + phi
+            break
+            # s2 = s2 + phi ** 2
+            latent_rec = self.vqgan.phi2lat(phi).float()
+            rec_metric = (latent-latent_rec).abs().sum()
+            # print('--lm-->', rec_metric)
+            latent = latent_rec
+            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            if rec_metric < 1e-6 or old_rec_metric == rec_metric:
+                break
+            old_rec_metric = rec_metric
+        # compressor(self.pathdir, self.pathdir + '/phi.zip')
+        return s1 / N
+    
+    def generator_step(self, batch, C=0):
+        c = batch[self.signal_key].float() # dataset -> replace -> selection of ccodebook
+        phi = self.__c2phi(c, batch['batch_size'])
+        p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
+        s, sloss = self.scodebook(p)
+        sq = self.vqgan.lat2qua(s)
+        scphi = self.vqgan.qua2phi(self.mac[C](sq))
+        
+        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
+        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
+        
+        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
+        loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
+        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
+        loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
+        drloss_scphi = self.lambda_drloss_scphi[c] * torch.tensor(1, device=self.device) #* self.drclassifire(scphic).mean()
+        
+        loss = loss_phi + loss_scphi + drloss_scphi
+
+        lossdict = self.generatorLoss._lossdict(
+            loss=loss,
+            loss_phi=loss_phi,
+            dloss_phi=dloss_phi,
+            loss_scphi=loss_scphi,
+            dloss_scphi=dloss_scphi,
+            drloss_scphi=drloss_scphi
+        )
+
+        print('@@@@@@@@@@@@@@@', lossdict)
+        for ldik, ldiv in lossdict.items():
+            print(f'--{ldik}--->', ldiv.shape, ldiv.requires_grad)
+
+        assert False
+        return loss, lossdict
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class _FUM(plModuleBase):
     def resnet50(self, model):
         model.fc = nn.Linear(model.fc.in_features, 1)
         return model
@@ -32,15 +148,6 @@ class FUM(plModuleBase):
             trg_vocab_size=getattr(self, 'trg_vocab_size', 1e3),
             src_vocab_size=getattr(self, 'src_vocab_size', 1e3)
         )
-
-    def generator_step_3(self, batch):
-        print('++>', batch[self.signal_key])
-        B = 2
-        src = torch.randint(0, self.vocab_size, (B, 3), device=self.device)
-        trg = torch.randint(0, self.vocab_size, (B, 8), device=self.device)
-        out = self.transformer(src, trg)
-        print('++++++++>', out, out.shape)
-        assert False
 
     def generator_step(self, batch):
         # latent = self.ccodebook(batch[self.signal_key])[0].view(-1, self.qwh, self.qwh)
@@ -90,8 +197,7 @@ class FUM(plModuleBase):
             ld[f'drloss_scphic_{c}'] = drloss_scphic.clone().detach().mean()
             loss = loss + loss_scphic + drloss_scphic
 
-
-        lossdict = self.generatorLoss.lossdict(
+        lossdict = self.generatorLoss._lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,

@@ -10,14 +10,8 @@ class MAC(BB):
         self.fwd = str(self.kwargs.get('fwd', 'f1'))
         self.units = int(self.kwargs.get('units', 1))
         self.shape = list(self.kwargs.get('shape', []))
-        self.w = nn.ParameterList([
-            nn.Parameter(torch.randn(self.shape))
-            for unit in range(self.units)
-        ])
-        self.b = nn.ParameterList([
-            nn.Parameter(torch.randn(self.shape))
-            for unit in range(self.units)
-        ])
+        self.w = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
+        self.b = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
         setattr(self, 'forward', getattr(self, self.fwd))
 
     def f1(self, x):

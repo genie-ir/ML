@@ -426,6 +426,24 @@ class plModuleBase(pl.LightningModule):
             model.requires_grad_(False)
         return model
     
+    def hp(self, hpname: str, hptype=(list, tuple), **hpargs):
+        if not isinstance(hptype, (list, tuple)):
+            hptype = tuple([hptype])
+        hpvalue = getattr(self, hpname, None)
+        if isinstance(hpvalue, hptype):
+            return
+        hpv = None
+        
+        if list in hptype or tuple in hptype:
+            hpv = []
+            for i in range(int(hpargs.get('len', 1))):
+                hpv.append(hpvalue)
+        
+        # if ... in hptype:
+        #     ...
+        
+        setattr(self, hpname, hpv)
+        
     def log_signal(self, batch, **kwargs):
         """
             It can be overwrite in child class

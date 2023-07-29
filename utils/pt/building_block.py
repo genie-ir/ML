@@ -9,7 +9,6 @@ import torch.nn.functional as F
 class BB(nn.Module):
     def __init__(self, **kwargs):
         super().__init__()
-
         kwargs_new = dict()
         for k, v in kwargs.items():
             if isinstance(k, str) and ':' in k:
@@ -21,6 +20,8 @@ class BB(nn.Module):
                 kwargs_new[k] = v
 
         self.kwargs = kwargs_new
+        self.DEBUG = bool(self.kwargs.get('DEBUG', False)) or (os.getenv('DEBUG') == 'True')
+        self.__map_id2name = dict()
         self.start()
         if bool(self.kwargs.get('apply_weights_init', True)): # TODO
             self.apply(getattr(self, self.kwargs.get('weights_init_fn_name', 'weights_init')))
@@ -42,4 +43,24 @@ class BB(nn.Module):
         # kwargs['create_node'](id(self))
         # kwargs['create_node'](self.__class__.__name__)
         pass
-        
+
+    def nnParameter(self, **pkwargs):
+        t = torch.randn(pkwargs.get('shape', []))
+        requires_grad = bool(pkwargs.get('requires_grad', True))
+        p = nn.Parameter(t, requires_grad=requires_grad)
+        hooks = pkwargs.get('hooks', [])
+        if requires_grad:
+            self.sethooks(p, hooks=hooks, leaf=True)
+        pname = str(pkwargs.get('pkwargs', ''))
+        if pname:
+            setattr(self, pname, p)
+        return p
+    
+    def sethooks(self, p, hooks=[], leaf=False):
+        self.__map_id2name[id(p)] = id(p)
+        if self.DEBUG:
+            p.register_hook(lambda grad: print(self.__map_id2name[id(p)], grad))
+        for hook in hooks:
+            p.register_hook(hook)
+        # if self.DEBUG and (not leaf): # even though retain_grad is defined but inaccessable from outside the forward method and also inaccessble inside the forward method becuse at that time backward doesnt happend!
+        #     p.retain_grad()

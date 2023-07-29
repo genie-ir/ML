@@ -15,14 +15,19 @@ class VectorQuantizer2(BB):
     # backwards compatibility we use the buggy version by default, but you can
     # specify legacy=False to fix it.
     def start(self):
-        self.n_e = int(self.kwargs['n_e'])
-        self.e_dim = int(self.kwargs['e_dim'])
-        self.beta = float(self.kwargs['beta'])
+        self.dim = int(self.kwargs.get('dim', 0))
+        self.ncluster = int(self.kwargs.get('ncluster', 0))
+
+        self.n_e = self.ncluster or int(self.kwargs['n_e'])
+        self.e_dim = self.dim or int(self.kwargs['e_dim'])
+        self.beta = float(self.kwargs.get('beta', 0.25))
         self.remap = self.kwargs.get('remap', None)
         self.legacy = bool(self.kwargs.get('legacy', True))
         unknown_index = self.kwargs.get('unknown_index', 'random')
         self.zwh = int(self.kwargs.get('zwh', 16))
         self.zch = int(self.kwargs.get('zch', self.e_dim))
+        # currently in my codes assumes that `zch` & `e_dim` are `equals` if in your specefic case its not you must code for that
+        assert self.zch == self.e_dim, f'`self.zch={self.zch}` != `self.e_dim={self.e_dim}`'
         self.zshape = [-1, self.zwh, self.zwh, self.zch]
         self.sane_index_shape = bool(self.kwargs.get('sane_index_shape', False))
 
