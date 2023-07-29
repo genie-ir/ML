@@ -68,7 +68,7 @@ class FUM(plModuleBase):
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
-        drloss_scphi = self.lambda_drloss_scphi[c] * torch.tensor(1, device=self.device) #* self.drclassifire(scphic).mean()
+        drloss_scphi = self.lambda_drloss_scphi[C] * torch.tensor(1, device=self.device) #* self.drclassifire(scphic).mean()
         
         loss = loss_phi + loss_scphi + drloss_scphi
 
