@@ -13,6 +13,7 @@ from omegaconf import OmegaConf
 from torchsummary import summary
 from stringcase import pascalcase
 from utils.pl.plPlot import fwd_plot
+from utils.pt.building_block import EBB
 from libs.dyimport import instantiate_from_config
 from libs.basicIO import signal_save, compressor, puml, fwrite
 
@@ -213,10 +214,19 @@ class plModuleBase(pl.LightningModule):
         if bool(self.ckpt):
             self.init_from_ckpt(self.ckpt, ignore_keys=self.ignore_keys)
         
+        self.__ebb = EBB(DEBUG=bool(kwargs.get('DEBUG', False)))
+        
         self.start()
 
     def start(self):
         pass
+
+    def nnParameter(self, **pkwargs):
+        pkwargs['Self'] = self
+        return self.__ebb.nnParameter(**pkwargs)
+    
+    def sethooks(self, p, hooks=[], leaf=False):
+        return self.__ebb.sethooks(p, hooks=hooks, leaf=leaf)
 
     def model_repository(self, **model_params):
         name = str(model_params.get('name', 'resnet50'))

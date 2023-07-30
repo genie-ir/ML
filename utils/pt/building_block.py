@@ -53,10 +53,12 @@ class BB(nn.Module):
             self.sethooks(p, hooks=hooks, leaf=True)
         pname = str(pkwargs.get('pkwargs', ''))
         if pname:
-            setattr(self, pname, p)
+            setattr(pkwargs.get('Self', self), pname, p)
         return p
     
     def sethooks(self, p, hooks=[], leaf=False):
+        if not isinstance(hooks, (list, tuple)):
+            hooks = [hooks]
         self.__map_id2name[id(p)] = id(p)
         if self.DEBUG:
             p.register_hook(lambda grad: print(self.__map_id2name[id(p)], grad))
@@ -64,3 +66,13 @@ class BB(nn.Module):
             p.register_hook(hook)
         # if self.DEBUG and (not leaf): # even though retain_grad is defined but inaccessable from outside the forward method and also inaccessble inside the forward method becuse at that time backward doesnt happend!
         #     p.retain_grad()
+
+
+class EBB(BB):
+    """Empty BB"""
+    
+    def start(self):
+        pass
+    
+    def forward(self):
+        return

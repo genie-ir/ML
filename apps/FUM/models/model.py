@@ -11,6 +11,11 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuan
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
+
+    def training_step(self, batch, batch_idx, split='train'):
+        for C in range(self.nclasses):
+            batch['C'] = C
+            super().training_step(batch, batch_idx, split)
     
     def resnet50(self, model):
         model.fc = nn.Linear(model.fc.in_features, 1)
@@ -19,10 +24,6 @@ class FUM(plModuleBase):
     def start(self):
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
-
-        print('self.lambda_loss_scphi', self.lambda_loss_scphi)
-        print('self.lambda_drloss_scphi', self.lambda_drloss_scphi)
-
         self.qshape = (self.qch, self.qwh, self.qwh)
         self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
         self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
@@ -54,49 +55,38 @@ class FUM(plModuleBase):
         return s1 / N
     
     def generator_step(self, batch):
+        print('!!!!!!!!!!!', batch['C'])
+        assert False
         c = batch[self.signal_key].float() # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
         s, sloss = self.scodebook(p)
         sq = self.vqgan.lat2qua(s)
+        scphi = self.vqgan.qua2phi(self.mac[C](sq))
+
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
+        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-        ld = dict()
-        loss = loss_phi
-        for C in range(self.nclasses):
-            loss_scphi, drloss_scphi = self.generator_step_slave(sq, C)
-            loss = loss + loss_scphi + drloss_scphi
-            # ld[f'loss_scphi_{C}'] = loss_scphi.clone().detach().mean()
-            # ld[f'drloss_scphi_{C}'] = drloss_scphi.clone().detach().mean()
+        loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
+        drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
+        loss = loss_phi + loss_scphi + drloss_scphi
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
-        ) #+ ld
+            loss_scphi=loss_scphi,
+            dloss_scphi=dloss_scphi,
+            drloss_scphi=drloss_scphi
+        ) + {'grade': C}
 
         print('@@@@@@@@@@@@@@@', lossdict)
 
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
+        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
+        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
 
         assert False
         return loss, lossdict
-
-    def generator_step_slave(self, sq, C):
-        scphi = self.vqgan.qua2phi(self.mac[C](sq))
-        self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
-        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
-        loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
-        drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
-        return loss_scphi, drloss_scphi
-
-
-
-
-
-
-
-
 
 
 
