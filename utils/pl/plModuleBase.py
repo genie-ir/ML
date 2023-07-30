@@ -301,6 +301,9 @@ class plModuleBase(pl.LightningModule):
         batch['Self'] = self
         return batch
     
+    def on_train_epoch_end(self):
+        pass
+
     def training_step(self, batch, batch_idx, split='train'):
         """It can be overwrite in child class"""
         batch = self.getbatch(batch)

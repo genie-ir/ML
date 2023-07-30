@@ -11,12 +11,17 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuan
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
+    
+    def on_train_epoch_end(self):
+        assert False
 
     def training_step(self, batch, batch_idx, split='train'):
-        B = batch[self.signal_key]
+        B = batch[self.signal_key].float()
+        print(B)
+        return
         for C in range(self.nclasses):
             batch['C'] = C
-            batch[self.signal_key] = B.clone().float()
+            batch[self.signal_key] = B.clone()
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
         if batch_idx == 0:
