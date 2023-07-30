@@ -96,7 +96,8 @@ class VectorQuantizer2(BB):
         return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
     
     def fwd_bpi(self, idx):
-        z_q = (onehot_with_grad(idx.squeeze(), self.n_e) @ self.embedding.weight).view(self.zshape)
+        z_q = (onehot_with_grad(idx.float().squeeze(), self.n_e) @ self.embedding.weight).view(self.zshape)
+        # z_q = (onehot_with_grad(idx.squeeze(), self.n_e) @ self.embedding.weight).view(self.zshape)
         # reshape back to match original input shape
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q
