@@ -15,7 +15,7 @@ class FUM(plModuleBase):
     def training_step(self, batch, batch_idx, split='train'):
         for C in range(self.nclasses):
             batch['C'] = C
-            # batch[self.signal_key] = 
+            batch[self.signal_key] = batch[self.signal_key].float()
             super().training_step(batch, batch_idx, split)
         assert False
     
