@@ -79,7 +79,8 @@ class FUM(plModuleBase):
             loss_scphi=loss_scphi,
             dloss_scphi=dloss_scphi,
             drloss_scphi=drloss_scphi
-        ) + {'grade': C}
+            Grade=torch.tensor(C),
+        )
 
         print('@@@@@@@@@@@@@@@', lossdict)
 
