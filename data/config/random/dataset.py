@@ -1,7 +1,7 @@
 import numpy as np
-from utils.pt.datasets.D import DBase
+from utils.pt.datasets.D import D_Base
 
-class D(DBase):
+class D(D_Base):
     def start(self):
         self.shape = list(self.config.get('shape', []))
         self.length = int(self.config.get('length', 1e3))
