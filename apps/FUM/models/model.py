@@ -84,8 +84,8 @@ class FUM(plModuleBase):
 
         print('@@@@@@@@@@@@@@@', lossdict)
 
-        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
-        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
+        self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
 
         return loss, lossdict
 
