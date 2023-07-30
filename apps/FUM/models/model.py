@@ -16,6 +16,7 @@ class FUM(plModuleBase):
         for C in range(self.nclasses):
             batch['C'] = C
             batch[self.signal_key] = batch[self.signal_key].float()
+            batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
         assert False
     
