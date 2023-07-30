@@ -13,12 +13,13 @@ class FUM(plModuleBase):
         pass
 
     def training_step(self, batch, batch_idx, split='train'):
+        B = batch[self.signal_key]
         for C in range(self.nclasses):
             batch['C'] = C
-            batch[self.signal_key] = batch[self.signal_key].float()
+            batch[self.signal_key] = B.clone().float()
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
-        if batch_idx == 2:
+        if batch_idx == 0:
             assert False, batch_idx
     
     def resnet50(self, model):
