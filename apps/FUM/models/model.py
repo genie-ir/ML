@@ -16,6 +16,7 @@ class FUM(plModuleBase):
         for C in range(self.nclasses):
             batch['C'] = C
             super().training_step(batch, batch_idx, split)
+        assert False
     
     def resnet50(self, model):
         model.fc = nn.Linear(model.fc.in_features, 1)
@@ -55,8 +56,8 @@ class FUM(plModuleBase):
         return s1 / N
     
     def generator_step(self, batch):
-        print('!!!!!!!!!!!', batch['C'])
-        assert False
+        C = batch['C']
+        print('!!!!!!!!!!!', C)
         c = batch[self.signal_key].float() # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
