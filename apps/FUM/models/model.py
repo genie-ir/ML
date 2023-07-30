@@ -15,6 +15,7 @@ class FUM(plModuleBase):
     def training_step(self, batch, batch_idx, split='train'):
         for C in range(self.nclasses):
             batch['C'] = C
+            # batch[self.signal_key] = 
             super().training_step(batch, batch_idx, split)
         assert False
     
@@ -58,7 +59,7 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         C = batch['C']
         print('!!!!!!!!!!!', C)
-        c = batch[self.signal_key].float() # dataset -> replace -> selection of ccodebook
+        c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
         s, sloss = self.scodebook(p)
@@ -84,8 +85,8 @@ class FUM(plModuleBase):
 
         print('@@@@@@@@@@@@@@@', lossdict)
 
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
-        self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
+        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
+        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
 
         return loss, lossdict
 
