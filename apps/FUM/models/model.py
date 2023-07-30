@@ -18,7 +18,8 @@ class FUM(plModuleBase):
             batch[self.signal_key] = batch[self.signal_key].float()
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
-        assert False, batch_idx
+        if batch_idx == 2:
+            assert False, batch_idx
     
     def resnet50(self, model):
         model.fc = nn.Linear(model.fc.in_features, 1)
