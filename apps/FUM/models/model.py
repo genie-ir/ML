@@ -87,7 +87,6 @@ class FUM(plModuleBase):
         # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname='final/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/scphi-{C}.png')
 
-        assert False
         return loss, lossdict
 
 
