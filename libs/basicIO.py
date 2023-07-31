@@ -185,10 +185,10 @@ def readBIO(fpath: str, **kwargs):
                 out = yaml.load(f, Loader=kwargs.get('Loader', YAML_Loader))
                 if (isinstance(out, dict)) and ('$vars' in out):
                     del out['$vars']
-                if (isinstance(out, dict)) and ('$include' in out):
-                    include_dict = {**out['$include']}
-                    del out['$include']
-                    out = OmegaConf.to_container(OmegaConf.merge(*[include_dict, out]))
+                if (isinstance(out, dict)) and ('$merge' in out):
+                    merge_dict = {**out['$merge']}
+                    del out['$merge']
+                    out = OmegaConf.to_container(OmegaConf.merge(*[merge_dict, out]))
                     print('----------->', out)
                 return dotdict(out, flag=dotdictFlag)
         except Exception as e:
