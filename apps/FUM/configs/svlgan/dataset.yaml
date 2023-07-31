@@ -18,6 +18,8 @@ params:
         length: 25
         shape: [2,2]
 
+params:
+  batch_size: 6
 
 
 
