@@ -1,7 +1,7 @@
-!include [data.config.random.dataset, t1] >-
+include: !include data.config.random.dataset
 
-t2: 
-  name: ali
+params:
+  batch_size: 4
 
 
 
