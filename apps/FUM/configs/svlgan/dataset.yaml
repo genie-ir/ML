@@ -1,10 +1,9 @@
-!merge [
+test: !merge [
   !include data.config.random.dataset,
-  target: mmd
 ]
 
-# params2:
-  # batch_size: 4
+params2:
+  batch_size: 4
 
 
 
