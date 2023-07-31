@@ -102,5 +102,6 @@ class VectorQuantizer2(BB):
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q
 
-    def get_codebook_entry(self, indices):
-        return self.embedding(indices)
+    def fwd_nbpi(self, idx):
+        """get_codebook_entry function"""
+        return self.embedding(idx)
