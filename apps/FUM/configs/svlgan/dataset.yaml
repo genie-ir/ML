@@ -1,10 +1,7 @@
-$merge: !merge [
-  !include configs.loss,
-  !include data.config.random.dataset,
-]
+$merge: !include data.config.random.dataset,
 
 params:
-  batch_size: 3
+  batch_size: 2
 
 
 
