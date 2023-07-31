@@ -1,4 +1,4 @@
-!include data.config.random.dataset
+!include data.config.random.dataset.yaml
 
 params:
   batch_size: 4
