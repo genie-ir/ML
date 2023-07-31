@@ -1,4 +1,4 @@
-!include [data.config.random.dataset, t1]
+!include [data.config.random.dataset, t1] >-
 
 t2: 
   name: ali
