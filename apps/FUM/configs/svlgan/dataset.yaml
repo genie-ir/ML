@@ -1,4 +1,4 @@
-$merge: !include data.config.random.dataset,
+$merge: !include data.config.random.dataset
 
 params:
   batch_size: 2
