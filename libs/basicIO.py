@@ -186,6 +186,9 @@ def readBIO(fpath: str, **kwargs):
                 if (isinstance(out, dict)) and ('$vars' in out):
                     del out['$vars']
                 if (isinstance(out, dict)) and ('$include' in out):
+                    include_dict = {**out['$include']}
+                    del out['$include']
+                    out = {**include_dict, **out}
                     print('----------->', out)
                 return dotdict(out, flag=dotdictFlag)
         except Exception as e:
