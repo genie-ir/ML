@@ -6,9 +6,9 @@ params:
     target: data.config.random.dataset.D
     params:
       config:
-        length: 1000
+        length: 10
   validation:
     target: data.config.random.dataset.D
     params:
       config:
-        length: 1000
+        length: 10
