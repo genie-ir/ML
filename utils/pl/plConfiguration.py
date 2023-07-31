@@ -102,9 +102,6 @@ class ConfigBase:
             cpu = False
         
         # data
-        print('-'*30)
-        print(config.data)
-        print('-'*30)
         data = cls.instantiate_from_config(config.data)
         
         dataTrainDataloader = data._train_dataloader()
