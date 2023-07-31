@@ -1,25 +1,7 @@
-# # !include data.config.range.dataset
-# # overwrite field `params.train.params.config.range`
-
-target: utils.pl.tools.dataset.DataModuleFromConfig
-params:
-  batch_size: 8
-  num_workers: 2
-  train:
-    target: data.config.random.dataset.D
-    params:
-      config:
-        length: 25
-        shape: [2, 2]
-  validation:
-    target: data.config.random.dataset.D
-    params:
-      config:
-        length: 25
-        shape: [2,2]
+!include data.config.random.dataset
 
 params:
-  batch_size: 6
+  batch_size: 4
 
 
 

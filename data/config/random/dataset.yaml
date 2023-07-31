@@ -1,18 +1,14 @@
 target: utils.pl.tools.dataset.DataModuleFromConfig
 params:
-  batch_size: 2
+  batch_size: 16
   num_workers: 2
   train:
     target: data.config.range.dataset.D
     params:
       config:
-        range: 100
         length: 1000
-        shape: []
   validation:
     target: data.config.range.dataset.D
     params:
       config:
-        range: 100
         length: 1000
-        shape: []
