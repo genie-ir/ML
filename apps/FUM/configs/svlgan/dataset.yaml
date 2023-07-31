@@ -1,4 +1,7 @@
-$include: !include data.config.random.dataset
+$merge: !merge [
+  !include configs.loss,
+  !include data.config.random.dataset,
+]
 
 params:
   batch_size: 4
