@@ -102,20 +102,5 @@ class VectorQuantizer2(BB):
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q
 
-    def get_codebook_entry(self, indices, shape):
-        # shape specifying (batch, height, width, channel)
-        if self.remap is not None:
-            indices = indices.reshape(shape[0],-1) # add batch axis
-            indices = self.unmap_to_all(indices)
-            indices = indices.reshape(-1) # flatten again
-
-        # get quantized latent vectors
-        z_q = self.embedding(indices)
-
-        if shape is not None:
-            z_q = z_q.view(shape)
-            # reshape back to match original input shape
-            z_q = z_q.permute(0, 3, 1, 2).contiguous()
-
-        return z_q
-
+    def get_codebook_entry(self, indices):
+        return self.embedding(indices)
