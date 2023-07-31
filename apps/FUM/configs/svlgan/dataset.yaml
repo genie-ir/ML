@@ -1,7 +1,15 @@
 $merge: !include data.config.random.dataset
 
 params:
-  batch_size: 3
+  batch_size: 5
+  train:
+    params:
+      config:
+        length: 20
+  validation:
+    params:
+      config:
+        length: 20
 
 
 
