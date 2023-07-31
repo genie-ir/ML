@@ -1,10 +1,7 @@
-!merge [
-  !include [data.config.random.dataset, t1],
-  {
-    "params2":
-      "batch_size": 4
-  }
-]
+!include [data.config.random.dataset, t1]
+
+t2: 
+  name: ali
 
 
 
