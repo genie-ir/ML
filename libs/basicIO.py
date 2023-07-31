@@ -188,7 +188,7 @@ def readBIO(fpath: str, **kwargs):
                 if (isinstance(out, dict)) and ('$include' in out):
                     include_dict = {**out['$include']}
                     del out['$include']
-                    out = {**include_dict, **out}
+                    out = OmegaConf.to_container(OmegaConf.merge(*[include_dict, out]))
                     print('----------->', out)
                 return dotdict(out, flag=dotdictFlag)
         except Exception as e:
