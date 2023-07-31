@@ -1,9 +1,9 @@
 !merge [
-!include data.config.random.dataset,
-{
-params2:
-  batch_size: 4
-}
+  !include [data.config.random.dataset, t1],
+  {
+  params2:
+    batch_size: 4
+  }
 ]
 
 
