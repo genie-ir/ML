@@ -1,6 +1,10 @@
-!include data.config.random.dataset
+!merge [
+!include data.config.random.dataset,
+{
 params2:
   batch_size: 4
+}
+]
 
 
 
