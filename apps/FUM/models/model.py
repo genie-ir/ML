@@ -16,10 +16,9 @@ class FUM(plModuleBase):
         assert False
 
     def training_step(self, batch, batch_idx, split='train'):
-        print(list(B.keys()))
-        return
         B = batch[self.signal_key].float()
         print(B)
+        return
         for C in range(self.nclasses):
             batch['C'] = C
             batch[self.signal_key] = B.clone()

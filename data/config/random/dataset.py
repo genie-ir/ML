@@ -7,12 +7,15 @@ class D(D_Base):
         self.length = int(self.config.get('length', 1e3))
         self.key = str(self.config.get('key', 'indices'))
         self.getitemfn = str(self.config.get('getitemfn', 'identity'))
-        setattr(self, '__getitem__', getattr(self, self.getitemfn))
         self.set_length(self.length)
+        setattr(self, 'getitem', getattr(self, self.getitemfn))
 
         if self.getitemfn == 'randint':
             self.low = int(self.config.get('low', 0))
             self.high = int(self.config.get('high', None))
+    
+    def __getitem__(self, i):
+        return self.getitem(i)
     
     def identity(self, i):
         return {
