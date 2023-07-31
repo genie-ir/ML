@@ -1,6 +1,6 @@
 !merge [
   !include data.config.random.dataset,
-  !include data.config.random.dataset
+  target: mmd
 ]
 
 # params2:
