@@ -1,7 +1,7 @@
 !include data.config.random.dataset
 
-# params:
-#   batch_size: 4
+params:
+  batch_size: 4
 
 
 

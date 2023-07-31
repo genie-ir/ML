@@ -3,12 +3,12 @@ params:
   batch_size: 16
   num_workers: 2
   train:
-    target: data.config.range.dataset.D
+    target: data.config.random.dataset.D
     params:
       config:
         length: 1000
   validation:
-    target: data.config.range.dataset.D
+    target: data.config.random.dataset.D
     params:
       config:
         length: 1000
