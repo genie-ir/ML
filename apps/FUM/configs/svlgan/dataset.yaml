@@ -4,7 +4,7 @@ $merge: !merge [
 ]
 
 params:
-  batch_size: 4
+  batch_size: 3
 
 
 

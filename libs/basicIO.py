@@ -189,7 +189,6 @@ def readBIO(fpath: str, **kwargs):
                     merge_dict = {**out['$merge']}
                     del out['$merge']
                     out = OmegaConf.to_container(OmegaConf.merge(*[merge_dict, out]))
-                    print('----------->', out)
                 return dotdict(out, flag=dotdictFlag)
         except Exception as e:
             EHR(e)
