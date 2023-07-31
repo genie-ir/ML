@@ -1,9 +1,11 @@
-test: !merge [
+!merge [
+  [
+    params2:
+      batch_size: 4
+  ],
   !include data.config.random.dataset,
 ]
 
-params2:
-  batch_size: 4
 
 
 
