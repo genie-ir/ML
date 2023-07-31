@@ -1,2 +1,2 @@
-!include data.config.mnist.dataset
+$merge: !include data.config.mnist.dataset
 # !include data.config.eyepacs.dataset
