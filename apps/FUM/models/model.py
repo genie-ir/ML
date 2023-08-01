@@ -16,8 +16,10 @@ class FUM(plModuleBase):
     #     assert False
 
     def training_step(self, batch, batch_idx, split='train'):
-        print(f'iter{batch_idx}', self.generator.ccodebook.embedding.weight[0,0])
         B = batch[self.signal_key]
+        print('1111111111111111111', B)
+        assert False
+        print(f'iter{batch_idx}', self.generator.ccodebook.embedding.weight[0,0])
         for C in range(self.nclasses):
             batch['C'] = C
             batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
