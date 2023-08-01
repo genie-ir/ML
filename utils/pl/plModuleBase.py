@@ -323,7 +323,9 @@ class plModuleBase(pl.LightningModule):
                 print('!!!!!!!! after', self.generator.ccodebook.embedding.weight.grad)
 
             cnet = self.optconfig['map'][optimizer_idx] # current network
+            print('!!!!!!!! after 2', self.generator.ccodebook.embedding.weight.grad)
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch)
+            print('!!!!!!!! after 3', self.generator.ccodebook.embedding.weight.grad)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
             log_dict = {**log_dict, **ld}
             # optimizers_list[optimizer_idx].zero_grad()
