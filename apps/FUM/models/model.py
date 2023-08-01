@@ -17,7 +17,7 @@ class FUM(plModuleBase):
 
     def training_step(self, batch, batch_idx, split='train'):
         print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
-        return torch.tensor(0. requires_grad=True), {'loss': 0}
+        return torch.tensor(0., requires_grad=True), {'loss': 0}
         
         
         
