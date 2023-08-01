@@ -20,7 +20,7 @@ class FUM(plModuleBase):
         B = torch.tensor([2,2,2,2, 6], device=self.device)
         b = B[0]
         self.b = b
-        print('1111111111111111111', b)
+        # print('1111111111111111111', b)
         print(f'iter{batch_idx} | before', self.generator.ccodebook.embedding.weight[b,0])
         for C in range(self.nclasses):
             batch['C'] = C
@@ -77,7 +77,7 @@ class FUM(plModuleBase):
     
     def generator_step(self, batch):
         C = batch['C']
-        print('!!!!!!!!!!!', C)
+        # print('!!!!!!!!!!!', C)
         c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
@@ -102,7 +102,7 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(C))
         )
 
-        print('@@@@@@@@@@@@@@@', lossdict)
+        print(f'loss for C={C}', lossdict)
 
         # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
