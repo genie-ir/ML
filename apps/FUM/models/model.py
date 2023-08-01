@@ -16,7 +16,7 @@ class FUM(plModuleBase):
         assert False
 
     def training_step(self, batch, batch_idx, split='train'):
-        print(self.ccodebook.embedding.weight.shape)
+        print(self.ccodebook.embedding.weight[0,0], self.ccodebook.embedding.weight.requires_grad)
         assert False
         B = self.ccodebook.fwd_nbpi(batch[self.signal_key])
         print(f'B{batch_idx}', B.shape, B.dtype, B.requires_grad)
