@@ -16,11 +16,11 @@ class FUM(plModuleBase):
     #     assert False
 
     def training_step(self, batch, batch_idx, split='train'):
-        print(f'iter{batch_idx}', self.ccodebook.embedding.weight[0,0])
+        print(f'iter{batch_idx}', self.generator.ccodebook.embedding.weight[0,0])
         B = batch[self.signal_key]
         for C in range(self.nclasses):
             batch['C'] = C
-            batch[self.signal_key] = self.ccodebook.fwd_nbpi(B) #.clone()
+            batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
             print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
@@ -41,16 +41,11 @@ class FUM(plModuleBase):
         self.qshape = (self.qch, self.qwh, self.qwh)
         self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
         self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
-        self.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-        self.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
-        self.mac = nn.Sequential(*[
+        self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+        self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+        self.generator.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
-        self.generator.scodebook = self.scodebook
-        self.generator.ccodebook = self.ccodebook
-        self.generator.mac = self.mac
-        print(id(self.generator.scodebook))
-        print(id(self.scodebook))
 
     def __c2phi(self, c, batch_size):
         latent = c
@@ -80,9 +75,9 @@ class FUM(plModuleBase):
         c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
-        s, sloss = self.scodebook(p)
+        s, sloss = self.generator.scodebook(p)
         sq = self.vqgan.lat2qua(s)
-        scphi = self.vqgan.qua2phi(self.mac[C](sq))
+        scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
