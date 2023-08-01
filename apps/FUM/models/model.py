@@ -25,7 +25,7 @@ class FUM(plModuleBase):
         for C in range(self.nclasses):
             batch['C'] = C
             batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
-            self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('$$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[6, :3], grad[11, :3]))
+            # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('$$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[6, :3], grad[11, :3]))
             print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
@@ -60,7 +60,7 @@ class FUM(plModuleBase):
         # s2 = torch.zeros(phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
-            self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, :3], grad[-1, :3]))
+            # self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, :3], grad[-1, :3]))
             s1 = s1 + phi
             break
             # s2 = s2 + phi ** 2
