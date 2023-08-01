@@ -38,10 +38,10 @@ class FUM(plModuleBase):
             batch['C'] = C
             batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
             # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
-            self.sethooks(batch[self.signal_key], hooks=[
-                lambda grad: grad * 10**C,
-                # lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3])
-            ])
+            # self.sethooks(batch[self.signal_key], hooks=[
+            #     lambda grad: grad * 10**C,
+            #     # lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3])
+            # ])
             super().training_step(batch, batch_idx, split)
         print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0])
         if batch_idx == 2:
