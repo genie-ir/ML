@@ -10,7 +10,7 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuan
 
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
-        pass
+        return
     
     # def on_train_epoch_end(self):
     #     assert False

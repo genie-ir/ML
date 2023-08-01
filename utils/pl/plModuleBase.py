@@ -316,12 +316,6 @@ class plModuleBase(pl.LightningModule):
             if (self.current_epoch+1) % self.optconfig['epoch_learning_frequency'].get(optimizer_idx, 1) != 0:
                 continue
             
-            for opt in optimizers_list:
-                # print('------------>', opt)
-                print('!!!!!!!! before', self.generator.ccodebook.embedding.weight.grad)
-                opt.zero_grad()
-                print('!!!!!!!! after', self.generator.ccodebook.embedding.weight.grad)
-
             cnet = self.optconfig['map'][optimizer_idx] # current network
             print('!!!!!!!! after 2', self.generator.ccodebook.embedding.weight.grad)
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch)
@@ -330,6 +324,12 @@ class plModuleBase(pl.LightningModule):
             log_dict = {**log_dict, **ld}
             # optimizers_list[optimizer_idx].zero_grad()
             
+            for opt in optimizers_list:
+                # print('------------>', opt)
+                print('!!!!!!!! before', self.generator.ccodebook.embedding.weight.grad)
+                opt.zero_grad()
+                print('!!!!!!!! after', self.generator.ccodebook.embedding.weight.grad)
+
             self.manual_backward(loss)
             optimizers_list[optimizer_idx].step()
         
