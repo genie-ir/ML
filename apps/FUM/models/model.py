@@ -56,6 +56,7 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, c, batch_size):
+        return self.vqgan.lat2phi(c)
         latent = c
         old_rec_metric = -1
         s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
