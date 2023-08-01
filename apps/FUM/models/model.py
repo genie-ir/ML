@@ -49,6 +49,8 @@ class FUM(plModuleBase):
         self.generator.scodebook = self.scodebook
         self.generator.ccodebook = self.ccodebook
         self.generator.mac = self.mac
+        print(id(self.generator.scodebook))
+        print(id(self.scodebook))
 
     def __c2phi(self, c, batch_size):
         latent = c
