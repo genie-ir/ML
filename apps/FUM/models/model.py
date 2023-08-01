@@ -12,8 +12,8 @@ class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         pass
     
-    def on_train_epoch_end(self):
-        assert False
+    # def on_train_epoch_end(self):
+    #     assert False
 
     def training_step(self, batch, batch_idx, split='train'):
         print(f'iter{batch_idx}', self.ccodebook.embedding.weight[0,0])
@@ -24,7 +24,7 @@ class FUM(plModuleBase):
             print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
-        if batch_idx == 0:
+        if batch_idx == 2:
             assert False, batch_idx
     
     def resnet50(self, model):
