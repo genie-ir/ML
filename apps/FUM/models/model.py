@@ -17,11 +17,11 @@ class FUM(plModuleBase):
 
     def training_step(self, batch, batch_idx, split='train'):
         print(f'iter{batch_idx}', self.ccodebook.embedding.weight[0,0])
+        B = batch[self.signal_key]
         for C in range(self.nclasses):
             batch['C'] = C
-            B = self.ccodebook.fwd_nbpi(batch[self.signal_key])
-            print(f'B{batch_idx}', B.shape, B.dtype, B.requires_grad)
-            batch[self.signal_key] = B #.clone()
+            batch[self.signal_key] = self.ccodebook.fwd_nbpi(B) #.clone()
+            print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
         if batch_idx == 0:
