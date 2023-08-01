@@ -80,7 +80,12 @@ class FUM(plModuleBase):
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         return s1 / N
     
+    
     def generator_step(self, batch):
+        x = torch.tensor(0., requires_grad=True, device=self.device)
+        return 2*x, {'loss': 0}
+    
+    def generator_step2(self, batch):
         C = batch['C']
         c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
