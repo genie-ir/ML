@@ -3,15 +3,15 @@ generator:
     optimizer:
       params:
         lr: 12 #0.001
-    forward:
-      - seq0
-      - Return: x
+    # forward:
+    #   - seq0
+    #   - Return: x
     
-    seq0:
-      input: x
-      output: x
-      head:
-        - torch.nn.Linear:
-            in_features: 257
-            out_features: 257
-            bias: True
+    # seq0:
+    #   input: x
+    #   output: x
+    #   head:
+    #     - torch.nn.Linear:
+    #         in_features: 257
+    #         out_features: 257
+    #         bias: True
