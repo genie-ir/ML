@@ -25,6 +25,7 @@ class FUM(plModuleBase):
         for C in range(self.nclasses):
             batch['C'] = C
             batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
+            self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('$$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[6, :3], grad[11, :3]))
             print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
