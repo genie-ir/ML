@@ -58,7 +58,7 @@ class FUM(plModuleBase):
         # s2 = torch.zeros(phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
-            self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, 0], grad[-1, -1]))
+            self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, :3], grad[-1, :3]))
             s1 = s1 + phi
             break
             # s2 = s2 + phi ** 2
