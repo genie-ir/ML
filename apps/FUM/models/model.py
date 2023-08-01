@@ -16,8 +16,12 @@ class FUM(plModuleBase):
     #     assert False
 
     def training_step(self, batch, batch_idx, split='train'):
-        # B = batch[self.signal_key]
         print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
+        return torch.tensor(0. requires_grad=True), {'loss': 0}
+        
+        
+        
+        # B = batch[self.signal_key]
         B = torch.tensor([2,2,2,2, 6], device=self.device)
         b = B[0]
         self.b = b

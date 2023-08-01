@@ -320,7 +320,7 @@ class plModuleBase(pl.LightningModule):
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
             log_dict = {**log_dict, **ld}
-            optimizers_list[optimizer_idx].zero_grad()
+            # optimizers_list[optimizer_idx].zero_grad()
             for opt in optimizers_list:
                 # print('------------>', opt)
                 opt.zero_grad()
