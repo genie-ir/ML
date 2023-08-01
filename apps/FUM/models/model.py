@@ -17,7 +17,7 @@ class FUM(plModuleBase):
 
     def training_step(self, batch, batch_idx, split='train'):
         # B = batch[self.signal_key]
-        B = torch.tensor([2,2,2,2, 6])
+        B = torch.tensor([2,2,2,2, 6], device=self.device)
         b = B[0]
         self.b = b
         print('1111111111111111111', b)
