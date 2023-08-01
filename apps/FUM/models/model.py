@@ -31,9 +31,9 @@ class FUM(plModuleBase):
         model.fc = nn.Linear(model.fc.in_features, 1)
         return model
 
-    def configure_optimizers(self):
-        print('#############################################')
-        return super().configure_optimizers()
+    # def configure_optimizers(self):
+    #     print('#############################################')
+    #     return super().configure_optimizers()
     
     def start(self):
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
@@ -54,7 +54,7 @@ class FUM(plModuleBase):
         # s2 = torch.zeros(phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
-            self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.flatten()[0]))
+            self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad.flatten()[0]))
             s1 = s1 + phi
             break
             # s2 = s2 + phi ** 2
