@@ -26,7 +26,7 @@ class FUM(plModuleBase):
             batch['C'] = C
             batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
             # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('$$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[6, :3], grad[11, :3]))
-            print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
+            # print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
         print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0])
@@ -77,7 +77,6 @@ class FUM(plModuleBase):
     
     def generator_step(self, batch):
         C = batch['C']
-        # print('!!!!!!!!!!!', C)
         c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
         p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
@@ -102,7 +101,7 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(C))
         )
 
-        print(f'loss for C={C}', lossdict)
+        print(f'C={C}', lossdict)
 
         # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
