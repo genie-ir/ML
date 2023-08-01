@@ -23,7 +23,7 @@ class FUM(plModuleBase):
         # print('1111111111111111111', b)
         print(f'iter{batch_idx} | before', self.generator.ccodebook.embedding.weight[b,0])
         for C in range(self.nclasses):
-            # print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
+            print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
             # batch['C'] = C
             # batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
             x = self.generator.ccodebook.fwd_nbpi(B) #.clone()
