@@ -87,10 +87,10 @@ class FUM(plModuleBase):
         C = batch['C']
         c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
         phi = self.__c2phi(c, batch['batch_size'])
-        p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
-        s, sloss = self.generator.scodebook(p)
-        sq = self.vqgan.lat2qua(s)
-        scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
+        # p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
+        # s, sloss = self.generator.scodebook(p)
+        # sq = self.vqgan.lat2qua(s)
+        # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
