@@ -2,4 +2,4 @@ generator:
   params:
     optimizer:
       params:
-        lr: 100000 #0.001
+        lr: 0.001
