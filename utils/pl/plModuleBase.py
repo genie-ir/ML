@@ -327,7 +327,7 @@ class plModuleBase(pl.LightningModule):
                 # print('------------>', opt)
                 print('----grad after row2---->', self.generator.ccodebook.embedding.weight.grad[2, :3])
                 print('----grad after row6---->', self.generator.ccodebook.embedding.weight.grad[6, :3])
-                # opt.zero_grad()
+                opt.zero_grad()
         
         self.log_dict(log_dict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=batch['batch_size'])
     
