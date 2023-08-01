@@ -92,7 +92,12 @@ class FUM(plModuleBase):
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
-        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
+        
+        
+        dloss_phi = phi.mean()
+
+
+        # dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
