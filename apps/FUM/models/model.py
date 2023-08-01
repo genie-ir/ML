@@ -31,6 +31,10 @@ class FUM(plModuleBase):
         model.fc = nn.Linear(model.fc.in_features, 1)
         return model
 
+    def configure_optimizers(self):
+        print('#############################################')
+        return super().configure_optimizers()
+    
     def start(self):
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
