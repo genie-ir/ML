@@ -318,8 +318,10 @@ class plModuleBase(pl.LightningModule):
             
             for opt in optimizers_list:
                 # print('------------>', opt)
+                print('!!!!!!!! before', self.generator.ccodebook.embedding.weight.grad)
                 opt.zero_grad()
-                
+                print('!!!!!!!! after', self.generator.ccodebook.embedding.weight.grad)
+
             cnet = self.optconfig['map'][optimizer_idx] # current network
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
