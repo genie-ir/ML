@@ -93,19 +93,19 @@ class FUM(plModuleBase):
         scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
-        dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
+        # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-        loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
-        drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
-        loss = loss_phi + loss_scphi + drloss_scphi
+        # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
+        # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
+        loss = loss_phi #+ loss_scphi + drloss_scphi
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
-            loss_scphi=loss_scphi,
-            dloss_scphi=dloss_scphi,
-            drloss_scphi=drloss_scphi,
+            # loss_scphi=loss_scphi,
+            # dloss_scphi=dloss_scphi,
+            # drloss_scphi=drloss_scphi,
             Class=torch.tensor(float(C))
         )
 
