@@ -10,7 +10,7 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuan
 
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
-        self.w = self.nnParameter(hige=451, shape=self.eshape, rand_type='randint')
+        self.w = self.nnParameter(high=451, shape=self.eshape, rand_type='randint')
         self.embedding.weight = self.w
 
 class FUM(plModuleBase):
