@@ -6,7 +6,12 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 from utils.pt.BB.Calculation.residual_block import MAC
 from utils.pt.BB.Scratch.Transformer.transformer import Transformer
-from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizer
+from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizerBase
+
+class VectorQuantizer(VectorQuantizerBase):
+    def embedding_weight_init(self):
+        self.w = self.nnParameter(hige=451, shape=self.eshape, rand_type='randint')
+        self.embedding.weight = self.w
 
 class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
@@ -16,6 +21,11 @@ class FUM(plModuleBase):
     #     assert False
 
     def training_step(self, batch, batch_idx, split='train'):
+        if batch_idx == 0:
+            print('-'*60)
+            print(self.generator.ccodebook.embedding.weight)
+            print('-'*60)
+
         # B = batch[self.signal_key]
         t = 60000
         B = torch.tensor([2,2,2,2, t], device=self.device)

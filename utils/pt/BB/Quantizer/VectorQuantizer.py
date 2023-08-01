@@ -31,8 +31,9 @@ class VectorQuantizer2(BB):
         self.zshape = [-1, self.zwh, self.zwh, self.zch]
         self.sane_index_shape = bool(self.kwargs.get('sane_index_shape', False))
 
+        self.eshape = (self.n_e, self.e_dim)
         self.embedding = nn.Embedding(self.n_e, self.e_dim)
-        self.embedding.weight.data.uniform_(-1.0 / self.n_e, 1.0 / self.n_e)
+        self.embedding_weight_init()
 
         setattr(self, 'forward', self.fwd)
 
@@ -47,6 +48,9 @@ class VectorQuantizer2(BB):
         else:
             self.re_embed = self.n_e
 
+    def embedding_weight_init(self):
+        self.embedding.weight.data.uniform_(-1.0 / self.n_e, 1.0 / self.n_e)
+    
     def remap_to_used(self, inds):
         ishape = inds.shape
         assert len(ishape)>1
