@@ -306,7 +306,7 @@ class plModuleBase(pl.LightningModule):
 
     def training_step(self, batch, batch_idx, split='train'):
         """It can be overwrite in child class"""
-        # batch = self.getbatch(batch)
+        batch = self.getbatch(batch)
         optimizers_list = self.optimizers()
         if not isinstance(optimizers_list, (list, tuple)):
             optimizers_list = [optimizers_list]
