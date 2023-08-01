@@ -46,7 +46,9 @@ class FUM(plModuleBase):
         self.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
-        print('********************************************')
+        self.generator.scodebook = self.scodebook
+        self.generator.ccodebook = self.ccodebook
+        self.generator.mac = self.mac
 
     def __c2phi(self, c, batch_size):
         latent = c
