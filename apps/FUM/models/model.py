@@ -35,14 +35,14 @@ class FUM(plModuleBase):
         print(f'iter{batch_idx} | before', self.generator.ccodebook.embedding.weight[b,0])
         for C in range(self.nclasses):
             print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
-            # batch['C'] = C
-            # batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
-            x = self.generator.ccodebook.fwd_nbpi(B) #.clone()
-            # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
-            # self.sethooks(x, hooks=lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3]))
+            batch['C'] = C
+            batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
+            # x = self.generator.ccodebook.fwd_nbpi(B) #.clone()
+            self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
+            self.sethooks(batch[self.signal_key], hooks=lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3]))
             # print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
             # batch[self.signal_key].requires_grad_(True)
-            super().training_step({'C': C, 'x': x}, batch_idx, split)
+            super().training_step(batch, batch_idx, split)
         print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0])
         if batch_idx == 2:
             assert False, batch_idx
