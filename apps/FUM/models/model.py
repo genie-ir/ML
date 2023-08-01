@@ -17,8 +17,7 @@ class FUM(plModuleBase):
 
     def training_step(self, batch, batch_idx, split='train'):
         print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
-        x = torch.tensor(0., requires_grad=True, device=self.device)
-        return 2*x, {'loss': 0}
+        
         
         
         
@@ -33,7 +32,7 @@ class FUM(plModuleBase):
             batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
             # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('$$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[6, :3], grad[11, :3]))
             # print(f'B{batch_idx}', batch[self.signal_key].shape, batch[self.signal_key].dtype, batch[self.signal_key].requires_grad)
-            batch[self.signal_key].requires_grad_(True)
+            # batch[self.signal_key].requires_grad_(True)
             super().training_step(batch, batch_idx, split)
         print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0])
         if batch_idx == 2:
