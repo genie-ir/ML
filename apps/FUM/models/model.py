@@ -32,7 +32,7 @@ class FUM(plModuleBase):
         b = B[0]
         self.b = b
         # print('1111111111111111111', b)
-        print(f'iter{batch_idx} | before', self.generator.ccodebook.embedding.weight[b,0])
+        print(f'iter{batch_idx} | before', self.generator.ccodebook.embedding.weight[b,0], self.generator.ccodebook.embedding.weight[b,0].exp())
         for C in range(self.nclasses):
             print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
             batch['C'] = C
@@ -43,7 +43,7 @@ class FUM(plModuleBase):
             #     # lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3])
             # ])
             super().training_step(batch, batch_idx, split)
-        print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0])
+        print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0], self.generator.ccodebook.embedding.weight[b,0].exp())
         if batch_idx == 2:
             assert False, batch_idx
     
