@@ -10,7 +10,7 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuan
 
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
-        self.w = self.nnParameter(high=451, shape=self.eshape, rand_type='randint')
+        self.w = self.nnParameter(tensor=torch.randint(0, 1024, self.eshape).log())
         self.embedding.weight = self.w
 
 class FUM(plModuleBase):
@@ -36,7 +36,7 @@ class FUM(plModuleBase):
         for C in range(self.nclasses):
             print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
             batch['C'] = C
-            batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B) #.clone()
+            batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B).exp() #.clone()
             # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
             # self.sethooks(batch[self.signal_key], hooks=[
             #     lambda grad: grad * 10**C,

@@ -45,14 +45,18 @@ class BB(nn.Module):
         pass
 
     def nnParameter(self, **pkwargs):
-        rand_type = str(pkwargs.get('rand_type', 'randn'))
-        if rand_type == 'randn':
-            t = torch.randn(pkwargs.get('shape', []))
-        elif rand_type == 'randint':
-            low, high = int(pkwargs.get('low', 0)), int(pkwargs.get('high', 0))
-            t = torch.randint(low, high, pkwargs.get('shape', []), dtype=torch.float)
-        else:
-            assert False, '`rand_type={}` | currently is not supported please do code for it'.format(rand_type)
+        t = pkwargs.get('tensor', None)
+        if t is None:
+            tshape = pkwargs.get('shape', [])
+            rand_type = str(pkwargs.get('rand_type', 'randn'))
+            if rand_type == 'randn':
+                t = torch.randn(tshape)
+            elif rand_type == 'randint':
+                low, high = int(pkwargs.get('low', 0)), int(pkwargs.get('high', 0))
+                t = torch.randint(low, high, tshape, dtype=torch.float)
+            else:
+                assert False, '`rand_type={}` | currently is not supported please do code for it'.format(rand_type)
+            
         requires_grad = bool(pkwargs.get('requires_grad', True))
         p = nn.Parameter(t, requires_grad=requires_grad)
         hooks = pkwargs.get('hooks', [])
