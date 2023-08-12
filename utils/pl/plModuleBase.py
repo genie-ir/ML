@@ -325,7 +325,7 @@ class plModuleBase(pl.LightningModule):
 
             for opt in optimizers_list:
                 # print('------------>', opt)
-                print('----grad after row2---->', self.generator.ccodebook.embedding.weight.grad[2, :3])
+                print('----grad after row2---->', self.generator.scodebook.embedding.weight.grad[2, :3])
                 opt.zero_grad()
         
         self.log_dict(log_dict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=batch['batch_size'])
