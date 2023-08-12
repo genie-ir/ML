@@ -36,6 +36,7 @@ class FUM(plModuleBase):
         for cidx in range(self.nclasses):
             print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
+            batch['bidx'] = batch_idx
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
             super().training_step(batch, batch_idx, split)
         print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
@@ -83,6 +84,7 @@ class FUM(plModuleBase):
     
     
     def generator_step(self, batch):
+        bidx = batch['bidx']
         cidx = batch['cidx']
         phi = self.__c2phi(batch[self.signal_key], batch['batch_size'])
         # p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
@@ -110,8 +112,8 @@ class FUM(plModuleBase):
 
         print(f'cidx={cidx}', lossdict)
 
-        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
-        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
+        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
 
         return loss, lossdict
 
