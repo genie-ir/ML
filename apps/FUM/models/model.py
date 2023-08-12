@@ -27,7 +27,7 @@ class FUM(plModuleBase):
             print('-'*60)
 
         # B = batch[self.signal_key]
-        t = 60000
+        t = 3612
         B = torch.tensor([2,2,2,2, t], device=self.device)
         b = B[0]
         self.b = b
