@@ -33,15 +33,10 @@ class FUM(plModuleBase):
         self.b = b
         # print('1111111111111111111', b)
         print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
-        for C in range(self.nclasses):
+        for cidx in range(self.nclasses):
             print('----grad---->', self.generator.scodebook.embedding.weight.grad)
-            batch['C'] = C
+            batch['cidx'] = cidx
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
-            # self.sethooks(self.generator.scodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
-            # self.sethooks(batch[self.signal_key], hooks=[
-            #     lambda grad: grad * 10**C,
-            #     # lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3])
-            # ])
             super().training_step(batch, batch_idx, split)
         print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         if batch_idx == 2:
@@ -51,11 +46,12 @@ class FUM(plModuleBase):
         model.fc = nn.Linear(model.fc.in_features, 1)
         return model
 
-    # def configure_optimizers(self):
-    #     print('#############################################')
-    #     return super().configure_optimizers()
+    def configure_optimizers(self):
+        print('#############################################')
+        return super().configure_optimizers()
     
     def start(self):
+        print('/'*60)
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
         self.qshape = (self.qch, self.qwh, self.qwh)
@@ -91,15 +87,9 @@ class FUM(plModuleBase):
         return s1 / N
     
     
-    def generator_step2(self, batch):
-        x = batch['x']
-        x = torch.tensor(0., requires_grad=True, device=self.device)
-        return 2*x, {'loss': 0}
-    
     def generator_step(self, batch):
-        C = batch['C']
-        c = batch[self.signal_key] # dataset -> replace -> selection of ccodebook
-        phi = self.__c2phi(c, batch['batch_size'])
+        cidx = batch['cidx']
+        phi = self.__c2phi(batch[self.signal_key], batch['batch_size'])
         # p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
@@ -124,7 +114,7 @@ class FUM(plModuleBase):
             # loss_scphi=loss_scphi,
             # dloss_scphi=dloss_scphi,
             # drloss_scphi=drloss_scphi,
-            Class=torch.tensor(float(C))
+            Class=torch.tensor(float(cidx))
         )
 
         # print(f'C={C}', lossdict)
