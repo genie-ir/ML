@@ -23,7 +23,7 @@ class FUM(plModuleBase):
     def training_step(self, batch, batch_idx, split='train'):
         if batch_idx == 0:
             print('-'*60)
-            print(self.generator.ccodebook.embedding.weight)
+            print(self.generator.scodebook.embedding.weight)
             print('-'*60)
 
         # B = batch[self.signal_key]
@@ -32,18 +32,18 @@ class FUM(plModuleBase):
         b = B[0]
         self.b = b
         # print('1111111111111111111', b)
-        print(f'iter{batch_idx} | before', self.generator.ccodebook.embedding.weight[b,0], self.generator.ccodebook.embedding.weight[b,0].exp())
+        print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for C in range(self.nclasses):
-            print('----grad---->', self.generator.ccodebook.embedding.weight.grad)
+            print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['C'] = C
-            batch[self.signal_key] = self.generator.ccodebook.fwd_nbpi(B).exp() #.clone()
-            # self.sethooks(self.generator.ccodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
+            batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
+            # self.sethooks(self.generator.scodebook.embedding.weight, hooks=lambda grad: print('w $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[2, :3], grad[t, :3], grad[11, :3]))
             # self.sethooks(batch[self.signal_key], hooks=[
             #     lambda grad: grad * 10**C,
             #     # lambda grad: print('x $$$$$$$$$$$$$$$$$$$$$$$$$$', grad.shape, grad[:, :3])
             # ])
             super().training_step(batch, batch_idx, split)
-        print(f'iter{batch_idx} | after', self.generator.ccodebook.embedding.weight[b,0], self.generator.ccodebook.embedding.weight[b,0].exp())
+        print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         if batch_idx == 2:
             assert False, batch_idx
     
@@ -62,7 +62,7 @@ class FUM(plModuleBase):
         self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
         self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
         self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-        self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+        # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
         self.generator.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
