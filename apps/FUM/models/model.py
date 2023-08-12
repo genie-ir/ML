@@ -69,7 +69,6 @@ class FUM(plModuleBase):
             s1 = s1 + phi
             latent_rec = self.vqgan.phi2lat(phi).float().flatten(1)
             print('$$$$$$$', latent_rec.requires_grad)
-            assert False
             rec_metric = (latent-latent_rec).detach().abs().sum()
             print('--lm-->', rec_metric, rec_metric < 1e-6, old_rec_metric == rec_metric)
             latent = latent_rec
