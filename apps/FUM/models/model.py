@@ -61,11 +61,11 @@ class FUM(plModuleBase):
 
     def __c2phi(self, c, batch_size):
         # return self.vqgan.lat2phi(c)
-        latent = c.detach()
+        latent = c
         old_rec_metric = -1
         s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
-            phi = self.vqgan.lat2phi(latent)
+            phi = self.vqgan.lat2phi(latent).detach()
             s1 = s1 + phi
             latent_rec = self.vqgan.phi2lat(phi).float().flatten(1).detach()#NOTE
             # print('$$$$$$$', latent_rec.requires_grad)
