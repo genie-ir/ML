@@ -34,7 +34,7 @@ class FUM(plModuleBase):
         # print('1111111111111111111', b)
         print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for cidx in range(self.nclasses):
-            print('----grad---->', self.generator.scodebook.embedding.weight.grad)
+            # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
             batch['bidx'] = batch_idx
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
@@ -60,27 +60,23 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, c, batch_size):
-        return self.vqgan.lat2phi(c)
+        # return self.vqgan.lat2phi(c)
         latent = c
         old_rec_metric = -1
         s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
-        # s2 = torch.zeros(phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
-            # self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, :3], grad[-1, :3]))
             s1 = s1 + phi
-            break
-            # s2 = s2 + phi ** 2
             latent_rec = self.vqgan.phi2lat(phi).float()
-            rec_metric = (latent-latent_rec).abs().sum()
-            # print('--lm-->', rec_metric)
+            rec_metric = (latent-latent_rec).detach().abs().sum()
+            print('--lm-->', rec_metric, rec_metric < 1e-6, old_rec_metric == rec_metric)
             latent = latent_rec
-            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'local/phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
-        # compressor(self.pathdir, self.pathdir + '/phi.zip')
-        return s1 / N
+        mue = s1 / N
+        return mue
     
     
     def generator_step(self, batch):
@@ -110,7 +106,7 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(cidx))
         )
 
-        print(f'cidx={cidx}', lossdict)
+        # print(f'cidx={cidx}', lossdict)
 
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
