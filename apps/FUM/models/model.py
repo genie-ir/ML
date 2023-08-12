@@ -67,7 +67,7 @@ class FUM(plModuleBase):
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
             s1 = s1 + phi
-            latent_rec = self.vqgan.phi2lat(phi).float().flatten(1)
+            latent_rec = self.vqgan.phi2lat(phi).float().flatten(1).detach()#NOTE
             # print('$$$$$$$', latent_rec.requires_grad)
             rec_metric = (latent-latent_rec).detach().abs().sum()
             # print('--lm-->', rec_metric, rec_metric < 1e-6, old_rec_metric == rec_metric)
