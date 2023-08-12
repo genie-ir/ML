@@ -46,12 +46,7 @@ class FUM(plModuleBase):
         model.fc = nn.Linear(model.fc.in_features, 1)
         return model
 
-    def configure_optimizers(self):
-        print('#############################################')
-        return super().configure_optimizers()
-    
     def start(self):
-        print('/'*60)
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
         self.qshape = (self.qch, self.qwh, self.qwh)
@@ -97,10 +92,10 @@ class FUM(plModuleBase):
 
         
         
-        dloss_phi = phi.mean()
+        # dloss_phi = phi.mean()
 
 
-        # dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
+        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
