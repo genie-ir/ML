@@ -65,9 +65,10 @@ class FUM(plModuleBase):
         old_rec_metric = -1
         s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
-            phi = self.vqgan.lat2phi(latent).detach()
+            phi = self.vqgan.lat2phi(latent)
             s1 = s1 + phi
             latent_rec = self.vqgan.phi2lat(phi).float().flatten(1).detach()#NOTE
+            break
             # print('$$$$$$$', latent_rec.requires_grad)
             rec_metric = (latent-latent_rec).detach().abs().sum()
             # print('--lm-->', rec_metric, rec_metric < 1e-6, old_rec_metric == rec_metric)
@@ -77,7 +78,7 @@ class FUM(plModuleBase):
                 break
             old_rec_metric = rec_metric
         mue = s1 / N
-        print('done', rec_metric, N)
+        # print('done', rec_metric, N)
         return mue
     
     
