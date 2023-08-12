@@ -112,7 +112,7 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(cidx))
         )
 
-        # print(f'C={C}', lossdict)
+        print(f'cidx={cidx}', lossdict)
 
         # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/Class-{C}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/Class-{C}/scphi.png')
