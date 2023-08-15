@@ -54,8 +54,7 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        print('@@@@@@@@@@@@@@@', ln.shape, ln.dtype)
-        assert False
+        ln = ln.flatten(1).float() #NOTE: delete line
         phi = self.vqgan.lat2phi(ln)
         sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         print('sn', sn.shape, sn.dtype)
