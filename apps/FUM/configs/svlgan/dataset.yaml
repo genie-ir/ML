@@ -46,7 +46,7 @@ params:
   batch_size: 4
   num_workers: 2
   train:
-    target: apps.FUM.svlgan.data.eyepacs.D.eyepacsTrain
+    target: apps.FUM.svlgan.data.eyepacs.eyepacsTrain
     params:
       config:
         txt_filelist: train_filelist.txt
@@ -76,7 +76,7 @@ params:
         FILES:
           - datasetfile.zip
   validation:
-    target: apps.FUM.svlgan.data.eyepacs.D.eyepacsValidation
+    target: apps.FUM.svlgan.data.eyepacs.eyepacsValidation
     params:
       config:
         txt_filelist: val_filelist.txt
