@@ -67,7 +67,6 @@ class FUM(plModuleBase):
 
         D = self.vqgan.loss.discriminator(phi)
         print('D', D.shape, D.dtype)
-        assert False
         dloss_phi = -torch.mean(D)
         loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
