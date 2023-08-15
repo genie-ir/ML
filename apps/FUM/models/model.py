@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from utils.pl.plModuleBase import plModuleBase
 from utils.pt.BB.Calculation.residual_block import MAC
+from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
 
 class VectorQuantizer(VectorQuantizerBase):
@@ -87,6 +88,10 @@ class FUM(plModuleBase):
         )
 
         print(f'cidx={cidx}', lossdict)
+        print('phi', phi.shape, phi.dtype, phi.min().item(), phi.max().item())
+        for i in range(5):
+            for j in range(5):
+                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i], phi[j]))
 
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
