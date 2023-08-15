@@ -1,11 +1,7 @@
 import torch
 from torch import nn
-import torch.nn.functional as F
-from utils.pt.nnModuleBase import nnModuleBase
 from utils.pl.plModuleBase import plModuleBase
-from libs.basicIO import signal_save, compressor
 from utils.pt.BB.Calculation.residual_block import MAC
-from utils.pt.BB.Scratch.Transformer.transformer import Transformer
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
 
 class VectorQuantizer(VectorQuantizerBase):
@@ -17,9 +13,6 @@ class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         return
     
-    # def on_train_epoch_end(self):
-    #     assert False
-
     def training_step(self, batch, batch_idx, split='train'):
         if batch_idx == 0:
             print('-'*60)
@@ -27,19 +20,17 @@ class FUM(plModuleBase):
             print('-'*60)
 
         # B = batch[self.signal_key]
-        t = 3612
-        B = torch.tensor([2,2,2,2, t], device=self.device)
-        b = B[0]
-        self.b = b
-        # print('1111111111111111111', b)
-        print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
+        # t = 3612
+        # B = torch.tensor([2,2,2,2, t], device=self.device)
+        # b = B[0]
+        # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for cidx in range(self.nclasses):
             # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
             batch['bidx'] = batch_idx
-            batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
+            # batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
             super().training_step(batch, batch_idx, split)
-        print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
+        # print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         if batch_idx == 2:
             assert False, batch_idx
     
@@ -59,25 +50,6 @@ class FUM(plModuleBase):
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
 
-    # def __c2phi(self, ln, batch_size):
-    #     # return self.vqgan.lat2phi(c), ln
-    #     latent = ln
-    #     old_rec_metric = -1
-    #     s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
-    #     for N in range(1, self.phi_steps + 1):
-    #         phi = self.vqgan.lat2phi(latent)
-    #         s1 = s1 + phi
-    #         latent_rec = self.vqgan.phi2lat(phi).float().flatten(1)
-    #         rec_metric = (latent-latent_rec).detach().abs().sum()
-    #         latent = latent_rec
-    #         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'local/phi-{str(N)}.png')
-    #         if rec_metric < 1e-6 or old_rec_metric == rec_metric:
-    #             break
-    #         old_rec_metric = rec_metric
-    #     mue = s1 / N
-    #     assert False
-    #     return mue, latent
-    
     def generator_step(self, batch):
         bidx = batch['bidx']
         cidx = batch['cidx']
@@ -116,7 +88,7 @@ class FUM(plModuleBase):
 
         print(f'cidx={cidx}', lossdict)
 
-        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
 
         return loss, lossdict
