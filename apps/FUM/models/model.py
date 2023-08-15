@@ -88,10 +88,9 @@ class FUM(plModuleBase):
         )
 
         print(f'cidx={cidx}', lossdict)
-        print('phi', phi[3:4].shape, phi.dtype, phi.min().item(), phi.max().item())
         for i in range(5):
             for j in range(5):
-                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i].unsqueeze(0), phi[j].unsqueeze(0)))
+                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]))
 
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
