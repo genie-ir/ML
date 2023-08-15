@@ -59,33 +59,35 @@ class FUM(plModuleBase):
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
 
-    def __c2phi(self, c, batch_size):
-        # return self.vqgan.lat2phi(c)
-        latent = c
-        old_rec_metric = -1
-        s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
-        for N in range(1, self.phi_steps + 1):
-            phi = self.vqgan.lat2phi(latent)
-            s1 = s1 + phi
-            latent_rec = self.vqgan.phi2lat(phi).float().flatten(1)
-            # print('$$$$$$$', latent_rec.requires_grad)
-            rec_metric = (latent-latent_rec).detach().abs().sum()
-            # print('--lm-->', rec_metric, rec_metric < 1e-6, old_rec_metric == rec_metric)
-            latent = latent_rec
-            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'local/phi-{str(N)}.png')
-            if rec_metric < 1e-6 or old_rec_metric == rec_metric:
-                break
-            old_rec_metric = rec_metric
-        mue = s1 / N
-        # print('done', rec_metric, N)
-        return mue
-    
+    # def __c2phi(self, ln, batch_size):
+    #     # return self.vqgan.lat2phi(c), ln
+    #     latent = ln
+    #     old_rec_metric = -1
+    #     s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
+    #     for N in range(1, self.phi_steps + 1):
+    #         phi = self.vqgan.lat2phi(latent)
+    #         s1 = s1 + phi
+    #         latent_rec = self.vqgan.phi2lat(phi).float().flatten(1)
+    #         rec_metric = (latent-latent_rec).detach().abs().sum()
+    #         latent = latent_rec
+    #         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'local/phi-{str(N)}.png')
+    #         if rec_metric < 1e-6 or old_rec_metric == rec_metric:
+    #             break
+    #         old_rec_metric = rec_metric
+    #     mue = s1 / N
+    #     assert False
+    #     return mue, latent
     
     def generator_step(self, batch):
         bidx = batch['bidx']
         cidx = batch['cidx']
-        phi = self.__c2phi(batch[self.signal_key], batch['batch_size'])
-        # p = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1) #NOTE derivative?
+        ln = batch[self.signal_key]
+        phi = self.vqgan.lat2phi(ln)
+        sn = self.vqgan.phi2lat(phi).float().flatten(1).unsqueeze(-1).unsqueeze(-1)
+        print(ln.shape, ln.dtype)
+        print(sn.shape, sn.dtype)
+        assert False
+        # mue, sn = self.__c2phi(batch[self.signal_key], batch['batch_size']) #NOTE: mue
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
