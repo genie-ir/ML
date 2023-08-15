@@ -88,7 +88,7 @@ class FUM(plModuleBase):
         )
 
         print(f'cidx={cidx}', lossdict)
-        print('phi', phi.shape, phi.dtype, phi.min().item(), phi.max().item())
+        print('phi', phi[3:4].shape, phi.dtype, phi.min().item(), phi.max().item())
         for i in range(5):
             for j in range(5):
                 print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i].unsqueeze(0), phi[j].unsqueeze(0)))
