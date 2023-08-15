@@ -91,7 +91,7 @@ class FUM(plModuleBase):
         print('phi', phi.shape, phi.dtype, phi.min().item(), phi.max().item())
         for i in range(5):
             for j in range(5):
-                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i], phi[j]))
+                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i].unsqueeze(0), phi[j].unsqueeze(0)))
 
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
