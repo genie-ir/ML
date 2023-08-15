@@ -21,15 +21,15 @@ class FUM(plModuleBase):
             print('-'*60)
 
         # B = batch[self.signal_key]
-        # t = 3612
-        # B = torch.tensor([2,2,2,2, t], device=self.device)
+        t = 3612
+        B = torch.tensor([2,2,2,2, t], device=self.device)
         # b = B[0]
         # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for cidx in range(self.nclasses):
             # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
             batch['bidx'] = batch_idx
-            # batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
+            batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
             super().training_step(batch, batch_idx, split)
         # print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         if batch_idx == 2:
@@ -55,7 +55,7 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        ln = ln.flatten(1).float() #NOTE: delete line
+        # ln = ln.flatten(1).float() #NOTE: delete line
         phi = self.vqgan.lat2phi(ln)
         sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         print('sn', sn.shape, sn.dtype)
