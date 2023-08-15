@@ -90,7 +90,8 @@ class FUM(plModuleBase):
         print(f'cidx={cidx}', lossdict)
         for i in range(5):
             for j in range(5):
-                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]))
+                print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]).abs())
+        print(f'--> SSIM(phi, phi)=', SSIM(phi, phi).abs())
 
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
