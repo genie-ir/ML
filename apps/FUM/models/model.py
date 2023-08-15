@@ -93,7 +93,7 @@ class FUM(plModuleBase):
                 print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]).abs())
         print(f'--> SSIM(phi, phi)=', SSIM(phi, phi).abs())
         print(f'--> SSIM(phi, permute(phi))=', SSIM(phi, torch.cat([
-            phi[2:3], phi[0:1], phi[1:2], phi[3:4], phi[4:5]
+            phi[2:3], phi[0:1], phi[4:5], phi[1:2], phi[3:4]
         ], dim=0)).abs())
 
         self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
