@@ -85,7 +85,7 @@ class FUM(plModuleBase):
         phi = self.vqgan.lat2phi(ln)
         sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         print('sn', sn.shape, sn.dtype)
-        SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1))
+        SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
         print('SN', SN.shape, SN.dtype, SN)
         # mue, sn = self.__c2phi(batch[self.signal_key], batch['batch_size']) #NOTE: mue
         # s, sloss = self.generator.scodebook(p)
