@@ -6,7 +6,7 @@ from utils.pt.distance import L2S
 from utils.pt.building_block import BB
 from utils.pt.tricks.gradfns import onehot_with_grad, dzq_dz_eq1
 
-class VectorQuantizer2(BB):
+class VectorQuantizer(BB):
     '''
     Improved version over VectorQuantizer, can be used as a drop-in replacement. Mostly
     avoids costly matrix multiplications and allows for post-hoc remapping of indices.
@@ -93,7 +93,7 @@ class VectorQuantizer2(BB):
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q, loss
     
-    def fwd_idx(self, z):
+    def fwd_getIndices(self, z):
         z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
         min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)

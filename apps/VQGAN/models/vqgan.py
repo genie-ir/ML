@@ -13,7 +13,7 @@ from libs.basicIO import compressor
 instantiate_from_config = Config.instantiate_from_config
 
 from apps.VQGAN.modules.diffusionmodules.model import Encoder, Decoder
-from apps.VQGAN.modules.vqvae.quantize import VectorQuantizer2 as VectorQuantizer
+from apps.VQGAN.modules.vqvae.quantize import VectorQuantizer #2 as VectorQuantizer
 # from apps.VQGAN.modules.vqvae.quantize import GumbelQuantize
 # from apps.VQGAN.modules.vqvae.quantize import EMAVectorQuantizer
 
@@ -76,7 +76,7 @@ class VQModel(pl.LightningModule):
         h = self.encoder(x)
         h = self.quant_conv(h)
         if vetoFlag:
-            return self.quantize.fwd_idx(h)
+            return self.quantize.fwd_getIndices(h)
         else:
             return self.quantize(h)
 

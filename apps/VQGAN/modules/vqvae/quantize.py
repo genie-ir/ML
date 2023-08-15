@@ -4,10 +4,10 @@ import torch.nn.functional as F
 import numpy as np
 from torch import einsum
 from einops import rearrange
-from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2
+from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer
 
 
-class VectorQuantizer(nn.Module):
+class __VectorQuantizer(nn.Module):
     """
     see https://github.com/MishaLaskin/vqvae/blob/d761a999e2267766400dc646d82d3ac3657771d4/models/quantizer.py
     ____________________________________________
@@ -108,7 +108,7 @@ class VectorQuantizer(nn.Module):
         return z_q
 
 
-class GumbelQuantize(nn.Module):
+class __GumbelQuantize(nn.Module):
     """
     credit to @karpathy: https://github.com/karpathy/deep-vector-quantization/blob/main/model.py (thanks!)
     Gumbel Softmax trick quantizer
@@ -211,7 +211,7 @@ class GumbelQuantize(nn.Module):
         return z_q
 
 
-class EmbeddingEMA(nn.Module):
+class __EmbeddingEMA(nn.Module):
     def __init__(self, num_tokens, codebook_dim, decay=0.99, eps=1e-5):
         super().__init__()
         self.decay = decay

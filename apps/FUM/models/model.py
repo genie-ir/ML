@@ -6,7 +6,7 @@ from utils.pl.plModuleBase import plModuleBase
 from libs.basicIO import signal_save, compressor
 from utils.pt.BB.Calculation.residual_block import MAC
 from utils.pt.BB.Scratch.Transformer.transformer import Transformer
-from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer2 as VectorQuantizerBase
+from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
 
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
@@ -84,13 +84,19 @@ class FUM(plModuleBase):
         ln = batch[self.signal_key]
         phi = self.vqgan.lat2phi(ln)
         sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
+        print('sn', sn.shape, sn.dtype)
+        SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1))
+        print('SN', SN.shape, SN.dtype, SN)
         # mue, sn = self.__c2phi(batch[self.signal_key], batch['batch_size']) #NOTE: mue
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
-        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
-        loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn0(ln, sn).log()
+        D = self.vqgan.loss.discriminator(phi)
+        print(D.shape, D.dtype)
+        assert False
+        dloss_phi = -torch.mean(D)
+        loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
