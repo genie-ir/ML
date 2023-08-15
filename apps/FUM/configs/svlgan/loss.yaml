@@ -1,6 +1,6 @@
 target: apps.FUM.modules.losses.loss.Loss
 
 params:
-  criterion: ce
+  criterion: mse
   # params:
   #   ignore_index: 1 # PAD_IDX defined in module `utils.preprocessing.text.tokenizer`

@@ -3,6 +3,7 @@ negative_slope: 0.01
 
 lambda_loss_phi: 1.0
 lambda_loss_scphi: 1.0
+lambda_loss_latent: 1.0
 lambda_drloss_scphi: 1.0
 
 nclasses: 5

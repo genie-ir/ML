@@ -26,6 +26,9 @@ class LossBase(nn.Module):
             'params': self.kwargs.get('params', dict())
         })
     
+    def lossfn0(self, y, t):
+        return self.criterion(y, t)
+
     def lossfn(self, y, t):
         loss = self.criterion(y, t)
         log = {

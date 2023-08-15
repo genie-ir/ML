@@ -84,35 +84,33 @@ class FUM(plModuleBase):
         ln = batch[self.signal_key]
         phi = self.vqgan.lat2phi(ln)
         sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
-        print(ln.shape, ln.dtype)
-        print(sn.shape, sn.dtype)
-        assert False
         # mue, sn = self.__c2phi(batch[self.signal_key], batch['batch_size']) #NOTE: mue
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
-        
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi))
+        loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn0(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
-        loss = loss_phi #+ loss_scphi + drloss_scphi
+        loss = loss_latent + loss_phi #+ loss_scphi + drloss_scphi
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
+            loss_latent=loss_latent,
             # loss_scphi=loss_scphi,
             # dloss_scphi=dloss_scphi,
             # drloss_scphi=drloss_scphi,
             Class=torch.tensor(float(cidx))
         )
 
-        # print(f'cidx={cidx}', lossdict)
+        print(f'cidx={cidx}', lossdict)
 
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
+        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
 
         return loss, lossdict
