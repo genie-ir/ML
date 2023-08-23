@@ -23,15 +23,15 @@ class FUM(plModuleBase):
         # B = batch[self.signal_key]
         t = 3612
         B = torch.tensor([2,2,2,2, t], device=self.device)
-        # b = B[0]
-        # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
+        b = B[0]
+        print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for cidx in range(self.nclasses):
-            # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
+            print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
             batch['bidx'] = batch_idx
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
             super().training_step(batch, batch_idx, split)
-        # print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
+        print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         if batch_idx == 2:
             assert False, batch_idx
     
@@ -51,14 +51,41 @@ class FUM(plModuleBase):
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
 
+    def __c2phi(self, c, batch_size):
+        return self.vqgan.lat2phi(c)
+        latent = c
+        old_rec_metric = -1
+        s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
+        # s2 = torch.zeros(phi_shape, device=self.device)
+        for N in range(1, self.phi_steps + 1):
+            phi = self.vqgan.lat2phi(latent)
+            # self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, :3], grad[-1, :3]))
+            s1 = s1 + phi
+            break
+            # s2 = s2 + phi ** 2
+            latent_rec = self.vqgan.phi2lat(phi).float()
+            rec_metric = (latent-latent_rec).abs().sum()
+            # print('--lm-->', rec_metric)
+            latent = latent_rec
+            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            if rec_metric < 1e-6 or old_rec_metric == rec_metric:
+                break
+            old_rec_metric = rec_metric
+        # compressor(self.pathdir, self.pathdir + '/phi.zip')
+        return s1 / N
+    
     def generator_step(self, batch):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         # ln = ln.flatten(1).float() #NOTE: delete line
+        print('ln', ln.shape, ln.dtype)
         phi = self.vqgan.lat2phi(ln)
-        sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
-        print('sn', sn.shape, sn.dtype)
+        print('phi', phi.shape, phi.dtype)
+        sn = self.vqgan.phi2lat(phi)
+        print('sn1', sn.shape, sn.dtype)
+        sn = sn.flatten(1).float().detach()
+        print('sn2', sn.shape, sn.dtype)
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
         print('SN', SN.shape, SN.dtype, SN)
         # mue, sn = self.__c2phi(batch[self.signal_key], batch['batch_size']) #NOTE: mue
