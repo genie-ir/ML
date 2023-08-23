@@ -52,7 +52,11 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, c, batch_size):
-        return self.vqgan.lat2phi(c)
+        phi = self.vqgan.lat2phi(c)
+        sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
+        return phi, sn
+        
+        
         latent = c
         old_rec_metric = -1
         s1 = torch.zeros((batch_size,) + self.phi_shape, device=self.device)
@@ -78,22 +82,26 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        # ln = ln.flatten(1).float() #NOTE: delete line
         print('ln', ln.shape, ln.dtype)
-        phi = self.vqgan.lat2phi(ln)
+        phi, sn = self.__c2phi(ln, batch['batch_size'])
         print('phi', phi.shape, phi.dtype)
-        sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         print('sn', sn.shape, sn.dtype)
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
-        print('SN', SN.shape, SN.dtype, SN)
-        # mue, sn = self.__c2phi(batch[self.signal_key], batch['batch_size']) #NOTE: mue
+        print('SN', SN.shape, SN.dtype, SN) #NOTE: nearset latents to sn
+        
+        
+        
+        
+        
+        
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
-        D = self.vqgan.loss.discriminator(phi)
-        print('D', D.shape, D.dtype)
-        dloss_phi = -torch.mean(D)
+        
+        DLOSS = self.vqgan.loss.discriminator(phi)
+        print('DLOSS', DLOSS.shape, DLOSS.dtype)
+        dloss_phi = -torch.mean(DLOSS)
         loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
@@ -121,7 +129,7 @@ class FUM(plModuleBase):
         #     phi[2:3], phi[0:1], phi[4:5], phi[1:2], phi[3:4]
         # ], dim=0)).abs())
 
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
+        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
 
         return loss, lossdict
