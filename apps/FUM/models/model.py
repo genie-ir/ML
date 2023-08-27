@@ -5,6 +5,8 @@ from utils.pt.BB.Calculation.residual_block import MAC
 from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
 
+#  TODO: this is a test 
+
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
         self.w = self.nnParameter(tensor=torch.randint(0, 1024, self.eshape).log())
