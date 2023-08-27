@@ -52,10 +52,9 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, c, batch_size):
-        phi = self.vqgan.lat2phi(c)
-        sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
-        return phi, sn
-        
+        # phi = self.vqgan.lat2phi(c)
+        # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
+        # return phi, sn 
         
         latent = c
         old_rec_metric = -1
@@ -63,31 +62,32 @@ class FUM(plModuleBase):
         # s2 = torch.zeros(phi_shape, device=self.device)
         for N in range(1, self.phi_steps + 1):
             phi = self.vqgan.lat2phi(latent)
-            # self.sethooks(latent, hooks=lambda grad: print('@@@@@@@@@@@', grad.shape, grad[0, :3], grad[-1, :3]))
             s1 = s1 + phi
-            break
-            # s2 = s2 + phi ** 2
             latent_rec = self.vqgan.phi2lat(phi).float()
-            rec_metric = (latent-latent_rec).abs().sum()
-            # print('--lm-->', rec_metric)
+            rec_metric = ((latent-latent_rec) ** 2).mean()
+            print('latent', latent.shape, latent.dtype)
+            print('latent_rec', latent_rec.shape, latent_rec.dtype)
+            print('--rec_metric-->', rec_metric)
             latent = latent_rec
-            # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             if rec_metric < 1e-6 or old_rec_metric == rec_metric:
                 break
             old_rec_metric = rec_metric
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
-        return s1 / N
+        mue = (s1 / N).detach()
+        sn = latent.detach()
+        return mue, sn
     
     def generator_step(self, batch):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        print('ln', ln.shape, ln.dtype)
-        phi, sn = self.__c2phi(ln, batch['batch_size'])
-        print('phi', phi.shape, phi.dtype)
-        print('sn', sn.shape, sn.dtype)
+        mue, sn = self.__c2phi(ln.detach(), batch['batch_size'])
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
-        print('SN', SN.shape, SN.dtype, SN) #NOTE: nearset latents to sn
+        # print('ln', ln.shape, ln.dtype)
+        # print('phi', phi.shape, phi.dtype)
+        # print('sn', sn.shape, sn.dtype)
+        # print('SN', SN.shape, SN.dtype, SN) #NOTE: nearset latents to sn
         
         
         
