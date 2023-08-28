@@ -82,6 +82,7 @@ class FUM(plModuleBase):
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         # mue = (s1 / N).detach()
         sn = latent.detach()
+        assert False
         return phi0, sn
     
     def generator_step(self, batch):
