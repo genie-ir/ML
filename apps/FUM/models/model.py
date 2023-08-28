@@ -61,23 +61,24 @@ class FUM(plModuleBase):
         old_quantization_error = float('inf')
         phi0 = self.vqgan.lat2phi(cross)
         # latent = self.vqgan.phi2lat(phi0).float().detach()
-        phi = phi0.detach()
-        # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device)   becuse the first one is diffrentiable.
+        
+        
+        p = phi0.detach()
+        nl = self.vqgan.phi2lat(p).float()
+        # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device)   becuse the first one is diffrentiable. ; each time you must do: s1=s1+phi
         for N in range(1, self.phi_steps):
-            # s1 = s1 + phi
-            latent_index = self.vqgan.phi2lat(phi).float()
-            phi_of_latent_index = self.vqgan.lat2phi(latent_index)
-            quantization_error = ((phi-phi_of_latent_index).abs()).sum()
-            latent = latent_index
-            phi = phi_of_latent_index
-            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            np = self.vqgan.lat2phi(nl)
+            nnl = self.vqgan.phi2lat(np).float()
+            quantization_error = ((nl-nnl).abs()).sum()
+            self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             # print('latent', latent.shape, latent.dtype)
             # print('latent_index', latent_index.shape, latent_index.dtype)
             print('---quantization_error-->', quantization_error.item())
-            print(f'{N}--- old_quantization_error - quantization_error --->', (old_quantization_error - quantization_error).item(), (old_quantization_error - quantization_error).item() < 1e-6)
-            if quantization_error < 1e-6 or (old_quantization_error - quantization_error) < 1e-6:
+            # print(f'{N}--- old_quantization_error - quantization_error --->', (old_quantization_error - quantization_error).item(), (old_quantization_error - quantization_error).item() < 1e-6)
+            if quantization_error < 1e-6: #or (old_quantization_error - quantization_error) < 1e-6:
                 break
-            old_quantization_error = quantization_error
+            nl = nnl
+            # old_quantization_error = quantization_error
             
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         # mue = (s1 / N).detach()
