@@ -69,20 +69,20 @@ class FUM(plModuleBase):
         for N in range(1, self.phi_steps):
             np = self.vqgan.lat2phi(nl)
             nnl = self.vqgan.phi2lat(np).float()
-            quantization_error = ((nl-nnl).abs()).sum()
+            qe_sae = ((nl-nnl).abs()).sum()
+            qe_mse = ((nl-nnl)**2).mean()
             self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
-            # print('latent', latent.shape, latent.dtype)
-            # print('latent_index', latent_index.shape, latent_index.dtype)
-            print(f'{N} ---quantization_error-->', quantization_error.item())
+            print(f'{N} ---qe_sae-->', qe_sae.item())
+            print(f'{N} ---qe_mse-->', qe_mse.item())
             # print(f'{N}--- old_quantization_error - quantization_error --->', (old_quantization_error - quantization_error).item(), (old_quantization_error - quantization_error).item() < 1e-6)
-            if quantization_error < 1e-6: #or (old_quantization_error - quantization_error) < 1e-6:
+            if qe_sae < 1e-6: #or (old_quantization_error - quantization_error) < 1e-6:
                 break
             nl = nnl
             # old_quantization_error = quantization_error
             
         # compressor(self.pathdir, self.pathdir + '/phi.zip')
         # mue = (s1 / N).detach()
-        sn = latent.detach()
+        # sn = latent.detach()
         assert False
         return phi0, sn
     
