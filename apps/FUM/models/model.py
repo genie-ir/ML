@@ -67,7 +67,7 @@ class FUM(plModuleBase):
             # s1 = s1 + phi
             latent_index = self.vqgan.phi2lat(phi).float()
             phi_of_latent_index = self.vqgan.lat2phi(latent_index)
-            quantization_error = ((phi-phi_of_latent_index) ** 2).mean()
+            quantization_error = ((phi-phi_of_latent_index).abs()).sum()
             latent = latent_index
             phi = phi_of_latent_index
             self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
