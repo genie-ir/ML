@@ -53,7 +53,7 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, cross, batch_size):
-        list_of_distance_to_mode = []
+        # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
         # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
@@ -63,20 +63,20 @@ class FUM(plModuleBase):
         phi0 = self.vqgan.lat2phi(cross)
         nl = self.vqgan.phi2lat(phi0.detach()).float()
         for N in range(1, self.phi_steps):
-            list_of_distance_to_mode.append(nl.flatten(1))
+            # list_of_distance_to_mode.append(nl.flatten(1))
             np = self.vqgan.lat2phi(nl)
             nnl = self.vqgan.phi2lat(np).float()
             qe_mse = ((nl-nnl)**2).mean()
             nl = nnl
             if qe_mse < 1e-6: 
                 break
-            print(f'{N} ---qe_mse-->', qe_mse.item())
+            # print(f'{N} ---qe_mse-->', qe_mse.item())
             # self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
         # mue = (s1 / N).detach()
         sn = nl.flatten(1).detach()
-        print('='*60)
-        for i, l in enumerate(list_of_distance_to_mode):
-            print(f'{i}--->', ((l-sn)**2).mean().item())
+        # print('='*60)
+        # for i, l in enumerate(list_of_distance_to_mode):
+        #     print(f'{i}--->', ((l-sn)**2).mean().item())
         return phi0, sn
     
     def generator_step(self, batch):
@@ -85,11 +85,11 @@ class FUM(plModuleBase):
         ln = batch[self.signal_key]
         phi, sn = self.__c2phi(ln.detach(), batch['batch_size'])
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
-        print('ln', ln.shape, ln.dtype)
-        print('phi', phi.shape, phi.dtype)
-        print('sn', sn.shape, sn.dtype)
-        print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
-        assert False
+        # print('ln', ln.shape, ln.dtype)
+        # print('phi', phi.shape, phi.dtype)
+        # print('sn', sn.shape, sn.dtype)
+        # print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
+        # assert False
         
         
         
