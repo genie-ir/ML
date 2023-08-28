@@ -80,11 +80,11 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         phi, sn = self.__c2phi(ln.detach(), batch['batch_size'])
-        SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
+        # SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
         print('ln', ln.shape, ln.dtype)
         print('phi', phi.shape, phi.dtype)
         print('sn', sn.shape, sn.dtype)
-        print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
+        # print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
         assert False
         
         
