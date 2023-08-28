@@ -61,18 +61,17 @@ class FUM(plModuleBase):
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         phi0 = self.vqgan.lat2phi(cross)
-        p = phi0.detach()
-        nl = self.vqgan.phi2lat(p).float()
+        nl = self.vqgan.phi2lat(phi0.detach()).float()
         for N in range(1, self.phi_steps):
             list_of_distance_to_mode.append(nl.flatten(1))
             np = self.vqgan.lat2phi(nl)
             nnl = self.vqgan.phi2lat(np).float()
             qe_mse = ((nl-nnl)**2).mean()
-            # self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
-            print(f'{N} ---qe_mse-->', qe_mse.item())
             nl = nnl
             if qe_mse < 1e-6: 
                 break
+            print(f'{N} ---qe_mse-->', qe_mse.item())
+            # self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
         # mue = (s1 / N).detach()
         sn = nl.flatten(1).detach()
         print('='*60)
