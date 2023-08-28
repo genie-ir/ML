@@ -64,7 +64,7 @@ class FUM(plModuleBase):
         p = phi0.detach()
         nl = self.vqgan.phi2lat(p).float()
         for N in range(1, self.phi_steps):
-            list_of_distance_to_mode.append(nl)
+            list_of_distance_to_mode.append(nl.flatten(1))
             np = self.vqgan.lat2phi(nl)
             nnl = self.vqgan.phi2lat(np).float()
             qe_mse = ((nl-nnl)**2).mean()
