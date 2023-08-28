@@ -1,6 +1,16 @@
 # DELETE this file shoude be delete later it is just for backuping of main code.
 
 
+# for i in range(5):
+        #     for j in range(5):
+        #         print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]).abs())
+        # print(f'--> SSIM(phi, phi)=', SSIM(phi, phi).abs())
+        # print(f'--> SSIM(phi, permute(phi))=', SSIM(phi, torch.cat([
+        #     phi[2:3], phi[0:1], phi[4:5], phi[1:2], phi[3:4]
+        # ], dim=0)).abs())
+
+
+
 class _FUM(plModuleBase):
     def resnet50(self, model):
         model.fc = nn.Linear(model.fc.in_features, 1)

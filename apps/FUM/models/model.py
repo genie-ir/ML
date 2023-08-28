@@ -85,11 +85,7 @@ class FUM(plModuleBase):
         ln = batch[self.signal_key]
         phi, sn = self.__c2phi(ln, batch['batch_size'])
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
-        # print('ln', ln.shape, ln.dtype)
-        # print('phi', phi.shape, phi.dtype)
-        # print('sn', sn.shape, sn.dtype)
-        # print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
-        # assert False
+        # print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latent to sn.
         
         
         
@@ -100,10 +96,10 @@ class FUM(plModuleBase):
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
         
-        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32
+        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
         loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
-        # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
+        # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
         loss = loss_latent + loss_phi #+ loss_scphi + drloss_scphi
@@ -119,13 +115,6 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(cidx))
         )
         print(f'cidx={cidx}', lossdict)
-        # for i in range(5):
-        #     for j in range(5):
-        #         print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]).abs())
-        # print(f'--> SSIM(phi, phi)=', SSIM(phi, phi).abs())
-        # print(f'--> SSIM(phi, permute(phi))=', SSIM(phi, torch.cat([
-        #     phi[2:3], phi[0:1], phi[4:5], phi[1:2], phi[3:4]
-        # ], dim=0)).abs())
 
         # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
         # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
