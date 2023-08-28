@@ -71,8 +71,8 @@ class FUM(plModuleBase):
             latent = latent_index
             phi = phi_of_latent_index
             # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
-            print('latent', latent.shape, latent.dtype)
-            print('latent_index', latent_index.shape, latent_index.dtype)
+            # print('latent', latent.shape, latent.dtype)
+            # print('latent_index', latent_index.shape, latent_index.dtype)
             print('---quantization_error-->', quantization_error)
             print(f'{N}--- old_quantization_error - quantization_error --->', (old_quantization_error - quantization_error).item(), (old_quantization_error - quantization_error) < 1e-6)
             if quantization_error < 1e-6 or old_quantization_error == quantization_error:
