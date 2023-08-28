@@ -58,45 +58,34 @@ class FUM(plModuleBase):
         # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         # return phi, sn
         
-        old_quantization_error = float('inf')
+        # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         phi0 = self.vqgan.lat2phi(cross)
-        # latent = self.vqgan.phi2lat(phi0).float().detach()
-        
-        
         p = phi0.detach()
         nl = self.vqgan.phi2lat(p).float()
-        # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device)   becuse the first one is diffrentiable. ; each time you must do: s1=s1+phi
         for N in range(1, self.phi_steps):
             np = self.vqgan.lat2phi(nl)
             nnl = self.vqgan.phi2lat(np).float()
-            # qe_sae = ((nl-nnl).abs()).sum()
             qe_mse = ((nl-nnl)**2).mean()
-            self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
-            # print(f'{N} ---qe_sae-->', qe_sae.item())
+            # self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
             print(f'{N} ---qe_mse-->', qe_mse.item())
-            # print(f'{N}--- old_quantization_error - quantization_error --->', (old_quantization_error - quantization_error).item(), (old_quantization_error - quantization_error).item() < 1e-6)
-            if qe_mse < 1e-6: #or (old_quantization_error - quantization_error) < 1e-6:
-                break
             nl = nnl
-            # old_quantization_error = quantization_error
-            
-        # compressor(self.pathdir, self.pathdir + '/phi.zip')
+            if qe_mse < 1e-6: 
+                break
         # mue = (s1 / N).detach()
-        # sn = latent.detach()
-        assert False
+        sn = nl.detach()
         return phi0, sn
     
     def generator_step(self, batch):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        mue, sn = self.__c2phi(ln.detach(), batch['batch_size'])
+        phi, sn = self.__c2phi(ln.detach(), batch['batch_size'])
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
-        # print('ln', ln.shape, ln.dtype)
-        # print('phi', phi.shape, phi.dtype)
-        # print('sn', sn.shape, sn.dtype)
-        # print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
-        
+        print('ln', ln.shape, ln.dtype)
+        print('phi', phi.shape, phi.dtype)
+        print('sn', sn.shape, sn.dtype)
+        print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latents to sn
+        assert False
         
         
         
