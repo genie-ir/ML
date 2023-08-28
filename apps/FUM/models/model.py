@@ -27,7 +27,7 @@ class FUM(plModuleBase):
         b = B[0]
         print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for cidx in range(self.nclasses):
-            print('----grad---->', self.generator.scodebook.embedding.weight.grad)
+            # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
             batch['bidx'] = batch_idx
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
