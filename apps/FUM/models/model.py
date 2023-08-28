@@ -53,6 +53,7 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, cross, batch_size):
+        list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
         # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
@@ -63,6 +64,7 @@ class FUM(plModuleBase):
         p = phi0.detach()
         nl = self.vqgan.phi2lat(p).float()
         for N in range(1, self.phi_steps):
+            list_of_distance_to_mode.append(nl)
             np = self.vqgan.lat2phi(nl)
             nnl = self.vqgan.phi2lat(np).float()
             qe_mse = ((nl-nnl)**2).mean()
@@ -73,6 +75,9 @@ class FUM(plModuleBase):
                 break
         # mue = (s1 / N).detach()
         sn = nl.flatten(1).detach()
+        print('='*60)
+        for i, l in enumerate(list_of_distance_to_mode):
+            print(f'{i}--->', ((l-sn)**2).mean().item())
         return phi0, sn
     
     def generator_step(self, batch):
