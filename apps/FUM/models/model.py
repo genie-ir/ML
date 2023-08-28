@@ -83,7 +83,7 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        phi, sn = self.__c2phi(ln.detach(), batch['batch_size'])
+        phi, sn = self.__c2phi(ln, batch['batch_size'])
         SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
         # print('ln', ln.shape, ln.dtype)
         # print('phi', phi.shape, phi.dtype)
@@ -100,9 +100,7 @@ class FUM(plModuleBase):
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
         
-        DLOSS = self.vqgan.loss.discriminator(phi)
-        print('DLOSS', DLOSS.shape, DLOSS.dtype)
-        dloss_phi = -torch.mean(DLOSS)
+        dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32
         loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
