@@ -97,13 +97,10 @@ def dfread(src: str, **kwargs):
         if src.endswith('.csv'):
             return pd.read_csv(src)
 
-def dfdir(src: str):
-    if os.path.isfile(src):
-        print('@@@@@@@@@@@@@@@@@@@ extract start')
-        extractor(src)
-        print('@@@@@@@@@@@@@@@@@@@ extract end')
-    else:
-        pass
+def dfdir(src_dir: str=None, src_file: str=None):
+    if src_file is not None:
+        extractor(src_file, src_dir)
+    
 
 def dfshuffle(df, frac=1.0, resetIndexFlag=True):
     random_state = int(int(round(time.time() * 1000)) % 10000)
@@ -255,13 +252,11 @@ def compressor(src_dir: str, dst_file: str, mode=None):
                     zipf.write(join(sd_root, sd_file), os.path.relpath(join(sd_root, sd_file), join(src_dir, '..')))
 
 
-def extractor(src_file: str, dst_dir: str=None, mode=None, delFlag=False, makeReadyFlag=True):
+def extractor(src_file: str, dst_dir: str=None, mode=None, delFlag=False, makeReadyFlag=False):
     if dst_dir is None:
         dirpath, filename = os.path.split(src_file)
         dst_dir = join(dirpath, filename.replace('.', '__'))
     
-
-
     assert not is_prepared(dst_dir), 'dst_dir=`{}` is already exist'.format(dst_dir)
     flag = False
     if src_file.endswith('.tar'):

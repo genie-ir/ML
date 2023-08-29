@@ -11,7 +11,7 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuant
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
         dataset_path = '/content/drive/MyDrive/storage/pretrained_0_1DsignalOfEyepacs.zip'
-        dfdir(dataset_path)
+        dfdir(src_file=dataset_path, src_dir='/content/dataset')
         assert False
         t = torch.randint(0, 1024, self.eshape) # NOTE dataset
         # t = torch.randint(0, 1024, self.eshape) # NOTE random latents
