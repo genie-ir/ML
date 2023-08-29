@@ -96,6 +96,14 @@ def dfread(src: str, **kwargs):
         if src.endswith('.csv'):
             return pd.read_csv(src)
 
+def dfdir(src: str):
+    if os.path.isfile(src):
+        print('@@@@@@@@@@@@@@@@@@@ extract start')
+        extractor(src)
+        print('@@@@@@@@@@@@@@@@@@@ extract end')
+    else:
+        pass
+
 def dfshuffle(df, frac=1.0, resetIndexFlag=True):
     random_state = int(int(round(time.time() * 1000)) % 10000)
     if resetIndexFlag:
@@ -246,9 +254,21 @@ def compressor(src_dir: str, dst_file: str, mode=None):
                     zipf.write(join(sd_root, sd_file), os.path.relpath(join(sd_root, sd_file), join(src_dir, '..')))
 
 
-def extractor(src_file, dst_dir, mode='tar', delFlag=False, makeReadyFlag=False):
+def extractor(src_file: str, dst_dir: str=None, mode=None, delFlag=False, makeReadyFlag=False):
+    if dst_dir is None:
+        dirpath, filename = os.path.split(src_file)
+        dst_dir = join(dirpath, filename.replace('.', '__'))
+    
     assert not is_prepared(dst_dir), 'dst_dir=`{}` is already exist'.format(dst_dir)
     flag = False
+    if src_file.endswith('.tar'):
+        mode = 'tar'
+    elif src_file.endswith('.zip'):
+        mode = 'zip'
+    else:
+        if mode is None:
+            assert False, 'extractor needs know `mode`. | `mode={}` | `src_file={}` | `dst_dir={}`'.format(mode, src_file, dst_dir)
+
     if mode == 'tar':
         flag = True
         with tarfile.open(src_file, 'r:') as tar_ref:
@@ -275,8 +295,8 @@ def extractor(src_file, dst_dir, mode='tar', delFlag=False, makeReadyFlag=False)
     
     assert flag, 'mode=`{}` is not supported'.format(mode)
     if delFlag:
-        # os.system('sudo rm -rf {}'.format(src_file))
-        print('[deleting] -> {}'.format(src_file))
+        os.system('sudo rm -rf {}'.format(src_file))
+        logger.info('[deleting] -> {}'.format(src_file))
     if makeReadyFlag:
         mark_prepared(dst_dir)
 
