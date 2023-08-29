@@ -96,8 +96,14 @@ class FUM(plModuleBase):
         phi, sn, concept = self.__c2phi(ln, batch['batch_size'])
         self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
         SN = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze())
+        
+        
+        
+        
         print('----mse(sn, SN)----->', ((sn-SN)**2).mean())
-        self.vqgan.save_phi(self.vqgan.lat2phi(SN), pathdir=self.pathdir, fname=f'SN.png')
+        print('----SSIM(phi PSN)----->', SSIM(phi, PSN))
+        PSN = self.vqgan.lat2phi(SN)
+        self.vqgan.save_phi(PSN, pathdir=self.pathdir, fname=f'SN.png')
         assert False
         
         # s, sloss = self.generator.scodebook(p)
