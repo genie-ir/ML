@@ -11,8 +11,6 @@ from os.path import join, exists, relpath, getsize, abspath
 from os import makedirs, system, environ, getenv, link, rename
 from libs.basicIO import dffilter, dfread, dfwrite, fwrite, extractor, pathBIO, download, is_prepared, mark_prepared, dotdict
 
-# from apps.VQGAN.util import retrieve
-
 class ImageNetBase(Dataset):
     """
         relpaths:     [... '/x1.png' ...]  It can be consider as `x`
@@ -299,12 +297,6 @@ class ImageNetBase(Dataset):
             '#upper_path': self.datadir
         }
 
-        # print(self.relpaths)
-        # print(self.class_labels)
-        # print(class_dict)
-        # print(class_dict_R)
-        # print(human_dict_R)
-        
         if self.DF_CLASS_TYPE in ('int', 'str'): # classification task
             labels['@human_label'] = lambda yi: human_dict_R[str(yi)]
         if self.BYPASS_SYNSETS_FLAG:
@@ -320,35 +312,3 @@ class ImageNetBase(Dataset):
             **self.config,
             size=retrieve(self.config, 'SIZE', default=0)
         )
-
-class ImageNetTrain(ImageNetBase):
-    """
-    it useful to overide functions below in creation of custom dataset:
-        `download_dataset`, `extract_dataset`, ``preparation` of parrent class`
-    """
-    def __init__(self, config=None):
-        self.dataset_category = 'train'
-        super().__init__(config)
-
-    def extract_dataset(self, **kwargs):
-        fake_fpath = kwargs['fake_fpath']
-        datadir = kwargs['datadir']
-        extractor(src_file=fake_fpath, dst_dir=datadir, mode='zip')
-        nested_list = glob.glob(join(datadir, '*.zip*'))
-        assert len(nested_list)==0, f'nested_list: {nested_list} is exist.'
-
-class ImageNetValidation(ImageNetBase):
-    """
-    it useful to overide functions below in creation of custom dataset:
-        `download_dataset`, `extract_dataset`, `preparation of parrent class`
-    """
-    def __init__(self, config=None):
-        self.dataset_category = 'val'
-        super().__init__(config)
-    
-    def extract_dataset(self, **kwargs):
-        fake_fpath = kwargs['fake_fpath']
-        datadir = kwargs['datadir']
-        extractor(src_file=fake_fpath, dst_dir=datadir, mode='zip')
-        nested_list = glob.glob(join(datadir, '*.zip*'))
-        assert len(nested_list)==0, f'nested_list: {nested_list} is exist.'

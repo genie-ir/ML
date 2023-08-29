@@ -97,10 +97,10 @@ def dfread(src: str, **kwargs):
         if src.endswith('.csv'):
             return pd.read_csv(src)
 
-def dfdir(src_dir: str=None, src_file: str=None):
+def dfdir(src_dir: str, src_file: str=None):
     if src_file is not None:
-        extractor(src_file, src_dir)
-    
+        extractor(src_file, src_dir, makeReadyFlag=True)
+    pass
 
 def dfshuffle(df, frac=1.0, resetIndexFlag=True):
     random_state = int(int(round(time.time() * 1000)) % 10000)
