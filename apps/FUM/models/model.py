@@ -87,14 +87,15 @@ class FUM(plModuleBase):
         # print('='*60)
         # for i, l in enumerate(list_of_distance_to_mode):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
-        assert False
-        return phi0, sn
+        return phi0, sn, np
     
     def generator_step(self, batch):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        phi, sn = self.__c2phi(ln, batch['batch_size'])
+        phi, sn, concept = self.__c2phi(ln, batch['batch_size'])
+        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
+        assert False
         # SN = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze())
         
         # s, sloss = self.generator.scodebook(p)
