@@ -10,11 +10,11 @@ from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuant
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
-        dataset_path = '/content/drive/MyDrive/storage/pretrained_0_1DsignalOfEyepacs.zip'
-        dfdir(src_file=dataset_path, src_dir='/content/dataset')
-        assert False
-        t = torch.randint(0, 1024, self.eshape) # NOTE dataset
-        # t = torch.randint(0, 1024, self.eshape) # NOTE random latents
+        # dataset_path = '/content/drive/MyDrive/storage/pretrained_0_1DsignalOfEyepacs.zip'
+        # dfdir(src_file=dataset_path, src_dir='/content/dataset')
+        # assert False
+        # t = torch.randint(0, 1024, self.eshape) # NOTE dataset
+        # # t = torch.randint(0, 1024, self.eshape) # NOTE random latents
         self.w = self.nnParameter(tensor=t.log())
         self.embedding.weight = self.w
 
