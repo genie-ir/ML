@@ -102,8 +102,8 @@ class FUM(plModuleBase):
         
         PSN = self.vqgan.lat2phi(SN)
         self.vqgan.save_phi(PSN, pathdir=self.pathdir, fname=f'SN.png')
-        print('----mse(sn, SN)----->', ((sn-SN)**2).mean())
-        print('----sae(sn, SN)----->', ((sn-SN).abs()).sum())
+        d = (((sn-SN)**2).mean() +1).log()
+        print('----d(sn, SN)----->', d)
         print('----SSIM(phi PSN)----->', SSIM(phi, PSN))
         assert False
         
