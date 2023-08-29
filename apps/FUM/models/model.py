@@ -14,7 +14,7 @@ class VectorQuantizer(VectorQuantizerBase):
         # dfdir(src_file=dataset_path, src_dir='/content/dataset')
         # assert False
         # t = torch.randint(0, 1024, self.eshape) # NOTE dataset
-        # # t = torch.randint(0, 1024, self.eshape) # NOTE random latents
+        t = torch.randint(0, 1024, self.eshape) # NOTE random latents
         self.w = self.nnParameter(tensor=t.log())
         self.embedding.weight = self.w
 
