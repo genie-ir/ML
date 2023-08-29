@@ -84,21 +84,15 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         phi, sn = self.__c2phi(ln, batch['batch_size'])
-        SN = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
-        # print('SN', SN.shape, SN.dtype, SN) #NOTE: index of nearset latent to sn.
-        
-        
-        
-        
+        # SN = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze())
         
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
-        
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
-        loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
+        loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
