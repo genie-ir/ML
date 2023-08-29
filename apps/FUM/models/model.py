@@ -87,6 +87,7 @@ class FUM(plModuleBase):
         # print('='*60)
         # for i, l in enumerate(list_of_distance_to_mode):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
+        assert False
         return phi0, sn
     
     def generator_step(self, batch):
