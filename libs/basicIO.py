@@ -25,6 +25,7 @@ from tqdm import tqdm
 from time import sleep
 from torf import Torrent
 from loguru import logger
+from http import HTTPStatus
 from libs.basicHR import EHR
 from omegaconf import OmegaConf
 from os.path import join, exists
@@ -254,11 +255,13 @@ def compressor(src_dir: str, dst_file: str, mode=None):
                     zipf.write(join(sd_root, sd_file), os.path.relpath(join(sd_root, sd_file), join(src_dir, '..')))
 
 
-def extractor(src_file: str, dst_dir: str=None, mode=None, delFlag=False, makeReadyFlag=False):
+def extractor(src_file: str, dst_dir: str=None, mode=None, delFlag=False, makeReadyFlag=True):
     if dst_dir is None:
         dirpath, filename = os.path.split(src_file)
         dst_dir = join(dirpath, filename.replace('.', '__'))
     
+
+
     assert not is_prepared(dst_dir), 'dst_dir=`{}` is already exist'.format(dst_dir)
     flag = False
     if src_file.endswith('.tar'):
