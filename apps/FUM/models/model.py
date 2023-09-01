@@ -65,7 +65,7 @@ class FUM(plModuleBase):
         A = self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1), argmin=True, topk=2)
         print(A, A.shape)
         assert False
-        nearst_cross = self.generator.scodebook.fwd_nbpi(.squeeze()).exp().detach()
+        # nearst_cross = self.generator.scodebook.fwd_nbpi(.squeeze()).exp().detach()
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
