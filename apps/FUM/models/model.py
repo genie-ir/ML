@@ -95,7 +95,9 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         for i in range(3):
-            phi, sn, concept = self.__c2phi(ln, tag=f'{i}/') # NOTE `sn` and `concept` doesnt have derevetive.
+            tag=f'{i}/'
+            phi, sn, concept = self.__c2phi(ln, tag=tag) # NOTE `sn` and `concept` doesnt have derevetive.
+            self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'{tag}concept.png')
         assert False
         self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
         s_prime = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
