@@ -15,7 +15,7 @@ class VectorQuantizer(VectorQuantizerBase):
         # assert False
         # t = torch.randint(0, 1024, self.eshape) # NOTE dataset
         # t = torch.randint(0, 1024, self.eshape) # NOTE random latents
-        t = torch.randint(0, 50, self.eshape) # NOTE random latents
+        t = torch.randint(0, 10, self.eshape) # NOTE random latents
         self.w = self.nnParameter(tensor=t.log())
         self.embedding.weight = self.w
 
