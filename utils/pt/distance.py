@@ -13,6 +13,8 @@ from einops import rearrange
 
 def L2S(a, b, argmin=False, topk=1):
     """Square of L2 Norm"""
+    a = a.round()
+    b = b.round()
     d = torch.sum(a ** 2, dim=1, keepdim=True) + \
         torch.sum(b ** 2, dim=1) - 2 * \
         torch.einsum('bd,dn->bn', a, rearrange(b, 'n d -> d n'))
