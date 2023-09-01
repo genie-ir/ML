@@ -93,10 +93,10 @@ class VectorQuantizer(BB):
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q, loss
     
-    def fwd_getIndices(self, z):
+    def fwd_getIndices(self, z, topk=1):
         z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
-        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
+        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True, topk=topk)
         return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
     
     def fwd_bpi(self, idx):
