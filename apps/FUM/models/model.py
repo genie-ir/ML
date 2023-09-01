@@ -78,7 +78,7 @@ class FUM(plModuleBase):
             self.vqgan.save_phi((phi_concept), pathdir=self.pathdir, fname=f'0phi_concept.png')
             self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'0phi_sprime.png')
             S = SSIM(phi_concept, P0, reduction='none').abs()
-            ssim = (S>.3).float().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).detach()
+            ssim = (S>=.4).float().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).detach()
             print('S-------------->', S)
             print('ssim-------------->', ssim)
             P0 = (1-ssim) * P0 + ssim * phi_concept
