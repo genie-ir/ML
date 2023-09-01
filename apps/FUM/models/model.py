@@ -70,6 +70,7 @@ class FUM(plModuleBase):
         phi0 = self.vqgan.lat2phi(cross)
         P0 = phi0.detach()
         P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
+        P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
         # _np = phi0.detach()
         for N in range(1, self.phi_steps):
