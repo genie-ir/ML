@@ -68,7 +68,7 @@ class FUM(plModuleBase):
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         phi0 = self.vqgan.lat2phi(cross)
-        P0 = phi0.detach()
+        P0 = phi0.clone().detach()
         P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
