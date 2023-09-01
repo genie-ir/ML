@@ -116,7 +116,8 @@ class FUM(plModuleBase):
         #     self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'{tag}concept.png')
         # assert False
         phi, sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
-        s_prime = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
+        nidx = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
+        s_prime = self.generator.scodebook.fwd_nbpi(nidx).exp().detach()
         phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, phi_concept=phi.detach())
         self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
         self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
@@ -125,6 +126,7 @@ class FUM(plModuleBase):
         mse_p1log_sn_szegond = (mse_sn_szegond + 1).log()
         loss_sn_szegond = 1 - mse_p1log_sn_szegond.sigmoid()
         
+        print('----nidx------->', nidx)
         print('----mse(ln, s\')----->', ((ln - s_prime)**2).mean(), (1+((ln - s_prime)**2).mean()).log())
         # print('----mse(ln, sn)----->', ((ln - sn)**2).mean(), (1+((ln - sn)**2).mean()).log())
         # print('----mse(sn, s")----->', mse_sn_szegond)
