@@ -72,10 +72,14 @@ class FUM(plModuleBase):
         if phi_concept is not None:
             _P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) /3
             _phi_concept = (phi_concept[:, 0:1, :,:] + phi_concept[:, 1:2, :,:] + phi_concept[:, 2:3, :,:]) /3
+            
+            self.vqgan.save_phi((_phi_concept), pathdir=self.pathdir, fname=f'_phi_concept.png')
+            self.vqgan.save_phi(( _P0), pathdir=self.pathdir, fname=f'_P0.png')
+            self.vqgan.save_phi((_phi_concept - _P0), pathdir=self.pathdir, fname=f'menha.png')
             ssim = SSIM(_phi_concept, _P0).abs().detach()
             print('ssim-------------->', ssim.item())
             P0 = (1-ssim) * P0 + ssim * phi_concept
-
+        assert False
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
