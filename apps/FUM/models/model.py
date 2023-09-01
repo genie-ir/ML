@@ -79,7 +79,7 @@ class FUM(plModuleBase):
             ssim = SSIM(_phi_concept, _P0).abs().detach()
             print('ssim-------------->', ssim.item())
             P0 = (1-ssim) * P0 + ssim * phi_concept
-        assert False
+            assert False
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
