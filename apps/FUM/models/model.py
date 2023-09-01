@@ -78,10 +78,7 @@ class FUM(plModuleBase):
             self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'phi_sprim.png')
             self.vqgan.save_phi((phi_concept - P0), pathdir=self.pathdir, fname=f'menha.png')
             ssim = SSIM(phi_concept, P0).abs().detach()
-            ssim2 = SSIM(P0, phi_concept).abs().detach()
             print('ssim-------------->', ssim.item())
-            print('ssim2-------------->', ssim2.item())
-            assert False
             P0 = (1-ssim) * P0 + ssim * phi_concept
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
