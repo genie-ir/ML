@@ -125,10 +125,11 @@ class FUM(plModuleBase):
         mse_p1log_sn_szegond = (mse_sn_szegond + 1).log()
         loss_sn_szegond = 1 - mse_p1log_sn_szegond.sigmoid()
         
-        print('----mse(ln, sn)----->', ((ln - sn)**2).mean(), (1+((ln - sn)**2).mean()).log())
-        print('----mse(sn, s")----->', mse_sn_szegond)
-        print('----mse_p1log_sn_szegond----->', mse_p1log_sn_szegond)
-        print('----loss_sn_szegond----->', loss_sn_szegond)
+        print('----mse(ln, s\')----->', ((ln - s_prime)**2).mean(), (1+((ln - s_prime)**2).mean()).log())
+        # print('----mse(ln, sn)----->', ((ln - sn)**2).mean(), (1+((ln - sn)**2).mean()).log())
+        # print('----mse(sn, s")----->', mse_sn_szegond)
+        # print('----mse_p1log_sn_szegond----->', mse_p1log_sn_szegond)
+        # print('----loss_sn_szegond----->', loss_sn_szegond)
         assert False
         
         # s, sloss = self.generator.scodebook(p)
