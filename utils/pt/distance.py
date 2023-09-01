@@ -20,6 +20,8 @@ def L2S(a, b, argmin=False, topk=1):
         torch.einsum('bd,dn->bn', a, rearrange(b, 'n d -> d n'))
     
     if argmin:
+        print(d)
+        print(d.shape)
         amin = torch.argmin(d, dim=1)
         tk = torch.topk(d, topk, largest=False, dim=1)
         print('amin', amin)
