@@ -70,16 +70,18 @@ class FUM(plModuleBase):
         phi0 = self.vqgan.lat2phi(cross)
         P0 = phi0.clone().detach()
         if phi_concept is not None:
-            _P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) /3
-            _phi_concept = (phi_concept[:, 0:1, :,:] + phi_concept[:, 1:2, :,:] + phi_concept[:, 2:3, :,:]) /3
+            # _P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) /3
+            # _phi_concept = (phi_concept[:, 0:1, :,:] + phi_concept[:, 1:2, :,:] + phi_concept[:, 2:3, :,:]) /3
             
-            self.vqgan.save_phi((_phi_concept), pathdir=self.pathdir, fname=f'_phi_concept.png')
-            self.vqgan.save_phi(( _P0), pathdir=self.pathdir, fname=f'_P0.png')
-            self.vqgan.save_phi((_phi_concept - _P0), pathdir=self.pathdir, fname=f'menha.png')
-            ssim = SSIM(_phi_concept, _P0).abs().detach()
+            self.vqgan.save_phi((phi_concept), pathdir=self.pathdir, fname=f'phi.png')
+            self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'phi_sprim.png')
+            self.vqgan.save_phi((phi_concept - P0), pathdir=self.pathdir, fname=f'menha.png')
+            ssim = SSIM(phi_concept, P0).abs().detach()
+            ssim2 = SSIM(P0, phi_concept).abs().detach()
             print('ssim-------------->', ssim.item())
-            P0 = (1-ssim) * P0 + ssim * phi_concept
+            print('ssim2-------------->', ssim2.item())
             assert False
+            P0 = (1-ssim) * P0 + ssim * phi_concept
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
