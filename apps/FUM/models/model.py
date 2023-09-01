@@ -73,6 +73,11 @@ class FUM(plModuleBase):
         P0 = phi0.clone().detach()
         ssim = SSIM(P0, nearst_phi0).detach()
         P0 = (1-ssim) * P0 + ssim * nearst_phi0
+        print('ssim=', ssim.item())
+        self.vqgan.save_phi(phi0, pathdir=self.pathdir, fname=f'phi0.png')
+        self.vqgan.save_phi(nearst_phi0, pathdir=self.pathdir, fname=f'nearst_phi0.png')
+        self.vqgan.save_phi(P0, pathdir=self.pathdir, fname=f'P0.png')
+        assert False
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
