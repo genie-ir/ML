@@ -14,8 +14,8 @@ class VectorQuantizer(VectorQuantizerBase):
         # dfdir(src_file=dataset_path, src_dir='/content/dataset')
         # assert False
         # t = torch.randint(0, 1024, self.eshape) # NOTE dataset
-        # t = torch.randint(0, 1024, self.eshape) # NOTE random latents
-        t = torch.randint(0, 100, self.eshape) # NOTE random latents
+        t = torch.randint(0, 1024, self.eshape) # NOTE random latents
+        # t = torch.randint(0, 100, self.eshape) # NOTE random latents
         self.w = self.nnParameter(tensor=t.log())
         self.embedding.weight = self.w
 
@@ -31,8 +31,8 @@ class FUM(plModuleBase):
 
         # B = batch[self.signal_key]
         t = 3612
-        # B = torch.tensor([2,2,2,2, t], device=self.device)
-        B = torch.tensor([2], device=self.device)
+        B = torch.tensor([2,2,2,2, t], device=self.device)
+        # B = torch.tensor([2], device=self.device)
         b = B[0]
         print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
         for cidx in range(self.nclasses):
@@ -78,7 +78,7 @@ class FUM(plModuleBase):
             self.vqgan.save_phi((phi_concept), pathdir=self.pathdir, fname=f'phi.png')
             self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'phi_sprim.png')
             self.vqgan.save_phi((phi_concept - P0), pathdir=self.pathdir, fname=f'menha.png')
-            ssim = SSIM(phi_concept, P0, reduction='none').abs().round().detach()
+            ssim = SSIM(phi_concept, P0, reduction='none').abs().round().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).detach()
             print('ssim-------------->', ssim)
             P0 = (1-ssim) * P0 + ssim * phi_concept
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
