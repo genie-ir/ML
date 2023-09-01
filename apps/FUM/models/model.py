@@ -60,6 +60,9 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, cross, tag=''):
+        print(cross.shape)
+        assert False
+        # self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
@@ -75,7 +78,7 @@ class FUM(plModuleBase):
         # _np = phi0.detach()
         for N in range(1, self.phi_steps):
             # list_of_distance_to_mode.append(nl.flatten(1))
-            np = P0 * self.vqgan.lat2phi(nl)
+            np = self.vqgan.lat2phi(nl)
             # print(f'({N-1},{N})-------ssim-------->', SSIM(_np, np))
             nnl = self.vqgan.phi2lat(np).float()
             qe_mse = ((nl-nnl)**2).mean()
