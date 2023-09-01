@@ -62,7 +62,7 @@ class FUM(plModuleBase):
     def __c2phi(self, cross, tag=''):
         print('hooooooooooooooooo!!')
         print(cross)
-        A = self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1), argmin=True, topk=2)
+        A = self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1), argmin=False, topk=2)
         print(A, A.shape)
         assert False
         # nearst_cross = self.generator.scodebook.fwd_nbpi(.squeeze()).exp().detach()
