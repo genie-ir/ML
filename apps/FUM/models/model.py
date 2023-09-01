@@ -60,9 +60,7 @@ class FUM(plModuleBase):
         ])
 
     def __c2phi(self, cross, tag=''):
-        nearset_cross = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
-        print(nearset_cross.shape)
-        assert False
+        nearst_cross = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
@@ -71,7 +69,10 @@ class FUM(plModuleBase):
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         phi0 = self.vqgan.lat2phi(cross)
+        nearst_phi0 = self.vqgan.lat2phi(nearst_cross).detach()
         P0 = phi0.clone().detach()
+        ssim = SSIM(P0, nearst_phi0).detach()
+        P0 = (1-ssim) * P0 + ssim * nearst_phi0
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
