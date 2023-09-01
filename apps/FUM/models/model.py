@@ -110,7 +110,7 @@ class FUM(plModuleBase):
         loss_sn_szegond = 1 - mse_p1log_sn_szegond.sigmoid()
         
         print('----mse(ln, sn)----->', ((ln, sn)**2).mean(), (1+((ln, sn)**2).mean()).log())
-        print('----mse_sn_szegond----->', mse_sn_szegond)
+        print('----mse(sn, s")----->', mse_sn_szegond)
         print('----mse_p1log_sn_szegond----->', mse_p1log_sn_szegond)
         print('----loss_sn_szegond----->', loss_sn_szegond)
         assert False
