@@ -19,13 +19,6 @@ def L2S(a, b, argmin=False, topk=False):
         torch.sum(b ** 2, dim=1) - 2 * \
         torch.einsum('bd,dn->bn', a, rearrange(b, 'n d -> d n'))
     
-    print('-'*60)
-    amin = torch.argmin(d, dim=1)
-    tk = torch.topk(d, topk, largest=False, dim=1)
-    print('amin', amin)
-    print('tk', tk)
-    print('-'*60)
-    
     if argmin:
         return torch.argmin(d, dim=1)
     
