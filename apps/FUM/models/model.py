@@ -69,21 +69,22 @@ class FUM(plModuleBase):
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         phi0 = self.vqgan.lat2phi(cross)
         nl = self.vqgan.phi2lat(phi0.detach()).float()
-        _np = phi0.detach()
+        # _np = phi0.detach()
         for N in range(1, self.phi_steps):
             # list_of_distance_to_mode.append(nl.flatten(1))
             np = self.vqgan.lat2phi(nl)
-            print(f'({N-1},{N})-------ssim-------->', SSIM(_np, np))
+            # print(f'({N-1},{N})-------ssim-------->', SSIM(_np, np))
             nnl = self.vqgan.phi2lat(np).float()
             qe_mse = ((nl-nnl)**2).mean()
             nl = nnl
             if qe_mse < 1e-6: 
                 break
-            _np = np
+            # _np = np
             # print(f'{N} ---qe_mse-->', qe_mse.item())
             self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
         # mue = (s1 / N).detach()
         sn = nl.flatten(1).detach()
+        np = np.detach()
         # print('='*60)
         # for i, l in enumerate(list_of_distance_to_mode):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
@@ -93,18 +94,19 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        phi, sn, concept = self.__c2phi(ln, batch['batch_size'])
+        phi, sn, concept = self.__c2phi(ln, batch['batch_size']) # NOTE `sn` and `concept` doesnt have derevetive.
         self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
-        SN = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp()
+        s_prime = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
+        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, batch['batch_size'])
+        self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
+        self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
+        mse_sn_szegond = ((sn-s_zegond)**2).mean()
+        mse_p1log_sn_szegond = (mse_sn_szegond + 1).log()
+        loss_sn_szegond = 1 - mse_p1log_sn_szegond.sigmoid()
         
-        
-        
-        
-        PSN = self.vqgan.lat2phi(SN)
-        self.vqgan.save_phi(PSN, pathdir=self.pathdir, fname=f'SN.png')
-        d = (((sn-SN)**2).mean() +1).log()
-        print('----d(sn, SN)----->', d)
-        print('----SSIM(phi PSN)----->', SSIM(phi, PSN))
+        print('----mse_sn_szegond----->', mse_sn_szegond)
+        print('----mse_p1log_sn_szegond----->', mse_p1log_sn_szegond)
+        print('----loss_sn_szegond----->', loss_sn_szegond)
         assert False
         
         # s, sloss = self.generator.scodebook(p)
