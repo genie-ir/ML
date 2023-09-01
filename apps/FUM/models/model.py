@@ -62,7 +62,10 @@ class FUM(plModuleBase):
     def __c2phi(self, cross, tag=''):
         print('hooooooooooooooooo!!')
         print(cross)
-        nearst_cross = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1), topk=2).squeeze()).exp().detach()
+        A = self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1), argmin=True, topk=2)
+        print(A, A.shape)
+        assert False
+        nearst_cross = self.generator.scodebook.fwd_nbpi(.squeeze()).exp().detach()
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)

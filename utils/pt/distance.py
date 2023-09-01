@@ -11,7 +11,7 @@ from einops import rearrange
 #             + torch.sum(b**2, dim=1) \
 #             -2 * torch.matmul(a, b.t())
 
-def L2S(a, b, argmin=False, topk=1):
+def L2S(a, b, argmin=False, topk=False):
     """Square of L2 Norm"""
     a = a.round()
     b = b.round()
@@ -19,12 +19,17 @@ def L2S(a, b, argmin=False, topk=1):
         torch.sum(b ** 2, dim=1) - 2 * \
         torch.einsum('bd,dn->bn', a, rearrange(b, 'n d -> d n'))
     
+    print('-'*60)
+    amin = torch.argmin(d, dim=1)
+    tk = torch.topk(d, topk, largest=False, dim=1)
+    print('amin', amin)
+    print('tk', tk)
+    print('-'*60)
+    
     if argmin:
-        print(d)
-        print(d.shape)
-        amin = torch.argmin(d, dim=1)
-        tk = torch.topk(d, topk, largest=False, dim=1)
-        print('amin', amin)
-        print('tk', tk)
-        assert False
+        return torch.argmin(d, dim=1)
+    
+    if topk:
+        return torch.topk(d, topk, largest=False, dim=1)
+    
     return d

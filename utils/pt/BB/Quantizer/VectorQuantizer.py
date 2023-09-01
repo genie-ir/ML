@@ -93,12 +93,15 @@ class VectorQuantizer(BB):
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         return z_q, loss
     
-    def fwd_getIndices(self, z, topk=1):
+    def fwd_getIndices(self, z, argmin=True, topk=False):
         z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
-        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True, topk=topk)
-        return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
-    
+        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=argmin, topk=topk)
+        if argmin:
+            return min_encoding_indices.view(z.shape[:-1]) # (-1,16,16,256) -> (-1,16,16)
+        else:
+            return min_encoding_indices
+        
     def fwd_bpi(self, idx):
         """`idx` should be `float or somthing meaningful` since `grad` can be `backprob` in it"""
         z_q = (onehot_with_grad(idx.squeeze(), self.n_e) @ self.embedding.weight).view(self.zshape)
