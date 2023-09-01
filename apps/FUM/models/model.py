@@ -59,7 +59,7 @@ class FUM(plModuleBase):
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
 
-    def __c2phi(self, cross, batch_size):
+    def __c2phi(self, cross, tag=''):
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
@@ -81,7 +81,7 @@ class FUM(plModuleBase):
                 break
             # _np = np
             # print(f'{N} ---qe_mse-->', qe_mse.item())
-            self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'phi-{str(N)}.png')
+            self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'{tag}phi-{str(N)}.png')
         # mue = (s1 / N).detach()
         sn = nl.flatten(1).detach()
         np = np.detach()
@@ -94,10 +94,12 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        phi, sn, concept = self.__c2phi(ln, batch['batch_size']) # NOTE `sn` and `concept` doesnt have derevetive.
+        for i in range(3):
+            phi, sn, concept = self.__c2phi(ln, tag=f'{i}/') # NOTE `sn` and `concept` doesnt have derevetive.
+        assert False
         self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
         s_prime = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
-        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, batch['batch_size'])
+        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime)
         self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
         self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
         mse_sn_szegond = ((sn-s_zegond)**2).mean()
