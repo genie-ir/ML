@@ -31,7 +31,7 @@ class FUM(plModuleBase):
 
         # B = batch[self.signal_key]
         t = 3612
-        B = torch.tensor([2,2,2,2, t], device=self.device)
+        B = torch.tensor([2,3,4,5, t], device=self.device)
         # B = torch.tensor([2], device=self.device)
         b = B[0]
         print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[b,0], self.generator.scodebook.embedding.weight[b,0].exp())
