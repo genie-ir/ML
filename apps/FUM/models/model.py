@@ -70,8 +70,9 @@ class FUM(plModuleBase):
         phi0 = self.vqgan.lat2phi(cross)
         P0 = phi0.clone().detach()
         if phi_concept is not None:
-            ssim = SSIM(phi_concept, P0).detach()
+            ssim = SSIM(phi_concept, P0).abs().detach()
             print('ssim-------------->', ssim.item())
+            print('ssim-------------->', (phi_concept / (P0 + 1e-8)))
             P0 = (1-ssim) * P0 + ssim * phi_concept
 
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
