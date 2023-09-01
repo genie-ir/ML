@@ -59,13 +59,7 @@ class FUM(plModuleBase):
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
 
-    def __c2phi(self, cross, tag=''):
-        print('hooooooooooooooooo!!')
-        print(cross)
-        A = self.generator.scodebook.fwd_getIndices(cross.unsqueeze(-1).unsqueeze(-1), argmin=False, topk=2).indices
-        print(A, A.shape)
-        assert False
-        # nearst_cross = self.generator.scodebook.fwd_nbpi(.squeeze()).exp().detach()
+    def __c2phi(self, cross, tag='', phi_concept=None):
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
@@ -74,15 +68,12 @@ class FUM(plModuleBase):
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         phi0 = self.vqgan.lat2phi(cross)
-        nearst_phi0 = self.vqgan.lat2phi(nearst_cross).detach()
         P0 = phi0.clone().detach()
-        ssim = SSIM(P0, nearst_phi0).detach()
-        P0 = (1-ssim) * P0 + ssim * nearst_phi0
-        print('ssim=', ssim.item())
-        self.vqgan.save_phi(phi0, pathdir=self.pathdir, fname=f'phi0.png')
-        self.vqgan.save_phi(nearst_phi0, pathdir=self.pathdir, fname=f'nearst_phi0.png')
-        self.vqgan.save_phi(P0, pathdir=self.pathdir, fname=f'P0.png')
-        assert False
+        if phi_concept is not None:
+            ssim = SSIM(phi_concept, P0).detach()
+            print('ssim-------------->', ssim.item())
+            P0 = (1-ssim) * P0 + ssim * phi_concept
+
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
@@ -117,9 +108,9 @@ class FUM(plModuleBase):
         #     self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'{tag}concept.png')
         # assert False
         phi, sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
-        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
         s_prime = self.generator.scodebook.fwd_nbpi(self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()).exp().detach()
-        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime)
+        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, phi_concept=phi.detach())
+        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
         self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
         self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
         mse_sn_szegond = ((sn-s_zegond)**2).mean()
