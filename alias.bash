@@ -56,6 +56,7 @@ alias kcg-controllers-advanced="lssubsys"
 alias kcg-controllers-advanced-paths="lssubsys -M"
 alias kcg-controllers-advanced-paths-only="kcg-controllers-advanced-paths | grep '\/.*' -o | grep ''"
 alias kmemory-ls="free -m"
+alias kunrar="unrar x -p './*.rar'"
 ksplit ()
 {
 	set -- "${1:-}" "${2:-1G}" "${3:-$(openssl rand -hex 12)}"

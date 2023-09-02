@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from libs.basicIO import dfdir
+from utils.pt.tricks.gradfns import dzq_dz_eq1
 from utils.pl.plModuleBase import plModuleBase
 from utils.pt.BB.Calculation.residual_block import MAC
 from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
@@ -72,9 +73,6 @@ class FUM(plModuleBase):
         phi0 = self.vqgan.lat2phi(cross)
         P0 = phi0.clone().detach()
         if phi_concept is not None:
-            # _P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) /3
-            # _phi_concept = (phi_concept[:, 0:1, :,:] + phi_concept[:, 1:2, :,:] + phi_concept[:, 2:3, :,:]) /3
-            
             self.vqgan.save_phi((phi_concept), pathdir=self.pathdir, fname=f'0phi_concept.png')
             self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'0phi_sprime.png')
             S = SSIM(phi_concept, P0, reduction='none').abs()
@@ -82,6 +80,7 @@ class FUM(plModuleBase):
             print('S-------------->', S)
             print('ssim-------------->', ssim)
             P0 = (1-ssim) * P0 + ssim * phi_concept
+        
         # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
         # P0 = torch.cat([P0, P0, P0], dim=1)
         nl = self.vqgan.phi2lat(P0).float()
@@ -107,50 +106,45 @@ class FUM(plModuleBase):
         return phi0, sn, np
     
     def generator_step(self, batch):
-        bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        # for i in range(3):
-        #     tag=f'{i}/'
-        #     phi, sn, concept = self.__c2phi(ln, tag=tag) # NOTE `sn` and `concept` doesnt have derevetive.
-        #     self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'{tag}concept.png')
-        # assert False
         phi, sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
+        
         nidx = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
         s_prime = self.generator.scodebook.fwd_nbpi(nidx).exp().detach()
-        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, phi_concept=phi.detach())
-        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
-        self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
-        self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
-        mse_sn_szegond = ((sn-s_zegond)**2).mean()
-        mse_p1log_sn_szegond = (mse_sn_szegond + 1).log()
-        loss_sn_szegond = 1 - mse_p1log_sn_szegond.sigmoid()
         
-        print('----nidx------->', nidx)
-        print('----mse(ln, s\')----->', ((ln - s_prime)**2).mean(), (1+((ln - s_prime)**2).mean()).log())
-        # print('----mse(ln, sn)----->', ((ln - sn)**2).mean(), (1+((ln - sn)**2).mean()).log())
-        # print('----mse(sn, s")----->', mse_sn_szegond)
-        # print('----mse_p1log_sn_szegond----->', mse_p1log_sn_szegond)
-        # print('----loss_sn_szegond----->', loss_sn_szegond)
-        assert False
         
+        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, phi_concept=phi.detach()) # NOTE `phi_sprime` does not exist in any deravitive path.
+        
+        sn = dzq_dz_eq1(sn, ln)
+        divergenceloss = 1 - torch.sigmoid((1 + ((sn-s_zegond) ** 2).mean()).log())
+
         # s, sloss = self.generator.scodebook(p)
         # sq = self.vqgan.lat2qua(s)
         # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-        loss_latent = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
+        convergenceloss = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
-        loss = loss_latent + loss_phi #+ loss_scphi + drloss_scphi
+        
+        
+        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
+        self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
+        self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
+        
+        print('----nidx------->', nidx)
+        
+        loss = convergenceloss + divergenceloss + loss_phi #+ loss_scphi + drloss_scphi
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
-            loss_latent=loss_latent,
+            divergenceloss=divergenceloss,
+            convergenceloss=convergenceloss,
             # loss_scphi=loss_scphi,
             # dloss_scphi=dloss_scphi,
             # drloss_scphi=drloss_scphi,
