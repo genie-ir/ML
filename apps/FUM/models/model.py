@@ -41,7 +41,7 @@ class FUM(plModuleBase):
         img = img.numpy().astype(np.uint8)
         signal_save(img, self.pathdir + '/' + f'_batch.png')
         
-        print(self.drclassifire(_phi))
+        print(self.drclassifire(img))
         print(batch['y'])
         assert False
 
