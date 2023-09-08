@@ -12,6 +12,7 @@ try:
     from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Union
 except Exception as e:
     print(e)
+    assert False
 
 class GenieLoggerBase(Logger):
     def __init__(
