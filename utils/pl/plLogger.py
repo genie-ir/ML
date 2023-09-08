@@ -1,14 +1,17 @@
-from os import getenv, makedirs
-import inflect
-from os.path import join
-from loguru import logger
-from libs.coding import sha1
-import pytorch_lightning as pl
-from utils.metrics import Metrics
-from libs.dbms.sqlite_dbms import SqliteDBMS
-from pytorch_lightning.loggers.logger import Logger, rank_zero_experiment
-from pytorch_lightning.utilities import rank_zero_only
-from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Union
+try:
+    from os import getenv, makedirs
+    import inflect
+    from os.path import join
+    from loguru import logger
+    from libs.coding import sha1
+    import pytorch_lightning as pl
+    from utils.metrics import Metrics
+    from libs.dbms.sqlite_dbms import SqliteDBMS
+    from pytorch_lightning.loggers.logger import Logger, rank_zero_experiment
+    from pytorch_lightning.utilities import rank_zero_only
+    from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Union
+except Exception as e:
+    print(e)
 
 class GenieLoggerBase(Logger):
     def __init__(
