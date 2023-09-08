@@ -30,10 +30,9 @@ class FUM(plModuleBase):
         print(_phi.shape)
         from einops import rearrange
         import torchvision, numpy as np
-        signal_save(
-            torchvision.utils.make_grid(rearrange(_phi, 'b c h w -> b h w c').contiguous().detach().cpu(), nrow=2).numpy().astype(np.uint8), 
-            self.pathdir + '/' + f'_batch.png'
-        )
+        img = torchvision.utils.make_grid(rearrange(_phi, 'b c h w -> b h w c').contiguous().detach().cpu(), nrow=2).numpy().astype(np.uint8)
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
+        signal_save(img, self.pathdir + '/' + f'_batch.png')
         
         print(self.drclassifire(_phi))
         print(batch['y'])
