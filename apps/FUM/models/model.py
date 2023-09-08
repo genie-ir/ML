@@ -26,7 +26,7 @@ class FUM(plModuleBase):
     
     def training_step(self, batch, batch_idx, split='train'):
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
-        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).long().to(self.device)
+        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
         print(_phi.shape, _phi.dtype, _phi.min(), _phi.max(), _phi.device)
         # from einops import rearrange
         # import torchvision, numpy as np
