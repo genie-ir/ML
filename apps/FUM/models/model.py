@@ -1,12 +1,12 @@
 import torch
 from torch import nn
 from libs.basicIO import dfdir
+from libs.basicIO import signal_save
 from utils.pt.tricks.gradfns import dzq_dz_eq1
 from utils.pl.plModuleBase import plModuleBase
 from utils.pt.BB.Calculation.residual_block import MAC
 from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
-
 
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
@@ -28,7 +28,12 @@ class FUM(plModuleBase):
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True)
         print(_phi.shape)
-        self.vqgan.save_phi(_phi, pathdir=self.pathdir, fname=f'_batch.png', afn=lambda x: x)
+        import torchvision, numpy as np
+        signal_save(
+            torchvision.utils.make_grid(_phi.detach().cpu(), nrow=2).numpy().astype(np.uint8), 
+            self.pathdir + '/' + f'_batch.png'
+        )
+        
         print(self.drclassifire(_phi))
         print(batch['y'])
         assert False

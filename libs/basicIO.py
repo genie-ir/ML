@@ -340,8 +340,6 @@ def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None, sreturn=False):
         grid = fn(grid).numpy().astype(np.uint8)
         
         signal_save(grid, fpath)
-        if sreturn == False:
-            assert False, '222222222222222222222222'
         
         if sreturn:
             imgs = fn(images)
@@ -364,7 +362,6 @@ def signal_save(s, path, makedirsFlag=True, stype=None, sparams=None):
     
     if isinstance(s, np.ndarray): # image signal
         if any(ext.lower() in fname_lower for ext in ['.png', '.jpg', '.jpeg']):
-            print('!!!!!!!!!!!!!!!!!!!!', s.shape, s.dtype)
             return Image.fromarray(s).save(path)
         if any(ext.lower() in fname_lower for ext in ['.npy']):
             return np.save(path, s)
