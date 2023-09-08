@@ -34,9 +34,10 @@ class FUM(plModuleBase):
             _phi.detach().cpu(), 
             nrow=2
         )
+        img = rearrange(img, 'c h w -> h w c').contiguous()
             
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
-        assert False
+        
         img = img.numpy().astype(np.uint8)
         signal_save(img, self.pathdir + '/' + f'_batch.png')
         
