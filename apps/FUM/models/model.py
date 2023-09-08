@@ -25,7 +25,7 @@ class FUM(plModuleBase):
         return
     
     def training_step(self, batch, batch_idx, split='train'):
-        self.vqgan.save_phi(self.vqgan.lat2phi(batch['X']).float().flatten(1), pathdir=self.pathdir, fname=f'batch.png')
+        self.vqgan.save_phi(self.vqgan.lat2phi(batch['X'].float().flatten(1)), pathdir=self.pathdir, fname=f'batch.png')
         assert False
 
     def training_step0(self, batch, batch_idx, split='train'):
