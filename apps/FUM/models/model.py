@@ -25,7 +25,8 @@ class FUM(plModuleBase):
         return
     
     def training_step(self, batch, batch_idx, split='train'):
-        self.vqgan.save_phi(batch[self.signal_key], pathdir=self.pathdir, fname=f'batch.png')
+        print(batch['x'])
+        # self.vqgan.save_phi(batch[self.signal_key], pathdir=self.pathdir, fname=f'batch.png')
         assert False
 
     def training_step0(self, batch, batch_idx, split='train'):

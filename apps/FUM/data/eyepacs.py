@@ -11,7 +11,7 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 class D(D_Base):
     def fetch(self, signal_path):
         return {
-            'indices': np.load(signal_path)
+            'x': np.load(signal_path)
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
