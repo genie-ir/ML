@@ -25,7 +25,10 @@ class FUM(plModuleBase):
         return
     
     def training_step(self, batch, batch_idx, split='train'):
-        self.vqgan.save_phi(self.vqgan.lat2phi(batch['X'].float().flatten(1)), pathdir=self.pathdir, fname=f'batch.png')
+        phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png')
+        print(self.drclassifire(phi))
+        print(batch['y'])
         assert False
 
     def training_step0(self, batch, batch_idx, split='train'):
@@ -65,6 +68,15 @@ class FUM(plModuleBase):
         self.generator.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
+
+        ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
+        from torchvision import models
+        weights = torch.load(ckpt)
+        model = models.resnet50()
+        # Our model outputs the score of DR for classification. See https://arxiv.org/pdf/2110.14160.pdf for more details.
+        model.fc = nn.Linear(model.fc.in_features, 1)
+        model.load_state_dict(weights, strict=True)
+        self.drclassifire = model
 
     def __c2phi(self, cross, tag='', phi_concept=None):
         # list_of_distance_to_mode = []
