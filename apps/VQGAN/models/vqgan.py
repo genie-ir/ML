@@ -120,8 +120,7 @@ class VQModel(pl.LightningModule):
         fname = fname if fname else f'{random_string()}.png'
         pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir
         afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
-        signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5)})
-    
+        return signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5), 'sreturn': True})
     
     # def forward_syn(self, input):
     #     print('forward_syn')

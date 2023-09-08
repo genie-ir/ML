@@ -328,7 +328,7 @@ def file_hash(path, fn=md5):
         content = f.read()
     return fn(content)
 
-def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None):
+def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None, sreturn=False):
         if fn is None:
             fn = lambda G: G
         nrow = images.shape[0] if nrow is None else nrow
@@ -337,6 +337,8 @@ def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None):
         grid = torchvision.utils.make_grid(images, nrow=nrow) # this grid finally contains table of iamges like this -> [images[k].shape[0]/nrow, nrow] ; Notic: grid is tensor with shape: ch x h? x w?
         grid = fn(grid).numpy().astype(np.uint8)
         signal_save(grid, fpath)
+        if sreturn:
+            return grid
 
 def signal_save(s, path, makedirsFlag=True, stype=None, sparams=None):
     sparams = dict() if sparams is None else sparams
