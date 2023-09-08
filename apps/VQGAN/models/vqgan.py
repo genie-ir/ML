@@ -116,11 +116,12 @@ class VQModel(pl.LightningModule):
         return self.quantize.fwd_bpi(x)
     def qua2phi(self, x):
         return self.decode(x)
-    def save_phi(self, _dec, pathdir=None, fname=None):
+    def save_phi(self, _dec, pathdir=None, fname=None, sreturn=False, afn=None):
         fname = fname if fname else f'{random_string()}.png'
         pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir
-        afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
-        return signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5), 'sreturn': True})
+        if afn is None:
+            afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
+        return signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5), 'sreturn': bool(sreturn)})
     
     # def forward_syn(self, input):
     #     print('forward_syn')
