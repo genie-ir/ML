@@ -336,11 +336,13 @@ def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None, sreturn=False):
         if isinstance(images, torch.Tensor):
             images = images.detach().cpu()
         
+        if sreturn == False:
+            assert False, '222222222222222222222222'
+        
         grid = torchvision.utils.make_grid(images, nrow=nrow) # this grid finally contains table of iamges like this -> [images[k].shape[0]/nrow, nrow] ; Notic: grid is tensor with shape: ch x h? x w?
         grid = fn(grid).numpy().astype(np.uint8)
         signal_save(grid, fpath)
-        if sreturn == False:
-            assert False, '222222222222222222222222'
+        
         if sreturn:
             imgs = fn(images)
             imgs = rearrange(imgs, 'c h b w -> b c h w').contiguous()
