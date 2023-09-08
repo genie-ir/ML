@@ -28,9 +28,10 @@ class FUM(plModuleBase):
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True)
         print(_phi.shape)
+        from einops import rearrange
         import torchvision, numpy as np
         signal_save(
-            torchvision.utils.make_grid(_phi.detach().cpu(), nrow=2).numpy().astype(np.uint8), 
+            torchvision.utils.make_grid(rearrange(_phi, 'b c h w -> b h w c').contiguous().detach().cpu(), nrow=2).numpy().astype(np.uint8), 
             self.pathdir + '/' + f'_batch.png'
         )
         
