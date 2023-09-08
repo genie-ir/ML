@@ -27,21 +27,19 @@ class FUM(plModuleBase):
     def training_step(self, batch, batch_idx, split='train'):
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True)
-        print(_phi.shape)
-        from einops import rearrange
-        import torchvision, numpy as np
-        img = torchvision.utils.make_grid(
-            _phi.detach().cpu(), 
-            nrow=2
-        )
-        img = rearrange(img, 'c h w -> h w c').contiguous()
-            
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
+        print(_phi.shape, _phi.dtype, _phi.min(), _phi.max())
+        # from einops import rearrange
+        # import torchvision, numpy as np
+        # img = torchvision.utils.make_grid(
+        #     _phi.detach().cpu(), 
+        #     nrow=2
+        # )
+        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
+        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
+        # img = img.numpy().astype(np.uint8)
+        # signal_save(img, self.pathdir + '/' + f'_batch.png')
         
-        img = img.numpy().astype(np.uint8)
-        signal_save(img, self.pathdir + '/' + f'_batch.png')
-        
-        print(self.drclassifire(img))
+        print(self.drclassifire(_phi))
         print(batch['y'])
         assert False
 
