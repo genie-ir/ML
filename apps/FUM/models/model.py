@@ -81,9 +81,9 @@ class FUM(plModuleBase):
         self.generator.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
-        self.std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device)
-        self.mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device)
-
+        self.std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        self.mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        
         ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
         from torchvision import models
         weights = torch.load(ckpt)
