@@ -25,9 +25,11 @@ class FUM(plModuleBase):
         return
     
     def training_step(self, batch, batch_idx, split='train'):
+        _std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        _mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
-        _phi = (_phi - self.mean * 255) / (self.std * 255)
+        _phi = (_phi - _mean * 255) / (_std * 255)
         print(_phi.shape, _phi.dtype, _phi.min(), _phi.max(), _phi.device)
         # from einops import rearrange
         # import torchvision, numpy as np
@@ -81,8 +83,6 @@ class FUM(plModuleBase):
         self.generator.mac = nn.Sequential(*[
             MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         ])
-        self.std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        self.mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         
         ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
         from torchvision import models
