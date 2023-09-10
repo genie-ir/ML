@@ -43,7 +43,7 @@ class FUM(plModuleBase):
         signal_save(img, self.pathdir + '/' + f'_batch.png')
 
 
-        _phi = F.interpolate(img, size=(512, 512), mode='bilinear', align_corners=False)
+        _phi = F.interpolate(_phi, size=(512, 512), mode='bilinear', align_corners=False)
         img = torchvision.utils.make_grid(
             _phi.detach().cpu(), 
             nrow=2
