@@ -40,7 +40,8 @@ class FUM(plModuleBase):
             _phi.detach().cpu(), 
             nrow=2
         )
-        img = rearrange(img, 'b c h w -> b h w c').contiguous()
+        img = rearrange(img, 'c h w -> h w c').contiguous()
+        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
         # print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
         img = img.numpy().astype(np.uint8)
         signal_save(img, self.pathdir + '/' + f'_batch.png')
