@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from libs.basicIO import dfdir
+import torch.nn.functional as F
 from libs.basicIO import signal_save
 from utils.pt.tricks.gradfns import dzq_dz_eq1
 from utils.pl.plModuleBase import plModuleBase
@@ -30,6 +31,8 @@ class FUM(plModuleBase):
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
         _phi = (_phi - _mean * 255) / (_std * 255)
+        
+        _phi = F.interpolate(_phi, size=(512, 512), mode='bilinear', align_corners=False)
         print(_phi.shape, _phi.dtype, _phi.min(), _phi.max(), _phi.device)
         # from einops import rearrange
         # import torchvision, numpy as np
