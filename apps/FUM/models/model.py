@@ -34,16 +34,16 @@ class FUM(plModuleBase):
         
         _phi = F.interpolate(_phi, size=(512, 512), mode='bilinear', align_corners=False)
         print(_phi.shape, _phi.dtype, _phi.min(), _phi.max(), _phi.device)
-        # from einops import rearrange
-        # import torchvision, numpy as np
-        # img = torchvision.utils.make_grid(
-        #     _phi.detach().cpu(), 
-        #     nrow=2
-        # )
-        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
+        from einops import rearrange
+        import torchvision, numpy as np
+        img = torchvision.utils.make_grid(
+            _phi.detach().cpu(), 
+            nrow=2
+        )
+        img = rearrange(img, 'b c h w -> b h w c').contiguous()
         # print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
-        # img = img.numpy().astype(np.uint8)
-        # signal_save(img, self.pathdir + '/' + f'_batch.png')
+        img = img.numpy().astype(np.uint8)
+        signal_save(img, self.pathdir + '/' + f'_batch.png')
         
         print(self.drclassifire(_phi))
         print(batch['y'])
