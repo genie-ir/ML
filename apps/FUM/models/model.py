@@ -30,10 +30,7 @@ class FUM(plModuleBase):
         _mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
-        _phi = (_phi - _mean * 255) / (_std * 255)
         
-        _phi = F.interpolate(_phi, size=(512, 512), mode='bilinear', align_corners=False)
-        print(_phi.shape, _phi.dtype, _phi.min(), _phi.max(), _phi.device)
         from einops import rearrange
         import torchvision, numpy as np
         img = torchvision.utils.make_grid(
@@ -42,10 +39,23 @@ class FUM(plModuleBase):
         )
         img = rearrange(img, 'c h w -> h w c').contiguous()
         # img = rearrange(img, 'b c h w -> b h w c').contiguous()
-        # print('@@@@@@@@@@@@@@@@@@@@@@@@@@', img.shape)
         img = img.numpy().astype(np.uint8)
         signal_save(img, self.pathdir + '/' + f'_batch.png')
+
+
+        _phi = F.interpolate(img, size=(512, 512), mode='bilinear', align_corners=False)
+        img = torchvision.utils.make_grid(
+            _phi.detach().cpu(), 
+            nrow=2
+        )
+        img = rearrange(img, 'c h w -> h w c').contiguous()
+        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
+        img = img.numpy().astype(np.uint8)
+        signal_save(img, self.pathdir + '/' + f'_batch2.png')
         
+
+
+        _phi = (_phi - _mean * 255) / (_std * 255)
         print(self.drclassifire(_phi))
         print(batch['y'])
         assert False
