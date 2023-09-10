@@ -55,7 +55,7 @@ class FUM(plModuleBase):
         
 
 
-        _phi = (_phi - _mean * 255) / (_std * 255)
+        # _phi = (_phi - _mean * 255) / (_std * 255)
         print(self.drclassifire(_phi))
         print(batch['y'])
         assert False
