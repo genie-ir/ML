@@ -6,7 +6,6 @@ def pretrain(ckpt):
     return model
 
 
-
 tasknet = pretrain('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
 output, output_M, output_IQ = tasknet(image.cuda())
 softmax(output)
