@@ -62,9 +62,12 @@ class basic_dataset(Dataset):
                 print('DR_label', DR_label)
                 # print('liq', quality)
 
-                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
+                # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                print(img_clahe.shape)
+                r= rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()
+                print(r.shape, r.dtype)
+                # signal_save(vaslExtractor()), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
 
                 
                 # lat = self.vqgan.phi2lat(T)
