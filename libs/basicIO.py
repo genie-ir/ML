@@ -358,6 +358,8 @@ def signal_save(s, path, makedirsFlag=True, stype=None, sparams=None):
     if isinstance(s, torch.Tensor):
         if stype == 'img':
             return __signal_save__img_Tensor(s, path, **sparams)
+        # elif stype == 'img_normal':
+        #     pass
         s = s.cpu().detach().numpy()
     
     if isinstance(s, np.ndarray): # image signal
