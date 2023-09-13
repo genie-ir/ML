@@ -10,6 +10,24 @@ from einops import rearrange
 import torchvision, numpy as np
 from libs.basicIO import signal_save
 
+
+
+def imshow_components(labels):
+    # Map component labels to hue val
+    label_hue = np.uint8(179*labels/np.max(labels))
+    blank_ch = 255*np.ones_like(label_hue)
+    labeled_img = cv2.merge([label_hue, blank_ch, blank_ch])
+
+    # cvt to BGR for display
+    labeled_img = cv2.cvtColor(labeled_img, cv2.COLOR_HSV2BGR)
+
+    # set bg label to black
+    labeled_img[label_hue==0] = 0
+
+    return labeled_img
+
+
+
 class basic_dataset(Dataset):
     def __init__(self, root, split='empty', transform=None, **kwargs):
         self.kwargs = kwargs
@@ -68,8 +86,15 @@ class basic_dataset(Dataset):
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())
                 # print('@@@@@@@@@', img_clahe.shape, r.shape)
-                r = cv2.GaussianBlur(r,(13,13),0)
-                r = cv2.threshold(r, 100, 255, cv2.THRESH_BINARY)[1]
+                # r = cv2.GaussianBlur(r,(13,13),0)
+                # r = cv2.threshold(r, 100, 255, cv2.THRESH_BINARY)[1]
+
+
+                r = cv2.threshold(r, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
+                num_labels, labels_im = cv2.connectedComponents(r)
+
+                r = imshow_components(labels_im)
+
                 # print('!!!!!!!!!', thresh.shape)
                 # assert False
                 r = torch.tensor(r)
