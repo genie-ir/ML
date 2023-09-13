@@ -8,10 +8,10 @@ class basic_dataset(Dataset):
         self.datadir = root['DATADIR']
         self.mapsplit = root['MAPSPLIT']
         self.transform = transform
-        self.data = []
-        self.label_T = []
-        self.label_IQ = []
-        self.label_M = []
+        # self.data = []
+        # self.label_T = []
+        # self.label_IQ = []
+        # self.label_M = []
         self.split = split
 
     def read_data(self, split, dataset_name, num_T):
@@ -22,10 +22,16 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
-                self.data.append(T)
-                self.label_T.append(int(line[1]))
-                self.label_IQ.append(int(line[2]))
-                self.label_M.append(int(line[2]) * num_T + int(line[1]))
+                
+                lt = (int(line[1]))
+                liq = (int(line[2]))
+                lm = (int(line[2]) * num_T + int(line[1]))
+                
+                print(T.shape, lt, liq, lm)
+                
+                # self.label_T.append(int(line[1]))
+                # self.label_IQ.append(int(line[2]))
+                # self.label_M.append(int(line[2]) * num_T + int(line[1]))
     
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
