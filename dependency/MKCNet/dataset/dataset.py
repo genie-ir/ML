@@ -27,10 +27,11 @@ class basic_dataset(Dataset):
             for line in f:
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
-                T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
+                scn = sc.split('_')[0]
+                T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))
                 print('---------------------->', T.shape)
                 T = T.unsqueeze(0)
-                signal_save(T, '/content/dataset')
+                signal_save(T, f'/content/dataset/{scn}.png')
                 lat = self.vqgan.phi2lat(T)
                 print(T.shape, lat.shape)
                 assert False
