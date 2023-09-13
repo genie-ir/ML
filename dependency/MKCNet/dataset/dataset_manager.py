@@ -8,9 +8,9 @@ def get_dataloader(cfg):
         'ROOT': cfg.DATASET.ROOT,
         'DATADIR': cfg.DATASET.DATADIR,
         'MAPSPLIT': {
-            'val': '/content/DeepDRiD/regular_fundus_images/regular-fundus-validation/Images',
-            'test': '/content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation/Images',
-            'train': '/content/DeepDRiD/regular_fundus_images/regular-fundus-training/Images'
+            'val': '/content/DeepDRiD/regular_fundus_images/regular-fundus-validation',
+            'test': '/content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation',
+            'train': '/content/DeepDRiD/regular_fundus_images/regular-fundus-training'
         }
     }
     batch_size = cfg.BATCH_SIZE
