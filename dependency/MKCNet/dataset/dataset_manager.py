@@ -7,7 +7,11 @@ def get_dataloader(cfg):
     root = {
         'ROOT': cfg.DATASET.ROOT,
         'DATADIR': getattr(cfg.DATASET, 'DATADIR', cfg.DATASET.ROOT),
-        'MAPSPLIT': getattr(cfg.DATASET, 'MAPSPLIT', dict())
+        'MAPSPLIT': {
+            'val': '/content/DeepDRiD/regular_fundus_images/regular-fundus-validation/Images',
+            'test': '/content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation/Images',
+            'train': '/content/DeepDRiD/regular_fundus_images/regular-fundus-training/Images'
+        }
     }
     batch_size = cfg.BATCH_SIZE
     dataset_name = cfg.DATASET.NAME
