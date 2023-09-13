@@ -25,8 +25,7 @@ class basic_dataset(Dataset):
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
                 T = T.unsqueeze(0)
                 lat = self.vqgan.phi2lat(T)
-                print(T.shape)
-                # print(T.shape, lat.shape)
+                print(T.shape, lat.shape)
                 assert False
                 lt = (int(line[1]))
                 liq = (int(line[2]))
