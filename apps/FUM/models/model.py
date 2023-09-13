@@ -152,7 +152,7 @@ class FUM(plModuleBase):
         # self.tasknet = tasknet.to('cuda')
         self.cfg = cfg
         # print(cfg)
-        train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg)
+        train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, vqgan=self.vqgan)
         print(train_loader)
         for b in train_loader:
             print(b)
