@@ -18,3 +18,4 @@ DATASET:
   NUM_IQ: 2
   NUM_M: 6
   CHANNEL_NUM: 3
+  # DATADIR: /content/DeepDRiD/regular_fundus_images
