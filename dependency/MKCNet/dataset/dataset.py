@@ -1,4 +1,5 @@
 import torch
+import cv2
 import os.path as osp
 from torch.utils.data import Dataset
 from PIL import Image
@@ -8,6 +9,7 @@ import albumentations as A
 from einops import rearrange
 import torchvision, numpy as np
 from libs.basicIO import signal_save
+
 class basic_dataset(Dataset):
     def __init__(self, root, split='empty', transform=None, **kwargs):
         self.kwargs = kwargs
@@ -64,8 +66,13 @@ class basic_dataset(Dataset):
 
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                print(img_clahe.shape)
-                r = torch.tensor(vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()))
+                r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())
+                print('@@@@@@@@@', img_clahe.shape, r.shape)
+                blur = cv2.GaussianBlur(r,(13,13),0)
+                thresh = cv2.threshold(blur, 100, 255, cv2.THRESH_BINARY)[1]
+                print('!!!!!!!!!', thresh.shape)
+                assert False
+                r = torch.tensor(r)
                 r = rearrange(r, 'h w c -> c h w').contiguous()
                 print(r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
