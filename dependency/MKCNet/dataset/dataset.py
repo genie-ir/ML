@@ -59,7 +59,7 @@ class basic_dataset(Dataset):
     
 class DEEPDR(basic_dataset):
     def __init__(self, root, split, transform=None, **kwargs):
-        super(DEEPDR, self).__init__(root, split, transform)
+        super(DEEPDR, self).__init__(root, split, transform, **kwargs)
         self.read_data(split, 'DEEPDR', 3)
 
 class EYEQ(basic_dataset):
