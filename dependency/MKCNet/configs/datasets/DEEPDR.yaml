@@ -18,3 +18,5 @@ DATASET:
   NUM_IQ: 2
   NUM_M: 6
   CHANNEL_NUM: 3
+  NAME: DEEPDR
+  ROOT: /content/ML/dependency/MKCNet/dataset_splits/DEEPDR
