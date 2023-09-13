@@ -19,7 +19,7 @@ def get_dataloader(cfg):
     # print('@@@@@@@@', root)
 
     train_ts, test_ts = get_transform(cfg)
-    num_worker = min (batch_size // 4, 16)
+    num_worker = 2
     dataset = globals()[dataset_name]
     # print('------------------->', dataset)
 
