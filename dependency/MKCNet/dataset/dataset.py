@@ -23,7 +23,8 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
-                print(self.vqgan)
+                lat = self.vqgan.phi2lat(T)
+                print(T.shape, lat.shape)
                 assert False
                 lt = (int(line[1]))
                 liq = (int(line[2]))
