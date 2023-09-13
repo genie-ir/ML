@@ -1,4 +1,5 @@
-from .models import CANet, MTMRNet, MultiTaskNet, VanillaNet, DETACH
+# from .models import CANet, MTMRNet, MultiTaskNet, VanillaNet, DETACH
+from .models import CANet, VanillaNet, DETACH
 from .MKCNet import FirstOrderTaskNet, ComputeFirstOrder, MetaLearner, TaskNet
 
 def get_model(cfg, psi = None):
