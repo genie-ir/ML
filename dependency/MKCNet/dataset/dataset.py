@@ -58,16 +58,17 @@ class basic_dataset(Dataset):
                 
                 
                 # quality = (int(line[2]))
-                print('pred', pred)
-                print('DR_label', DR_label)
+                # print('pred', pred)
+                # print('DR_label', DR_label)
                 # print('liq', quality)
 
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print(img_clahe.shape)
-                r= rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()
+                r = torch.tensor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())
+                r = rearrange(img_clahe, 'h w c -> c h w').contiguous()
                 print(r.shape, r.dtype)
-                # signal_save(vaslExtractor()), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
+                signal_save(vaslExtractor(r)), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
 
                 
                 # lat = self.vqgan.phi2lat(T)
