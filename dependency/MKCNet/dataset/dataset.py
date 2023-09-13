@@ -29,9 +29,9 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
+                print(self.transform)
                 T = self.transform(np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))
                 # T = T.unsqueeze(0)
-
 
                 
                 signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})

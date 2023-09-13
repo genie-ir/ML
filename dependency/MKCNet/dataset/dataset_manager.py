@@ -1,7 +1,7 @@
 from .dataset import EYEQ, DEEPDR, DRAC, IQAD_CXR, IQAD_CT
 from torchvision import transforms
 from torch.utils.data import DataLoader
-
+import albumentations as A
 def get_dataloader(cfg, **kwargs):
     # print(cfg)
     root = {
@@ -52,16 +52,16 @@ def get_transform(cfg):
     #     transfrom_train.append(transforms.Grayscale(1))
     #     transfrom_test.append(transforms.Grayscale(1))
 
-    transfrom_train.append(transforms.Resize((256, 256)))
-    transfrom_test.append(transforms.Resize((256, 256)))
+    transfrom_train.append(A.Resize((256, 256)))
+    transfrom_test.append(A.Resize((256, 256)))
 
-    transfrom_train.append(transforms.ToTensor())
-    transfrom_train.append(transforms.Normalize(means, std))
+    transfrom_train.append(A.ToTensor())
+    transfrom_train.append(A.Normalize(means, std))
 
-    transfrom_test.append(transforms.ToTensor())
-    transfrom_test.append(transforms.Normalize(means, std))
+    transfrom_test.append(A.ToTensor())
+    transfrom_test.append(A.Normalize(means, std))
 
-    train_ts =  transforms.Compose(transfrom_train)
-    test_ts = transforms.Compose(transfrom_test)
+    train_ts =  A.Compose(transfrom_train)
+    test_ts = A.Compose(transfrom_test)
 
     return train_ts, test_ts
