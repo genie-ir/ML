@@ -31,7 +31,7 @@ class basic_dataset(Dataset):
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
                 # print(self.transform)
-                T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image']
+                T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image'].float()
                 T = T.unsqueeze(0).to('cuda')
                 signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print('---------------------->', T.shape, T.dtype)
