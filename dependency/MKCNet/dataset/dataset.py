@@ -8,7 +8,7 @@ import torchvision, numpy as np
 from libs.basicIO import signal_save
 class basic_dataset(Dataset):
     def __init__(self, root, split='empty', transform=None, **kwargs):
-        self.vqgan = kwargs['vqgan']
+        self.kwargs = kwargs
         self.root = root['ROOT']
         self.datadir = root['DATADIR']
         self.mapsplit = root['MAPSPLIT']
@@ -31,17 +31,24 @@ class basic_dataset(Dataset):
                 scn = sc.split('_')[0]
                 print(self.transform)
                 T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image']
-                # T = T.unsqueeze(0)
+                print(self.kwargs['tasknet'](T))
+                T = T.unsqueeze(0)
 
                 
                 signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print('---------------------->', T.shape, T.dtype)
+
+                
+
                 # lat = self.vqgan.phi2lat(T)
                 # print(T.shape, lat.shape)
-                assert False
                 lt = (int(line[1]))
                 liq = (int(line[2]))
                 lm = (int(line[2]) * num_T + int(line[1]))
+                print('lt', lt)
+                print('liq', liq)
+                print('lm', lm)
+                assert False
                 
                 
                 # self.label_T.append(int(line[1]))

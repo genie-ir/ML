@@ -147,12 +147,15 @@ class FUM(plModuleBase):
     def start(self):
         from libs.basicIO import pathBIO
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
-        cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        # tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        # self.tasknet = tasknet.to('cuda')
+        # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        self.tasknet = tasknet.to('cuda')
         self.cfg = cfg
         # print(cfg)
-        train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, vqgan=self.vqgan)
+        train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
+            vqgan=self.vqgan,
+            tasknet=tasknet
+        )
         print(train_loader)
         for b in train_loader:
             print(b)
