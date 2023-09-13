@@ -17,16 +17,14 @@ except Exception as e:
 def pretrain(ckpt):
     args = get_args()
     cfg = setup_cfg(args)
-
-    print('*'*30)
-    print(cfg)
-
+    # print('*'*30)
+    # print(cfg)
     psi = [cfg.MODEL.META_LENGTH] * cfg.DATASET.NUM_M
     model, metalearner = get_model(cfg, psi)
-    print('*'*30)
-    print(model)
+    # print('*'*30)
+    # print(model)
     model.load_state_dict(torch.load(ckpt))
-    print('ok'*30)
+    # print('ok'*30)
     return model
 
 if __name__ == "__main__":

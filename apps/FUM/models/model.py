@@ -57,11 +57,10 @@ class FUM(plModuleBase):
 
         
         
-        
-        
         output, output_M, output_IQ = tasknet(_phi)
         softmax = torch.nn.Softmax(dim=1)
         print('!!!!!!!!!!!!!!!!!!!', softmax(output))
+        print(batch['y'])
         assert False, 'hoooooooooooooo!!'
 
     # def build_model(input_size,nb_classes):
