@@ -27,8 +27,7 @@ class basic_dataset(Dataset):
         with open(txt_path, 'r') as f:
             next(f)
             for idx, line in enumerate(f):
-                if idx != 6:
-                    continue
+                
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
@@ -38,22 +37,20 @@ class basic_dataset(Dataset):
                 signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print('---------------------->', T.shape, T.dtype)
                 softmax = torch.nn.Softmax(dim=1)
-
-                print(softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))[0]))
+                pred = softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))[0])
+                DR_label = (int(line[1]))
+                # quality = (int(line[2]))
+                print('pred', pred)
+                print('DR_label', DR_label)
+                # print('liq', quality)
 
                 
 
                 
-
+                if idx == 25:
+                    assert False    
                 # lat = self.vqgan.phi2lat(T)
                 # print(T.shape, lat.shape)
-                lt = (int(line[1]))
-                liq = (int(line[2]))
-                lm = (int(line[2]) * num_T + int(line[1]))
-                print('lt', lt)
-                print('liq', liq)
-                print('lm', lm)
-                assert False
                 
                 
                 # self.label_T.append(int(line[1]))
