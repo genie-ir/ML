@@ -154,7 +154,7 @@ class FUM(plModuleBase):
         # print(cfg)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
             vqgan=self.vqgan,
-            tasknet=tasknet
+            tasknet=self.tasknet
         )
         print(train_loader)
         for b in train_loader:
