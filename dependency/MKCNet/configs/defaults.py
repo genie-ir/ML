@@ -4,7 +4,7 @@ from yacs.config import CfgNode as CN
 # Config definition
 ###########################
 _C = CN()
-_C.OUT_DIR = "./output"
+_C.OUT_DIR = "/content/drclassifire/output"
 _C.SEED = 42
 _C.USE_CUDA = True
 _C.VERBOSE = True

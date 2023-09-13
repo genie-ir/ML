@@ -28,7 +28,7 @@ def setup_seed(seed):
 from libs.basicIO import pathBIO
 def setup_cfg(args):
     cfg = cfg_default.clone()
-    cfg.MODEL.NAME = args.model
+    cfg.MODEL.NAME = 'MKCNet' #args.model
     cfg.DATASET.ROOT = args.root
     cfg.DATASET.NAME = args.dataset
     cfg.merge_from_file(pathBIO(f"//dependency/MKCNet/configs/datasets/{args.dataset}.yaml"))
