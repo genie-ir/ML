@@ -40,9 +40,9 @@ class basic_dataset(Dataset):
 
 
 
-                print('---------------------->', T.shape)
-                lat = self.vqgan.phi2lat(T)
-                print(T.shape, lat.shape)
+                # print('---------------------->', T.shape)
+                # lat = self.vqgan.phi2lat(T)
+                # print(T.shape, lat.shape)
                 assert False
                 lt = (int(line[1]))
                 liq = (int(line[2]))
