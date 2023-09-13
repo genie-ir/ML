@@ -1,6 +1,6 @@
-# vqgan: 
-#   keys: model
-#   config: apps.VQGAN.configs.eyepacs_vqgan
+vqgan: 
+  keys: model
+  config: apps.VQGAN.configs.eyepacs_vqgan
 
 # drclassifire:
 #   model: resnet50

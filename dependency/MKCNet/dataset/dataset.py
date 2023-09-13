@@ -3,7 +3,8 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 class basic_dataset(Dataset):
-    def __init__(self, root, split='empty', transform=None):
+    def __init__(self, root, split='empty', transform=None, **kwargs):
+        self.vqgan = kwargs['vqgan']
         self.root = root['ROOT']
         self.datadir = root['DATADIR']
         self.mapsplit = root['MAPSPLIT']
@@ -22,12 +23,12 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
-                
+                print(self.vqgan)
+                assert False
                 lt = (int(line[1]))
                 liq = (int(line[2]))
                 lm = (int(line[2]) * num_T + int(line[1]))
                 
-                print(T.shape, lt, liq, lm)
                 
                 # self.label_T.append(int(line[1]))
                 # self.label_IQ.append(int(line[2]))
@@ -57,7 +58,7 @@ class basic_dataset(Dataset):
         return len(self.data)
     
 class DEEPDR(basic_dataset):
-    def __init__(self, root, split, transform=None):
+    def __init__(self, root, split, transform=None, **kwargs):
         super(DEEPDR, self).__init__(root, split, transform)
         self.read_data(split, 'DEEPDR', 3)
 

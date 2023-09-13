@@ -2,7 +2,7 @@ from .dataset import EYEQ, DEEPDR, DRAC, IQAD_CXR, IQAD_CT
 from torchvision import transforms
 from torch.utils.data import DataLoader
 
-def get_dataloader(cfg):
+def get_dataloader(cfg, **kwargs):
     # print(cfg)
     root = {
         'ROOT': cfg.DATASET.ROOT,
@@ -23,14 +23,14 @@ def get_dataloader(cfg):
     dataset = globals()[dataset_name]
     # print('------------------->', dataset)
 
-    train_dataset = dataset(root=root, split = 'train', transform=train_ts)
+    train_dataset = dataset(root=root, split = 'train', transform=train_ts, **kwargs)
     train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle=True, num_workers= num_worker)
 
     if cfg.DATASET.NAME in cfg.VALIDATION_DATASET:
-        val_dataset = dataset(root=root, split = 'val', transform=test_ts)
+        val_dataset = dataset(root=root, split = 'val', transform=test_ts, **kwargs)
         val_loader = DataLoader(val_dataset, batch_size = batch_size, shuffle=False, num_workers=num_worker)
 
-    test_dataset = dataset(root=root, split = 'test', transform=test_ts)
+    test_dataset = dataset(root=root, split = 'test', transform=test_ts, **kwargs)
     test_loader = DataLoader(test_dataset, batch_size = batch_size, shuffle=False, num_workers=num_worker)
 
     dataset_size = [len(train_dataset), len(test_dataset)]
