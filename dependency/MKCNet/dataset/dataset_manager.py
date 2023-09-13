@@ -3,7 +3,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 def get_dataloader(cfg):
-    print(cfg)
+    # print(cfg)
     root = {
         'ROOT': cfg.DATASET.ROOT,
         'DATADIR': cfg.DATASET.DATADIR,

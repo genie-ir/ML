@@ -148,7 +148,7 @@ class FUM(plModuleBase):
         from libs.basicIO import pathBIO
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.tasknet = tasknet.to('cuda')
+        # self.tasknet = tasknet.to('cuda')
         self.cfg = cfg
         print(cfg)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg)
