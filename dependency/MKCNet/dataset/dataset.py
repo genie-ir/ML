@@ -2,6 +2,9 @@ import os.path as osp
 from torch.utils.data import Dataset
 from PIL import Image
 
+
+
+from libs.basicIO import signal_save
 class basic_dataset(Dataset):
     def __init__(self, root, split='empty', transform=None, **kwargs):
         self.vqgan = kwargs['vqgan']
@@ -15,6 +18,8 @@ class basic_dataset(Dataset):
         # self.label_M = []
         self.split = split
 
+
+
     def read_data(self, split, dataset_name, num_T):
         txt_path = osp.join(self.root, dataset_name, split + '.txt')
         with open(txt_path, 'r') as f:
@@ -23,7 +28,9 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
+                print('---------------------->', T.shape)
                 T = T.unsqueeze(0)
+                signal_save(T, '/content/dataset')
                 lat = self.vqgan.phi2lat(T)
                 print(T.shape, lat.shape)
                 assert False
