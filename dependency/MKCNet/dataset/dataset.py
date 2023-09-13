@@ -30,7 +30,7 @@ class basic_dataset(Dataset):
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
                 print(self.transform)
-                T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))
+                T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image']
                 # T = T.unsqueeze(0)
 
                 
