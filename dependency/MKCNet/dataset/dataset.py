@@ -84,16 +84,18 @@ class basic_dataset(Dataset):
 
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())[:,:,0:1]
+                r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())
                 # print('@@@@@@@@@', img_clahe.shape, r.shape)
                 # r = cv2.GaussianBlur(r,(13,13),0)
                 # r = cv2.threshold(r, 100, 255, cv2.THRESH_BINARY)[1]
 
 
                 r = cv2.threshold(r, 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
+                print('@@@@@@@@@@@@@', r)
                 num_labels, labels_im = cv2.connectedComponents(r)
-
+                print('!!!!!!!!!!', labels_im)
                 r = imshow_components(labels_im)
+                print('#########', r)
 
                 # print('!!!!!!!!!', thresh.shape)
                 # assert False
@@ -101,7 +103,7 @@ class basic_dataset(Dataset):
                 r = rearrange(r, 'h w c -> c h w').contiguous()
                 # print(r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-
+                assert False
                 
                 # lat = self.vqgan.phi2lat(T)
                 # print(T.shape, lat.shape)
