@@ -150,6 +150,7 @@ class FUM(plModuleBase):
         # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = tasknet.to('cuda')
+        self.tasknet.requires_grad_(False)
         self.cfg = cfg
         # print(cfg)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
@@ -160,11 +161,6 @@ class FUM(plModuleBase):
         for b in train_loader:
             print(b)
             assert False
-        # self.D = basic_dataset(
-        #     '/content/ML/dependency/MKCNet/dataset_splits/DEEPDR',
-        #     'train'
-        # )
-        # print(self.D)
         assert False
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
