@@ -35,8 +35,6 @@ class basic_dataset(Dataset):
     
     def _readimage_(self, path, dataset_name):
         if dataset_name in ['DEEPDR', 'EYEQ']:
-            print('!!!!!!!!!!!!!!!!!', path)
-            assert False
             return Image.open(path).convert('RGB')
         else:
             return Image.open(path).convert('L')

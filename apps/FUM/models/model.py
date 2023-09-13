@@ -151,8 +151,11 @@ class FUM(plModuleBase):
         self.tasknet = tasknet.to('cuda')
         self.cfg = cfg
         print(cfg)
-        dataloader = get_dataloader(cfg)
-        print(dataloader)
+        train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg)
+        print(train_loader)
+        for b in train_loader:
+            print(b)
+            assert False
         # self.D = basic_dataset(
         #     '/content/ML/dependency/MKCNet/dataset_splits/DEEPDR',
         #     'train'
