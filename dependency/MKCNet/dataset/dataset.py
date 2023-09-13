@@ -20,7 +20,8 @@ class basic_dataset(Dataset):
             next(f)
             for line in f:
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
-                self.data.append(self._readimage_(osp.join(self.mapsplit[split], line[0].split('_')[0], line[0]), dataset_name))
+                fs, sc = line[0].split('/')
+                self.data.append(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
                 self.label_T.append(int(line[1]))
                 self.label_IQ.append(int(line[2]))
                 self.label_M.append(int(line[2]) * num_T + int(line[1]))
