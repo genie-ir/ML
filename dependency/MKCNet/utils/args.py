@@ -28,6 +28,7 @@ def setup_seed(seed):
 from libs.basicIO import pathBIO
 def setup_cfg(args):
     cfg = cfg_default.clone()
+    print(cfg)
     cfg.MODEL.NAME = 'MKCNet' #args.model
     # cfg.DATASET.ROOT = args.root
     # cfg.DATASET.NAME = 'DEEPDR' #args.dataset
