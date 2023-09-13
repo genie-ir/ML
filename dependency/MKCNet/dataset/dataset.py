@@ -68,7 +68,7 @@ class basic_dataset(Dataset):
                 r = torch.tensor(vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()))
                 r = rearrange(r, 'h w c -> c h w').contiguous()
                 print(r.shape, r.dtype)
-                signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png')
+                signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
 
                 
                 # lat = self.vqgan.phi2lat(T)
