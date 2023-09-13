@@ -99,7 +99,7 @@ class basic_dataset(Dataset):
                 # assert False
                 r = torch.tensor(r)
                 r = rearrange(r, 'h w c -> c h w').contiguous()
-                print(r.shape, r.dtype)
+                # print(r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
 
                 
