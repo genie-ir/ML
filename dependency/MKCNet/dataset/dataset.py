@@ -30,9 +30,8 @@ class basic_dataset(Dataset):
                 scn = sc.split('_')[0]
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))
                 print('---------------------->', T.shape)
-                T = T.unsqueeze(0)
                 signal_save(T, f'/content/dataset/{scn}.png')
-                lat = self.vqgan.phi2lat(T)
+                lat = self.vqgan.phi2lat(T.unsqueeze(0))
                 print(T.shape, lat.shape)
                 assert False
                 lt = (int(line[1]))
