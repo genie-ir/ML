@@ -3,7 +3,8 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 def get_dataloader(cfg):
-        
+    print('@@@@@@@@', cfg.DATASET)
+    assert False
     root = cfg.DATASET.ROOT
     batch_size = cfg.BATCH_SIZE
     dataset_name = cfg.DATASET.NAME
