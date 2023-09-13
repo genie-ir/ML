@@ -37,7 +37,7 @@ class basic_dataset(Dataset):
                 print('---------------------->', T.shape, T.dtype)
                 softmax = torch.nn.Softmax(dim=1)
 
-                print(softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))))
+                print(softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))[0]))
 
                 
 
