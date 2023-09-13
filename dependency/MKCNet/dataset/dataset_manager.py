@@ -16,12 +16,12 @@ def get_dataloader(cfg):
     batch_size = cfg.BATCH_SIZE
     dataset_name = cfg.DATASET.NAME
 
-    print('@@@@@@@@', root)
+    # print('@@@@@@@@', root)
 
     train_ts, test_ts = get_transform(cfg)
     num_worker = min (batch_size // 4, 16)
     dataset = globals()[dataset_name]
-    print('------------------->', dataset)
+    # print('------------------->', dataset)
 
     train_dataset = dataset(root=root, split = 'train', transform=train_ts)
     train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle=True, num_workers= num_worker)
