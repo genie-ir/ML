@@ -31,12 +31,12 @@ class basic_dataset(Dataset):
                 scn = sc.split('_')[0]
                 print(self.transform)
                 T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image']
-                print(self.kwargs['tasknet'](T))
                 T = T.unsqueeze(0)
+                print('---------------------->', T.shape, T.dtype)
+                print(self.kwargs['tasknet'](T))
 
                 
                 signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                print('---------------------->', T.shape, T.dtype)
 
                 
 
