@@ -38,7 +38,7 @@ class FUM(plModuleBase):
     
     
     def training_step(self, batch, batch_idx, split='train'):
-        tasknet = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        tasknet = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth').to(self.device)
         
         
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
