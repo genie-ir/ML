@@ -25,10 +25,11 @@ def setup_seed(seed):
     torch.backends.cudnn.deterministic = True
     # torch.backends.cudnn.enabled = False
 
+from libs.basicIO import pathBIO
 def setup_cfg(args):
     cfg = cfg_default.clone()
     cfg.MODEL.NAME = args.model
     cfg.DATASET.ROOT = args.root
     cfg.DATASET.NAME = args.dataset
-    cfg.merge_from_file(f"./configs/datasets/{args.dataset}.yaml")
+    cfg.merge_from_file(pathBIO(f"//dependency/MKCNet/configs/datasets/{args.dataset}.yaml"))
     return cfg
