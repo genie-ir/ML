@@ -3,11 +3,14 @@ import torch
 import os, logging
 from dependency.MKCNet.utils.args import *
 import torch.multiprocessing
-from dependency.MKCNet.utils.evaluate import model_validate
-from dependency.MKCNet.dataset.dataset_manager import get_dataloader
-from dependency.MKCNet.model.model_manager import get_model
-from dependency.MKCNet.utils.misc import init_log, check_path
-from dependency.MKCNet.utils.train import *
+# from dependency.MKCNet.utils.evaluate import model_validate
+# from dependency.MKCNet.dataset.dataset_manager import get_dataloader
+try:
+    from dependency.MKCNet.model.model_manager import get_model
+except Exception as e:
+    assert False, e
+# from dependency.MKCNet.utils.misc import init_log, check_path
+# from dependency.MKCNet.utils.train import *
 
 
 
