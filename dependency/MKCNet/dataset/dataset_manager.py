@@ -3,7 +3,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 def get_dataloader(cfg):
-    print('@@@@@@@@', cfg.DATASET.DATADIR)
+    print('@@@@@@@@', cfg.DATASET.get('DATADIR'))
     assert False
     root = cfg.DATASET.ROOT
     batch_size = cfg.BATCH_SIZE
