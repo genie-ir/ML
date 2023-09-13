@@ -3,7 +3,7 @@ import os.path as osp
 from torch.utils.data import Dataset
 from PIL import Image
 
-
+import albumentations as A
 from einops import rearrange
 import torchvision, numpy as np
 from libs.basicIO import signal_save
@@ -23,6 +23,8 @@ class basic_dataset(Dataset):
 
 
     def read_data(self, split, dataset_name, num_T):
+        NSTD  =  torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+        NMEAN =  torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         txt_path = osp.join(self.root, dataset_name, split + '.txt')
         with open(txt_path, 'r') as f:
             next(f)
@@ -34,7 +36,12 @@ class basic_dataset(Dataset):
                 # print(self.transform)
                 T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image'].float()
                 T = T.unsqueeze(0).to('cuda')
-                signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                
+                denormalized_img = T * (255 * NSTD) + (255 * NMEAN)
+                signal_save(denormalized_img, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(A.Compose([
+                    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0)
+                ])(image=denormalized_img)['image'], f'/content/dataset/{scn}-CLAHE.png', stype='img', sparams={'chw2hwc': True})
                 print('---------------------->', T.shape, T.dtype)
                 softmax = torch.nn.Softmax(dim=1)
                 pred = softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))[0])
