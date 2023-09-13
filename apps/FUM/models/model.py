@@ -39,28 +39,48 @@ class FUM(plModuleBase):
     
     def training_step(self, batch, batch_idx, split='train'):
         tasknet = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        output, output_M, output_IQ = tasknet(image.cuda())
+        
+        
+        phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
+        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
+        
+        from einops import rearrange
+        import torchvision, numpy as np
+        img = torchvision.utils.make_grid(
+            _phi.detach().cpu(), 
+            nrow=2
+        )
+        img = rearrange(img, 'c h w -> h w c').contiguous()
+        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
+        img = img.numpy().astype(np.uint8)
+        signal_save(img, self.pathdir + '/' + f'_batch.png')
+
+        
+        
+        
+        
+        output, output_M, output_IQ = tasknet(_phi)
         softmax = torch.nn.Softmax(dim=1)
         print('!!!!!!!!!!!!!!!!!!!', softmax(output))
         assert False, 'hoooooooooooooo!!'
 
-    def build_model(input_size,nb_classes):
-        global base_model 
-        base_model = InceptionV3(
-            input_shape = input_size,
-            input_tensor = Input(input_size),
-            include_top = False,
-            weights = 'imagenet'
-        )
-        base_model.trainable = False
-        inputs = Input(shape = input_size)
-        x = base_model(inputs, training = False)
-        #x = Dense(1024, activation = 'relu')(x)
-        #x = GlobalAveragePooling2D()(x)
-        x = Flatten()(x)
-        x = Dropout(0.2)(x)
-        outputs = Dense(nb_classes, activation = 'softmax')(x)
-        return Model(inputs,outputs)
+    # def build_model(input_size,nb_classes):
+    #     global base_model 
+    #     base_model = InceptionV3(
+    #         input_shape = input_size,
+    #         input_tensor = Input(input_size),
+    #         include_top = False,
+    #         weights = 'imagenet'
+    #     )
+    #     base_model.trainable = False
+    #     inputs = Input(shape = input_size)
+    #     x = base_model(inputs, training = False)
+    #     #x = Dense(1024, activation = 'relu')(x)
+    #     #x = GlobalAveragePooling2D()(x)
+    #     x = Flatten()(x)
+    #     x = Dropout(0.2)(x)
+    #     outputs = Dense(nb_classes, activation = 'softmax')(x)
+    #     return Model(inputs,outputs)
     
     def training_step2(self, batch, batch_idx, split='train'):
         _std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)

@@ -27,7 +27,6 @@ def pretrain(ckpt):
     print(model)
     model.load_state_dict(torch.load(ckpt))
     print('ok'*30)
-    assert False
     return model
 
 if __name__ == "__main__":
