@@ -25,7 +25,8 @@ def pretrain(ckpt):
     # print(model)
     model.load_state_dict(torch.load(ckpt))
     # print('ok'*30)
-    return model, cfg
+    # return model, cfg
+    return cfg
 
 
 from torchvision import transforms
