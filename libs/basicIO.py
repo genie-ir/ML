@@ -329,16 +329,21 @@ def file_hash(path, fn=md5):
         content = f.read()
     return fn(content)
 
-def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None, sreturn=False):
+def __signal_save__img_Tensor(images, fpath, nrow=None, fn=None, sreturn=False, chw2hwc=False):
         if fn is None:
             fn = lambda G: G
+        
         nrow = images.shape[0] if nrow is None else nrow
+        
         if isinstance(images, torch.Tensor):
             images = images.detach().cpu()
         
         grid = torchvision.utils.make_grid(images, nrow=nrow) # this grid finally contains table of iamges like this -> [images[k].shape[0]/nrow, nrow] ; Notic: grid is tensor with shape: ch x h? x w?
-        grid = fn(grid).numpy().astype(np.uint8)
         
+        if chw2hwc:
+            grid = rearrange(grid, 'c h w -> h w c').contiguous()
+        
+        grid = fn(grid).numpy().astype(np.uint8)
         signal_save(grid, fpath)
         
         if sreturn:
@@ -358,8 +363,6 @@ def signal_save(s, path, makedirsFlag=True, stype=None, sparams=None):
     if isinstance(s, torch.Tensor):
         if stype == 'img':
             return __signal_save__img_Tensor(s, path, **sparams)
-        # elif stype == 'img_normal':
-        #     pass
         s = s.cpu().detach().numpy()
     
     if isinstance(s, np.ndarray): # image signal

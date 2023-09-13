@@ -3,7 +3,8 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
-
+from einops import rearrange
+import torchvision, numpy as np
 from libs.basicIO import signal_save
 class basic_dataset(Dataset):
     def __init__(self, root, split='empty', transform=None, **kwargs):
@@ -30,8 +31,14 @@ class basic_dataset(Dataset):
                 scn = sc.split('_')[0]
                 T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))
                 T = T.unsqueeze(0)
+
+
+                
+                signal_save(T, f'/content/dataset/{scn}.png', stype='img', chw2hwc=True)
+
+
+
                 print('---------------------->', T.shape)
-                signal_save(T, f'/content/dataset/{scn}.png', stype='img')
                 lat = self.vqgan.phi2lat(T)
                 print(T.shape, lat.shape)
                 assert False
