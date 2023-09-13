@@ -6,7 +6,7 @@ def get_dataloader(cfg):
     print(cfg)
     root = {
         'ROOT': cfg.DATASET.ROOT,
-        'DATADIR': getattr(cfg.DATASET, 'DATADIR', cfg.DATASET.ROOT),
+        'DATADIR': cfg.DATASET.DATADIR,
         'MAPSPLIT': {
             'val': '/content/DeepDRiD/regular_fundus_images/regular-fundus-validation/Images',
             'test': '/content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation/Images',
