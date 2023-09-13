@@ -90,7 +90,7 @@ class basic_dataset(Dataset):
                 # r = cv2.threshold(r, 100, 255, cv2.THRESH_BINARY)[1]
 
 
-                r = cv2.threshold(r, 127, 255, cv2.THRESH_BINARY)#[1]  # ensure binary
+                r = cv2.threshold(r, 127, 255, cv2.THRESH_BINARY)[1][:,:,0]  # ensure binary
                 print('@@@@@@@@@@@@@', r.shape)
                 num_labels, labels_im = cv2.connectedComponents(r)
                 print('!!!!!!!!!!', labels_im)
