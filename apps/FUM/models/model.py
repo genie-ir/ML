@@ -9,6 +9,15 @@ from utils.pt.BB.Calculation.residual_block import MAC
 from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
 from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
 
+
+# import tensorflow as tf
+# from tensorflow.keras.applications.inception_v3 import InceptionV3
+# from tensorflow.keras.models import Model
+# from tensorflow.keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense, Flatten
+
+from dependency.MKCNet.main import pretrain as makeDRclassifire
+
+
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
@@ -25,7 +34,33 @@ class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         return
     
+    
     def training_step(self, batch, batch_idx, split='train'):
+        tasknet = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        output, output_M, output_IQ = tasknet(image.cuda())
+        softmax = torch.nn.Softmax(dim=1)
+        print('!!!!!!!!!!!!!!!!!!!', softmax(output))
+        assert False, 'hoooooooooooooo!!'
+
+    def build_model(input_size,nb_classes):
+        global base_model 
+        base_model = InceptionV3(
+            input_shape = input_size,
+            input_tensor = Input(input_size),
+            include_top = False,
+            weights = 'imagenet'
+        )
+        base_model.trainable = False
+        inputs = Input(shape = input_size)
+        x = base_model(inputs, training = False)
+        #x = Dense(1024, activation = 'relu')(x)
+        #x = GlobalAveragePooling2D()(x)
+        x = Flatten()(x)
+        x = Dropout(0.2)(x)
+        outputs = Dense(nb_classes, activation = 'softmax')(x)
+        return Model(inputs,outputs)
+    
+    def training_step2(self, batch, batch_idx, split='train'):
         _std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         _mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))

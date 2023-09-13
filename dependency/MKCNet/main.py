@@ -1,13 +1,31 @@
 from tqdm import tqdm
 import torch
 import os, logging
-from utils.args import *
+from dependency.MKCNet.utils.args import *
 import torch.multiprocessing
-from utils.evaluate import model_validate
-from dataset.dataset_manager import get_dataloader
-from model.model_manager import get_model
-from utils.misc import init_log, check_path
-from utils.train import *
+from dependency.MKCNet.utils.evaluate import model_validate
+from dependency.MKCNet.dataset.dataset_manager import get_dataloader
+from dependency.MKCNet.model.model_manager import get_model
+from dependency.MKCNet.utils.misc import init_log, check_path
+from dependency.MKCNet.utils.train import *
+
+
+
+def pretrain(ckpt):
+    args = get_args()
+    cfg = setup_cfg(args)
+
+    print('*'*30)
+    print(cfg)
+
+    psi = [cfg.MODEL.META_LENGTH] * cfg.DATASET.NUM_M
+    model, metalearner = get_model(cfg, psi)
+    print('*'*30)
+    print(model)
+    model.load_state_dict(torch.load(ckpt))
+    print('ok'*30)
+    assert False
+    return model
 
 if __name__ == "__main__":
     args = get_args()
