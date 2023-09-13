@@ -4,7 +4,11 @@ from torch.utils.data import DataLoader
 
 def get_dataloader(cfg):
     print(cfg)
-    root = getattr(cfg.DATASET, 'DATADIR', cfg.DATASET.ROOT)
+    root = {
+        'ROOT': cfg.DATASET.ROOT,
+        'DATADIR': getattr(cfg.DATASET, 'DATADIR', cfg.DATASET.ROOT),
+        'MAPSPLIT': getattr(cfg.DATASET, 'MAPSPLIT', dict())
+    }
     batch_size = cfg.BATCH_SIZE
     dataset_name = cfg.DATASET.NAME
 

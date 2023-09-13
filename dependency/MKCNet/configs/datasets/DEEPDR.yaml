@@ -20,3 +20,7 @@ DATASET:
   CHANNEL_NUM: 3
   ROOT: /content/ML/dependency/MKCNet/dataset_splits
   DATADIR: /content/DeepDRiD/regular_fundus_images
+  MAPSPLIT: 
+    val: /content/DeepDRiD/regular_fundus_images/regular-fundus-validation/Images
+    test: /content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation/Images
+    train: /content/DeepDRiD/regular_fundus_images/regular-fundus-training/Images

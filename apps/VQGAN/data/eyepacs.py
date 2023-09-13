@@ -54,9 +54,9 @@ def str_to_indices(string):
 #         self.random_crop = retrieve(self.config, 'ImageNetValidation/random_crop', default=False)
 
 mapdict = {
-    'test': '/content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation/Images',
-    'train': '/content/DeepDRiD/regular_fundus_images/regular-fundus-training/Images',
-    'val': '/content/DeepDRiD/regular_fundus_images/regular-fundus-validation/Images',
+    'test': '',
+    'train': '',
+    'val': '',
 }
 
 class eyepacsTrain(ImageNetTrain):
