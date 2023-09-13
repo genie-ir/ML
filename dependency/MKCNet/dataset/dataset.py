@@ -34,7 +34,7 @@ class basic_dataset(Dataset):
 
 
                 
-                signal_save(T, f'/content/dataset/{scn}.png', stype='img', chw2hwc=True)
+                signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
 
 
 
