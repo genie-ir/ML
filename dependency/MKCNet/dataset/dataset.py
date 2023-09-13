@@ -6,7 +6,7 @@ class basic_dataset(Dataset):
     def __init__(self, root, split='empty', transform=None):
         self.root = root['ROOT']
         self.datadir = root['DATADIR']
-        self.mapsplit = root['mapsplit']
+        self.mapsplit = root['MAPSPLIT']
         self.transform = transform
         self.data = []
         self.label_T = []
