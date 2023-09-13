@@ -84,7 +84,7 @@ class basic_dataset(Dataset):
 
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())[:,:,0]
+                r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())[:,:,0:1]
                 # print('@@@@@@@@@', img_clahe.shape, r.shape)
                 # r = cv2.GaussianBlur(r,(13,13),0)
                 # r = cv2.threshold(r, 100, 255, cv2.THRESH_BINARY)[1]
