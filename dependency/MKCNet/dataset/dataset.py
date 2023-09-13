@@ -65,10 +65,10 @@ class basic_dataset(Dataset):
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print(img_clahe.shape)
-                r = torch.tensor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy())
-                r = rearrange(img_clahe, 'h w c -> c h w').contiguous()
+                r = torch.tensor(vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()))
+                r = rearrange(r, 'h w c -> c h w').contiguous()
                 print(r.shape, r.dtype)
-                signal_save(vaslExtractor(r)), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
+                signal_save(r), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
 
                 
                 # lat = self.vqgan.phi2lat(T)
