@@ -94,6 +94,8 @@ class basic_dataset(Dataset):
                 print('@@@@@@@@@@@@@', r.shape)
                 num_labels, labels_im = cv2.connectedComponents(r)
                 print('!!!!!!!!!!', labels_im)
+                kernel = np.ones((5, 5), np.uint8)
+                r = cv2.erode(r, kernel)
                 r = imshow_components(labels_im)
                 print('#########', r)
 
