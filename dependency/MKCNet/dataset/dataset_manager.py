@@ -3,6 +3,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 
 def get_dataloader(cfg):
+    print(cfg)
     print('@@@@@@@@', cfg.DATASET.get('DATADIR', cfg.DATASET.ROOT))
     assert False
     root = cfg.DATASET.ROOT
