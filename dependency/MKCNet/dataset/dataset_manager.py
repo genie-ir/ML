@@ -52,13 +52,13 @@ def get_transform(cfg):
     #     transfrom_train.append(transforms.Grayscale(1))
     #     transfrom_test.append(transforms.Grayscale(1))
 
-    transfrom_train.append(A.Resize((256, 256)))
-    transfrom_test.append(A.Resize((256, 256)))
+    transfrom_train.append(A.SmallestMaxSize(256))
+    transfrom_test.append(A.SmallestMaxSize(256))
 
-    transfrom_train.append(A.ToTensor())
+    transfrom_train.append(A.ToTensorV2())
     transfrom_train.append(A.Normalize(means, std))
 
-    transfrom_test.append(A.ToTensor())
+    transfrom_test.append(A.ToTensorV2())
     transfrom_test.append(A.Normalize(means, std))
 
     train_ts =  A.Compose(transfrom_train)
