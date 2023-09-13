@@ -4,13 +4,11 @@ from torch.utils.data import DataLoader
 
 def get_dataloader(cfg):
     print(cfg)
-    print('@@@@@@@@',
-        getattr(cfg.DATASET, 'DATADIR', cfg.DATASET.ROOT)      
-    )
-    assert False
-    root = cfg.DATASET.ROOT
+    root = getattr(cfg.DATASET, 'DATADIR', cfg.DATASET.ROOT)
     batch_size = cfg.BATCH_SIZE
     dataset_name = cfg.DATASET.NAME
+
+    print('@@@@@@@@', root)
 
     train_ts, test_ts = get_transform(cfg)
     num_worker = min (batch_size // 4, 16)

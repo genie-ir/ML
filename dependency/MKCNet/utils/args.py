@@ -32,8 +32,8 @@ def setup_cfg(args):
     cfg.MODEL.NAME = 'MKCNet' #args.model
     # cfg.DATASET.ROOT = args.root
     # cfg.DATASET.NAME = 'DEEPDR' #args.dataset
+    cfg.DATASET.ROOT = ''
     cfg.DATASET.DATADIR = ''
     cfg.DATASET.NAME = 'DEEPDR'
-    cfg.DATASET.ROOT = '/content/ML/dependency/MKCNet/dataset_splits'
     cfg.merge_from_file(pathBIO(f"//dependency/MKCNet/configs/datasets/DEEPDR.yaml"))
     return cfg
