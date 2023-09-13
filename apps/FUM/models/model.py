@@ -148,8 +148,8 @@ class FUM(plModuleBase):
         from libs.basicIO import pathBIO
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        print('--------------------------------------->', self.device)
-        self.tasknet = tasknet.to(self.device)
+        self.tasknet = tasknet.to('cuda')
+        print('--------------------------------------->', self.tasknet.device)
         self.cfg = cfg
         # self.D = basic_dataset(
         #     pathBIO('//dependency/MKCNet/dataset_splits/DEEPDR'),
