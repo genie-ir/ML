@@ -2,7 +2,7 @@ import torch
 import os.path as osp
 from torch.utils.data import Dataset
 from PIL import Image
-
+from utils.preprocessing.image.example.fundus.eyepacs_vasl_extraction import vaslExtractor
 from albumentations.pytorch import ToTensorV2
 import albumentations as A
 from einops import rearrange
@@ -24,6 +24,7 @@ class basic_dataset(Dataset):
 
 
     def read_data(self, split, dataset_name, num_T):
+        softmax = torch.nn.Softmax(dim=1)
         NSTD  =  torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         NMEAN =  torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         txt_path = osp.join(self.root, dataset_name, split + '.txt')
@@ -34,32 +35,38 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
-                # print(self.transform)
-                img = np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name)))
-                T = self.transform(image=img)['image'].float()
-                T = T.unsqueeze(0).to('cuda')
                 
-                denormalized_img = T * (255 * NSTD) + (255 * NMEAN)
-                signal_save(denormalized_img, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(A.Compose([
+                img = np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name)))
+                img_clahe = A.Compose([
                     A.Resize(256, 256),
                     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
                     ToTensorV2()
-                ])(image=img)['image'], f'/content/dataset/{scn}-CLAHE.png', stype='img', sparams={'chw2hwc': True})
-                print('---------------------->', T.shape, T.dtype)
-                softmax = torch.nn.Softmax(dim=1)
+                ])(image=img)['image']
+
+                T = self.transform(image=img)['image'].float()
+                T = T.unsqueeze(0).to('cuda')
+                
+                
+                
                 pred = softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))[0])
                 DR_label = (int(line[1]))
+                target = 0
+                if DR_label == 1 or DR_label == 2:
+                    target = 1
+                elif DR_label == 3 or DR_label == 4:
+                    target = 2
+                
+                
                 # quality = (int(line[2]))
                 print('pred', pred)
                 print('DR_label', DR_label)
                 # print('liq', quality)
 
-                
+                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(vaslExtractor(img_clahe), f'/content/dataset/fundus-vasl/{target}/{scn}.png')
 
                 
-                if idx == 25:
-                    assert False    
                 # lat = self.vqgan.phi2lat(T)
                 # print(T.shape, lat.shape)
                 
