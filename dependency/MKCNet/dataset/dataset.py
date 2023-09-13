@@ -29,7 +29,7 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
-                T = (self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))
+                T = (self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name)).numpy()
                 # T = T.unsqueeze(0)
 
 
