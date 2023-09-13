@@ -1,22 +1,24 @@
-import torch
-from torch import nn
-from libs.basicIO import dfdir
-import torch.nn.functional as F
-from libs.basicIO import signal_save
-from utils.pt.tricks.gradfns import dzq_dz_eq1
-from utils.pl.plModuleBase import plModuleBase
-from utils.pt.BB.Calculation.residual_block import MAC
-from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
-from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
+try:
+    import torch
+    from torch import nn
+    from libs.basicIO import dfdir
+    import torch.nn.functional as F
+    from libs.basicIO import signal_save
+    from utils.pt.tricks.gradfns import dzq_dz_eq1
+    from utils.pl.plModuleBase import plModuleBase
+    from utils.pt.BB.Calculation.residual_block import MAC
+    from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
+    from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
 
 
-# import tensorflow as tf
-# from tensorflow.keras.applications.inception_v3 import InceptionV3
-# from tensorflow.keras.models import Model
-# from tensorflow.keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense, Flatten
+    # import tensorflow as tf
+    # from tensorflow.keras.applications.inception_v3 import InceptionV3
+    # from tensorflow.keras.models import Model
+    # from tensorflow.keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense, Flatten
 
-from dependency.MKCNet.main import pretrain as makeDRclassifire
-
+    from dependency.MKCNet.main import pretrain as makeDRclassifire
+except Exception as e:
+    assert False, e
 
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
