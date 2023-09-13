@@ -19,11 +19,12 @@ class basic_dataset(Dataset):
         with open(txt_path, 'r') as f:
             next(f)
             for line in f:
-                print('@@@@@@@@@@', self.transform)
-                assert False
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
-                self.data.append(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
+                T = self.transform(self._readimage_(osp.join(self.mapsplit[split], fs, sc.split('_')[0], sc), dataset_name))
+                print('@@@@@@@', T.shape)
+                assert False
+                
                 self.label_T.append(int(line[1]))
                 self.label_IQ.append(int(line[2]))
                 self.label_M.append(int(line[2]) * num_T + int(line[1]))
