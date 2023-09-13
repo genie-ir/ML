@@ -53,8 +53,8 @@ def get_transform(cfg):
     #     transfrom_train.append(transforms.Grayscale(1))
     #     transfrom_test.append(transforms.Grayscale(1))
 
-    transfrom_train.append(A.SmallestMaxSize(256))
-    transfrom_test.append(A.SmallestMaxSize(256))
+    transfrom_train.append(A.LongestMaxSize(256))
+    transfrom_test.append(A.LongestMaxSize(256))
 
     transfrom_train.append(A.Normalize(means, std))
     transfrom_train.append(ToTensorV2())
