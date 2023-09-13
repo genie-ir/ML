@@ -1,3 +1,4 @@
+import torch
 import os.path as osp
 from torch.utils.data import Dataset
 from PIL import Image
@@ -32,11 +33,11 @@ class basic_dataset(Dataset):
                 # print(self.transform)
                 T = self.transform(image=np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name))))['image']
                 T = T.unsqueeze(0).to('cuda')
+                signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print('---------------------->', T.shape, T.dtype)
-                print(self.kwargs['tasknet'](T))
+                print(self.kwargs['tasknet'](torch.cat([T, T], dim=0)))
 
                 
-                signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
 
                 
 
