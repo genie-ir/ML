@@ -13,7 +13,9 @@ def get_args():
     parser.add_argument("--override", action='store_true')    
     parser.add_argument("--model", type=str, default='VanillaNet')
     
-    return parser.parse_args()
+    # return parser.parse_args()
+    opt, unknown = parser.parse_known_args()
+    return opt
 
 def setup_seed(seed):
     torch.manual_seed(seed)
