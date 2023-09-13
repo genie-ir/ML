@@ -1,7 +1,8 @@
 from .dataset import EYEQ, DEEPDR, DRAC, IQAD_CXR, IQAD_CT
 from torchvision import transforms
 from torch.utils.data import DataLoader
-
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 def get_dataloader(cfg, **kwargs):
     # print(cfg)
     root = {
@@ -40,6 +41,34 @@ def get_dataloader(cfg, **kwargs):
     else:
         return train_loader, test_loader, dataset_size
 
+# def get_transform(cfg):
+
+#     means = cfg.DATASET.NORMALIZATION_MEAN
+#     std = cfg.DATASET.NORMALIZATION_STD
+
+#     transfrom_train = []
+#     transfrom_test = []
+
+#     # if dataset in ['DRAC', 'IQAD_CXR', 'IQAD_CT']:
+#     #     transfrom_train.append(transforms.Grayscale(1))
+#     #     transfrom_test.append(transforms.Grayscale(1))
+
+#     transfrom_train.append(transforms.Resize((256, 256)))
+#     transfrom_test.append(transforms.Resize((256, 256)))
+
+#     transfrom_train.append(transforms.ToTensor())
+#     transfrom_train.append(transforms.Normalize(means, std))
+
+#     transfrom_test.append(transforms.ToTensor())
+#     transfrom_test.append(transforms.Normalize(means, std))
+
+#     train_ts =  transforms.Compose(transfrom_train)
+#     test_ts = transforms.Compose(transfrom_test)
+
+#     return train_ts, test_ts
+
+
+
 def get_transform(cfg):
 
     means = cfg.DATASET.NORMALIZATION_MEAN
@@ -52,16 +81,16 @@ def get_transform(cfg):
     #     transfrom_train.append(transforms.Grayscale(1))
     #     transfrom_test.append(transforms.Grayscale(1))
 
-    transfrom_train.append(transforms.Resize((256, 256)))
-    transfrom_test.append(transforms.Resize((256, 256)))
+    transfrom_train.append(A.Resize(256, 256))
+    transfrom_test.append(A.Resize(256, 256))
 
-    transfrom_train.append(transforms.ToTensor())
-    # transfrom_train.append(transforms.Normalize(means, std))
+    # transfrom_train.append(A.Normalize(means, std))
+    transfrom_train.append(ToTensorV2())
 
-    transfrom_test.append(transforms.ToTensor())
-    # transfrom_test.append(transforms.Normalize(means, std))
+    # transfrom_test.append(A.Normalize(means, std))
+    transfrom_test.append(ToTensorV2())
 
-    train_ts =  transforms.Compose(transfrom_train)
-    test_ts = transforms.Compose(transfrom_test)
+    train_ts =  A.Compose(transfrom_train)
+    test_ts = A.Compose(transfrom_test)
 
     return train_ts, test_ts
