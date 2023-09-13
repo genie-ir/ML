@@ -1,6 +1,6 @@
 import argparse
 import torch, random, numpy as np
-from configs.defaults import _C as cfg_default
+from dependency.MKCNet.configs.defaults import _C as cfg_default
 
 def get_args():
     parser = argparse.ArgumentParser()
