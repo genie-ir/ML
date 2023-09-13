@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 class basic_dataset(Dataset):
-    def __init__(self, root, split, transform=None):
+    def __init__(self, root, split='empty', transform=None):
         self.root = root
         self.transform = transform
         self.data = []

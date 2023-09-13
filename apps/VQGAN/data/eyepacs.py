@@ -31,6 +31,34 @@ def str_to_indices(string):
     return sorted(indices)
 
 
+# class eyepacsTrain(ImageNetTrain):
+#     def download_dataset(self, **kwargs):
+#         system('kaggle datasets download -d {} -p {}'.format(
+#             'agaldran/eyepacs',
+#             kwargs['real_fdir']
+#         ))
+    
+#     def preparation(self, **kwargs):
+#         self.D = D # real dataset wrapper
+#         self.random_crop = retrieve(self.config, 'ImageNetTrain/random_crop', default=True)
+    
+# class eyepacsValidation(ImageNetValidation):
+#     def download_dataset(self, **kwargs):
+#         system('kaggle datasets download -d {} -p {}'.format(
+#             'agaldran/eyepacs',
+#             kwargs['real_fdir']
+#         ))
+    
+#     def preparation(self, **kwargs):
+#         self.D = D
+#         self.random_crop = retrieve(self.config, 'ImageNetValidation/random_crop', default=False)
+
+mapdict = {
+    'test': '/content/DeepDRiD/regular_fundus_images/Online-Challenge1&2-Evaluation/Images',
+    'train': '/content/DeepDRiD/regular_fundus_images/regular-fundus-training/Images',
+    'val': '/content/DeepDRiD/regular_fundus_images/regular-fundus-validation/Images',
+}
+
 class eyepacsTrain(ImageNetTrain):
     def download_dataset(self, **kwargs):
         system('kaggle datasets download -d {} -p {}'.format(
@@ -52,6 +80,18 @@ class eyepacsValidation(ImageNetValidation):
     def preparation(self, **kwargs):
         self.D = D
         self.random_crop = retrieve(self.config, 'ImageNetValidation/random_crop', default=False)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # class eyepacsLatentTrain(ImageNetTrain):

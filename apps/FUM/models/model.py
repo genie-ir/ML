@@ -16,7 +16,7 @@ try:
     # from tensorflow.keras.models import Model
     # from tensorflow.keras.layers import Input, GlobalAveragePooling2D, Dropout, Dense, Flatten
 
-    from dependency.MKCNet.main import pretrain as makeDRclassifire
+    from dependency.MKCNet.main import pretrain as makeDRclassifire, get_transform
 except Exception as e:
     assert False, e
 
@@ -38,7 +38,9 @@ class FUM(plModuleBase):
     
     
     def training_step(self, batch, batch_idx, split='train'):
-        tasknet = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth').to(self.device)
+        _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        _mean = torch.tensor([0.3771, 0.2320, 0.1395], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        
         
         
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
@@ -54,7 +56,7 @@ class FUM(plModuleBase):
         # img = rearrange(img, 'b c h w -> b h w c').contiguous()
         img = img.numpy().astype(np.uint8)
         signal_save(img, self.pathdir + '/' + f'_batch.png')
-
+        
         
         
         output, output_M, output_IQ = tasknet(_phi)
@@ -82,8 +84,8 @@ class FUM(plModuleBase):
     #     return Model(inputs,outputs)
     
     def training_step2(self, batch, batch_idx, split='train'):
-        _std = torch.tensor([0.27670302987098694, 0.20240527391433716, 0.1686241775751114], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        _mean = torch.tensor([0.425753653049469, 0.29737451672554016, 0.21293757855892181], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        _mean = torch.tensor([0.3771, 0.2320, 0.1395], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
         
@@ -143,6 +145,18 @@ class FUM(plModuleBase):
         return model
 
     def start(self):
+        from libs.basicIO import pathBIO
+        from dependency.MKCNet.dataset.dataset_manager import get_dataloader
+        tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        print('--------------------------------------->', self.device)
+        self.tasknet = tasknet.to(self.device)
+        self.cfg = cfg
+        # self.D = basic_dataset(
+        #     pathBIO('//dependency/MKCNet/dataset_splits/DEEPDR'),
+        #     'train'
+        # )
+        # print(self.D)
+        assert False
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
         self.qshape = (self.qch, self.qwh, self.qwh)

@@ -143,7 +143,10 @@ class VQModel(pl.LightningModule):
         return dec, diff
 
     def training_step_syn(self, batch, batch_idx, optimizer_idx):
-        print('training_step_syn')
+        print(batch['x'], batch['x'].shape, batch['x'].dtype)
+        print(batch['y'], batch['y'].shape, batch['y'].dtype)
+
+        assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
         print('training_step')

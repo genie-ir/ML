@@ -25,7 +25,56 @@ def pretrain(ckpt):
     # print(model)
     model.load_state_dict(torch.load(ckpt))
     # print('ok'*30)
-    return model
+    return model, cfg
+
+
+from torchvision import transforms
+def get_transform(cfg=None):
+
+    # means = cfg.DATASET.NORMALIZATION_MEAN
+    # std = cfg.DATASET.NORMALIZATION_STD
+    means = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+    std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+
+
+    return means, std
+
+    transfrom_train = []
+    transfrom_test = []
+
+    # if dataset in ['DRAC', 'IQAD_CXR', 'IQAD_CT']:
+    #     transfrom_train.append(transforms.Grayscale(1))
+    #     transfrom_test.append(transforms.Grayscale(1))
+
+    transfrom_train.append(transforms.Resize((256, 256)))
+    transfrom_test.append(transforms.Resize((256, 256)))
+
+    transfrom_train.append(transforms.ToTensor())
+    transfrom_train.append(transforms.Normalize(means, std))
+
+    transfrom_test.append(transforms.ToTensor())
+    transfrom_test.append(transforms.Normalize(means, std))
+
+    train_ts =  transforms.Compose(transfrom_train)
+    test_ts = transforms.Compose(transfrom_test)
+
+    return train_ts, test_ts
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     args = get_args()
