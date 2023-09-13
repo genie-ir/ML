@@ -84,10 +84,10 @@ def get_transform(cfg):
     transfrom_train.append(A.Resize(256, 256))
     transfrom_test.append(A.Resize(256, 256))
 
-    transfrom_train.append(A.Normalize(means, std))
+    # transfrom_train.append(A.Normalize(means, std))
     transfrom_train.append(ToTensorV2())
 
-    transfrom_test.append(A.Normalize(means, std))
+    # transfrom_test.append(A.Normalize(means, std))
     transfrom_test.append(ToTensorV2())
 
     train_ts =  A.Compose(transfrom_train)

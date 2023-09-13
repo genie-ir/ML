@@ -35,7 +35,9 @@ class basic_dataset(Dataset):
                 T = T.unsqueeze(0).to('cuda')
                 signal_save(T, f'/content/dataset/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 print('---------------------->', T.shape, T.dtype)
-                print(self.kwargs['tasknet'](torch.cat([T, T], dim=0)))
+                softmax = torch.nn.Softmax(dim=1)
+
+                print(softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))))
 
                 
 
