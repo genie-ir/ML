@@ -125,6 +125,7 @@ class basic_dataset(Dataset):
                 # r = rearrange(r, 'h w c -> c h w').contiguous()
                 # print(r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(T2, f'/content/dataset/fundus-vasl-normal/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 assert False
                 
                 # lat = self.vqgan.phi2lat(T)
