@@ -14,8 +14,8 @@ import numpy as np
 def BCDU_net_D3(input_size = (256,256,1)):
     N = input_size[0]
     inputs = Input(input_size) 
-    assert False, '1111111111111'
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
+    assert False, '1111111111111'
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv1)
   
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
