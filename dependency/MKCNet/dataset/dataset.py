@@ -16,8 +16,8 @@ from libs.basicIO import compressor
 
 def cmatrix(Y_TRUE, Y_PRED, path, normalize=False):
     conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
-    if normalize:
-        conf_matrix = conf_matrix / conf_matrix.astype(np.float32).sum(axis=1)
+    # if normalize:
+    #     conf_matrix = conf_matrix / conf_matrix.astype(np.float32).sum(axis=1)
     fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
     plt.xlabel('Predictions', fontsize=18)
     plt.ylabel('Actuals', fontsize=18)
