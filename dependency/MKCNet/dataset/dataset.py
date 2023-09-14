@@ -97,15 +97,7 @@ class basic_dataset(Dataset):
                 pred = softmax(self.kwargs['tasknet'](TB2)[0])
                 yp = pred[0].argmax().item()
                 # print('---------------------->', pred[0], pred[0].argmax().item())
-                DR_label = (int(line[1]))
-                print(line)
-                continue
-                target = 0
-                if DR_label == 1 or DR_label == 2:
-                    target = 1
-                elif DR_label == 3 or DR_label == 4:
-                    target = 2
-                
+                target = (int(line[1])) # drlable -> target. in line proccessing function
                 
                 # quality = (int(line[2]))
                 # print('pred', pred)
@@ -130,7 +122,6 @@ class basic_dataset(Dataset):
                 # self.label_T.append(int(line[1]))
                 # self.label_IQ.append(int(line[2]))
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
-            assert False
             cmatrix(Y_TRUE, Y_PRED, f'/content/dataset/confusion_matrix.png', normalize=True)
             compressor('/content/dataset', '/content/dataset.zip')
             assert False, 'done'
