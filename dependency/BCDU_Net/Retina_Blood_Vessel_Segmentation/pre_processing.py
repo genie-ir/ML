@@ -20,7 +20,7 @@ def my_PreProc(data):
     #black-white conversion
     train_imgs = rgb2gray(data)
     #my preprocessing:
-    train_imgs = dataset_normalized(train_imgs)
+    # train_imgs = dataset_normalized(train_imgs)
     train_imgs = clahe_equalized(train_imgs)
     train_imgs = adjust_gamma(train_imgs, 1.2)
     train_imgs = train_imgs/255.  #reduce to 0-1 range
