@@ -148,7 +148,7 @@ class FUM(plModuleBase):
         from libs.basicIO import pathBIO
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
-        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5').to('cuda')
+        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = tasknet.to('cuda')
