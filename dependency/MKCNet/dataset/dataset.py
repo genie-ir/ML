@@ -64,7 +64,6 @@ class basic_dataset(Dataset):
                 ])(image=img)['image']
                 T2 = A.Compose([
                     A.Resize(256, 256),
-                    # A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
                     ToTensorV2()
                 ])(image=img)['image'].unsqueeze(0)
                 
@@ -94,8 +93,10 @@ class basic_dataset(Dataset):
                 
                 # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
                 r = self.kwargs['vseg'](T2)
+                r2 = self.kwargs['vseg'](img_clahe)
                 print('****************************', r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(r2, f'/content/dataset/fundus-vasl/{target}/{scn}2.png', stype='img', sparams={'chw2hwc': True})
                 signal_save(T2, f'/content/dataset/fundus-vasl-normal/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 assert False
                 
