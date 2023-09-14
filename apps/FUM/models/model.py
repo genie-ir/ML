@@ -152,15 +152,15 @@ class FUM(plModuleBase):
         self.tasknet = tasknet.to('cuda')
         self.tasknet.requires_grad_(False)
         self.cfg = cfg
-        # print(cfg)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
             vqgan=self.vqgan,
             tasknet=self.tasknet
         )
-        print(train_loader)
-        for b in train_loader:
-            print(b)
-            assert False
+        print('done')
+        # print(train_loader)
+        # for b in train_loader:
+        #     print(b)
+        #     assert False
         assert False
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)

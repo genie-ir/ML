@@ -4,6 +4,7 @@ import time
 import yaml
 import json
 import glob
+import h5py
 import torch
 import boto3
 import random
@@ -85,6 +86,16 @@ def fwrite(dst: str, content, mode='w'):
     f = open(dst, mode)
     f.write(content)
     f.close()
+
+def hdf5_read(infile):
+  with h5py.File(infile,'r') as f:  #
+    return f['image'][()]
+
+def hdf5_write(arr,outfile):
+  with h5py.File(outfile,'w') as f:
+    f.create_dataset('image', data=arr, dtype=arr.dtype)
+
+
 
 def dfwrite(dst: str, df, **kwargs):
     if dst.endswith('.csv'):
