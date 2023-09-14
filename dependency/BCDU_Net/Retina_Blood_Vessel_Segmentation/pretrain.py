@@ -19,7 +19,7 @@ def pretrain(ckpt):
         # print('D @@@@@@@@@@@', img.shape, img.dtype)
         img = extract_ordered(img, 64, 64)
         print('E @@@@@@@@@@@', img.shape, img.dtype)
-        predictions = model.predict(img, batch_size=2, verbose=1)
+        predictions = model.predict(img, batch_size=img.shape[0], verbose=1)
         print('F @@@@@@@@@@@', predictions.shape, predictions.dtype)
         predictions = rearrange(predictions, 'b h w c -> b c h w')
         print('G @@@@@@@@@@@', predictions.shape, predictions.dtype)
