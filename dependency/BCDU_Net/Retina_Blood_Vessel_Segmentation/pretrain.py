@@ -6,8 +6,13 @@ from .pre_processing import my_PreProc
 from .extract_patches import recompone
 
 def pretrain(ckpt):
-    model = BCDU_net_D3(input_size = (64,64,1))
+    try:
+        model = BCDU_net_D3(input_size = (64,64,1))
+    except Exception as e:
+        assert False, e
+    assert False, 'ok!'
     model.load_weights(ckpt)
+    assert False
     
     def Model(img):
         print('A @@@@@@@@@@@', img.shape, img.dtype)
