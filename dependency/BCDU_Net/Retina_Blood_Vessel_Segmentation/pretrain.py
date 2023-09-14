@@ -13,7 +13,7 @@ def pretrain(ckpt):
         # print('A @@@@@@@@@@@', img.shape, img.dtype)
         img = my_PreProc(img)
         # print('B @@@@@@@@@@@', img.shape, img.dtype)
-        # img = paint_border(img, 64, 64)
+        img = paint_border(img, 64, 64)
         # print('C @@@@@@@@@@@', img.shape, img.dtype)
         img = extract_ordered(img, 64, 64)
         # print('D @@@@@@@@@@@', img.shape, img.dtype)
