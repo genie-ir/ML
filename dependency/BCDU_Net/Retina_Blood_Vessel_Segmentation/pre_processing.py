@@ -19,7 +19,10 @@ def my_PreProc(data):
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
     train_imgs = rgb2gray(data)
-    signal_save(torch.tensor(train_imgs), f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': False})
+    t = torch.tensor(train_imgs)
+    t = torch.cat([t,t,t], dim=1)
+    print(t.shape, t.dtype)
+    signal_save(t, f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': False})
     assert False
 
     #my preprocessing:
