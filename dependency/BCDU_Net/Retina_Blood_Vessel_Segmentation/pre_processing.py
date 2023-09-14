@@ -15,7 +15,6 @@ from .help_functions import *
 
 #My pre processing (use for both training and testing!)
 def my_PreProc(data):
-    print('------------------------------->', data.shape)
     assert(len(data.shape)==4)
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
