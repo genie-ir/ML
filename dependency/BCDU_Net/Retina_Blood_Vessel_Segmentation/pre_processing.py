@@ -22,7 +22,7 @@ def my_PreProc(data):
     t = torch.tensor(train_imgs)
     t = torch.cat([t,t,t], dim=1)
     print(t.shape, t.dtype)
-    signal_save(t, f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': False})
+    signal_save(t, f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': True})
     assert False
 
     #my preprocessing:
