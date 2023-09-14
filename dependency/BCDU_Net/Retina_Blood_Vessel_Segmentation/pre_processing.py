@@ -12,13 +12,16 @@ import cv2
 
 from .help_functions import *
 
-
+from libs.basicIO import signal_save
 #My pre processing (use for both training and testing!)
 def my_PreProc(data):
     assert(len(data.shape)==4)
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
     train_imgs = rgb2gray(data)
+    signal_save(train_imgs, f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': True})
+    assert False
+
     #my preprocessing:
     # train_imgs = dataset_normalized(train_imgs)
     train_imgs = clahe_equalized(train_imgs)
