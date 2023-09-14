@@ -306,7 +306,13 @@ def recompone(data,N_h,N_w):
     patch_w = data.shape[3]
     N_pacth_per_img = N_w*N_h
     #define and start full recompone
-    full_recomp = np.empty((N_full_imgs,data.shape[1],N_h*patch_h,N_w*patch_w))
+    try:
+        full_recomp = np.empty((N_full_imgs,data.shape[1],N_h*patch_h,N_w*patch_w))
+        print(full_recomp.dtype)
+    except Exception as e:
+        print('!!!!!!!!!', e)
+        assert False
+    
     k = 0  #iter full img
     s = 0  #iter single patch
     while (s<data.shape[0]):
