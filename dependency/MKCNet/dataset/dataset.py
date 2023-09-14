@@ -130,6 +130,7 @@ class basic_dataset(Dataset):
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
             cmatrix(Y_TRUE, Y_PRED, f'/content/dataset/confusion_matrix.png', normalize=True)
             compressor('/content/dataset', '/content/dataset.zip')
+            assert False, 'done'
 
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
