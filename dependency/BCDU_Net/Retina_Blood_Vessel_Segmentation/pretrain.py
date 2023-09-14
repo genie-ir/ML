@@ -19,7 +19,13 @@ def pretrain(ckpt):
         print('D @@@@@@@@@@@', img.shape, img.dtype)
         img = rearrange(img, 'b c h w -> b h w c')
         print('E @@@@@@@@@@@', img.shape, img.dtype)
-        predictions = model.predict(img, batch_size=2, verbose=1)
+        print(model.predict)
+        try:
+            predictions = model.predict(img, batch_size=2, verbose=1)
+        except Exception as e:
+            print('----> e', e)
+            assert False
+        
         print('F @@@@@@@@@@@', predictions.shape, predictions.dtype)
         predictions = rearrange(predictions, 'b h w c -> b c h w')
         print('G @@@@@@@@@@@', predictions.shape, predictions.dtype)
