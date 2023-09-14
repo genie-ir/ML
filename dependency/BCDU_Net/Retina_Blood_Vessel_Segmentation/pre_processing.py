@@ -19,7 +19,7 @@ def my_PreProc(data):
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
     train_imgs = rgb2gray(data)
-    signal_save(train_imgs, f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': True})
+    signal_save(train_imgs.squeeze().unsqueeze(0), f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': False})
     assert False
 
     #my preprocessing:
