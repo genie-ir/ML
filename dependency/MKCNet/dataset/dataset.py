@@ -95,7 +95,6 @@ class basic_dataset(Dataset):
                 # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
                 r = self.kwargs['vseg'](torch.cat([T2, T2], dim=0).cpu().detach().numpy())
                 print('****************************', r.shape, r.dtype)
-                assert False, 'END'
                 
                 
                 # print('@@@@@@@@@', img_clahe.shape, r.shape)
