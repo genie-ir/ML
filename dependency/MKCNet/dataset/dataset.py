@@ -66,7 +66,8 @@ class basic_dataset(Dataset):
                     A.Resize(256, 256),
                     # A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
                     ToTensorV2()
-                ])(image=img)['image']
+                ])(image=img)['image'].unsqueeze(0)
+                
 
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
@@ -92,7 +93,7 @@ class basic_dataset(Dataset):
                 
                 
                 # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
-                print('000000000000 hooooooooooooooO!!', T2.shape, T2.dtype)
+                print('000000000000 hooooooooooooooO!!', T2.shape, T2.dtype, T2.cpu().detach().numpy().shape, T2.cpu().detach().numpy().dtype)
                 r = self.kwargs['vseg'](T2.cpu().detach().numpy())
                 print('****************************', r.shape, r.dtype)
                 assert False, 'END'
