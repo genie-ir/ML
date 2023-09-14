@@ -98,6 +98,14 @@ class basic_dataset(Dataset):
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 Y_TRUE.append(target)
                 Y_PRED.append(yp)
+                
+                conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
+                fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
+                plt.xlabel('Predictions', fontsize=18)
+                plt.ylabel('Actuals', fontsize=18)
+                plt.title('Confusion Matrix', fontsize=18)
+                fig.savefig('/content/conf_matrix.png', dpi=1200)
+                
                 assert False
                 
                 # lat = self.vqgan.phi2lat(T)
@@ -107,12 +115,7 @@ class basic_dataset(Dataset):
                 # self.label_T.append(int(line[1]))
                 # self.label_IQ.append(int(line[2]))
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
-            conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
-            fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
-            plt.xlabel('Predictions', fontsize=18)
-            plt.ylabel('Actuals', fontsize=18)
-            plt.title('Confusion Matrix', fontsize=18)
-            fig.savefig('/content/conf_matrix.png', dpi=1200)
+            
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
         if dataset_name in ['DEEPDR', 'EYEQ']:
