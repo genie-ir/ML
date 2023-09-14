@@ -11,7 +11,7 @@ from PIL import Image
 import cv2
 
 from .help_functions import *
-
+import torch
 from libs.basicIO import signal_save
 #My pre processing (use for both training and testing!)
 def my_PreProc(data):
@@ -19,7 +19,7 @@ def my_PreProc(data):
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
     train_imgs = rgb2gray(data)
-    signal_save(train_imgs.squeeze().unsqueeze(0), f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': False})
+    signal_save(torch.tensor(train_imgs).squeeze().unsqueeze(0), f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': False})
     assert False
 
     #my preprocessing:
