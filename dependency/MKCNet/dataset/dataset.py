@@ -98,7 +98,7 @@ class basic_dataset(Dataset):
                 yp = pred[0].argmax().item()
                 # print('---------------------->', pred[0], pred[0].argmax().item())
                 DR_label = (int(line[1]))
-                print(DR_label)
+                print(line)
                 continue
                 target = 0
                 if DR_label == 1 or DR_label == 2:
