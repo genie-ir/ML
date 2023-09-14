@@ -72,9 +72,10 @@ class basic_dataset(Dataset):
                 T = T.unsqueeze(0).to('cuda')
                 
                 
-                # torch.cat([T, T], dim=0)
-                pred = softmax(self.kwargs['tasknet'](T)[0])
+                TB2 = torch.cat([T, T], dim=0)
+                pred = softmax(self.kwargs['tasknet'](TB2)[0])
                 print('---------------------->', pred)
+                print('---------------------->', pred[0])
                 assert False
                 DR_label = (int(line[1]))
                 target = 0
