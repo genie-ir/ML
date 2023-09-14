@@ -9,8 +9,9 @@ import albumentations as A
 from einops import rearrange
 import torchvision, numpy as np
 from libs.basicIO import signal_save
-
-
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+from mlxtend.plotting import plot_confusion_matrix
 
 def imshow_components(labels):
     # Map component labels to hue val
@@ -44,6 +45,8 @@ class basic_dataset(Dataset):
 
 
     def read_data(self, split, dataset_name, num_T):
+        Y_PRED = []
+        Y_TRUE = []
         softmax = torch.nn.Softmax(dim=1)
         NSTD  =  torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         NMEAN =  torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
@@ -74,8 +77,8 @@ class basic_dataset(Dataset):
                 
                 TB2 = torch.cat([T, T], dim=0)
                 pred = softmax(self.kwargs['tasknet'](TB2)[0])
-                print('---------------------->', pred[0], pred[0].argmax())
-                assert False
+                yp = pred[0].argmax().item()
+                # print('---------------------->', pred[0], pred[0].argmax().item())
                 DR_label = (int(line[1]))
                 target = 0
                 if DR_label == 1 or DR_label == 2:
@@ -89,15 +92,12 @@ class basic_dataset(Dataset):
                 # print('DR_label', DR_label)
                 # print('liq', quality)
 
-                # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                
-                
-                # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
                 r = self.kwargs['vseg'](T2)
-                print('****************************', r.shape, r.dtype)
+                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(T2, f'/content/dataset/{target}/fundus{scn}.png', stype='img', sparams={'chw2hwc': True})
+                Y_TRUE.append(target)
+                Y_PRED.append(yp)
                 assert False
                 
                 # lat = self.vqgan.phi2lat(T)
@@ -107,7 +107,12 @@ class basic_dataset(Dataset):
                 # self.label_T.append(int(line[1]))
                 # self.label_IQ.append(int(line[2]))
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
-    
+            conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
+            fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
+            plt.xlabel('Predictions', fontsize=18)
+            plt.ylabel('Actuals', fontsize=18)
+            plt.title('Confusion Matrix', fontsize=18)
+            fig.savefig('/content/conf_matrix.png', dpi=1200)
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
         if dataset_name in ['DEEPDR', 'EYEQ']:
