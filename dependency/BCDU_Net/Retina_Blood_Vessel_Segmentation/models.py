@@ -78,7 +78,7 @@ def BCDU_net_D3(input_size = (256,256,1)):
     conv9 = Conv2D(1, 1, activation = 'sigmoid')(conv8)
 
     print('++++++++++++++++++++++++++++++++++++++++')
-    model = Model(input = inputs, output = conv9)
+    model = Model(inputs, conv9)
     assert False, '1111111111111'
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])
     return model
