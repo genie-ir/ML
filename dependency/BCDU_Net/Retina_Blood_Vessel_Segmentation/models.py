@@ -8,7 +8,7 @@ from keras import backend as K
 from keras.optimizers import SGD
 from keras.optimizers import *
 from keras.layers import *        
-
+import numpy as np
 
 
 def BCDU_net_D3(input_size = (256,256,1)):
