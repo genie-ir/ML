@@ -301,17 +301,12 @@ def recompone(data,N_h,N_w):
     assert(len(data.shape)==4)
     N_pacth_per_img = N_w*N_h
     assert(data.shape[0]%N_pacth_per_img == 0)
-    N_full_imgs = data.shape[0]/N_pacth_per_img
+    N_full_imgs = data.shape[0]//N_pacth_per_img
     patch_h = data.shape[2]
     patch_w = data.shape[3]
     N_pacth_per_img = N_w*N_h
     #define and start full recompone
-    try:
-        full_recomp = np.empty((N_full_imgs,data.shape[1],N_h*patch_h,N_w*patch_w))
-        print(full_recomp.dtype)
-    except Exception as e:
-        print('!!!!!!!!!', e)
-        assert False
+    full_recomp = np.empty((N_full_imgs,data.shape[1],N_h*patch_h,N_w*patch_w))
     
     k = 0  #iter full img
     s = 0  #iter single patch
