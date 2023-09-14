@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image
 import cv2
 
-from .help_functions import rgb2gray
+from .help_functions import *
 
 
 #My pre processing (use for both training and testing!)

@@ -3,11 +3,11 @@ import numpy as np
 import random
 
 
-from help_functions import load_hdf5
-from help_functions import visualize
-from help_functions import group_images
+from .help_functions import load_hdf5
+from .help_functions import visualize
+from .help_functions import group_images
 
-from pre_processing import my_PreProc
+from .pre_processing import my_PreProc
 
 
 #To select the same images
