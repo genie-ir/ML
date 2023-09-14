@@ -45,8 +45,8 @@ class basic_dataset(Dataset):
 
 
     def read_data(self, split, dataset_name, num_T):
-        Y_PRED = []
-        Y_TRUE = []
+        Y_PRED = [2, 1]
+        Y_TRUE = [3, 4]
         softmax = torch.nn.Softmax(dim=1)
         NSTD  =  torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         NMEAN =  torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
