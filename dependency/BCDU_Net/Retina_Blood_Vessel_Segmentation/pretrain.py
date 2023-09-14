@@ -5,9 +5,8 @@ from .models import BCDU_net_D3
 from .pre_processing import my_PreProc
 from .extract_patches import recompone
 
-def pretrain():
-    ckpt = '/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5'
-    model = BCDU_net_D3(input_size = (64,64,1)).to('cuda')
+def pretrain(ckpt):
+    model = BCDU_net_D3(input_size = (64,64,1))
     model.load_weights(ckpt)
     
     def Model(img):
