@@ -72,8 +72,10 @@ class basic_dataset(Dataset):
                 T = T.unsqueeze(0).to('cuda')
                 
                 
-                
-                pred = softmax(self.kwargs['tasknet'](torch.cat([T, T], dim=0))[0])
+                # torch.cat([T, T], dim=0)
+                pred = softmax(self.kwargs['tasknet'](T)[0])
+                print('---------------------->', pred)
+                assert False
                 DR_label = (int(line[1]))
                 target = 0
                 if DR_label == 1 or DR_label == 2:
@@ -95,7 +97,7 @@ class basic_dataset(Dataset):
                 r = self.kwargs['vseg'](T2)
                 print('****************************', r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(T2, f'/content/dataset/fundus-vasl-normal/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(T2, f'/content/dataset/{target}/fundus{scn}.png', stype='img', sparams={'chw2hwc': True})
                 assert False
                 
                 # lat = self.vqgan.phi2lat(T)
