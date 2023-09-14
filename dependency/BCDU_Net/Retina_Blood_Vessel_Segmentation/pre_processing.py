@@ -14,20 +14,22 @@ from .help_functions import *
 import torch
 from libs.basicIO import signal_save
 #My pre processing (use for both training and testing!)
+def imshow(img, name):
+    t = torch.tensor(img)
+    t = torch.cat([t,t,t], dim=1)
+    print(t.shape, t.dtype)
+    signal_save(t, f'/content/dataset/fundus-vasl-normal/{name}.png', stype='img', sparams={'chw2hwc': True})
+
 def my_PreProc(data):
     assert(len(data.shape)==4)
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
-    train_imgs = rgb2gray(data)
-    t = torch.tensor(train_imgs)
-    t = torch.cat([t,t,t], dim=1)
-    print(t.shape, t.dtype)
-    signal_save(t, f'/content/dataset/fundus-vasl-normal/gray.png', stype='img', sparams={'chw2hwc': True})
-    assert False
-
     #my preprocessing:
+    train_imgs = rgb2gray(data)
+    imshow(train_imgs, 'Gray')
     # train_imgs = dataset_normalized(train_imgs)
     train_imgs = clahe_equalized(train_imgs)
+    imshow(train_imgs, 'Gray-clahe')
     train_imgs = adjust_gamma(train_imgs, 1.2)
     train_imgs = train_imgs/255.  #reduce to 0-1 range
     return train_imgs
