@@ -93,7 +93,7 @@ class basic_dataset(Dataset):
                 
                 
                 # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
-                r = self.kwargs['vseg'](torch.cat([T2], dim=0).cpu().detach().numpy())
+                r = self.kwargs['vseg'](T2)
                 print('****************************', r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 signal_save(T2, f'/content/dataset/fundus-vasl-normal/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})

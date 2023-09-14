@@ -10,6 +10,7 @@ def pretrain(ckpt):
     model.load_weights(ckpt)
     
     def Model(img):
+        img = img.numpy()
         # print('A @@@@@@@@@@@', img.shape, img.dtype)
         img = my_PreProc(img)
         # print('B @@@@@@@@@@@', img.shape, img.dtype)
