@@ -21,7 +21,7 @@ def imshow(img, name):
     signal_save(t, f'/content/dataset/fundus-vasl-normal/{name}.png', stype='img', sparams={'chw2hwc': True})
 
 def my_PreProc(data):
-    assert(len(data.shape)==4)
+    assert(len(data.shape)==4), data.shape
     assert (data.shape[1]==3)  #Use the original images
     #black-white conversion
     #my preprocessing:
