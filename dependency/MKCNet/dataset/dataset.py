@@ -74,8 +74,7 @@ class basic_dataset(Dataset):
                 
                 TB2 = torch.cat([T, T], dim=0)
                 pred = softmax(self.kwargs['tasknet'](TB2)[0])
-                print('---------------------->', pred)
-                print('---------------------->', pred[0])
+                print('---------------------->', pred[0], pred[0].argmax())
                 assert False
                 DR_label = (int(line[1]))
                 target = 0
