@@ -27,7 +27,7 @@ def my_PreProc(data):
     #my preprocessing:
     train_imgs = rgb2gray(data)
     imshow(train_imgs, 'Gray')
-    # train_imgs = dataset_normalized(train_imgs)
+    train_imgs = dataset_normalized(train_imgs)
     train_imgs = clahe_equalized(train_imgs)
     imshow(train_imgs, 'Gray-clahe')
     train_imgs = adjust_gamma(train_imgs, 1.2)

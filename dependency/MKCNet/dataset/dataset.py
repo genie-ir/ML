@@ -122,6 +122,7 @@ class basic_dataset(Dataset):
                 # print('!!!!!!!!!', thresh.shape)
                 # assert False
                 r = torch.tensor(r)
+                print('##############', r.min().item(), r.max().item())
                 # r = rearrange(r, 'h w c -> c h w').contiguous()
                 # print(r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
