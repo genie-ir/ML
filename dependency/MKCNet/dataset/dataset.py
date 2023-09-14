@@ -87,7 +87,7 @@ class basic_dataset(Dataset):
                 
                 
                 # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
-                print('hooooooooooooooO!!', img.shape)
+                print('000000000000 hooooooooooooooO!!', img.shape)
                 r = self.kwargs['vseg'](img)
                 print('****************************', r.shape, r.dtype)
                 assert False
