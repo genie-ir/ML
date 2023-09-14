@@ -25,7 +25,7 @@ def get_dataloader(cfg, **kwargs):
     # print('------------------->', dataset)
 
     train_dataset = dataset(root=root, split = 'train', transform=train_ts, **kwargs)
-    train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle=True, num_workers= num_worker)
+    train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle=False, num_workers= num_worker)
 
     if cfg.DATASET.NAME in cfg.VALIDATION_DATASET:
         val_dataset = dataset(root=root, split = 'val', transform=test_ts, **kwargs)
