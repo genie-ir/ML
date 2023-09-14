@@ -23,7 +23,7 @@ from sklearn.metrics import f1_score
 import sys
 sys.path.insert(0, './lib/')
 # help_functions.py
-from help_functions import *
+from .lib.help_functions import *
 # extract_patches.py
 from extract_patches import recompone
 from extract_patches import recompone_overlap

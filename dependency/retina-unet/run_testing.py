@@ -11,6 +11,8 @@ import ConfigParser
 #config file to read from
 config = ConfigParser.RawConfigParser()
 config.readfp(open(r'./configuration.txt'))
+
+
 #===========================================
 #name of the experiment!!
 name_experiment = config.get('experiment name', 'name')
