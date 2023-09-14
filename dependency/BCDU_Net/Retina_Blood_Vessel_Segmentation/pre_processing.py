@@ -26,10 +26,10 @@ def my_PreProc(data):
     #black-white conversion
     #my preprocessing:
     train_imgs = rgb2gray(data)
-    imshow(train_imgs, 'Gray')
+    # imshow(train_imgs, 'Gray')
     train_imgs = dataset_normalized(train_imgs)
     train_imgs = clahe_equalized(train_imgs)
-    imshow(train_imgs, 'Gray-clahe')
+    # imshow(train_imgs, 'Gray-clahe')
     train_imgs = adjust_gamma(train_imgs, 1.2)
     train_imgs = train_imgs/255.  #reduce to 0-1 range
     return train_imgs

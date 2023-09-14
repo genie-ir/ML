@@ -93,38 +93,8 @@ class basic_dataset(Dataset):
                 
                 
                 # r = vaslExtractor(rearrange(img_clahe, 'c h w -> h w c').contiguous().numpy()).astype(np.uint8)
-                r = self.kwargs['vseg'](torch.cat([T2, T2], dim=0).cpu().detach().numpy())
+                r = self.kwargs['vseg'](torch.cat([T2], dim=0).cpu().detach().numpy())
                 print('****************************', r.shape, r.dtype)
-                
-                
-                # print('@@@@@@@@@', img_clahe.shape, r.shape)
-                # r = cv2.GaussianBlur(r,(13,13),0)
-                # r = cv2.threshold(r, 100, 255, cv2.THRESH_BINARY)[1]
-
-
-
-
-
-                # r = cv2.threshold(r[:,:,1], 127, 255, cv2.THRESH_BINARY)[1]  # ensure binary
-                # print('@@@@@@@@@@@@@', r.shape)
-                # num_labels, labels_im = cv2.connectedComponents(r)
-                # print('!!!!!!!!!!', labels_im)
-                # # kernel = np.ones((5, 5), np.uint8)
-                # # r = cv2.erode(r, kernel)
-                # r = imshow_components(labels_im)
-                # print('#########', r)
-
-
-
-
-
-
-                # print('!!!!!!!!!', thresh.shape)
-                # assert False
-                r = torch.tensor(r)
-                print('##############', r.min().item(), r.max().item())
-                # r = rearrange(r, 'h w c -> c h w').contiguous()
-                # print(r.shape, r.dtype)
                 signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 signal_save(T2, f'/content/dataset/fundus-vasl-normal/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 assert False

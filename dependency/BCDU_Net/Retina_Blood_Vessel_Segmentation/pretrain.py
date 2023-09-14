@@ -26,7 +26,7 @@ def pretrain(ckpt):
         # pred_imgs = recompone(predictions,13,12) 
         predictions = recompone(predictions,4,4) 
         # print('H @@@@@@@@@@@', predictions.shape, predictions.dtype)
-        return (predictions * 255).astype(np.uint8)
+        return torch.tensor((predictions * 255).astype(np.uint8)).to('cuda')
 
     return Model
 
