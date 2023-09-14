@@ -15,7 +15,7 @@ def BCDU_net_D3(input_size = (256,256,1)):
     N = input_size[0]
     inputs = Input(input_size) 
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
-    assert False, '1111111111111'
+    
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv1)
   
     pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
@@ -77,7 +77,9 @@ def BCDU_net_D3(input_size = (256,256,1)):
     conv8 = Conv2D(2, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv8)
     conv9 = Conv2D(1, 1, activation = 'sigmoid')(conv8)
 
+    print('++++++++++++++++++++++++++++++++++++++++')
     model = Model(input = inputs, output = conv9)
+    assert False, '1111111111111'
     model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])
     return model
         
