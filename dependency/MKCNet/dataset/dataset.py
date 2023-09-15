@@ -115,6 +115,8 @@ class basic_dataset(Dataset):
                 TB2 = torch.cat([T, T], dim=0)
                 pred = softmax(self.kwargs['tasknet'](TB2)[0])
                 yp = pred[0].argmax().item()
+                if yp != 0:
+                    yp = 1
                 # print('---------------------->', pred[0], pred[0].argmax().item())
                 target = (int(line[1])) # drlable -> target. in line proccessing function
                 _yt.append(int(target))
@@ -148,10 +150,17 @@ class basic_dataset(Dataset):
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
         if dataset_name in ['DEEPDR', 'EYEQ']:
-            if line[1] in ['3', '4']: line[1] = '2'
-            elif line[1] in ['1', '2']: line[1] = '1'
-            else: line[1] = '0'
+            if line[1] in ['0', '1']: line[1] = '0'
+            elif line[1] in ['2', '3', '4']: line[1] = '1'
+            # else: line[1] = '0'
+
         # if dataset_name in ['DEEPDR', 'EYEQ']:
+        #     if line[1] in ['3', '4']: line[1] = '2'
+        #     elif line[1] in ['1', '2']: line[1] = '1'
+        #     else: line[1] = '0'
+
+
+        # if dataset_name in ['DEEPDR', 'EYEQ']: #default
         #     if line[1] == '4': line[1] = '2'
         #     elif line[1] in ['2', '3']: line[1] = '1'
 
