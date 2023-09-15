@@ -83,15 +83,15 @@ class basic_dataset(Dataset):
         txt_path = osp.join(self.root, dataset_name, split + '.txt')
         with open(txt_path, 'r') as f:
             next(f)
-            counter = 0
+            # counter = 0
             for idx, line in enumerate(f):
-                if counter == 4:
-                    counter = 0
-                elif counter == 0:
-                    counter += 1
-                else:
-                    counter += 1
-                    continue
+                # if counter == 4:
+                #     counter = 0
+                # elif counter == 0:
+                #     counter += 1
+                # else:
+                #     counter += 1
+                #     continue
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
@@ -124,9 +124,9 @@ class basic_dataset(Dataset):
                 # print('liq', quality)
 
                 r = self.kwargs['vseg'](T2)
-                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                # signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 Y_TRUE.append(target)
                 Y_PRED.append(yp)
                 
@@ -142,7 +142,7 @@ class basic_dataset(Dataset):
                 # self.label_IQ.append(int(line[2]))
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
             cmatrix(Y_TRUE, Y_PRED, f'/content/dataset/confusion_matrix.png', normalize=False)
-            compressor('/content/dataset', '/content/dataset.zip')
+            # compressor('/content/dataset', '/content/dataset.zip')
             assert False, 'done'
 
     def _modifyline_(self, line, dataset_name):
