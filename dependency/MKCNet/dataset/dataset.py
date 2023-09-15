@@ -83,9 +83,15 @@ class basic_dataset(Dataset):
         txt_path = osp.join(self.root, dataset_name, split + '.txt')
         with open(txt_path, 'r') as f:
             next(f)
+            counter = 0
             for idx, line in enumerate(f):
-                if idx == 100:
-                    break
+                if counter == 4:
+                    counter = 0
+                elif counter == 0:
+                    counter += 1
+                else:
+                    counter += 1
+                    continue
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
