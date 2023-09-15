@@ -32,8 +32,8 @@ def cmatrix(Y_TRUE, Y_PRED, path, normalize=False):
     # plt.title('Confusion Matrix', fontsize=18)
     # fig.savefig(path, dpi=1200)
     # np_default_print()
-    cm_analysis(Y_TRUE, Y_PRED, [
-        0,1,2
+    cm_analysis(list(Y_TRUE), list(Y_PRED), [
+        'NO-DR','NPDR','PDR'
     ], path, dpi=300)
 
 
@@ -75,8 +75,6 @@ class basic_dataset(Dataset):
 
 
     def read_data(self, split, dataset_name, num_T):
-        Y_PRED = []
-        Y_TRUE = []
         softmax = torch.nn.Softmax(dim=1)
         NSTD  =  torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         NMEAN =  torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
@@ -84,6 +82,8 @@ class basic_dataset(Dataset):
         with open(txt_path, 'r') as f:
             next(f)
             # counter = 0
+            _yp = []
+            _yt = []
             for idx, line in enumerate(f):
                 # if counter == 4:
                 #     counter = 0
@@ -117,6 +117,8 @@ class basic_dataset(Dataset):
                 yp = pred[0].argmax().item()
                 # print('---------------------->', pred[0], pred[0].argmax().item())
                 target = (int(line[1])) # drlable -> target. in line proccessing function
+                _yt.append(int(target))
+                _yp.append(int(yp))
                 
                 # quality = (int(line[2]))
                 # print('pred', pred)
@@ -127,8 +129,6 @@ class basic_dataset(Dataset):
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
-                Y_TRUE.append(target)
-                Y_PRED.append(yp)
                 
                 
                 
@@ -141,7 +141,7 @@ class basic_dataset(Dataset):
                 # self.label_T.append(int(line[1]))
                 # self.label_IQ.append(int(line[2]))
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
-            cmatrix(Y_TRUE, Y_PRED, f'/content/dataset/confusion_matrix.png', normalize=False)
+            cmatrix(_yt, _yp, f'/content/dataset/confusion_matrix.png', normalize=False)
             # compressor('/content/dataset', '/content/dataset.zip')
             assert False, 'done'
 
