@@ -195,7 +195,7 @@ def extract_ordered(full_imgs, patch_h, patch_w):
     N_patches_w = int(img_w/patch_w) #round to lowest int
     if (img_h%patch_h != 0):
         print "warning: " +str(N_patches_w) +" patches in width, with about " +str(img_w%patch_w) +" pixels left over"
-    print "number of patches per image: " +str(N_patches_h*N_patches_w)
+    # print "number of patches per image: " +str(N_patches_h*N_patches_w)
     N_patches_tot = (N_patches_h*N_patches_w)*full_imgs.shape[0]
     patches = np.empty((N_patches_tot,full_imgs.shape[1],patch_h,patch_w))
 
