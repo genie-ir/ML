@@ -22,19 +22,19 @@ def np_default_print():
         suppress=False, threshold=1000, formatter=None)
 
 def cmatrix(Y_TRUE, Y_PRED, path, normalize=False):
-    # conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
+    conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
     # if normalize:
     #     conf_matrix = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis]
-    # np.set_printoptions(precision=2, suppress=True, formatter={'float': '{:0.2f}%'.format})
-    # fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
-    # plt.xlabel('Predictions', fontsize=18)
-    # plt.ylabel('Actuals', fontsize=18)
-    # plt.title('Confusion Matrix', fontsize=18)
-    # fig.savefig(path, dpi=1200)
-    # np_default_print()
-    cm_analysis(list(Y_TRUE), list(Y_PRED), [
-        'NO-DR','NPDR','PDR'
-    ], path, dpi=300)
+    np.set_printoptions(precision=2, suppress=True, formatter={'float': '{:0.2f}%'.format})
+    fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
+    plt.xlabel('Predictions', fontsize=18)
+    plt.ylabel('Actuals', fontsize=18)
+    plt.title('Confusion Matrix', fontsize=18)
+    fig.savefig(path, dpi=1200)
+    np_default_print()
+    # cm_analysis(list(Y_TRUE), list(Y_PRED), [
+    #     'NO-DR','NPDR','PDR'
+    # ], path, dpi=300)
 
 
 
