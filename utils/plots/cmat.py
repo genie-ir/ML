@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from matplotlib.ticker import PercentFormatter
 
-def cm_analysis(y_true, y_pred, filename, labels=None, classes=None, ymap=None, figsize=(17,17)):
+def cm_analysis(y_true, y_pred, classes, filename, labels=None, ymap=None, figsize=(17,17)):
     """
     Generate matrix plot of confusion matrix with pretty annotations.
     The plot image is saved to disk.
