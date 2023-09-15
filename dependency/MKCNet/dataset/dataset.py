@@ -34,7 +34,7 @@ def cmatrix(Y_TRUE, Y_PRED, path, normalize=False):
     # np_default_print()
     cm_analysis(Y_TRUE, Y_PRED, [
         'NO-DR', 'NPDR', 'PDR'
-    ], path)
+    ], path, dpi=300)
 
 
 
