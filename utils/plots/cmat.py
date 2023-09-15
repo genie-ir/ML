@@ -25,7 +25,7 @@ def cm_analysis(y_true, y_pred, classes, filename, labels=None, ymap=None, figsi
     sns.set(font_scale=2.8)
     print('y_pred', y_pred)
     print('y_true', y_true)
-    assert False
+    # assert False
     if ymap is not None:
         y_pred = [ymap[yi] for yi in y_pred]
         y_true = [ymap[yi] for yi in y_true]
