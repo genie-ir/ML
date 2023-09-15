@@ -78,7 +78,8 @@ class basic_dataset(Dataset):
         with open(txt_path, 'r') as f:
             next(f)
             for idx, line in enumerate(f):
-                
+                if idx == 100:
+                    break
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
