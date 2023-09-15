@@ -148,8 +148,12 @@ class basic_dataset(Dataset):
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
         if dataset_name in ['DEEPDR', 'EYEQ']:
-            if line[1] == '4': line[1] = '2'
-            elif line[1] in ['2', '3']: line[1] = '1'
+            if line[1] in ['3', '4']: line[1] = '2'
+            elif line[1] in ['1', '2']: line[1] = '1'
+            else: line[1] = '0'
+        # if dataset_name in ['DEEPDR', 'EYEQ']:
+        #     if line[1] == '4': line[1] = '2'
+        #     elif line[1] in ['2', '3']: line[1] = '1'
 
         return line
     
