@@ -109,24 +109,24 @@ class basic_dataset(Dataset):
                     A.Resize(256, 256),
                     ToTensorV2()
                 ])(image=img)['image'].unsqueeze(0)
-                T3 = A.Compose([
-                    A.Resize(224, 224),
-                    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-                    ToTensorV2()
-                ])(image=img)['image'].unsqueeze(0).float().to('cuda')
+                # T3 = A.Compose([
+                #     A.Resize(224, 224),
+                #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+                #     ToTensorV2()
+                # ])(image=img)['image'].unsqueeze(0).float().to('cuda')
                 # T3 = rearrange(T3, 'b c h w -> b h w c').numpy()
                 # T3 = (T3 / 127.0) - 1
 
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
                 
-                S = torch.tensor(IMAGENET_DEFAULT_STD).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
-                M = torch.tensor(IMAGENET_DEFAULT_MEAN).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
-                T3 = (T3-(M*255)) / (S*255)
-                print('target', (int(line[1])))
-                print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
-                continue
-                assert False
+                # S = torch.tensor(IMAGENET_DEFAULT_STD).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+                # M = torch.tensor(IMAGENET_DEFAULT_MEAN).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+                # T3 = (T3-(M*255)) / (S*255)
+                # print('target', (int(line[1])))
+                # print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
+                # continue
+                # assert False
 
 
                 TB2 = torch.cat([T, T], dim=0)
@@ -136,8 +136,9 @@ class basic_dataset(Dataset):
                 #     yp = 1
                 # print('---------------------->', pred[0], pred[0].argmax().item())
                 target = (int(line[1])) # drlable -> target. in line proccessing function
-                _yt.append(int(target))
+                _yt.append(target)
                 _yp.append(int(yp))
+                continue
                 
                 # quality = (int(line[2]))
                 # print('pred', pred)
@@ -166,7 +167,6 @@ class basic_dataset(Dataset):
 
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
-        return line
         # if dataset_name in ['DEEPDR', 'EYEQ']:
         #     if line[1] in ['0', '1']: line[1] = '0'
         #     elif line[1] in ['2', '3', '4']: line[1] = '1'
