@@ -23,7 +23,7 @@ except Exception as e:
 try:
     import tensorflow.keras
     import torch
-    import models_vit
+    import dependency.RETFound_MAE.models_vit
     from util.pos_embed import interpolate_pos_embed
     from timm.models.layers import trunc_normal_
 except Exception as e:
