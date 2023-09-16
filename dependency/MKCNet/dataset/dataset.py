@@ -145,7 +145,7 @@ class basic_dataset(Dataset):
                     A.Resize(224, 224),
                     ToTensorV2()
                 ])(image=img)['image'].unsqueeze(0)
-                T3 = T3.einsum('bchw->bhwc').numpy()
+                T3 = rearrange(T3, 'b c h w -> b h w c').numpy()
                 T3 = (T3 / 127.0) - 1
 
                 T = self.transform(image=img)['image'].float()
