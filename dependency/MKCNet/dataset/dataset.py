@@ -108,11 +108,11 @@ class basic_dataset(Dataset):
                     A.Resize(256, 256),
                     ToTensorV2()
                 ])(image=img)['image'].unsqueeze(0)
-                # T3 = A.Compose([
-                #     A.Resize(224, 224),
-                #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-                #     ToTensorV2()
-                # ])(image=img)['image'].unsqueeze(0)
+                T3 = A.Compose([
+                    A.Resize(224, 224),
+                    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+                    ToTensorV2()
+                ])(image=img)['image'].unsqueeze(0)
                 # T3 = rearrange(T3, 'b c h w -> b h w c').numpy()
                 # T3 = (T3 / 127.0) - 1
 
@@ -120,7 +120,8 @@ class basic_dataset(Dataset):
                 T = T.unsqueeze(0).to('cuda')
                 
                 print('target', (int(line[1])))
-                print('pred', self.kwargs['drc'](torch.cat([T2,T2], dim=0)))
+                print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
+                continue
                 assert False
 
 
