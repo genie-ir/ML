@@ -18,6 +18,7 @@ from utils.plots.cmat import cm_analysis
 import os
 import tensorflow.keras
 from PIL import Image, ImageOps
+from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
 def np_default_print():
     np.set_printoptions(edgeitems=3, infstr='inf', linewidth=75, nanstr='nan', precision=8,
@@ -112,13 +113,16 @@ class basic_dataset(Dataset):
                     A.Resize(224, 224),
                     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
                     ToTensorV2()
-                ])(image=img)['image'].unsqueeze(0)
+                ])(image=img)['image'].unsqueeze(0).float()
                 # T3 = rearrange(T3, 'b c h w -> b h w c').numpy()
                 # T3 = (T3 / 127.0) - 1
 
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
                 
+                print(IMAGENET_DEFAULT_MEAN)
+                print(IMAGENET_DEFAULT_STD)
+                assert False
                 print('target', (int(line[1])))
                 print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
                 continue
