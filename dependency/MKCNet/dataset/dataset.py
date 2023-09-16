@@ -122,7 +122,7 @@ class basic_dataset(Dataset):
                 
                 print(IMAGENET_DEFAULT_MEAN)
                 print(IMAGENET_DEFAULT_STD)
-                assert False
+                T3 = (T3-(IMAGENET_DEFAULT_MEAN*255)) / (IMAGENET_DEFAULT_STD*255)
                 print('target', (int(line[1])))
                 print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
                 continue
