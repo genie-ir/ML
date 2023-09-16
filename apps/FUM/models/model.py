@@ -20,13 +20,14 @@ try:
 except Exception as e:
     assert False, e
 
-
-import tensorflow.keras
-import torch
-import models_vit
-from util.pos_embed import interpolate_pos_embed
-from timm.models.layers import trunc_normal_
-
+try:
+    import tensorflow.keras
+    import torch
+    import models_vit
+    from util.pos_embed import interpolate_pos_embed
+    from timm.models.layers import trunc_normal_
+except Exception as e:
+    print(e)
 
 def getdrmodel():
     # call the model
