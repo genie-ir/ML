@@ -28,7 +28,6 @@ try:
     from timm.models.layers import trunc_normal_
 except Exception as e:
     print(e)
-assert False
 def getdrmodel():
     # call the model
     model = vit_large_patch16(
