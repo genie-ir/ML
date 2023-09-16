@@ -113,7 +113,7 @@ class basic_dataset(Dataset):
                     A.Resize(224, 224),
                     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
                     ToTensorV2()
-                ])(image=img)['image'].unsqueeze(0).float()
+                ])(image=img)['image'].unsqueeze(0).float().to('cuda')
                 # T3 = rearrange(T3, 'b c h w -> b h w c').numpy()
                 # T3 = (T3 / 127.0) - 1
 
