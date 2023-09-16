@@ -23,7 +23,7 @@ except Exception as e:
 try:
     import tensorflow.keras
     import torch
-    import dependency.RETFound_MAE.models_vit
+    from dependency.RETFound_MAE.models_vit import vit_large_patch16
     from util.pos_embed import interpolate_pos_embed
     from timm.models.layers import trunc_normal_
 except Exception as e:
@@ -31,7 +31,7 @@ except Exception as e:
 
 def getdrmodel():
     # call the model
-    model = models_vit.__dict__['vit_large_patch16'](
+    model = vit_large_patch16(
         num_classes=2,
         drop_path_rate=0.2,
         global_pool=True,
