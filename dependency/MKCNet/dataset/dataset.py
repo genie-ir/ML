@@ -120,9 +120,9 @@ class basic_dataset(Dataset):
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
                 
-                print(IMAGENET_DEFAULT_MEAN)
-                print(IMAGENET_DEFAULT_STD)
-                T3 = (T3-(IMAGENET_DEFAULT_MEAN*255)) / (IMAGENET_DEFAULT_STD*255)
+                S = torch.tensor(IMAGENET_DEFAULT_STD).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+                M = torch.tensor(IMAGENET_DEFAULT_MEAN).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+                T3 = (T3-(M*255)) / (S*255)
                 print('target', (int(line[1])))
                 print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
                 continue
