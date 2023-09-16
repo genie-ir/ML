@@ -87,8 +87,8 @@ def get_transform(cfg):
     
 
     
-    # transfrom_train.append(A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0))
-    # transfrom_test.append(A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0))
+    transfrom_train.append(A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0))
+    transfrom_test.append(A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0))
 
     
     
