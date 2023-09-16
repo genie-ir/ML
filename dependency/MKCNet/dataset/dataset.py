@@ -15,11 +15,46 @@ from mlxtend.plotting import plot_confusion_matrix
 from libs.basicIO import compressor
 from utils.plots.cmat import cm_analysis
 
-
+import os
+import tensorflow.keras
+from PIL import Image, ImageOps
 
 def np_default_print():
     np.set_printoptions(edgeitems=3, infstr='inf', linewidth=75, nanstr='nan', precision=8,
         suppress=False, threshold=1000, formatter=None)
+
+def get(model, data):
+    
+
+    # Create the array of the right shape to feed into the keras model
+    # The 'length' or number of images you can put into the array is
+    # determined by the first position in the shape tuple, in this case 1.
+    # data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+
+    # Replace this with the path to your image
+    # image = Image.open(os.path.dirname(__file__) + '/test/' + img)
+
+    # resize the image to a 224x224 with the same strategy as in TM2:
+    # resizing the image to be at least 224x224 and then cropping from the center
+    # size = (224, 224)
+    # image = ImageOps.fit(image, size, Image.ANTIALIAS)
+
+    # turn the image into a numpy array
+    # image_array = np.asarray(image)
+
+    # display the resized image
+    # image.show()
+
+    # Normalize the image
+    # normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
+
+    # Load the image into the array
+    # data[0] = normalized_image_array
+
+    # run the inference
+    prediction = model.predict(data)
+    return prediction
+
 
 def cmatrix(Y_TRUE, Y_PRED, path, normalize=False):
     conf_matrix = confusion_matrix(y_true=Y_TRUE, y_pred=Y_PRED)
@@ -106,12 +141,22 @@ class basic_dataset(Dataset):
                     A.Resize(256, 256),
                     ToTensorV2()
                 ])(image=img)['image'].unsqueeze(0)
-                
+                T3 = A.Compose([
+                    A.Resize(224, 224),
+                    # ToTensorV2()
+                ])(image=img)['image'].unsqueeze(0)
+                T3 = (T3 / 127.0) - 1
 
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
                 
-                
+                print(T3.shape)
+                P = self.kwargs['drc'].predict(T3)
+                print('pred', P, P.shape)
+                print('target', (int(line[1])))
+                continue
+
+
                 TB2 = torch.cat([T, T], dim=0)
                 pred = softmax(self.kwargs['tasknet'](TB2)[0])
                 yp = pred[0].argmax().item()
@@ -149,6 +194,7 @@ class basic_dataset(Dataset):
 
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
+        return line
         # if dataset_name in ['DEEPDR', 'EYEQ']:
         #     if line[1] in ['0', '1']: line[1] = '0'
         #     elif line[1] in ['2', '3', '4']: line[1] = '1'

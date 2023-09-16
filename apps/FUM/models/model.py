@@ -20,6 +20,10 @@ try:
 except Exception as e:
     assert False, e
 
+
+import tensorflow.keras
+
+
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
@@ -148,6 +152,7 @@ class FUM(plModuleBase):
         from libs.basicIO import pathBIO
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
+        self.drc = tensorflow.keras.models.load_model('/content/ML/dependency/drclassifire_django/keras_model.h5')
         self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
@@ -156,7 +161,8 @@ class FUM(plModuleBase):
         self.cfg = cfg
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
             vqgan=self.vqgan,
-            tasknet=self.tasknet,
+            # tasknet=self.tasknet,
+            drc = self.drc,
             vseg=self.vseg
         )
         print('done')
