@@ -26,7 +26,6 @@ def get_dataloader(cfg, **kwargs):
 
     train_dataset = dataset(root=root, split = 'train', transform=train_ts, **kwargs)
     train_loader = DataLoader(train_dataset, batch_size = batch_size, shuffle=False, num_workers= num_worker)
-    assert False
     if cfg.DATASET.NAME in cfg.VALIDATION_DATASET:
         val_dataset = dataset(root=root, split = 'val', transform=test_ts, **kwargs)
         val_loader = DataLoader(val_dataset, batch_size = batch_size, shuffle=False, num_workers=num_worker)
