@@ -188,17 +188,14 @@ class FUM(plModuleBase):
     def start(self):
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
-<<<<<<< HEAD
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = self.tasknet.to('cuda')
-=======
         # self.drc = getdrmodel().to('cuda')
         self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = tasknet.to('cuda')
->>>>>>> 0f22e0f07802fd01b391789d0e11828613abca4a
         self.tasknet.requires_grad_(False)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
             vqgan=self.vqgan,
