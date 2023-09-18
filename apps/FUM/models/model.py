@@ -198,10 +198,10 @@ class FUM(plModuleBase):
         self.tasknet = tasknet.to('cuda')
         self.tasknet.requires_grad_(False)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
-            vqgan=self.vqgan,
+            # vqgan=self.vqgan,
             tasknet=self.tasknet,
             # drc=self.drc,
-            vseg=self.vseg
+            # vseg=self.vseg
         )
         print('done')
         # print(train_loader)
