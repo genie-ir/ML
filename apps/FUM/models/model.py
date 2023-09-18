@@ -205,7 +205,7 @@ class FUM(plModuleBase):
         )
         print(train_loader)
         for b in train_loader:
-            print(b)
+            print('------------->', b)
         print('done')
         assert False
         self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
