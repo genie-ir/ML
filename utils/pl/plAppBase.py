@@ -25,7 +25,11 @@ class AppBase:
             for tl in cls.trainer.loggers:
                 unlockFlag = getattr(tl, 'unlockFlag', lambda *args, **kwargs: None)
                 unlockFlag()
-            cls.trainer.fit(cls.model, cls.data)
+            if cls.data is None:
+                print('00000000000000000000000000000000000000000000000')
+                cls.trainer.fit(cls.model)
+            else:
+                cls.trainer.fit(cls.model, cls.data)
             for tl in cls.trainer.loggers:
                 lockFlag = getattr(tl, 'lockFlag', lambda *args, **kwargs: None)
                 lockFlag()
