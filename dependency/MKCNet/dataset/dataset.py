@@ -69,7 +69,7 @@ class basic_dataset(Dataset):
         self.datadir = root['DATADIR']
         self.mapsplit = root['MAPSPLIT']
         self.transform = transform
-        # self.data = []
+        self.data = []
         # self.label_T = []
         # self.label_IQ = []
         # self.label_M = []
@@ -99,7 +99,8 @@ class basic_dataset(Dataset):
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
                 
-                img = np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name)))
+                imgpath = osp.join(self.mapsplit[split], fs, scn, sc)
+                img = np.array((self._readimage_(imgpath, dataset_name)))
                 
                 # img_clahe = A.Compose([
                 #     A.Resize(256, 256),
@@ -124,6 +125,11 @@ class basic_dataset(Dataset):
                 T = T.unsqueeze(0).to('cuda')
 
                 target = (int(line[1]))
+                self.data.append({
+                    'path': imgpath,
+                    'target': target
+                })
+                continue
                 yield T, target
                 
                 # img_clahe = A.Compose([
@@ -217,10 +223,12 @@ class basic_dataset(Dataset):
             return Image.open(path).convert('L')
 
     def __getitem__(self, index):
-        img = self.data[index]
-        if self.transform is not None:
-            img = self.transform(img)
-        return img, self.label_T[index], self.label_IQ[index], self.label_M[index]
+        d = self.data[index]
+        print(d)
+        assert False
+        # if self.transform is not None:
+        #     img = self.transform(img)
+        # return img, self.label_T[index], self.label_IQ[index], self.label_M[index]
 
     def __len__(self):
         return len(self.data)
