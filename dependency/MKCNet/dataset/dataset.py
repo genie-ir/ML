@@ -130,7 +130,7 @@ class basic_dataset(Dataset):
                     'target': target
                 })
                 continue
-                yield T, target
+                # yield T, target
                 
                 # img_clahe = A.Compose([
                 #     A.Resize(256, 256),
@@ -232,6 +232,7 @@ class basic_dataset(Dataset):
         # return img, self.label_T[index], self.label_IQ[index], self.label_M[index]
 
     def __len__(self):
+        print(self.data)
         return len(self.data)
     
 class DEEPDR(basic_dataset):
