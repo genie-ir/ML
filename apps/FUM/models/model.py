@@ -203,7 +203,7 @@ class FUM(plModuleBase):
             # drc=self.drc,
             # vseg=self.vseg
         )
-        print(train_loader)
+        print(next(train_loader))
         for b in train_loader:
             print('------------->', b)
         print('done')
