@@ -224,7 +224,7 @@ class basic_dataset(Dataset):
 
     def __getitem__(self, index):
         d = self.data[index]
-        return d
+        return {'data': d}
         print(d)
         assert False
         # if self.transform is not None:
