@@ -215,6 +215,7 @@ class FUM(plModuleBase):
             # drc=self.drc,
             # vseg=self.vseg
         )
+        print('------------------------------>', len(self.train_ds))
         # assert False
         # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
