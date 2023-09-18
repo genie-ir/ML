@@ -102,9 +102,16 @@ class ConfigBase:
             cpu = False
         
         # data
-        data = cls.instantiate_from_config(config.data)
         
-        dataTrainDataloader = data._train_dataloader()
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@', getattr(cls, 'data', None))
+
+        data = getattr(cls, 'data', 'empty')
+        if data == 'empty':
+            data = cls.instantiate_from_config(config.data)
+            dataTrainDataloader = data._train_dataloader()
+        else:
+            dataTrainDataloader = None
+        
         if dataTrainDataloader is None:
             log_every_n_steps_var = 0
         else:

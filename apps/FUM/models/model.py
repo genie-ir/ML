@@ -9,6 +9,7 @@ try:
     from utils.pt.BB.Calculation.residual_block import MAC
     from torchmetrics.functional.image import structural_similarity_index_measure as SSIM
     from utils.pt.BB.Quantizer.VectorQuantizer import VectorQuantizer as VectorQuantizerBase
+    from torch.utils.data import DataLoader
 
 
     # import tensorflow as tf
@@ -74,11 +75,25 @@ class VectorQuantizer(VectorQuantizerBase):
         self.embedding.weight = self.w
 
 class FUM(plModuleBase):
+    def train_dataloader(self):
+        return DataLoader(self.train_ds, batch_size=5,shuffle=True)
+
+    def val_dataloader(self):
+        return DataLoader(self.val_ds, batch_size=5,shuffle=False)
+
+    def test_dataloader(self):
+        return DataLoader(self.test_ds, batch_size=5,shuffle=False)
+
     def validation_step(self, batch, batch_idx, split='val'):
         return
     
     
     def training_step(self, batch, batch_idx, split='train'):
+        print(batch)
+        assert False
+
+
+
         _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         _mean = torch.tensor([0.3771, 0.2320, 0.1395], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         
@@ -191,41 +206,34 @@ class FUM(plModuleBase):
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = self.tasknet.to('cuda')
-        # self.drc = getdrmodel().to('cuda')
-        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.tasknet = tasknet.to('cuda')
         self.tasknet.requires_grad_(False)
-        train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
+        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
             # vqgan=self.vqgan,
             tasknet=self.tasknet,
             # drc=self.drc,
             # vseg=self.vseg
         )
-        for b in train_loader:
-            print('------------->', b)
-        print('done')
-        assert False
-        self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
-        self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
-        self.qshape = (self.qch, self.qwh, self.qwh)
-        self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
-        self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
-        self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-        # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
-        self.generator.mac = nn.Sequential(*[
-            MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
-        ])
+        # assert False
+        # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
+        # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
+        # self.qshape = (self.qch, self.qwh, self.qwh)
+        # self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
+        # self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
+        # self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+        # # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+        # self.generator.mac = nn.Sequential(*[
+        #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+        # ])
         
-        ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
-        from torchvision import models
-        weights = torch.load(ckpt)
-        model = models.resnet50()
-        # Our model outputs the score of DR for classification. See https://arxiv.org/pdf/2110.14160.pdf for more details.
-        model.fc = nn.Linear(model.fc.in_features, 1)
-        model.load_state_dict(weights, strict=True)
-        self.drclassifire = model
+        # ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
+        # from torchvision import models
+        # weights = torch.load(ckpt)
+        # model = models.resnet50()
+        # # Our model outputs the score of DR for classification. See https://arxiv.org/pdf/2110.14160.pdf for more details.
+        # model.fc = nn.Linear(model.fc.in_features, 1)
+        # model.load_state_dict(weights, strict=True)
+        # self.drclassifire = model
 
     def __c2phi(self, cross, tag='', phi_concept=None):
         # list_of_distance_to_mode = []
