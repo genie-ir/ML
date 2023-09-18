@@ -97,37 +97,39 @@ class basic_dataset(Dataset):
                 scn = sc.split('_')[0]
                 
                 img = np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name)))
-                img_clahe = A.Compose([
-                    A.Resize(256, 256),
-                    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-                    ToTensorV2()
-                ])(image=img)['image']
-                T2 = A.Compose([
-                    A.Resize(256, 256),
-                    ToTensorV2()
-                ])(image=img)['image'].unsqueeze(0)
                 
-
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
+
+                target = (int(line[1])) 
+                yield T, target
+                
+                # img_clahe = A.Compose([
+                #     A.Resize(256, 256),
+                #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+                #     ToTensorV2()
+                # ])(image=img)['image']
+                # T2 = A.Compose([
+                #     A.Resize(256, 256),
+                #     ToTensorV2()
+                # ])(image=img)['image'].unsqueeze(0)
+                
+
                 
                 
-                TB2 = torch.cat([T, T], dim=0)
-                pred = softmax(self.kwargs['tasknet'](TB2)[0])
-                yp = pred[0].argmax().item()
-                # if yp != 0:
-                #     yp = 1
-                # print('---------------------->', pred[0], pred[0].argmax().item())
-                target = (int(line[1])) # drlable -> target. in line proccessing function
-                _yt.append(int(target))
-                _yp.append(int(yp))
+                
+                # TB2 = torch.cat([T, T], dim=0)
+                # pred = softmax(self.kwargs['tasknet'](TB2)[0])
+                # yp = pred[0].argmax().item()
+                # _yt.append(int(target))
+                # _yp.append(int(yp))
                 
                 # quality = (int(line[2]))
                 # print('pred', pred)
                 # print('DR_label', DR_label)
                 # print('liq', quality)
 
-                r = self.kwargs['vseg'](T2)
+                # r = self.kwargs['vseg'](T2)
                 # signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/fundus/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(img_clahe, f'/content/dataset/fundus-clahe/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
                 # signal_save(r, f'/content/dataset/fundus-vasl/{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
@@ -143,16 +145,16 @@ class basic_dataset(Dataset):
                 # self.label_T.append(int(line[1]))
                 # self.label_IQ.append(int(line[2]))
                 # self.label_M.append(int(line[2]) * num_T + int(line[1]))
-            cmatrix(_yt, _yp, f'/content/dataset/confusion_matrix.png', normalize=False)
+            # cmatrix(_yt, _yp, f'/content/dataset/confusion_matrix.png', normalize=False)
             # compressor('/content/dataset', '/content/dataset.zip')
-            assert False, 'done'
+            # assert False, 'done'
 
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
-        # if dataset_name in ['DEEPDR', 'EYEQ']:
-        #     if line[1] in ['0', '1']: line[1] = '0'
-        #     elif line[1] in ['2', '3', '4']: line[1] = '1'
-            # else: line[1] = '0'
+        if dataset_name in ['DEEPDR', 'EYEQ']:
+            if line[1] in ['0']: line[1] = '0'
+            elif line[1] in ['1', '2']: line[1] = '1'
+            elif line[1] in ['3', '4']: line[1] = '2'
 
         # if dataset_name in ['DEEPDR', 'EYEQ']:
         #     if line[1] in ['3', '4']: line[1] = '2'
@@ -160,9 +162,9 @@ class basic_dataset(Dataset):
         #     else: line[1] = '0'
 
 
-        if dataset_name in ['DEEPDR', 'EYEQ']: #default
-            if line[1] == '4': line[1] = '2'
-            elif line[1] in ['2', '3']: line[1] = '1'
+        # if dataset_name in ['DEEPDR', 'EYEQ']: #default
+        #     if line[1] == '4': line[1] = '2'
+        #     elif line[1] in ['2', '3']: line[1] = '1'
 
         return line
     
