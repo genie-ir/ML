@@ -232,7 +232,7 @@ class basic_dataset(Dataset):
         # return img, self.label_T[index], self.label_IQ[index], self.label_M[index]
 
     def __len__(self):
-        print(self.data)
+        print('>>>>>>>>>>>>>>>>>>>>>>>>>>', len(self.data))
         return len(self.data)
     
 class DEEPDR(basic_dataset):
