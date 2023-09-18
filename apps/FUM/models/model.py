@@ -206,7 +206,8 @@ class FUM(plModuleBase):
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = self.tasknet.to('cuda')
-        self.tasknet.requires_grad_(False)
+        self.generator.tasknet = self.tasknet
+        # self.tasknet.requires_grad_(False)
         self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
             # vqgan=self.vqgan,
