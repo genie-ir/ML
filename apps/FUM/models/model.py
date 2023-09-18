@@ -20,6 +20,47 @@ try:
 except Exception as e:
     assert False, e
 
+try:
+    import tensorflow.keras
+    import torch
+    from dependency.RETFound_MAE.models_vit import vit_large_patch16
+    from dependency.RETFound_MAE.util.pos_embed import interpolate_pos_embed
+    from timm.models.layers import trunc_normal_
+except Exception as e:
+    print(e)
+def getdrmodel():
+    # call the model
+    model = vit_large_patch16(
+        num_classes=2,
+        drop_path_rate=0.2,
+        global_pool=True,
+    )
+
+    # load RETFound weights
+    ckpt = '/content/drive/MyDrive/storage/dependency/RETFound_cfp_weights.pth'
+    checkpoint = torch.load(ckpt, map_location='cpu')
+    checkpoint_model = checkpoint['model']
+    state_dict = model.state_dict()
+    for k in ['head.weight', 'head.bias']:
+        if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
+            print(f"Removing key {k} from pretrained checkpoint")
+            del checkpoint_model[k]
+
+    # interpolate position embedding
+    interpolate_pos_embed(model, checkpoint_model)
+
+    # load pre-trained model
+    msg = model.load_state_dict(checkpoint_model, strict=False)
+
+    assert set(msg.missing_keys) == {'head.weight', 'head.bias', 'fc_norm.weight', 'fc_norm.bias'}
+
+    # manually initialize fc layer
+    trunc_normal_(model.head.weight, std=2e-5)
+
+    # print("Model = %s" % str(model))
+    return model
+
+
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
@@ -147,13 +188,22 @@ class FUM(plModuleBase):
     def start(self):
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
+<<<<<<< HEAD
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.tasknet = self.tasknet.to('cuda')
+=======
+        # self.drc = getdrmodel().to('cuda')
+        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        # cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        self.tasknet = tasknet.to('cuda')
+>>>>>>> 0f22e0f07802fd01b391789d0e11828613abca4a
         self.tasknet.requires_grad_(False)
         train_loader, test_loader, val_loader, dataset_size = get_dataloader(cfg, 
             vqgan=self.vqgan,
             tasknet=self.tasknet,
+            # drc=self.drc,
             vseg=self.vseg
         )
         print('done')

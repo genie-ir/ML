@@ -15,7 +15,10 @@ from mlxtend.plotting import plot_confusion_matrix
 from libs.basicIO import compressor
 from utils.plots.cmat import cm_analysis
 
-
+import os
+import tensorflow.keras
+from PIL import Image, ImageOps
+from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 
 def np_default_print():
     np.set_printoptions(edgeitems=3, infstr='inf', linewidth=75, nanstr='nan', precision=8,
@@ -97,7 +100,27 @@ class basic_dataset(Dataset):
                 scn = sc.split('_')[0]
                 
                 img = np.array((self._readimage_(osp.join(self.mapsplit[split], fs, scn, sc), dataset_name)))
+<<<<<<< HEAD
                 
+=======
+                img_clahe = A.Compose([
+                    A.Resize(256, 256),
+                    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+                    ToTensorV2()
+                ])(image=img)['image']
+                T2 = A.Compose([
+                    A.Resize(256, 256),
+                    ToTensorV2()
+                ])(image=img)['image'].unsqueeze(0)
+                # T3 = A.Compose([
+                #     A.Resize(224, 224),
+                #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+                #     ToTensorV2()
+                # ])(image=img)['image'].unsqueeze(0).float().to('cuda')
+                # T3 = rearrange(T3, 'b c h w -> b h w c').numpy()
+                # T3 = (T3 / 127.0) - 1
+
+>>>>>>> 0f22e0f07802fd01b391789d0e11828613abca4a
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
 
@@ -116,6 +139,7 @@ class basic_dataset(Dataset):
                 
 
                 
+<<<<<<< HEAD
                 
                 
                 # TB2 = torch.cat([T, T], dim=0)
@@ -123,6 +147,27 @@ class basic_dataset(Dataset):
                 # yp = pred[0].argmax().item()
                 # _yt.append(int(target))
                 # _yp.append(int(yp))
+=======
+                # S = torch.tensor(IMAGENET_DEFAULT_STD).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+                # M = torch.tensor(IMAGENET_DEFAULT_MEAN).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+                # T3 = (T3-(M*255)) / (S*255)
+                # print('target', (int(line[1])))
+                # print('pred', self.kwargs['drc'](torch.cat([T3,T3], dim=0)))
+                # continue
+                # assert False
+
+
+                TB2 = torch.cat([T, T], dim=0)
+                pred = softmax(self.kwargs['tasknet'](TB2)[0])
+                yp = pred[0].argmax().item()
+                if yp != 0:
+                    yp = 1
+                # print('---------------------->', pred[0], pred[0].argmax().item())
+                target = (int(line[1])) # drlable -> target. in line proccessing function
+                _yt.append(target)
+                _yp.append(int(yp))
+                continue
+>>>>>>> 0f22e0f07802fd01b391789d0e11828613abca4a
                 
                 # quality = (int(line[2]))
                 # print('pred', pred)
@@ -162,6 +207,13 @@ class basic_dataset(Dataset):
         #     else: line[1] = '0'
 
 
+<<<<<<< HEAD
+=======
+        if dataset_name in ['DEEPDR', 'EYEQ']: 
+            if line[1] == '0': line[1] = '0'
+            elif line[1] in ['1', '2', '3', '4']: line[1] = '1'
+        
+>>>>>>> 0f22e0f07802fd01b391789d0e11828613abca4a
         # if dataset_name in ['DEEPDR', 'EYEQ']: #default
         #     if line[1] == '4': line[1] = '2'
         #     elif line[1] in ['2', '3']: line[1] = '1'
