@@ -17,7 +17,10 @@ class AppBase:
     def validate(cls):
         if not cls.opt.no_validate and not cls.trainer.interrupted:
             print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-            cls.trainer.validate(cls.model, cls.data)
+            if cls.data is None:
+                cls.trainer.validate(cls.model)
+            else:
+                cls.trainer.validate(cls.model, cls.data)
 
     @classmethod
     def fit(cls):
