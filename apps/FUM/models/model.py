@@ -87,10 +87,14 @@ class FUM(plModuleBase):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
     def validation_step(self, batch, batch_idx, split='val'):
+        signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+
         return
     
     def training_step(self, batch, batch_idx, split='train'):
-        print(batch.keys())
+        
+        signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+
         assert False
     
     def training_step0000(self, batch, batch_idx, split='train'):
