@@ -32,7 +32,8 @@ def get_dataloader(cfg, **kwargs):
 
     test_dataset = dataset(root=root, split = 'test', transform=test_ts, **kwargs)
     test_loader = DataLoader(test_dataset, batch_size = batch_size, shuffle=False, num_workers=num_worker)
-
+    compressor('/content/dataset', '/content/dataset.zip')
+    assert False
     dataset_size = [len(train_dataset), len(test_dataset)]
     
     if dataset_name in cfg.VALIDATION_DATASET:

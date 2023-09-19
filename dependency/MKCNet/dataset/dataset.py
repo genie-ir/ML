@@ -123,12 +123,14 @@ class basic_dataset(Dataset):
 
                 T = self.transform(image=img)['image'].float()
                 T = T.unsqueeze(0).to('cuda')
-
                 target = (int(line[1]))
-                self.data.append({
-                    'path': imgpath,
-                    'target': target
-                })
+                s = 'train' if split == 'train' else 'val'
+                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+
+                # self.data.append({
+                #     'path': imgpath,
+                #     'target': target
+                # })
                 continue
                 # yield T, target
                 
