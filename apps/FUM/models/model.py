@@ -220,7 +220,7 @@ class FUM(plModuleBase):
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
             # vqgan=self.vqgan,
-            tasknet=self.tasknet,
+            tasknet=self.dr_classifire,
             # drc=self.drc,
             # vseg=self.vseg
         )
