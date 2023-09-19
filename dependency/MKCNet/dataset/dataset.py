@@ -99,8 +99,8 @@ class basic_dataset(Dataset):
                 line = self._modifyline_(line, dataset_name) # modify the label of DEEPDR and EYEQ
                 fs, sc = line[0].split('/')
                 scn = sc.split('_')[0]
-                print('--------------------------->', sc)
-                assert False
+                # print('--------------------------->', sc)
+                # assert False
                 imgpath = osp.join(self.mapsplit[split], fs, scn, sc)
                 img = np.array((self._readimage_(imgpath, dataset_name)))
                 
@@ -128,7 +128,7 @@ class basic_dataset(Dataset):
                 target = (int(line[1]))
                 s = 'train' if split == 'train' else 'val'
                 counter += 1
-                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/case_{target}_{counter}___{scn}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/case_{target}_{counter}___{scn}___{sc.replace(".jpg", "")}.png', stype='img', sparams={'chw2hwc': True})
 
                 # self.data.append({
                 #     'path': imgpath,
