@@ -40,133 +40,61 @@
 
 
 
-#NOTE: dataset drclassifire
-target: utils.pl.tools.dataset.DataModuleFromConfig
-params:
-  batch_size: 5
-  num_workers: 2
-  train:
-    target: apps.FUM.data.eyepacs.DTrain
-    params:
-      config:
-        txt_filelist: train_filelist.txt
-        SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
-        N_WSTAR: -1
-        S_WSTAR: '**/train/**'
-        PATH_TO_CLASS_MAP:
-          /fum_dataset/train/Grade_0: 0
-          /fum_dataset/train/Grade_1: 1
-          /fum_dataset/train/Grade_2: 2
-          /fum_dataset/train/Grade_3: 3
-          /fum_dataset/train/Grade_4: 4
-        DF_NAME: fum_dataset_train.csv
-        DF_KEY: image_id # select row inside dataframe
-        DF_VAL: dr # class value -> It can be exact one of this: int, float, str
-        DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
-        DF_CANDIDATE:
-          MAX_N_IN_CAT: 1000000
-        MODE_VAL: 1
-        EXT: npy
-        SIZE: 256
-        HOST_DIR: //data/external
-        NAME: fum_dataset
-        URL:
-          synset: //data/config/eyepacs/synset_human.txt
-          iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
-        FILES:
-          - datasetfile.zip
-  validation:
-    target: apps.FUM.data.eyepacs.DVal
-    params:
-      config:
-        txt_filelist: val_filelist.txt
-        SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
-        N_WSTAR: -1
-        S_WSTAR: '**/val/**'
-        PATH_TO_CLASS_MAP:
-          /fum_dataset/val/Grade_0: 0
-          /fum_dataset/val/Grade_1: 1
-          /fum_dataset/val/Grade_2: 2
-          /fum_dataset/val/Grade_3: 3
-          /fum_dataset/val/Grade_4: 4
-        DF_NAME: fum_dataset.csv
-        DF_KEY: image_id # select row inside dataframe
-        DF_VAL: dr # class value -> It can be exact one of this: int, float, str
-        DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
-        DF_CANDIDATE:
-          MAX_N_IN_CAT: 1000000
-        MODE_VAL: 1
-        EXT: npy
-        SIZE: 256
-        HOST_DIR: $KAGGLE_PATH
-        NAME: eyepacs_all_for_cgan
-        URL:
-          synset: //data/config/eyepacs/synset_human.txt
-          iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
-        FILES:
-          - datasetfile.zip
-
-
-
-
-
-
-# NOTE Default:
-
+# #NOTE: dataset drclassifire
 # target: utils.pl.tools.dataset.DataModuleFromConfig
 # params:
 #   batch_size: 5
 #   num_workers: 2
 #   train:
-#     target: apps.FUM.data.eyepacs.eyepacsTrain
+#     target: apps.FUM.data.eyepacs.DTrain
 #     params:
 #       config:
 #         txt_filelist: train_filelist.txt
-#         SRC: pretrained_0_1DsignalOfEyepacs.zip
+#         SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
 #         N_WSTAR: -1
 #         S_WSTAR: '**/train/**'
 #         PATH_TO_CLASS_MAP:
-#           /1DsignalOfEyepacs/train/Grade_0: 0
-#           /1DsignalOfEyepacs/train/Grade_1: 1
-#           /1DsignalOfEyepacs/train/Grade_2: 2
-#           /1DsignalOfEyepacs/train/Grade_3: 3
-#           /1DsignalOfEyepacs/train/Grade_4: 4
-#         DF_NAME: train_eyepacs.csv
+#           /fum_dataset/train/Grade_0: 0
+#           /fum_dataset/train/Grade_1: 1
+#           /fum_dataset/train/Grade_2: 2
+#           /fum_dataset/train/Grade_3: 3
+#           /fum_dataset/train/Grade_4: 4
+#         DF_NAME: fum_dataset_train.csv
 #         DF_KEY: image_id # select row inside dataframe
 #         DF_VAL: dr # class value -> It can be exact one of this: int, float, str
 #         DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
 #         DF_CANDIDATE:
-#           MAX_N_IN_CAT: 500
+#           MAX_N_IN_CAT: 1000000
 #         MODE_VAL: 1
 #         EXT: npy
 #         SIZE: 256
 #         HOST_DIR: //data/external
-#         NAME: eyepacs_all_for_cgan
+#         NAME: fum_dataset
 #         URL:
 #           synset: //data/config/eyepacs/synset_human.txt
 #           iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
 #         FILES:
 #           - datasetfile.zip
 #   validation:
-#     target: apps.FUM.data.eyepacs.eyepacsValidation
+#     target: apps.FUM.data.eyepacs.DVal
 #     params:
 #       config:
 #         txt_filelist: val_filelist.txt
-#         SRC: pretrained_0_1DsignalOfEyepacs.zip
+#         SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
 #         N_WSTAR: -1
 #         S_WSTAR: '**/val/**'
 #         PATH_TO_CLASS_MAP:
-#           /1DsignalOfEyepacs/val/Grade_0: 0
-#           /1DsignalOfEyepacs/val/Grade_1: 1
-#           /1DsignalOfEyepacs/val/Grade_2: 2
-#           /1DsignalOfEyepacs/val/Grade_3: 3
-#           /1DsignalOfEyepacs/val/Grade_4: 4
-#         DF_NAME: val_eyepacs.csv
+#           /fum_dataset/val/Grade_0: 0
+#           /fum_dataset/val/Grade_1: 1
+#           /fum_dataset/val/Grade_2: 2
+#           /fum_dataset/val/Grade_3: 3
+#           /fum_dataset/val/Grade_4: 4
+#         DF_NAME: fum_dataset.csv
 #         DF_KEY: image_id # select row inside dataframe
 #         DF_VAL: dr # class value -> It can be exact one of this: int, float, str
 #         DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
 #         DF_CANDIDATE:
-#           MAX_N_IN_CAT: 100
+#           MAX_N_IN_CAT: 1000000
 #         MODE_VAL: 1
 #         EXT: npy
 #         SIZE: 256
@@ -177,4 +105,76 @@ params:
 #           iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
 #         FILES:
 #           - datasetfile.zip
+
+
+
+
+
+
+# NOTE Default:
+
+target: utils.pl.tools.dataset.DataModuleFromConfig
+params:
+  batch_size: 5
+  num_workers: 2
+  train:
+    target: apps.FUM.data.eyepacs.eyepacsTrain
+    params:
+      config:
+        txt_filelist: train_filelist.txt
+        SRC: pretrained_0_1DsignalOfEyepacs.zip
+        N_WSTAR: -1
+        S_WSTAR: '**/train/**'
+        PATH_TO_CLASS_MAP:
+          /1DsignalOfEyepacs/train/Grade_0: 0
+          /1DsignalOfEyepacs/train/Grade_1: 1
+          /1DsignalOfEyepacs/train/Grade_2: 2
+          /1DsignalOfEyepacs/train/Grade_3: 3
+          /1DsignalOfEyepacs/train/Grade_4: 4
+        DF_NAME: train_eyepacs.csv
+        DF_KEY: image_id # select row inside dataframe
+        DF_VAL: dr # class value -> It can be exact one of this: int, float, str
+        DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+        DF_CANDIDATE:
+          MAX_N_IN_CAT: 500
+        MODE_VAL: 1
+        EXT: npy
+        SIZE: 256
+        HOST_DIR: //data/external
+        NAME: eyepacs_all_for_cgan
+        URL:
+          synset: //data/config/eyepacs/synset_human.txt
+          iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
+        FILES:
+          - datasetfile.zip
+  validation:
+    target: apps.FUM.data.eyepacs.eyepacsValidation
+    params:
+      config:
+        txt_filelist: val_filelist.txt
+        SRC: pretrained_0_1DsignalOfEyepacs.zip
+        N_WSTAR: -1
+        S_WSTAR: '**/val/**'
+        PATH_TO_CLASS_MAP:
+          /1DsignalOfEyepacs/val/Grade_0: 0
+          /1DsignalOfEyepacs/val/Grade_1: 1
+          /1DsignalOfEyepacs/val/Grade_2: 2
+          /1DsignalOfEyepacs/val/Grade_3: 3
+          /1DsignalOfEyepacs/val/Grade_4: 4
+        DF_NAME: val_eyepacs.csv
+        DF_KEY: image_id # select row inside dataframe
+        DF_VAL: dr # class value -> It can be exact one of this: int, float, str
+        DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+        DF_CANDIDATE:
+          MAX_N_IN_CAT: 100
+        MODE_VAL: 1
+        EXT: npy
+        SIZE: 256
+        HOST_DIR: $KAGGLE_PATH
+        NAME: eyepacs_all_for_cgan
+        URL:
+          synset: //data/config/eyepacs/synset_human.txt
+          iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
+        FILES:
+          - datasetfile.zip
 
