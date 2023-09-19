@@ -212,10 +212,10 @@ class ImageNetBase(Dataset):
             self.relpaths = f.read().splitlines()
             l1 = len(self.relpaths)
             if len(self.df) == 0:
+                print('-----------self.relpaths------------->', self.relpaths)
                 for _rp in tqdm(self.relpaths, desc='creating DataFrame -> {}'.format(self.df_path)):
                     rp = abspath(join(os.sep, _rp))
                     rps = rp.split(os.sep)
-                    print('-----------_rp------------->', _rp)
                     self.df = pd.concat([self.df, pd.DataFrame.from_records([
                         {self.DF_KEY: rps[-1], self.DF_VAL: self.set_tag_to_record(os.sep.join(rps[:-1]), rps[-1])}
                     ])])
