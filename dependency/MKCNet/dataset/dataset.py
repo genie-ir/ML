@@ -127,7 +127,7 @@ class basic_dataset(Dataset):
                 target = (int(line[1]))
                 s = 'train' if split == 'train' else 'val'
                 counter += 1
-                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/case_{counter}.png', stype='img', sparams={'chw2hwc': True})
+                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/case_{target}_{counter}_{scn}.png', stype='img', sparams={'chw2hwc': True})
 
                 # self.data.append({
                 #     'path': imgpath,

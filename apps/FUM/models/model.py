@@ -87,13 +87,13 @@ class FUM(plModuleBase):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
     def validation_step(self, batch, batch_idx, split='val'):
-        signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
         return
     
     def training_step(self, batch, batch_idx, split='train'):
         
-        signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
         assert False
     
@@ -218,13 +218,13 @@ class FUM(plModuleBase):
         self.generator.dr_classifire = self.dr_classifire
         # self.dr_classifire.requires_grad_(False)
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
-        #     # vqgan=self.vqgan,
-        #     tasknet=self.tasknet,
-        #     # drc=self.drc,
-        #     # vseg=self.vseg
-        # )
-        # assert False
+        self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
+            # vqgan=self.vqgan,
+            tasknet=self.tasknet,
+            # drc=self.drc,
+            # vseg=self.vseg
+        )
+        assert False
         # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
         # self.qshape = (self.qch, self.qwh, self.qwh)
