@@ -3,6 +3,7 @@
 import yaml
 import torch
 import numpy as np
+from PIL import Image
 from libs.basicIO import dfread
 from os.path import join, exists
 from utils.pt.datasets.D import D_Base
@@ -12,6 +13,11 @@ class D(D_Base):
     def fetch(self, signal_path):
         return {
             'X': np.load(signal_path)
+        }
+class D_DR(D_Base):
+    def fetch(self, signal_path):
+        return {
+            'X': Image.open(signal_path)
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
@@ -37,7 +43,7 @@ class DTrain(ImageNetTrain):
         ))
     
     def preparation(self, **kwargs):
-        self.D = D
+        self.D = D_DR
     
 class DVal(ImageNetValidation):
     def download_dataset(self, **kwargs):
@@ -50,4 +56,4 @@ class DVal(ImageNetValidation):
         ))
     
     def preparation(self, **kwargs):
-        self.D = D
+        self.D = D_DR
