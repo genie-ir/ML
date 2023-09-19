@@ -209,18 +209,17 @@ class FUM(plModuleBase):
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        self.tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.tasknet = self.tasknet.to('cuda')
-        self.generator.tasknet = self.tasknet
+        # self.tasknet, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        # self.tasknet = self.tasknet.to('cuda')
+        # self.generator.tasknet = self.tasknet
         # self.tasknet.requires_grad_(False)
-        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
-            # vqgan=self.vqgan,
-            tasknet=self.tasknet,
-            # drc=self.drc,
-            # vseg=self.vseg
-        )
-        print('------------------------------>', len(self.train_ds))
+        # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
+        #     # vqgan=self.vqgan,
+        #     tasknet=self.tasknet,
+        #     # drc=self.drc,
+        #     # vseg=self.vseg
+        # )
         # assert False
         # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
