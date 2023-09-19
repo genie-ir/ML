@@ -29,6 +29,8 @@ try:
     from timm.models.layers import trunc_normal_
 except Exception as e:
     print(e)
+
+
 def getdrmodel():
     # call the model
     model = vit_large_patch16(
@@ -75,20 +77,23 @@ class VectorQuantizer(VectorQuantizerBase):
         self.embedding.weight = self.w
 
 class FUM(plModuleBase):
-    def train_dataloader(self):
-        return DataLoader(self.train_ds, batch_size=5,shuffle=True)
+    # def train_dataloader(self):
+    #     return DataLoader(self.train_ds, batch_size=5,shuffle=True)
 
-    def val_dataloader(self):
-        return DataLoader(self.val_ds, batch_size=5,shuffle=False)
+    # def val_dataloader(self):
+    #     return DataLoader(self.val_ds, batch_size=5,shuffle=False)
 
-    def test_dataloader(self):
-        return DataLoader(self.test_ds, batch_size=5,shuffle=False)
+    # def test_dataloader(self):
+    #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
     
-    
     def training_step(self, batch, batch_idx, split='train'):
+        print(batch.keys())
+        assert False
+    
+    def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
         assert False
 
