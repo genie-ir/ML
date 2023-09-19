@@ -123,14 +123,12 @@ class ImageNetBase(Dataset):
             else:
                 inpalceWSTAR = join(*['**' for istar in range(self.config.get('N_WSTAR', 1))])
             glob_path = join(datadir, inpalceWSTAR, '*.{}'.format(self.config['EXT']))
-            print('globpath', glob_path)
+            # print('glob_path', glob_path)
             filelist = glob.glob(glob_path) # inside datadir we scaped one level directories and we select specefic `.EXT` files
-            print('00--------filelist------->', filelist)
             filelist = [relpath(p, start=datadir) for p in filelist]
             filelist = sorted(filelist)
             filelist = '\n'.join(filelist) + '\n'
             
-            print('11--------filelist------->', filelist)
             # assert False
             # globpath /content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/**/train/**/*.npy
             with open(self.txt_filelist, 'w') as f:

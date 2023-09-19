@@ -66,7 +66,7 @@ params:
         DF_CANDIDATE:
           MAX_N_IN_CAT: 1000000
         MODE_VAL: 1
-        EXT: npy
+        EXT: png
         SIZE: 256
         HOST_DIR: //data/external
         NAME: fum_dataset
@@ -96,7 +96,7 @@ params:
         DF_CANDIDATE:
           MAX_N_IN_CAT: 1000000
         MODE_VAL: 1
-        EXT: npy
+        EXT: png
         SIZE: 256
         HOST_DIR: $KAGGLE_PATH
         NAME: fum_dataset
