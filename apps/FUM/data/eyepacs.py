@@ -24,7 +24,7 @@ dr_transformer = A.Compose([
 class D_DR(D_Base):
     def fetch(self, signal_path):
         return {
-            'X': dr_transformer(np.array(Image.open(signal_path)))
+            'X': dr_transformer(image=np.array(Image.open(signal_path)))['image']
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
