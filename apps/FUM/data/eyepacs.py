@@ -8,16 +8,23 @@ from libs.basicIO import dfread
 from os.path import join, exists
 from utils.pt.datasets.D import D_Base
 from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValidation as eyepacsValidationBase
+from albumentations.pytorch import ToTensorV2
+import albumentations as A
 
 class D(D_Base):
     def fetch(self, signal_path):
         return {
             'X': np.load(signal_path)
         }
+
+
+dr_transformer = A.Compose([
+    ToTensorV2()
+])
 class D_DR(D_Base):
     def fetch(self, signal_path):
         return {
-            'X': np.array(Image.open(signal_path))
+            'X': dr_transformer(np.array(Image.open(signal_path)))
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
