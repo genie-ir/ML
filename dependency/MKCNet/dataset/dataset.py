@@ -78,6 +78,7 @@ class basic_dataset(Dataset):
 
 
     def read_data(self, split, dataset_name, num_T):
+        counter = 0
         softmax = torch.nn.Softmax(dim=1)
         NSTD  =  torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         NMEAN =  torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
@@ -125,7 +126,8 @@ class basic_dataset(Dataset):
                 T = T.unsqueeze(0).to('cuda')
                 target = (int(line[1]))
                 s = 'train' if split == 'train' else 'val'
-                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/{scn}.png', stype='img', sparams={'chw2hwc': True})
+                counter += 1
+                signal_save(T * (255 * NSTD) + (255 * NMEAN), f'/content/dataset/{s}/Grade_{target}/case_{counter}.png', stype='img', sparams={'chw2hwc': True})
 
                 # self.data.append({
                 #     'path': imgpath,
@@ -197,6 +199,7 @@ class basic_dataset(Dataset):
 
     def _modifyline_(self, line, dataset_name):
         line = line.strip().split(',')
+        return line
         if dataset_name in ['DEEPDR', 'EYEQ']:
             if line[1] in ['0']: line[1] = '0'
             elif line[1] in ['1', '2']: line[1] = '1'
