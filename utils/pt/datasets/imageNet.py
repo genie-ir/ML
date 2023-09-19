@@ -131,7 +131,8 @@ class ImageNetBase(Dataset):
             filelist = '\n'.join(filelist) + '\n'
             
             print('11--------filelist------->', filelist)
-            assert False
+            # assert False
+            # globpath /content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/**/train/**/*.npy
             with open(self.txt_filelist, 'w') as f:
                 f.write(filelist)
 
