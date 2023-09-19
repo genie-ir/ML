@@ -122,12 +122,16 @@ class ImageNetBase(Dataset):
                 inpalceWSTAR = self.config.get('S_WSTAR', '')
             else:
                 inpalceWSTAR = join(*['**' for istar in range(self.config.get('N_WSTAR', 1))])
-            filelist = glob.glob(join(datadir, inpalceWSTAR, '*.{}'.format(self.config['EXT']))) # inside datadir we scaped one level directories and we select specefic `.EXT` files
+            glob_path = join(datadir, inpalceWSTAR, '*.{}'.format(self.config['EXT']))
+            print('globpath', glob_path)
+            filelist = glob.glob(glob_path) # inside datadir we scaped one level directories and we select specefic `.EXT` files
+            print('00--------filelist------->', filelist)
             filelist = [relpath(p, start=datadir) for p in filelist]
             filelist = sorted(filelist)
             filelist = '\n'.join(filelist) + '\n'
             
-            print('__________________________--------------->', filelist)
+            print('11--------filelist------->', filelist)
+            assert False
             with open(self.txt_filelist, 'w') as f:
                 f.write(filelist)
 
