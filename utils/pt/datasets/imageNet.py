@@ -126,6 +126,8 @@ class ImageNetBase(Dataset):
             filelist = [relpath(p, start=datadir) for p in filelist]
             filelist = sorted(filelist)
             filelist = '\n'.join(filelist) + '\n'
+            
+            print('__________________________--------------->', filelist)
             with open(self.txt_filelist, 'w') as f:
                 f.write(filelist)
 
