@@ -17,7 +17,7 @@ class D(D_Base):
 class D_DR(D_Base):
     def fetch(self, signal_path):
         return {
-            'X': Image.open(signal_path)
+            'X': np.array(Image.open(signal_path))
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
