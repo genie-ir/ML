@@ -39,7 +39,7 @@ class DTrain(ImageNetTrain):
     def preparation(self, **kwargs):
         self.D = D
     
-class Dval(ImageNetValidation):
+class DVal(ImageNetValidation):
     def download_dataset(self, **kwargs):
         src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         if not exists(src):
