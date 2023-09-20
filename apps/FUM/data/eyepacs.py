@@ -12,7 +12,8 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 
 class D(D_Base):
-    def fetch(self, signal_path, y):
+    def fetch(self, signal_path, **kwargs):
+        y = kwargs['y']
         print('--------------------------------->', y)
         if y == 0 or y == 1:
             y_edit = 0
