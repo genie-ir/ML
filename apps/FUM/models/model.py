@@ -88,19 +88,22 @@ class FUM(plModuleBase):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
     def validation_step(self, batch, batch_idx, split='val'):
+        print(batch['y'])
+        print(batch['X'].shape, batch['X'].dtype)
         signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
         return
 
     def on_train_epoch_end(self):
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/dataset/train_confusion_matrix.png', normalize=False)
         assert False
-        
+
     def on_validation_end(self) -> None:
         cmatrix(self.v_ygrnt, self.v_ypred, f'/content/dataset/val_confusion_matrix.png', normalize=False)
 
 
     def training_step(self, batch, batch_idx, split='train'):
         print(batch['y'])
+        print(batch['X'].shape, batch['X'].dtype)
         signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
     def training_step0000(self, batch, batch_idx, split='train'):
