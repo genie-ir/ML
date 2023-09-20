@@ -89,24 +89,24 @@ class FUM(plModuleBase):
 
     def validation_step(self, batch, batch_idx, split='val'):
         print(batch['y'])
-        print(batch['X'].shape, batch['X'].dtype)
-        phi = self.vqgan.lat2phi(batch['X'].float())
-        signal_save(phi, f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        # print(batch['X'].shape, batch['X'].dtype)
+        phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+        signal_save(phi, f'/content/vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
         return
 
     def on_train_epoch_end(self):
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/dataset/train_confusion_matrix.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_confusion_matrix.png', normalize=False)
         assert False
 
     def on_validation_end(self) -> None:
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/dataset/val_confusion_matrix.png', normalize=False)
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_confusion_matrix.png', normalize=False)
 
 
     def training_step(self, batch, batch_idx, split='train'):
-        print(batch['y'])
-        print(batch['X'].shape, batch['X'].dtype)
-        phi = self.vqgan.lat2phi(batch['X'].float())
-        signal_save(phi, f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        # print(batch['y'])
+        # print(batch['X'].shape, batch['X'].dtype)
+        phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+        signal_save(phi, f'/content/vqdata/train{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
