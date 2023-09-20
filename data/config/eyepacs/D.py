@@ -7,7 +7,7 @@ from os import system, getenv, makedirs
 from utils.pt.datasets.imageNet import ImageNetTrain, ImageNetValidation
 
 class D(D_Base):
-    def fetch(self, signal_path):
+    def fetch(self, signal_path, **kwargs):
         return {
             'X': np.load(signal_path).astype(np.float32)
         }
