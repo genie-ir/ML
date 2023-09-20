@@ -92,10 +92,12 @@ class FUM(plModuleBase):
         # print(batch['X'].shape, batch['X'].dtype)
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True).to('cuda')
-        signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-        dr_pred = self.softmax(self.dr_classifire(_phi)[0]).argmax(dim=1)
-        self.v_ypred = self.v_ypred + list(dr_pred.cpu().numpy())
+        # signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        dr_pred = self.softmax(self.dr_classifire(_phi)[0])
+        self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        print('------------->', batch['y_edit'], self.ce(dr_pred, batch['y_edit']))
+        assert False
 
     def on_train_epoch_end(self):
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_confusion_matrix.png', normalize=False)
@@ -104,17 +106,15 @@ class FUM(plModuleBase):
     def on_validation_end(self) -> None:
         cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_confusion_matrix.png', normalize=False)
 
-
     def training_step(self, batch, batch_idx, split='train'):
         # print(batch['y'])
         # print(batch['X'].shape, batch['X'].dtype)
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png', sreturn=True).to('cuda')
-        signal_save(_phi, f'/content/__vqdata/train/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-        dr_pred = self.softmax(self.dr_classifire(_phi)[0]).argmax(dim=1)
-        self.t_ypred = self.t_ypred + list(dr_pred.cpu().numpy())
+        # signal_save(_phi, f'/content/__vqdata/train/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        dr_pred = self.softmax(self.dr_classifire(_phi)[0])
+        self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-
 
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
@@ -229,6 +229,7 @@ class FUM(plModuleBase):
         return model
 
     def start(self):
+        self.ce = nn.CrossEntropyLoss()
         self.softmax = torch.nn.Softmax(dim=1)
         self.t_ypred = []
         self.t_ygrnt = []

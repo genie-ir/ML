@@ -19,8 +19,10 @@ class D(D_Base):
             y_edit = 0
         elif y == 2 or y == 3:
             y_edit = 1
-        else:
+        elif y == 4:
             y_edit = 2
+        else:
+            assert False
         return {
             'X': np.load(signal_path),
             'y_edit': y_edit
