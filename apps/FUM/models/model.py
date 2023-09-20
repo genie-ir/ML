@@ -30,6 +30,7 @@ try:
 except Exception as e:
     print(e)
 
+from libs.basicIO import cmatrix
 
 def getdrmodel():
     # call the model
@@ -87,13 +88,19 @@ class FUM(plModuleBase):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
     def validation_step(self, batch, batch_idx, split='val'):
-        # signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-
+        signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
         return
-    
+
+    def on_train_epoch_end(self):
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/dataset/train_confusion_matrix.png', normalize=False)
+
+    def on_validation_end(self) -> None:
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/dataset/val_confusion_matrix.png', normalize=False)
+
+
     def training_step(self, batch, batch_idx, split='train'):
-        
-        # signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        print(batch['y'])
+        signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
         assert False
     
@@ -210,6 +217,10 @@ class FUM(plModuleBase):
         return model
 
     def start(self):
+        self.t_ypred = []
+        self.t_ygrnt = []
+        self.v_ypred = []
+        self.v_ygrnt = []
         from dependency.MKCNet.dataset.dataset_manager import get_dataloader
         from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
@@ -218,13 +229,13 @@ class FUM(plModuleBase):
         self.generator.dr_classifire = self.dr_classifire
         # self.dr_classifire.requires_grad_(False)
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
-            # vqgan=self.vqgan,
-            tasknet=self.dr_classifire,
-            # drc=self.drc,
-            # vseg=self.vseg
-        )
-        assert False
+        # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
+        #     # vqgan=self.vqgan,
+        #     tasknet=self.dr_classifire,
+        #     # drc=self.drc,
+        #     # vseg=self.vseg
+        # )
+        # assert False
         # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
         # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
         # self.qshape = (self.qch, self.qwh, self.qwh)

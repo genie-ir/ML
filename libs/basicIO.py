@@ -36,6 +36,11 @@ from libs.basicTime import getTimeHR_V0
 from libs.basicDS import dict2ns, dotdict
 from libs.coding import md5, sha1, random_string
 
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+from mlxtend.plotting import plot_confusion_matrix
+
+
 def rootPath():
     return pathlib.Path(__file__).parents[1]
 
@@ -71,6 +76,19 @@ def puml(src_fname: str, dst_fname: str, **kwargs):
         ),
         join(kwargs.get('dst_dpath', getenv('GENIE_ML_REPORT')), dst_fname)
     ))
+
+def cmatrix(y_true, y_pred, path, normalize=False):
+    conf_matrix = confusion_matrix(y_true=y_true, y_pred=y_pred)
+    if normalize:
+        conf_matrix = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis]
+    fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
+    plt.xlabel('Predictions', fontsize=18)
+    plt.ylabel('Actuals', fontsize=18)
+    plt.title('Confusion Matrix', fontsize=18)
+    fig.savefig(path, dpi=1200)
+    # cm_analysis(list(y_true), list(y_pred), [
+    #     'NO-DR','NPDR','PDR'
+    # ], path, dpi=300)
 
 def pklread(src: str):
     if not src.endswith('.pkl'):
