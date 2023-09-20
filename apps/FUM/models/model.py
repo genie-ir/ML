@@ -93,7 +93,8 @@ class FUM(plModuleBase):
 
     def on_train_epoch_end(self):
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/dataset/train_confusion_matrix.png', normalize=False)
-
+        assert False
+        
     def on_validation_end(self) -> None:
         cmatrix(self.v_ygrnt, self.v_ypred, f'/content/dataset/val_confusion_matrix.png', normalize=False)
 
@@ -102,8 +103,6 @@ class FUM(plModuleBase):
         print(batch['y'])
         signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
-        assert False
-    
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
         assert False
