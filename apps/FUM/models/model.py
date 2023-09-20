@@ -97,7 +97,8 @@ class FUM(plModuleBase):
         print('-------------------->', phi.shape, phi_denormalized.shape)
 
         phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
-        # signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
+        assert False
         # dr_pred = self.softmax(self.dr_classifire(phi_denormalized)[0])
         # loss = self.ce(dr_pred, batch['y_edit'])
         # return loss, {'loss', loss.cpu().detach().item()}
@@ -118,12 +119,12 @@ class FUM(plModuleBase):
     #     return super().validation_step()
     #     assert False
 
-    def on_train_epoch_end(self):
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_confusion_matrix.png', normalize=False)
-        assert False
+    # def on_train_epoch_end(self):
+    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_confusion_matrix.png', normalize=False)
+    #     assert False
 
-    def on_validation_end(self) -> None:
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_confusion_matrix.png', normalize=False)
+    # def on_validation_end(self) -> None:
+    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_confusion_matrix.png', normalize=False)
 
     # def training_step(self, batch, batch_idx, split='train'):
     #     # print(batch['y'])
