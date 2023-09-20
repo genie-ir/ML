@@ -90,7 +90,7 @@ class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         print(batch['y'])
         print(batch['X'].shape, batch['X'].dtype)
-        phi = self.vqgan.lat2phi(batch['X'])
+        phi = self.vqgan.lat2phi(batch['X'].float())
         signal_save(phi, f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
         return
 
@@ -105,7 +105,7 @@ class FUM(plModuleBase):
     def training_step(self, batch, batch_idx, split='train'):
         print(batch['y'])
         print(batch['X'].shape, batch['X'].dtype)
-        phi = self.vqgan.lat2phi(batch['X'])
+        phi = self.vqgan.lat2phi(batch['X'].float())
         signal_save(phi, f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
     def training_step0000(self, batch, batch_idx, split='train'):
