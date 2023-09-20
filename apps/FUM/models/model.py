@@ -93,7 +93,7 @@ class FUM(plModuleBase):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True).to('cuda')
         signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-        print(self.softmax(self.dr_classifire(_phi)[0]).argmax())
+        print(self.softmax(self.dr_classifire(_phi)[0]))
         assert False
         return
 
