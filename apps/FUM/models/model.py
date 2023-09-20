@@ -93,7 +93,8 @@ class FUM(plModuleBase):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True)
         signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-        
+        print(self.dr_classifire(_phi))
+        assert False
         return
 
     def on_train_epoch_end(self):
