@@ -12,9 +12,17 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 
 class D(D_Base):
-    def fetch(self, signal_path):
+    def fetch(self, signal_path, y):
+        print('--------------------------------->', y)
+        if y == 0 or y == 1:
+            y_edit = 0
+        elif y == 2 or y == 3:
+            y_edit = 1
+        else:
+            y_edit = 2
         return {
-            'X': np.load(signal_path)
+            'X': np.load(signal_path),
+            'y_edit': y_edit
         }
 
 
