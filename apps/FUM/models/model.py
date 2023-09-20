@@ -31,6 +31,10 @@ except Exception as e:
     print(e)
 
 from libs.basicIO import cmatrix
+from utils.pt.tricks.gradfns import onehot_with_grad, dzq_dz_eq1
+
+
+from libs.coding import random_string
 
 def getdrmodel():
     # call the model
@@ -87,17 +91,30 @@ class FUM(plModuleBase):
     # def test_dataloader(self):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
-    def validation_step(self, batch, batch_idx, split='val'):
-        # print(batch['y'])
-        # print(batch['X'].shape, batch['X'].dtype)
+    def generator_step(self, batch):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True).to('cuda')
-        # signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-        dr_pred = self.softmax(self.dr_classifire(_phi)[0])
-        self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-        self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-        print('------------->', batch['y_edit'], self.ce(dr_pred, batch['y_edit']))
-        assert False
+        phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
+        phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
+        signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
+        dr_pred = self.softmax(self.dr_classifire(phi_denormalized)[0])
+        loss = self.ce(dr_pred, batch['y_edit'])
+        return loss, {'loss', loss.cpu().detach().item()}
+
+    
+
+
+    # def validation_step(self, batch, batch_idx, split='val'):
+    #     # print(batch['y'])
+    #     # print(batch['X'].shape, batch['X'].dtype)
+    #     phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+    #     _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True).to('cuda')
+    #     # signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+    #     dr_pred = self.softmax(self.dr_classifire(_phi)[0])
+    #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+    #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+    #     # loss_value = self.ce(dr_pred, batch['y_edit'])
+    #     return super().validation_step()
+    #     assert False
 
     def on_train_epoch_end(self):
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_confusion_matrix.png', normalize=False)
@@ -106,15 +123,15 @@ class FUM(plModuleBase):
     def on_validation_end(self) -> None:
         cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_confusion_matrix.png', normalize=False)
 
-    def training_step(self, batch, batch_idx, split='train'):
-        # print(batch['y'])
-        # print(batch['X'].shape, batch['X'].dtype)
-        phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png', sreturn=True).to('cuda')
-        # signal_save(_phi, f'/content/__vqdata/train/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-        dr_pred = self.softmax(self.dr_classifire(_phi)[0])
-        self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-        self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+    # def training_step(self, batch, batch_idx, split='train'):
+    #     # print(batch['y'])
+    #     # print(batch['X'].shape, batch['X'].dtype)
+    #     phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+    #     _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png', sreturn=True).to('cuda')
+    #     # signal_save(_phi, f'/content/__vqdata/train/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+    #     dr_pred = self.softmax(self.dr_classifire(_phi)[0])
+    #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+    #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
 
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
@@ -229,6 +246,8 @@ class FUM(plModuleBase):
         return model
 
     def start(self):
+
+        self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
         self.ce = nn.CrossEntropyLoss()
         self.softmax = torch.nn.Softmax(dim=1)
         self.t_ypred = []
@@ -250,16 +269,19 @@ class FUM(plModuleBase):
         #     # drc=self.drc,
         #     # vseg=self.vseg
         # )
-        self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
-        self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
-        self.qshape = (self.qch, self.qwh, self.qwh)
-        self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
-        self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
-        self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-        # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
-        self.generator.mac = nn.Sequential(*[
-            MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
-        ])
+        
+        
+        
+        # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
+        # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
+        # self.qshape = (self.qch, self.qwh, self.qwh)
+        # self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
+        # self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
+        # self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+        # # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+        # self.generator.mac = nn.Sequential(*[
+        #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+        # ])
         
 
 
@@ -326,7 +348,7 @@ class FUM(plModuleBase):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
         return phi0, sn, np
     
-    def generator_step(self, batch):
+    def generator_step00(self, batch):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         phi, sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
