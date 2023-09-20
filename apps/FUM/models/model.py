@@ -90,7 +90,8 @@ class FUM(plModuleBase):
     def validation_step(self, batch, batch_idx, split='val'):
         print(batch['y'])
         print(batch['X'].shape, batch['X'].dtype)
-        signal_save(batch['X'], f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        phi = self.vqgan.lat2phi(batch['X'])
+        signal_save(phi, f'/content/b/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
         return
 
     def on_train_epoch_end(self):
@@ -104,7 +105,8 @@ class FUM(plModuleBase):
     def training_step(self, batch, batch_idx, split='train'):
         print(batch['y'])
         print(batch['X'].shape, batch['X'].dtype)
-        signal_save(batch['X'], f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        phi = self.vqgan.lat2phi(batch['X'])
+        signal_save(phi, f'/content/a/b{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
@@ -228,27 +230,40 @@ class FUM(plModuleBase):
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
-        self.generator.dr_classifire = self.dr_classifire
         # self.dr_classifire.requires_grad_(False)
+        self.generator.dr_classifire = self.dr_classifire
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        # self.vseg.requires_grad_(False)
         # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
         #     # vqgan=self.vqgan,
         #     tasknet=self.dr_classifire,
         #     # drc=self.drc,
         #     # vseg=self.vseg
         # )
-        # assert False
-        # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
-        # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
-        # self.qshape = (self.qch, self.qwh, self.qwh)
-        # self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
-        # self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
-        # self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-        # # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
-        # self.generator.mac = nn.Sequential(*[
-        #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
-        # ])
+        self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
+        self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
+        self.qshape = (self.qch, self.qwh, self.qwh)
+        self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
+        self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
+        self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+        # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+        self.generator.mac = nn.Sequential(*[
+            MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+        ])
         
+
+
+
+
+
+
+
+
+
+
+
+
+
         # ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
         # from torchvision import models
         # weights = torch.load(ckpt)
