@@ -37,7 +37,7 @@ class D_Base(Dataset):
     def __len__(self):
         return self.__length
 
-    def fetch(self, signal_path):
+    def fetch(self, signal_path, **kwargs):
         """It must be overwrite in child class"""
         cowsay.cow('NotImplementedError:\nplease define `{}:fetch` function.'.format(self.__class__.__name__))
         sys.exit()
