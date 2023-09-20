@@ -88,10 +88,10 @@ class FUM(plModuleBase):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
     def validation_step(self, batch, batch_idx, split='val'):
-        print(batch['y'])
+        # print(batch['y'])
         # print(batch['X'].shape, batch['X'].dtype)
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        signal_save(phi, f'/content/vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png')
         return
 
     def on_train_epoch_end(self):
@@ -106,7 +106,7 @@ class FUM(plModuleBase):
         # print(batch['y'])
         # print(batch['X'].shape, batch['X'].dtype)
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        signal_save(phi, f'/content/vqdata/train{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png')
 
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
