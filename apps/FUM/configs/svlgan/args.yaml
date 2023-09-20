@@ -19,5 +19,5 @@ phi_ch: 3
 phi_wh: 256
 phi_steps: 50
 
-signal_key: indices #x #indices
+signal_key: X #x #indices
 pathdir: /content/phi
