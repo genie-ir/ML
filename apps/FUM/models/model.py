@@ -91,7 +91,9 @@ class FUM(plModuleBase):
         # print(batch['y'])
         # print(batch['X'].shape, batch['X'].dtype)
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png')
+        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True)
+        signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
+        
         return
 
     def on_train_epoch_end(self):
@@ -106,7 +108,8 @@ class FUM(plModuleBase):
         # print(batch['y'])
         # print(batch['X'].shape, batch['X'].dtype)
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png')
+        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png', sreturn=True)
+        signal_save(_phi, f'/content/__vqdata/train/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
 
     def training_step0000(self, batch, batch_idx, split='train'):
         print(batch)
