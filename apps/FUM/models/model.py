@@ -94,11 +94,12 @@ class FUM(plModuleBase):
     def generator_step(self, batch):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
+        print('-------------------->', phi.shape, phi_denormalized.shape)
         phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
-        signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
-        dr_pred = self.softmax(self.dr_classifire(phi_denormalized)[0])
-        loss = self.ce(dr_pred, batch['y_edit'])
-        return loss, {'loss', loss.cpu().detach().item()}
+        # signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
+        # dr_pred = self.softmax(self.dr_classifire(phi_denormalized)[0])
+        # loss = self.ce(dr_pred, batch['y_edit'])
+        # return loss, {'loss', loss.cpu().detach().item()}
 
     
 
