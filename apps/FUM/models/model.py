@@ -108,12 +108,14 @@ class FUM(plModuleBase):
         # phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         print(phi_denormalized.min().item(), phi_denormalized.max().item())
         output, output_M, output_IQ = self.dr_classifire(phi_denormalized)
+        dr_pred = self.generator.softmax(output)
+        loss = self.generator.ce(dr_pred, batch['y_edit'])
         print('11111111111111', output.shape, output)
         print('22222222222222', output_M.shape, output_M)
         print('33333333333333', output_IQ.shape, output_IQ)
-        print('groundtrouth', batch['y'])
-        dr_pred = self.generator.softmax(output)
-        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        print('groundtrouth -> y', batch['y'])
+        print('groundtrouth -> y_edit', batch['y_edit'])
+        
         print('------------------------->', loss)
         if kwargs['split'] == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
