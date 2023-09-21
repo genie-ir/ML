@@ -91,6 +91,9 @@ class FUM(plModuleBase):
     # def test_dataloader(self):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
+    # def resnet50(self, model):
+    #     model.fc = nn.Linear(model.fc.in_features, 1)
+    #     return model
     
     
     def on_train_epoch_end(self):
@@ -101,6 +104,7 @@ class FUM(plModuleBase):
     def generator_step(self, batch, **kwargs):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
+        signal_save(phi_denormalized, f'/content/denormalized_phi/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
         # phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
         print('-------------------->', phi.shape, phi_denormalized.shape)
 
@@ -124,45 +128,11 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
 
-        # assert False
+        assert False
         return loss, {'loss', loss.cpu().detach().item()}
 
     
-    def training_step2(self, batch, batch_idx, split='train'):
-        _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        _mean = torch.tensor([0.3771, 0.2320, 0.1395], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
-        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
-        
-        from einops import rearrange
-        import torchvision, numpy as np
-        img = torchvision.utils.make_grid(
-            _phi.detach().cpu(), 
-            nrow=2
-        )
-        img = rearrange(img, 'c h w -> h w c').contiguous()
-        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
-        img = img.numpy().astype(np.uint8)
-        signal_save(img, self.pathdir + '/' + f'_batch.png')
-
-
-        _phi = F.interpolate(_phi, size=(512, 512), mode='bilinear', align_corners=False)
-        img = torchvision.utils.make_grid(
-            _phi.detach().cpu(), 
-            nrow=2
-        )
-        img = rearrange(img, 'c h w -> h w c').contiguous()
-        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
-        img = img.numpy().astype(np.uint8)
-        signal_save(img, self.pathdir + '/' + f'_batch2.png')
-        
-
-
-        _phi = (_phi - _mean * 255) / (_std * 255)
-        print(self.drclassifire(_phi))
-        print(batch['y'])
-        assert False
-
+    # NOTE: Synthesis Algorithm.
     def training_step0(self, batch, batch_idx, split='train'):
         if batch_idx == 0:
             print('-'*60)
@@ -185,10 +155,6 @@ class FUM(plModuleBase):
         if batch_idx == 2:
             assert False, batch_idx
     
-    def resnet50(self, model):
-        model.fc = nn.Linear(model.fc.in_features, 1)
-        return model
-
     def start(self):
         self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
@@ -209,12 +175,7 @@ class FUM(plModuleBase):
         self.generator.dr_classifire = self.dr_classifire
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         # self.vseg.requires_grad_(False)
-        # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
-        #     # vqgan=self.vqgan,
-        #     tasknet=self.dr_classifire,
-        #     # drc=self.drc,
-        #     # vseg=self.vseg
-        # )
+        
         
         
         
@@ -241,7 +202,13 @@ class FUM(plModuleBase):
 
 
 
-
+        # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
+        #     # vqgan=self.vqgan,
+        #     tasknet=self.dr_classifire,
+        #     # drc=self.drc,
+        #     # vseg=self.vseg
+        # )
+        #
         # ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
         # from torchvision import models
         # weights = torch.load(ckpt)
@@ -314,7 +281,7 @@ class FUM(plModuleBase):
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-        convergenceloss = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn)
+        convergenceloss = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn.detach())
         # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
         # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
         # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()

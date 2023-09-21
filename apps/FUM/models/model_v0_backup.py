@@ -1,6 +1,48 @@
 # DELETE this file shoude be delete later it is just for backuping of main code.
 
 
+
+    # def training_step2(self, batch, batch_idx, split='train'):
+    #     _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+    #     _mean = torch.tensor([0.3771, 0.2320, 0.1395], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+    #     phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
+    #     _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
+        
+    #     from einops import rearrange
+    #     import torchvision, numpy as np
+    #     img = torchvision.utils.make_grid(
+    #         _phi.detach().cpu(), 
+    #         nrow=2
+    #     )
+    #     img = rearrange(img, 'c h w -> h w c').contiguous()
+    #     # img = rearrange(img, 'b c h w -> b h w c').contiguous()
+    #     img = img.numpy().astype(np.uint8)
+    #     signal_save(img, self.pathdir + '/' + f'_batch.png')
+
+
+    #     _phi = F.interpolate(_phi, size=(512, 512), mode='bilinear', align_corners=False)
+    #     img = torchvision.utils.make_grid(
+    #         _phi.detach().cpu(), 
+    #         nrow=2
+    #     )
+    #     img = rearrange(img, 'c h w -> h w c').contiguous()
+    #     # img = rearrange(img, 'b c h w -> b h w c').contiguous()
+    #     img = img.numpy().astype(np.uint8)
+    #     signal_save(img, self.pathdir + '/' + f'_batch2.png')
+        
+
+
+    #     _phi = (_phi - _mean * 255) / (_std * 255)
+    #     print(self.drclassifire(_phi))
+    #     print(batch['y'])
+    #     assert False
+
+
+
+
+
+
+
 # for i in range(5):
         #     for j in range(5):
         #         print(f'SSIM(phi{i}, phi{j})=', SSIM(phi[i:i+1], phi[j:j+1]).abs())
