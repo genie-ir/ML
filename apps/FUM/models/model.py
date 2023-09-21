@@ -91,101 +91,40 @@ class FUM(plModuleBase):
     # def test_dataloader(self):
     #     return DataLoader(self.test_ds, batch_size=5,shuffle=False)
 
-    def generator_step(self, batch):
+    
+    
+    def on_train_epoch_end(self):
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_cmat_before.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_cmat_before.png', normalize=False)
+        assert False, 'END-TRAINING'
+    # NOTE: DR_CLASSIFIRE Training function.
+    def generator_step(self, batch, **kwargs):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
+        # phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
         print('-------------------->', phi.shape, phi_denormalized.shape)
 
-        phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
         signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
-        assert False
-        # dr_pred = self.softmax(self.dr_classifire(phi_denormalized)[0])
-        # loss = self.ce(dr_pred, batch['y_edit'])
-        # return loss, {'loss', loss.cpu().detach().item()}
+        # phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        print(phi_denormalized.min().item(), phi_denormalized.max().item())
+        output, output_M, output_IQ = self.dr_classifire(phi_denormalized)
+        print('11111111111111', output.shape, output)
+        print('22222222222222', output_M.shape, output_M)
+        print('33333333333333', output_IQ.shape, output_IQ)
+        print('groundtrouth', batch['y'])
+        dr_pred = self.generator.softmax(output)
+        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        print('------------------------->', loss)
+        if kwargs['split'] == 'train':
+            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        else:
+            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
 
-    
+        # assert False
+        return loss, {'loss', loss.cpu().detach().item()}
 
-
-    # def validation_step(self, batch, batch_idx, split='val'):
-    #     # print(batch['y'])
-    #     # print(batch['X'].shape, batch['X'].dtype)
-    #     phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-    #     _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/val/{batch_idx}.png', sreturn=True).to('cuda')
-    #     # signal_save(_phi, f'/content/__vqdata/val/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-    #     dr_pred = self.softmax(self.dr_classifire(_phi)[0])
-    #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-    #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-    #     # loss_value = self.ce(dr_pred, batch['y_edit'])
-    #     return super().validation_step()
-    #     assert False
-
-    # def on_train_epoch_end(self):
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_confusion_matrix.png', normalize=False)
-    #     assert False
-
-    # def on_validation_end(self) -> None:
-    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_confusion_matrix.png', normalize=False)
-
-    # def training_step(self, batch, batch_idx, split='train'):
-    #     # print(batch['y'])
-    #     # print(batch['X'].shape, batch['X'].dtype)
-    #     phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-    #     _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'/content/vqdata/train{batch_idx}.png', sreturn=True).to('cuda')
-    #     # signal_save(_phi, f'/content/__vqdata/train/{batch_idx}.png', stype='img', sparams={'chw2hwc': True})
-    #     dr_pred = self.softmax(self.dr_classifire(_phi)[0])
-    #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-    #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-
-    def training_step0000(self, batch, batch_idx, split='train'):
-        print(batch)
-        assert False
-
-
-
-        _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        _mean = torch.tensor([0.3771, 0.2320, 0.1395], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        
-        
-        
-        phi = self.vqgan.lat2phi(batch['X'].float().flatten(1))
-        _phi = self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'batch.png', sreturn=True).to(self.device)
-        
-        from einops import rearrange
-        import torchvision, numpy as np
-        img = torchvision.utils.make_grid(
-            _phi.detach().cpu(), 
-            nrow=2
-        )
-        img = rearrange(img, 'c h w -> h w c').contiguous()
-        # img = rearrange(img, 'b c h w -> b h w c').contiguous()
-        img = img.numpy().astype(np.uint8)
-        signal_save(img, self.pathdir + '/' + f'_batch.png')
-        
-        
-        
-        output, output_M, output_IQ = tasknet(_phi)
-        softmax = torch.nn.Softmax(dim=1)
-        print('!!!!!!!!!!!!!!!!!!!', softmax(output))
-        print(batch['y'])
-        assert False, 'hoooooooooooooo!!'
-
-    # def build_model(input_size,nb_classes):
-    #     global base_model 
-    #     base_model = InceptionV3(
-    #         input_shape = input_size,
-    #         input_tensor = Input(input_size),
-    #         include_top = False,
-    #         weights = 'imagenet'
-    #     )
-    #     base_model.trainable = False
-    #     inputs = Input(shape = input_size)
-    #     x = base_model(inputs, training = False)
-    #     #x = Dense(1024, activation = 'relu')(x)
-    #     #x = GlobalAveragePooling2D()(x)
-    #     x = Flatten()(x)
-    #     x = Dropout(0.2)(x)
-    #     outputs = Dense(nb_classes, activation = 'softmax')(x)
-    #     return Model(inputs,outputs)
     
     def training_step2(self, batch, batch_idx, split='train'):
         _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
@@ -249,10 +188,12 @@ class FUM(plModuleBase):
         return model
 
     def start(self):
+        self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+        self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
         self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)#.transpose(0,1).transpose(1,2)
-        self.ce = nn.CrossEntropyLoss()
-        self.softmax = torch.nn.Softmax(dim=1)
+        self.generator.ce = nn.CrossEntropyLoss()
+        self.generator.softmax = torch.nn.Softmax(dim=1)
         self.t_ypred = []
         self.t_ygrnt = []
         self.v_ypred = []
@@ -351,7 +292,7 @@ class FUM(plModuleBase):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
         return phi0, sn, np
     
-    def generator_step00(self, batch):
+    def generator_step00(self, batch, **kwargs):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         phi, sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
