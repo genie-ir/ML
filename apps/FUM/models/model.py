@@ -71,19 +71,16 @@ class FUM(plModuleBase):
     def generator_step__drcalgo(self, batch, **kwargs):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
-        signal_save(phi_denormalized, f'/content/denormalized_phi/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(phi_denormalized, f'/content/denormalized_phi/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
         # phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
-        print('-------------------->', phi.shape, phi_denormalized.shape)
+        # signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
 
-        signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
         # phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        print(phi_denormalized.min().item(), phi_denormalized.max().item())
+        # print(phi_denormalized.min().item(), phi_denormalized.max().item())
         output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
-        print('11111111111111', output.shape, output)
-        print('22222222222222', output_M.shape, output_M)
-        print('33333333333333', output_IQ.shape, output_IQ)
+        print('11111111111111', dr_pred)
         print('groundtrouth -> y', batch['y'])
         print('groundtrouth -> y_edit', batch['y_edit'])
         
