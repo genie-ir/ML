@@ -266,8 +266,8 @@ class plModuleBase(pl.LightningModule):
         
         
         test_ckpt = torch.load(path, map_location=lambda storage, loc: storage)
-        test_sd = test_ckpt['state_dict']
-        test_hp = test_ckpt['hyper_parameters']
+        # test_sd = test_ckpt['state_dict']
+        # test_hp = test_ckpt['hyper_parameters']
 
 
 
