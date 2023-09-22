@@ -88,10 +88,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
 
-        A = loss.cpu().detach().item()
-        print(A, type(A))
-        assert False
-        return loss, {'loss', loss.cpu().detach().item()}
+        return loss, dict(loss=loss.cpu().detach().item())
 
     
     # NOTE: Synthesis Algorithm.
