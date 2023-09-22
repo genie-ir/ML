@@ -75,8 +75,8 @@ class FUM(plModuleBase):
         # phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
         # signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
 
-        # phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        # print(phi_denormalized.min().item(), phi_denormalized.max().item())
+        phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        print(phi_denormalized.min().item(), phi_denormalized.max().item())
         output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
