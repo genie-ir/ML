@@ -81,7 +81,6 @@ class FUM(plModuleBase):
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         print('11111111111111', dr_pred)
-        print('groundtrouth -> y', batch['y'])
         print('groundtrouth -> y_edit', batch['y_edit'])
         
         print('------------------------->', loss)
