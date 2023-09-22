@@ -1,0 +1,25 @@
+# generator_step:
+#   forward:
+#     - input: [z, randn, [$zdim, 1, 1]]     # input z
+#     - input: [y, randint, 0, $nclass, []]  # input y
+#     - seq0
+#     - Return: GLOSS
+  
+#   seq0:
+#     input:
+#     output: GLOSS
+#     head:
+#       - BB.Self:
+#           fn: generator
+#           input: [[y, y], [z, z]]
+#       - BB.Self:
+#           fn: discriminator
+#           input: [[x], [y, y]]
+#       - .squeeze
+#       - BB.Self:
+#           fn: generatorLoss
+#           input: [[d_fake]]
+#           params:
+#             Real: $R_VAL
+
+

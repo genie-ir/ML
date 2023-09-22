@@ -1,0 +1,23 @@
+gamma: -0.1
+negative_slope: 0.01
+
+lambda_loss_phi: 1.0
+lambda_loss_scphi: 1.0
+lambda_loss_latent: 0.01
+lambda_drloss_scphi: 1.0
+
+nclasses: 3
+ncrosses: 30
+ncluster: 4000
+latent_dim: 256
+# latent_range: 451
+
+qwh: 16
+qch: 256
+
+phi_ch: 3
+phi_wh: 256
+phi_steps: 50
+
+signal_key: X #x #indices
+pathdir: /content/phi

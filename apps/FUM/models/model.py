@@ -67,12 +67,8 @@ class FUM(plModuleBase):
     #     return model
     
     
-    def on_train_epoch_end(self):
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_cmat_before.png', normalize=False)
-        assert False, 'END-TRAINING'
     # NOTE: DR_CLASSIFIRE Training function.
-    def generator_step(self, batch, **kwargs):
+    def generator_step__drcalgo(self, batch, **kwargs):
         phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
         signal_save(phi_denormalized, f'/content/denormalized_phi/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
@@ -82,7 +78,7 @@ class FUM(plModuleBase):
         signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
         # phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         print(phi_denormalized.min().item(), phi_denormalized.max().item())
-        output, output_M, output_IQ = self.dr_classifire(phi_denormalized)
+        output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         print('11111111111111', output.shape, output)
@@ -104,7 +100,7 @@ class FUM(plModuleBase):
 
     
     # NOTE: Synthesis Algorithm.
-    def training_step0(self, batch, batch_idx, split='train'):
+    def training_step__synalgo(self, batch, batch_idx, split='train'):
         if batch_idx == 0:
             print('-'*60)
             print(self.generator.scodebook.embedding.weight)
@@ -126,7 +122,7 @@ class FUM(plModuleBase):
         if batch_idx == 2:
             assert False, batch_idx
     
-    def start(self):
+    def start(self, dr_vs_synthesis_flag=True):
         self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
@@ -143,20 +139,21 @@ class FUM(plModuleBase):
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
-        # self.dr_classifire.requires_grad_(False)
-        self.generator.dr_classifire = self.dr_classifire
         
-        
-        # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
-        # self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
-        # self.qshape = (self.qch, self.qwh, self.qwh)
-        # self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
-        # self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
-        # self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-        # # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
-        # self.generator.mac = nn.Sequential(*[
-        #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
-        # ])
+        if dr_vs_synthesis_flag:
+            self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
+            self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
+            self.qshape = (self.qch, self.qwh, self.qwh)
+            self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
+            self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
+            self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+            # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+            self.generator.mac = nn.Sequential(*[
+                MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+            ])
+            self.dr_classifire.requires_grad_(False)
+        else:
+            self.generator.dr_classifire = self.dr_classifire
 
     def __c2phi(self, cross, tag='', phi_concept=None):
         # list_of_distance_to_mode = []
@@ -190,7 +187,8 @@ class FUM(plModuleBase):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
         return (phi0, Q), sn, np
     
-    def generator_step00(self, batch, **kwargs):
+    def generator_step__synalgo(self, batch, **kwargs):
+        bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
         (phi, q_phi), sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
@@ -216,12 +214,6 @@ class FUM(plModuleBase):
         dloss_cphi = -torch.mean(self.vqgan.loss.discriminator(cphi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
         loss_cphi = self.lambda_loss_phi * self.LeakyReLU(dloss_cphi - self.gamma)
         
-        # self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
-        # self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
-        # self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
-        
-        # print('----nidx------->', nidx)
-        
         loss = loss_phi + loss_cphi + convergenceloss + divergenceloss + drloss 
         
         lossdict = self.generatorLoss.lossdict(
@@ -236,8 +228,29 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(cidx))
         )
         print(f'cidx={cidx}', lossdict)
-
-        # self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
-        # self.vqgan.save_phi(scphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/scphi.png')
-
+        print('----nidx------->', nidx)
+        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'final/concept.png')
+        self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'final/phi_sprime.png')
+        self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'final/phi_szegond.png')
+        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/phi.png')
+        self.vqgan.save_phi(cphi, pathdir=self.pathdir, fname=f'final/cphi.png')
+        assert False
         return loss, lossdict
+
+
+
+class FUM_DR(FUM):
+    def on_train_epoch_end(self):
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/val_cmat_before.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/train_cmat_before.png', normalize=False)
+        assert False, 'END-TRAINING'
+
+    def generator_step(self, batch, **kwargs):
+        return super().generator_step__drcalgo(batch, **kwargs)
+    
+class FUM_Syn(FUM):
+    def training_step(self, batch, batch_idx, split='train'):
+        return super().training_step__synalgo(batch, batch_idx, split='train')
+
+    def generator_step(self, batch, **kwargs):
+        return super().generator_step__synalgo(batch, **kwargs)
