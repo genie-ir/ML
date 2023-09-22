@@ -81,12 +81,12 @@ class FUM(plModuleBase):
         # print('groundtrouth -> y_edit', batch['y_edit'])
         # print('------------------------->', loss)
         
-        if kwargs['split'] == 'train':
-            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-        else:
-            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # if kwargs['split'] == 'train':
+        #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # else:
+        #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         return loss, dict(loss=loss.cpu().detach().item())
 
     
