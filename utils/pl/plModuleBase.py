@@ -337,6 +337,7 @@ class plModuleBase(pl.LightningModule):
         log_dict = {**self.empty_log_dict[split]}
         for cnet in self.netconfig:
             loss, _ld = getattr(self, '{}_step'.format(cnet))(batch, split='val')
+            print( self.netconfig[cnet], type( self.netconfig[cnet]))
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
             log_dict = {**log_dict, **ld}
 
