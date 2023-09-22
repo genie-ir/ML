@@ -134,8 +134,8 @@ class FUM(plModuleBase):
         self.v_ypred = []
         self.v_ygrnt = []
         
-        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        self.vseg.requires_grad_(False)
+        # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        # self.vseg.requires_grad_(False)
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
