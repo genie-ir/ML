@@ -234,10 +234,10 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         return super().start(dr_vs_synthesis_flag=False)
     
-    def on_train_epoch_end(self):
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
-        assert False, 'END-TRAINING'
+    # def on_train_epoch_end(self):
+    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
+    #     assert False, 'END-TRAINING'
 
     def generator_step(self, batch, **kwargs):
         return super().generator_step__drcalgo(batch, **kwargs)
