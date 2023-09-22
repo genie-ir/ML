@@ -69,14 +69,11 @@ class FUM(plModuleBase):
     
     # NOTE: DR_CLASSIFIRE Training function.
     def generator_step__drcalgo(self, batch, **kwargs):
-        phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
-        # signal_save(phi_denormalized, f'/content/denormalized_phi/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
-        # phi_denormalized = dzq_dz_eq1(phi_denormalized, phi)
-        # signal_save(phi_denormalized, f'/content/gstep/{random_string()}.png', stype='img', sparams={'chw2hwc': True})
+        # phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+        # phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
 
+        phi_denormalized = torch.randint(0,255, (5,3,256,256)).float().to('cuda')
         phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        print(phi_denormalized.min().item(), phi_denormalized.max().item())
         output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
@@ -91,7 +88,6 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
 
-        assert False
         return loss, {'loss', loss.cpu().detach().item()}
 
     
