@@ -6,7 +6,7 @@ def dzq_dz_eq1(zq, z):
     """
         transfer gradients from `zq` to `z`  | (zq -> z)
         `zq` and `z` must be the same shape
-        (Notic): zq not change in terms of numberically but here we define a drevative path from zq to z such that (dzq/dz = 1)
+        (Notic): zq not change in terms of numerically but here we define a drevative path from zq to z such that (dzq/dz = 1)
         Example: 
             zq = dzq_dz_eq1(zq, z)
     """

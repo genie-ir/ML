@@ -36,38 +36,9 @@ from utils.pt.tricks.gradfns import onehot_with_grad, dzq_dz_eq1
 
 from libs.coding import random_string
 
-def getdrmodel():
-    # call the model
-    model = vit_large_patch16(
-        num_classes=2,
-        drop_path_rate=0.2,
-        global_pool=True,
-    )
 
-    # load RETFound weights
-    ckpt = '/content/drive/MyDrive/storage/dependency/RETFound_cfp_weights.pth'
-    checkpoint = torch.load(ckpt, map_location='cpu')
-    checkpoint_model = checkpoint['model']
-    state_dict = model.state_dict()
-    for k in ['head.weight', 'head.bias']:
-        if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
-            print(f"Removing key {k} from pretrained checkpoint")
-            del checkpoint_model[k]
-
-    # interpolate position embedding
-    interpolate_pos_embed(model, checkpoint_model)
-
-    # load pre-trained model
-    msg = model.load_state_dict(checkpoint_model, strict=False)
-
-    assert set(msg.missing_keys) == {'head.weight', 'head.bias', 'fc_norm.weight', 'fc_norm.bias'}
-
-    # manually initialize fc layer
-    trunc_normal_(model.head.weight, std=2e-5)
-
-    # print("Model = %s" % str(model))
-    return model
-
+from dependency.MKCNet.dataset.dataset_manager import get_dataloader
+from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
 
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
@@ -166,17 +137,14 @@ class FUM(plModuleBase):
         self.t_ygrnt = []
         self.v_ypred = []
         self.v_ygrnt = []
-        from dependency.MKCNet.dataset.dataset_manager import get_dataloader
-        from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
-        # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        
+        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        self.vseg.requires_grad_(False)
+
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
         # self.dr_classifire.requires_grad_(False)
         self.generator.dr_classifire = self.dr_classifire
-        # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        # self.vseg.requires_grad_(False)
-        
-        
         
         
         # self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
@@ -189,34 +157,6 @@ class FUM(plModuleBase):
         # self.generator.mac = nn.Sequential(*[
         #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
         # ])
-        
-
-
-
-
-
-
-
-
-
-
-
-
-        # self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
-        #     # vqgan=self.vqgan,
-        #     tasknet=self.dr_classifire,
-        #     # drc=self.drc,
-        #     # vseg=self.vseg
-        # )
-        #
-        # ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
-        # from torchvision import models
-        # weights = torch.load(ckpt)
-        # model = models.resnet50()
-        # # Our model outputs the score of DR for classification. See https://arxiv.org/pdf/2110.14160.pdf for more details.
-        # model.fc = nn.Linear(model.fc.in_features, 1)
-        # model.load_state_dict(weights, strict=True)
-        # self.drclassifire = model
 
     def __c2phi(self, cross, tag='', phi_concept=None):
         # list_of_distance_to_mode = []
@@ -226,20 +166,9 @@ class FUM(plModuleBase):
         # return phi, sn
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
-        phi0 = self.vqgan.lat2phi(cross)
-        P0 = phi0.clone().detach()
-        if phi_concept is not None:
-            self.vqgan.save_phi((phi_concept), pathdir=self.pathdir, fname=f'0phi_concept.png')
-            self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'0phi_sprime.png')
-            S = SSIM(phi_concept, P0, reduction='none').abs()
-            ssim = (S>=.4).float().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).detach()
-            print('S-------------->', S)
-            print('ssim-------------->', ssim)
-            P0 = (1-ssim) * P0 + ssim * phi_concept
-        
-        # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
-        # P0 = torch.cat([P0, P0, P0], dim=1)
-        nl = self.vqgan.phi2lat(P0).float()
+        Q = self.vqgan.lat2qua(cross)
+        phi0 = self.vqgan.qua2phi(Q)
+        nl = self.vqgan.phi2lat(phi0.detach()).float()
         # _np = phi0.detach()
         for N in range(1, self.phi_steps):
             # list_of_distance_to_mode.append(nl.flatten(1))
@@ -259,51 +188,51 @@ class FUM(plModuleBase):
         # print('='*60)
         # for i, l in enumerate(list_of_distance_to_mode):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
-        return phi0, sn, np
+        return (phi0, Q), sn, np
     
     def generator_step00(self, batch, **kwargs):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
-        phi, sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
+        (phi, q_phi), sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
         
+        cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
+        cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
+        cphi_denormalized = dzq_dz_eq1(cphi_denormalized, cphi)
+        cphi_denormalized = (cphi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        output_DR, output_M, output_IQ = self.dr_classifire(cphi_denormalized)
+        dr_pred = self.generator.softmax(output_DR)
+        drloss = self.lambda_drloss_scphi[cidx] * self.generator.ce(dr_pred, batch['y_edit'])
+
         nidx = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
         s_prime = self.generator.scodebook.fwd_nbpi(nidx).exp().detach()
-        
-        
-        phi_sprime, s_zegond, phi_szegond = self.__c2phi(s_prime, phi_concept=phi.detach()) # NOTE `phi_sprime` does not exist in any deravitive path.
+        (phi_sprime, phisprime_q), s_zegond, phi_szegond = self.__c2phi(s_prime, phi_concept=phi.detach()) # NOTE `phi_sprime` does not exist in any deravitive path.
         
         sn = dzq_dz_eq1(sn, ln)
         divergenceloss = 1 - torch.sigmoid((1 + ((sn-s_zegond) ** 2).mean()).log())
-
-        # s, sloss = self.generator.scodebook(p)
-        # sq = self.vqgan.lat2qua(s)
-        # scphi = self.vqgan.qua2phi(self.generator.mac[C](sq))
+        convergenceloss = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn.detach())
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
         loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
-        convergenceloss = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn.detach())
-        # dloss_scphi = -torch.mean(self.vqgan.loss.discriminator(scphi))
-        # loss_scphi = self.lambda_loss_scphi[C] * self.LeakyReLU(dloss_scphi - self.gamma)
-        # drloss_scphi = self.lambda_drloss_scphi[C] * torch.ones((1,), device=self.device) #* self.drclassifire(scphic).mean()
+        dloss_cphi = -torch.mean(self.vqgan.loss.discriminator(cphi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
+        loss_cphi = self.lambda_loss_phi * self.LeakyReLU(dloss_cphi - self.gamma)
         
+        # self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
+        # self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
+        # self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
         
-        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'concept.png')
-        self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'phi_sprime.png')
-        self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'phi_szegond.png')
+        # print('----nidx------->', nidx)
         
-        print('----nidx------->', nidx)
-        
-        loss = convergenceloss + divergenceloss + loss_phi #+ loss_scphi + drloss_scphi
+        loss = loss_phi + loss_cphi + convergenceloss + divergenceloss + drloss 
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
+            drloss=drloss,
             loss_phi=loss_phi,
             dloss_phi=dloss_phi,
+            loss_cphi=loss_cphi,
+            dloss_cphi=dloss_cphi,
             divergenceloss=divergenceloss,
             convergenceloss=convergenceloss,
-            # loss_scphi=loss_scphi,
-            # dloss_scphi=dloss_scphi,
-            # drloss_scphi=drloss_scphi,
             Class=torch.tensor(float(cidx))
         )
         print(f'cidx={cidx}', lossdict)

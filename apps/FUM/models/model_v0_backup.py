@@ -1,6 +1,76 @@
 # DELETE this file shoude be delete later it is just for backuping of main code.
 
 
+# self.train_ds, self.test_ds, self.val_ds, dataset_size = get_dataloader(cfg, 
+#     # vqgan=self.vqgan,
+#     tasknet=self.dr_classifire,
+#     # drc=self.drc,
+#     # vseg=self.vseg
+# )
+#
+# ckpt = '/content/fine_tuned_weights/resnet50_128_08_100.pt'
+# from torchvision import models
+# weights = torch.load(ckpt)
+# model = models.resnet50()
+# # Our model outputs the score of DR for classification. See https://arxiv.org/pdf/2110.14160.pdf for more details.
+# model.fc = nn.Linear(model.fc.in_features, 1)
+# model.load_state_dict(weights, strict=True)
+# self.drclassifire = model
+
+
+
+
+
+
+
+# if phi_concept is not None:
+        #     self.vqgan.save_phi((phi_concept), pathdir=self.pathdir, fname=f'0phi_concept.png')
+        #     self.vqgan.save_phi((P0), pathdir=self.pathdir, fname=f'0phi_sprime.png')
+        #     S = SSIM(phi_concept, P0, reduction='none').abs()
+        #     ssim = (S>=.4).float().unsqueeze(-1).unsqueeze(-1).unsqueeze(-1).detach()
+        #     print('S-------------->', S)
+        #     print('ssim-------------->', ssim)
+        #     P0 = (1-ssim) * P0 + ssim * phi_concept
+        
+        # P0 = (P0[:, 0:1, :,:] + P0[:, 1:2, :,:] + P0[:, 2:3, :,:]) / 3
+        # P0 = torch.cat([P0, P0, P0], dim=1)
+
+
+
+
+
+# def getdrmodel():
+#     # call the model
+#     model = vit_large_patch16(
+#         num_classes=2,
+#         drop_path_rate=0.2,
+#         global_pool=True,
+#     )
+
+#     # load RETFound weights
+#     ckpt = '/content/drive/MyDrive/storage/dependency/RETFound_cfp_weights.pth'
+#     checkpoint = torch.load(ckpt, map_location='cpu')
+#     checkpoint_model = checkpoint['model']
+#     state_dict = model.state_dict()
+#     for k in ['head.weight', 'head.bias']:
+#         if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
+#             print(f"Removing key {k} from pretrained checkpoint")
+#             del checkpoint_model[k]
+
+#     # interpolate position embedding
+#     interpolate_pos_embed(model, checkpoint_model)
+
+#     # load pre-trained model
+#     msg = model.load_state_dict(checkpoint_model, strict=False)
+
+#     assert set(msg.missing_keys) == {'head.weight', 'head.bias', 'fc_norm.weight', 'fc_norm.bias'}
+
+#     # manually initialize fc layer
+#     trunc_normal_(model.head.weight, std=2e-5)
+
+#     # print("Model = %s" % str(model))
+#     return model
+
 
     # def training_step2(self, batch, batch_idx, split='train'):
     #     _std = torch.tensor([0.1252, 0.0857, 0.0814], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
