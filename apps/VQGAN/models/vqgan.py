@@ -192,7 +192,7 @@ class VQModel(pl.LightningModule):
             ToTensorV2()
         ])
         self.save_phi(torch.cat([
-            logged['inputs'], 
+            logged['inputs'],
             T(image=rearrange(logged['reconstructions'], 'b c h w -> b h w c').cpu().detach().numpy())['image']
         ], dim=0), '/content/inp.png', nrow=4)
         # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
