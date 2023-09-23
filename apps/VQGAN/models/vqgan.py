@@ -225,8 +225,8 @@ class VQModel(pl.LightningModule):
         
         fundus_drive = Tf(image=fundus_drive)['image'].unsqueeze(0)
         fundus_mask = Tm(image=fundus_mask)['image'].unsqueeze(0)
-        
-        self.save_phi(torch.cat([fundus_drive, fundus_mask], dim=0), '/content/dri.png', nrow=4)
+        print(fundus_drive.shape, fundus_mask.shape)
+        signal_save(torch.cat([fundus_drive, fundus_mask], dim=0), '/content/dri.png',stype='img', sparams={'chw2hwc': True, 'nrow': 1})
         
         
         
