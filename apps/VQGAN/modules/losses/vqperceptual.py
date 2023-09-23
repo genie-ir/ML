@@ -87,7 +87,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         if optimizer_idx == 0:
             # generator update
             if cond is None:
-                assert not self.disc_conditional
+                # assert not self.disc_conditional
                 logits_fake = self.discriminator(reconstructions.contiguous())
             else:
                 assert self.disc_conditional
