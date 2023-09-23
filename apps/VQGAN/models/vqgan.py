@@ -153,7 +153,8 @@ class VQModel(pl.LightningModule):
         print('training_step')
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
-        vasl = None # self.get_input(batch, 'vasl')
+        # vasl = None # self.get_input(batch, 'vasl')
+        vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:
             # autoencode
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train", cond=vasl)
