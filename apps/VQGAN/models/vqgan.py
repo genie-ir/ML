@@ -150,7 +150,7 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
-        print('training_step')
+        # print('training_step')
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
         vasl = None # self.get_input(batch, 'vasl')
@@ -180,7 +180,7 @@ class VQModel(pl.LightningModule):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
-        print('validation_step')
+        # print('validation_step')
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
         vasl = None # self.get_input(batch, 'vasl')
