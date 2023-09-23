@@ -207,6 +207,10 @@ class VQModel(pl.LightningModule):
         
         
         
+        Tf0 = A.Compose([
+            A.Resize(256, 256),
+            ToTensorV2()
+        ])
         Tf = A.Compose([
             A.Resize(256, 256),
             A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
@@ -218,7 +222,7 @@ class VQModel(pl.LightningModule):
             ToTensorV2()
         ])
         fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
-        fd = fundus_drive
+        fd = Tf0(image=fundus_drive)['image']
         # fundus_drive = (fundus_drive[:,:,0] + fundus_drive[:,:,1] + fundus_drive[:,:,2]) / 3
         fundus_drive = fundus_drive.astype(np.uint8)
         fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
