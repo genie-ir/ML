@@ -17,7 +17,7 @@ from apps.VQGAN.modules.vqvae.quantize import VectorQuantizer #2 as VectorQuanti
 # from apps.VQGAN.modules.vqvae.quantize import GumbelQuantize
 # from apps.VQGAN.modules.vqvae.quantize import EMAVectorQuantizer
 from einops import rearrange
-
+from PIL import Image
 import albumentations as A 
 from albumentations.pytorch import ToTensorV2
 
@@ -188,21 +188,36 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
-        logged = self.log_images(batch)
-        T = A.Compose([
-            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-            ToTensorV2()
-        ])
-        R = []
-        rr = self.vqgan_fn_phi_denormalize(logged['inputs'])
-        for i in range(logged['inputs'].shape[0]):
-            r = rr[i]
-            R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
-        signal_save(torch.cat([
-            rr,
-            torch.cat(R, dim=0)
+        # logged = self.log_images(batch)
+        # T = A.Compose([
+        #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+        #     ToTensorV2()
+        # ])
+        # R = []
+        # rr = self.vqgan_fn_phi_denormalize(logged['inputs'])
+        # for i in range(logged['inputs'].shape[0]):
+        #     r = rr[i]
+        #     R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
+        # signal_save(torch.cat([
+        #     rr,
+        #     torch.cat(R, dim=0)
             
-        ], dim=0), '/content/D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # ], dim=0), '/content/D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        
+        
+        
+        
+        # fundus_T = A.Compose([])
+        fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
+        fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_training.gif'))
+        
+        print(fundus_drive.shape, fundus_mask.shape)
+        
+        
+        
+        
+        
+        
         # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
         assert False
         x = self.get_input(batch, self.image_key)
