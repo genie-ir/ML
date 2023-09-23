@@ -241,9 +241,10 @@ class VQModel(pl.LightningModule):
 
         signal_save(torch.cat([#fundus_drive, fundus_mask, 
             torch.cat([
-                patches_f0[0:1, :, 3,3,:,:], patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:]
+                patches_f0[0:1, :, 3,3,:,:], patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:],
+                patches_f0[0:1, :, 2,5,:,:], patches_f[0:1, :, 2,5,:,:], patches_m[0:1, :, 2,5,:,:]
         ], dim=0)
-        ], dim=0), '/content/dri2.png',stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        ], dim=0), '/content/dri2.png',stype='img', sparams={'chw2hwc': True, 'nrow': 6})
         
         
         
