@@ -188,7 +188,7 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
-        # logged = self.log_images(batch)
+        logged = self.log_images(batch)
         # T = A.Compose([
         #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
         #     ToTensorV2()
@@ -207,52 +207,52 @@ class VQModel(pl.LightningModule):
         
         
         
-        Tf0 = A.Compose([
-            A.Resize(256, 256),
-            ToTensorV2()
-        ])
-        Tf = A.Compose([
-            A.Resize(256, 256),
-            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-            A.ToGray(),
-            ToTensorV2()
-        ])
-        Tm = A.Compose([
-            A.Resize(256, 256),
-            ToTensorV2()
-        ])
-        fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
-        fd = Tf0(image=fundus_drive)['image'].unsqueeze(0)
-        # fundus_drive = (fundus_drive[:,:,0] + fundus_drive[:,:,1] + fundus_drive[:,:,2]) / 3
-        fundus_drive = fundus_drive.astype(np.uint8)
-        fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
+        # Tf0 = A.Compose([
+        #     A.Resize(256, 256),
+        #     ToTensorV2()
+        # ])
+        # Tf = A.Compose([
+        #     A.Resize(256, 256),
+        #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+        #     A.ToGray(),
+        #     ToTensorV2()
+        # ])
+        # Tm = A.Compose([
+        #     A.Resize(256, 256),
+        #     ToTensorV2()
+        # ])
+        # fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
+        # fd = Tf0(image=fundus_drive)['image'].unsqueeze(0)
+        # # fundus_drive = (fundus_drive[:,:,0] + fundus_drive[:,:,1] + fundus_drive[:,:,2]) / 3
+        # fundus_drive = fundus_drive.astype(np.uint8)
+        # fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
         
-        fundus_drive = Tf(image=fundus_drive)['image'].unsqueeze(0)
-        fundus_mask = Tm(image=fundus_mask)['image'].unsqueeze(0)
-        fundus_mask = torch.cat([fundus_mask,fundus_mask,fundus_mask], dim=1)
-        print(fundus_drive.shape, fundus_mask.shape)
+        # fundus_drive = Tf(image=fundus_drive)['image'].unsqueeze(0)
+        # fundus_mask = Tm(image=fundus_mask)['image'].unsqueeze(0)
+        # fundus_mask = torch.cat([fundus_mask,fundus_mask,fundus_mask], dim=1)
+        # print(fundus_drive.shape, fundus_mask.shape)
         
-        patches_f0 = fd.unfold(2, 64, 32).unfold(3, 64, 32)
-        patches_f = fundus_drive.unfold(2, 64, 32).unfold(3, 64, 32)
-        patches_m = fundus_mask.unfold(2, 64, 32).unfold(3, 64, 32)
+        # patches_f0 = fd.unfold(2, 64, 32).unfold(3, 64, 32)
+        # patches_f = fundus_drive.unfold(2, 64, 32).unfold(3, 64, 32)
+        # patches_m = fundus_mask.unfold(2, 64, 32).unfold(3, 64, 32)
 
 
 
 
-        signal_save(torch.cat([#fundus_drive, fundus_mask, 
-            torch.cat([
-                patches_f0[0:1, :, 3,3,:,:], patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:],
-                patches_f0[0:1, :, 2,5,:,:], patches_f[0:1, :, 2,5,:,:], patches_m[0:1, :, 2,5,:,:]
-        ], dim=0)
-        ], dim=0), '/content/dri2.png',stype='img', sparams={'chw2hwc': True, 'nrow': 6})
-        
-        
-        
-        
-        
-        
+        # signal_save(torch.cat([#fundus_drive, fundus_mask, 
+        #     torch.cat([
+        #         patches_f0[0:1, :, 3,3,:,:], patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:],
+        #         patches_f0[0:1, :, 2,5,:,:], patches_f[0:1, :, 2,5,:,:], patches_m[0:1, :, 2,5,:,:]
+        # ], dim=0)
+        # ], dim=0), '/content/dri2.png',stype='img', sparams={'chw2hwc': True, 'nrow': 6})
         
         # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
+        
+        
+        
+        
+        
+        
         assert False
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
@@ -292,6 +292,20 @@ class VQModel(pl.LightningModule):
         log = dict()
         x = self.get_input(batch, self.image_key)
         x = x.to(self.device)
+        
+        T = A.Compose([
+            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+            ToTensorV2()
+        ])
+        R = []
+        rr = self.vqgan_fn_phi_denormalize(x)
+        for i in range(x.shape[0]):
+            r = rr[i]
+            R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
+        x = torch.cat(R, dim=0)
+        print('--------------------->', x.shape)
+
+        
         xrec, _ = self(x)
         if x.shape[1] > 3:
             # colorize with random projection
@@ -300,6 +314,11 @@ class VQModel(pl.LightningModule):
             xrec = self.to_rgb(xrec)
         log["inputs"] = x
         log["reconstructions"] = xrec
+        signal_save(torch.cat([
+            x,
+            self.vqgan_fn_phi_denormalize(xrec)
+        ], dim=0), '/content/______D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        assert False
         return log
 
     def to_rgb(self, x):
