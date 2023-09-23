@@ -183,7 +183,7 @@ class VQModel(pl.LightningModule):
         # print('validation_step')
         logged = self.log_images(batch)
         
-        self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=1)
+        self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
         # self.save_phi(logged['reconstructions'], '/content/rec.png', nro)
         assert False
         x = self.get_input(batch, self.image_key)
