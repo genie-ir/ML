@@ -205,9 +205,10 @@ class SignalLoggerBase(Callback):
         self.log_signal(pl_module, batch, batch_idx, split='train')
 
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx): # in this case outputs is same as pl_module!!
-        if self.ignoreFlag_on_validation_batch_end:
-            return
+        # if self.ignoreFlag_on_validation_batch_end:
+        #     return
         self.log_signal(pl_module, batch, batch_idx, split='val')
+        assert False
 
 
 class CBBase(Callback):
