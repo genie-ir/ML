@@ -137,8 +137,9 @@ class VQModel(pl.LightningModule):
     #     signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
     #     return None, None
     def forward(self, input):
-        print('forward')
-        quant, diff, R = self.encode(input)
+        # print('forward')
+        # quant, diff, R = self.encode(input)
+        quant, diff = self.encode(input)
         dec = self.decode(quant)
         return dec, diff
 
