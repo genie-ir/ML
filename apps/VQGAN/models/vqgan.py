@@ -116,12 +116,12 @@ class VQModel(pl.LightningModule):
         return self.quantize.fwd_bpi(x)
     def qua2phi(self, x):
         return self.decode(x)
-    def save_phi(self, _dec, pathdir=None, fname=None, sreturn=False, afn=None):
+    def save_phi(self, _dec, pathdir=None, fname=None, sreturn=False, afn=None, nrow=0):
         fname = fname if fname else f'{random_string()}.png'
         pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir
         if afn is None:
             afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
-        return signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': int(_dec.shape[0] ** .5), 'sreturn': bool(sreturn)})
+        return signal_save(_dec, os.path.join(pathdir, 'syn', fname), stype='img', sparams={'fn': afn, 'nrow': nrow or int(_dec.shape[0] ** .5), 'sreturn': bool(sreturn)})
     
     # def forward_syn(self, input):
     #     print('forward_syn')
@@ -183,8 +183,8 @@ class VQModel(pl.LightningModule):
         # print('validation_step')
         logged = self.log_images(batch)
         
-        self.save_phi(logged['inputs'], '/content/inp.png')
-        self.save_phi(logged['reconstructions'], '/content/rec.png')
+        self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=1)
+        # self.save_phi(logged['reconstructions'], '/content/rec.png', nro)
         assert False
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
