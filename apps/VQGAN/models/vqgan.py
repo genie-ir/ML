@@ -222,7 +222,7 @@ class VQModel(pl.LightningModule):
             ToTensorV2()
         ])
         fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
-        fd = Tf0(image=fundus_drive)['image']
+        fd = Tf0(image=fundus_drive)['image'].unsqueeze(0)
         # fundus_drive = (fundus_drive[:,:,0] + fundus_drive[:,:,1] + fundus_drive[:,:,2]) / 3
         fundus_drive = fundus_drive.astype(np.uint8)
         fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
