@@ -209,7 +209,7 @@ class VQModel(pl.LightningModule):
         
         # fundus_T = A.Compose([])
         fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
-        fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_training.gif'))
+        fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
         
         print(fundus_drive.shape, fundus_mask.shape)
         
