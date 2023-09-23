@@ -207,9 +207,19 @@ class VQModel(pl.LightningModule):
         
         
         
-        # fundus_T = A.Compose([])
+        Tf = A.Compose([
+            A.Resize(256, 256),
+            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0)
+        ])
+        Tm = A.Compose([
+            A.Resize(256, 256),
+        ])
         fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
+        fundus_drive = (fundus_drive[:,:,0] + fundus_drive[:,:,1] + fundus_drive[:,:,2]) / 3
         fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
+        
+        fundus_drive = Tf(image=fundus_drive)['image']
+        fundus_mask = Tm(image=fundus_mask)['image']
         
         print(fundus_drive.shape, fundus_mask.shape)
         
