@@ -73,6 +73,7 @@ class D(Dataset):
             # ToTensorV2()
         ])
         image = Tclahe(image=image)['image']
+        print(image.min(), image.max())
 
 
 
