@@ -210,7 +210,7 @@ class VQModel(pl.LightningModule):
         Tf = A.Compose([
             A.Resize(256, 256),
             A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-            ToGray(),
+            A.ToGray(),
             ToTensorV2()
         ])
         Tm = A.Compose([
