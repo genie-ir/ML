@@ -293,17 +293,17 @@ class VQModel(pl.LightningModule):
         x = self.get_input(batch, self.image_key)
         x = x.to(self.device)
         
-        T = A.Compose([
-            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-            ToTensorV2()
-        ])
-        R = []
-        rr = self.vqgan_fn_phi_denormalize(x)
-        for i in range(x.shape[0]):
-            r = rr[i]
-            R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
-        x = torch.cat(R, dim=0)
-        print('--------------------->', x.shape)
+        # T = A.Compose([
+        #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+        #     ToTensorV2()
+        # ])
+        # R = []
+        # rr = self.vqgan_fn_phi_denormalize(x)
+        # for i in range(x.shape[0]):
+        #     r = rr[i]
+        #     R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
+        # x = torch.cat(R, dim=0)
+        # print('--------------------->', x.shape)
 
         
         xrec, _ = self(x)

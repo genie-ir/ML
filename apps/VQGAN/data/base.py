@@ -64,6 +64,19 @@ class D(Dataset):
         example = dict()
         vasl = vaslExtractor(fpath)
         image = self.preprocess_image(fpath)
+
+        
+        import albumentations as A 
+        from albumentations.pytorch import ToTensorV2
+        Tclahe = A.Compose([
+            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+            # ToTensorV2()
+        ])
+        image = Tclahe(image=image)['image']
+
+
+
+
         # logger.critical('{} | {} | {}'.format(np.unique(vasl), vasl.shape, image.shape))
         T = self.preprocessor(image=image, mask=vasl)
         
