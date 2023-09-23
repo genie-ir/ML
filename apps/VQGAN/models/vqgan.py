@@ -315,7 +315,7 @@ class VQModel(pl.LightningModule):
         log["inputs"] = x
         log["reconstructions"] = xrec
         signal_save(torch.cat([
-            x,
+            (x + 1 ) * 127.5,
             self.vqgan_fn_phi_denormalize(xrec)
         ], dim=0), '/content/______D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         assert False
