@@ -191,9 +191,14 @@ class VQModel(pl.LightningModule):
             A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
             ToTensorV2()
         ])
+        R = []
+        for i in range(logged['inputs'].shape[0]):
+            r = logged['reconstructions'][i]
+            R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy())['image'])
         self.save_phi(torch.cat([
             logged['inputs'],
-            T(image=rearrange(logged['reconstructions'], 'b c h w -> b h w c').cpu().detach().numpy())['image']
+            torch.cat(R, dim=0)
+            
         ], dim=0), '/content/inp.png', nrow=4)
         # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
         assert False
