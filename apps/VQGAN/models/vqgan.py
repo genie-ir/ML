@@ -16,6 +16,11 @@ from apps.VQGAN.modules.diffusionmodules.model import Encoder, Decoder
 from apps.VQGAN.modules.vqvae.quantize import VectorQuantizer #2 as VectorQuantizer
 # from apps.VQGAN.modules.vqvae.quantize import GumbelQuantize
 # from apps.VQGAN.modules.vqvae.quantize import EMAVectorQuantizer
+from einops import rearrange
+
+import albumentations as A 
+from albumentations.pytorch import ToTensorV2
+
 
 class VQModel(pl.LightningModule):
     def __init__(self,
@@ -182,9 +187,15 @@ class VQModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
         logged = self.log_images(batch)
-        
-        self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
-        # self.save_phi(logged['reconstructions'], '/content/rec.png', nro)
+        T = A.Compose([
+            A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+            ToTensorV2()
+        ])
+        self.save_phi(torch.cat([
+            logged['inputs'], 
+            T(image=rearrange(logged['reconstructions'], 'b c h w -> b h w c').cpu().detach().numpy())['image']
+        ], dim=0), '/content/inp.png', nrow=4)
+        # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
         assert False
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
