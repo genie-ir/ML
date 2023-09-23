@@ -157,6 +157,8 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
+        logged = self.log_images(batch)
+        assert False
         # print('training_step')
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
@@ -189,6 +191,7 @@ class VQModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
         logged = self.log_images(batch)
+        return
         # T = A.Compose([
         #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
         #     ToTensorV2()
