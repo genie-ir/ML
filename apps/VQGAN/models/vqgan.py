@@ -194,15 +194,15 @@ class VQModel(pl.LightningModule):
             ToTensorV2()
         ])
         R = []
-        rr = self.vqgan_fn_phi_denormalize(logged['reconstructions'])
+        rr = self.vqgan_fn_phi_denormalize(logged['inputs'])
         for i in range(logged['inputs'].shape[0]):
             r = rr[i]
             R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
-        self.save_phi(torch.cat([
-            logged['inputs'],
+        signal_save(torch.cat([
+            rr,
             torch.cat(R, dim=0)
             
-        ], dim=0), '/content/inp.png', nrow=4)
+        ], dim=0), '/content/inp.png', nrow=4, stype='img', sparams={'chw2hwc': True})
         # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
         assert False
         x = self.get_input(batch, self.image_key)
