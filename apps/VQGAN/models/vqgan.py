@@ -181,6 +181,11 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
+        logged = self.log_images(batch)
+        
+        self.save_phi(logged['inputs'], '/content/inp.png')
+        self.save_phi(logged['reconstructions'], '/content/rec.png')
+        assert False
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
         vasl = None # self.get_input(batch, 'vasl')
