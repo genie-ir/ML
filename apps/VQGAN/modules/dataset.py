@@ -1,6 +1,10 @@
-from apps.VQGAN.data.utils import custom_collate
-from apps.VQGAN.modules.configuration import Config
-from utils.pl.plDataset import DataModuleFromConfigBase, WrappedDatasetBase
+try:
+    from apps.VQGAN.data.utils import custom_collate
+    from apps.VQGAN.modules.configuration import Config
+    from utils.pl.plDataset import DataModuleFromConfigBase, WrappedDatasetBase
+except Exception as e:
+    print(e)
+    assert False
 
 class WrappedDataset(WrappedDatasetBase):
     pass
