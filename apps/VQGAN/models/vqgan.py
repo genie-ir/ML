@@ -50,6 +50,8 @@ class VQModel(pl.LightningModule):
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
         
+        self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)
+
         if bool(ckpt):
             self.init_from_ckpt(ckpt, ignore_keys=ignore_keys)
         self.image_key = image_key
@@ -192,8 +194,9 @@ class VQModel(pl.LightningModule):
             ToTensorV2()
         ])
         R = []
+        rr = self.vqgan_fn_phi_denormalize(logged['reconstructions'])
         for i in range(logged['inputs'].shape[0]):
-            r = logged['reconstructions'][i]
+            r = rr[i]
             R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy())['image'])
         self.save_phi(torch.cat([
             logged['inputs'],
