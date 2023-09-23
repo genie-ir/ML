@@ -218,7 +218,7 @@ class VQModel(pl.LightningModule):
         ])
         fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
         fd = fundus_drive
-        fundus_drive = (fundus_drive[:, :,:,0] + fundus_drive[:, :,:,1] + fundus_drive[:, :,:,2]) / 3
+        fundus_drive = (fundus_drive[:, :,:,0:1] + fundus_drive[:, :,:,1:2] + fundus_drive[:, :,:,2:3]) / 3
         fundus_drive = fundus_drive.astype(np.uint8)
         fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
         
