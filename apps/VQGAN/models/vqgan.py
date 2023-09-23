@@ -197,7 +197,7 @@ class VQModel(pl.LightningModule):
         rr = self.vqgan_fn_phi_denormalize(logged['reconstructions'])
         for i in range(logged['inputs'].shape[0]):
             r = rr[i]
-            R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy())['image'])
+            R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'])
         self.save_phi(torch.cat([
             logged['inputs'],
             torch.cat(R, dim=0)
