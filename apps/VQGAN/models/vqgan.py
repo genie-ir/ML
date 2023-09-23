@@ -202,7 +202,7 @@ class VQModel(pl.LightningModule):
             rr,
             torch.cat(R, dim=0)
             
-        ], dim=0), '/content/inp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        ], dim=0), '/content/D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
         assert False
         x = self.get_input(batch, self.image_key)
