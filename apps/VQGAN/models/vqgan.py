@@ -228,6 +228,7 @@ class VQModel(pl.LightningModule):
         fundus_mask = torch.cat([fundus_mask,fundus_mask,fundus_mask], dim=1)
         print(fundus_drive.shape, fundus_mask.shape)
         
+        patches_f0 = fd.unfold(2, 64, 32).unfold(3, 64, 32)
         patches_f = fundus_drive.unfold(2, 64, 32).unfold(3, 64, 32)
         patches_m = fundus_mask.unfold(2, 64, 32).unfold(3, 64, 32)
 
@@ -235,7 +236,9 @@ class VQModel(pl.LightningModule):
 
 
         signal_save(torch.cat([#fundus_drive, fundus_mask, 
-            torch.cat([patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:]], dim=0)
+            torch.cat([
+                patches_f0[0:1, :, 3,3,:,:], patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:]
+        ], dim=0)
         ], dim=0), '/content/dri2.png',stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         
         
