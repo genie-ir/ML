@@ -154,7 +154,7 @@ class SignalLoggerBase(Callback):
 
     @rank_zero_only # DELETE
     def log_signal(self, pl_module, batch, batch_idx, split='train'):
-        if (self.check_frequency(batch_idx) and  # batch_idx % self.batch_freq == 0
+        if True or (self.check_frequency(batch_idx) and  # batch_idx % self.batch_freq == 0
                 hasattr(pl_module, 'log_images') and
                 callable(pl_module.log_images) and
                 self.max_signals > 0):
@@ -200,8 +200,8 @@ class SignalLoggerBase(Callback):
         return False
 
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx): # ,dataloader_idx
-        if self.ignoreFlag_on_train_batch_end:
-            return
+        # if self.ignoreFlag_on_train_batch_end:
+        #     return
         self.log_signal(pl_module, batch, batch_idx, split='train')
 
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx): # in this case outputs is same as pl_module!!
