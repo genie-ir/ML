@@ -157,7 +157,7 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
-        logged = self.log_images(batch)
+        logged = self.log_images(batch, ignore=False)
         assert False
         # print('training_step')
         x = self.get_input(batch, self.image_key)
@@ -291,6 +291,8 @@ class VQModel(pl.LightningModule):
         return self.decoder.conv_out.weight
 
     def log_images(self, batch, **kwargs):
+        if kwargs.get('ignore', True):
+            return
         """this function is must be exist for ptCallback.ImageLoggerBase"""
         log = dict()
         x = self.get_input(batch, self.image_key)
