@@ -250,6 +250,7 @@ class FUM_DR(FUM):
     
 class FUM_Syn(FUM):
     def training_step(self, batch, batch_idx, split='train'):
+        assert False, '!!!!!!!!!!!!!!!!!!'
         return super().training_step__synalgo(batch, batch_idx, split='train')
 
     def generator_step(self, batch, **kwargs):
