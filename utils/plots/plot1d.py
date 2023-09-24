@@ -142,7 +142,7 @@ class Plot1D:
         else:
             if ax is None:
                 ax = self.fig.gca()
-            return internal_plot(ax)
+            return internal_plot(ax, x, y)
         
 
 if __name__ == '__main__':
