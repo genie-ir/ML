@@ -186,7 +186,7 @@ class FUM(plModuleBase):
         print(ln.shape)
         from utils.plots.plot1d import Plot1D
 
-        neon = Plot1D(xlabel='index', ylabel='codebook index')
+        neon = Plot1D(xlabel='latent index', ylabel='codebook index')
         neon.plot(range(256), ln[0].cpu().detach().numpy(), label=f'Latent Code')
         neon.savefig('/content/plot.png')
         assert False
