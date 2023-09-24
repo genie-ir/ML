@@ -184,7 +184,11 @@ class FUM(plModuleBase):
         ln = batch[self.signal_key]
 
         print(ln.shape)
-        self.forward_plot(batch)
+        from utils.plots.plot1d import Plot1D
+
+        neon = Plot1D(xlabel='x1', ylabel='y1')
+        neon.plot(range(256), ln[0].flattent(1), label=f'Latent Code')
+        neon.savefig('/content/plot.png')
         assert False
 
 
