@@ -182,6 +182,12 @@ class FUM(plModuleBase):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
+
+        print(ln.shape)
+        self.forward_plot(batch)
+        assert False
+
+
         (phi, q_phi), sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
         
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
