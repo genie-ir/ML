@@ -187,7 +187,7 @@ class FUM(plModuleBase):
         from utils.plots.plot1d import Plot1D
 
         neon = Plot1D(xlabel='x1', ylabel='y1')
-        neon.plot(range(256), ln.flattent(1)[0], label=f'Latent Code')
+        neon.plot(range(256), ln[0], label=f'Latent Code')
         neon.savefig('/content/plot.png')
         assert False
 
