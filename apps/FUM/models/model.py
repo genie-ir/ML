@@ -249,6 +249,9 @@ class FUM_DR(FUM):
         return super().generator_step__drcalgo(batch, **kwargs)
     
 class FUM_Syn(FUM):
+    def validation_step(self, batch, batch_idx, split='val'):
+        return
+
     def training_step(self, batch, batch_idx, split='train'):
         assert False, '!!!!!!!!!!!!!!!!!!'
         return super().training_step__synalgo(batch, batch_idx, split='train')
