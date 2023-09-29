@@ -215,7 +215,7 @@ class FUM(plModuleBase):
 
 
         (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
-        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
+        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
         assert False
 
 
