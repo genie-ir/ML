@@ -230,7 +230,7 @@ class FUM(plModuleBase):
             B.append(bbb)
             print(bbb.shape)
         V = self.vseg(torch.cat(B, dim=0))
-        print()
+        print(V.shape)
         assert False
 
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
