@@ -226,7 +226,7 @@ class FUM(plModuleBase):
             bbb = np.array(Image.open(os.path.join(vqgan_dataset, bb))).astype(np.uint8)
             # bbb = (bbb/127.5 - 1.0).astype(np.float32)
             # bbb = Transformer(image=bbb)['image']
-            bbb = Transformer(image=bbb)['image']
+            bbb = Transformer(image=bbb)['image'].unsqueeze(0)
             B.append(bbb)
             print(bbb.shape)
         V = self.vseg(torch.cat(B, dim=0))
