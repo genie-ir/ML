@@ -175,7 +175,7 @@ class FUM(plModuleBase):
             # qe_mse = ((nl-nnl)**2).mean()
             qe_mse = ((nl-nnl).abs()).sum()
 
-            if N %5 == 0:
+            if N %3 == 0:
                 PHI.append(np)
                 PHI_L.append(qe_mse.item())
 
