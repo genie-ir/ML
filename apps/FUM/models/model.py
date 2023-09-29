@@ -221,7 +221,7 @@ class FUM(plModuleBase):
         vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
         for b in batch['x']:
             bb = os.path.split(b)[1].replace('.npy', '.jpeg')
-            bbb = np.array(Image.open(bb)).astype(np.uint8)
+            bbb = np.array(Image.open(os.path.join(vqgan_dataset, bb))).astype(np.uint8)
             bbb = (bbb/127.5 - 1.0).astype(np.float32)
             bbb = Transformer(image=bbb)['image']
             print(bbb.shape)
