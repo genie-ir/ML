@@ -40,9 +40,17 @@ from libs.coding import random_string
 from dependency.MKCNet.dataset.dataset_manager import get_dataloader
 from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
 
+import albumentations as A 
+from albumentations.pytorch import ToTensorV2
+Transformer = A.Compose([
+    # A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+    ToTensorV2()
+])
 
 from utils.plots.plot1d import Plot1D
-
+import os
+import numpy as np
+from PIL import Image
 
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
@@ -210,7 +218,14 @@ class FUM(plModuleBase):
 
         # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
         # (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
-        print(batch['x'])
+        vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
+        for b in batch['x']:
+            bb = os.path.split(b)[1].replace('.npy', '.jpeg')
+            bbb = np.array(Image.open(bb)).astype(np.uint8)
+            bbb = (bbb/127.5 - 1.0).astype(np.float32)
+            bbb = Transformer(image=bbb)['image']
+            print(bbb.shape)
+        print()
         assert False
 
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
