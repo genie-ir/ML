@@ -159,8 +159,8 @@ class FUM(plModuleBase):
 
         cross = cross[0].unsqueeze(0)
 
-        PHI = []
-        PHI_L = []
+        # PHI = []
+        # PHI_L = []
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         Q = self.vqgan.lat2qua(cross)
@@ -175,9 +175,13 @@ class FUM(plModuleBase):
             # qe_mse = ((nl-nnl)**2).mean()
             qe_mse = ((nl-nnl).abs()).sum()
 
-            if N %2 == 0:
-                PHI.append(np)
-                PHI_L.append(qe_mse.item())
+
+
+            # if N %2 == 0:
+            #     PHI.append(np)
+            #     PHI_L.append(qe_mse.item())
+
+
 
             nl = nnl
             if qe_mse < 1e-6: 
@@ -193,10 +197,10 @@ class FUM(plModuleBase):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
         
         
-        self.vqgan.save_phi(torch.cat(PHI, dim=0), pathdir=self.pathdir, fname=f'PHI_{phiName}.png', nrow=4)
-        neon = Plot1D(xlabel='Iteration', ylabel='Quantization Error | sum_absolute_error(z*[i], z*[i-1])')
-        neon.plot(range(len(PHI_L)), PHI_L, label=f'convergence curve')
-        neon.savefig(f'/content/convergence_{phiName}.png')
+        # self.vqgan.save_phi(torch.cat(PHI, dim=0), pathdir=self.pathdir, fname=f'PHI_{phiName}.png', nrow=4)
+        # neon = Plot1D(xlabel='Iteration', ylabel='Quantization Error | sum_absolute_error(z*[i], z*[i-1])')
+        # neon.plot(range(len(PHI_L)), PHI_L, label=f'convergence curve')
+        # neon.savefig(f'/content/convergence_{phiName}.png')
         return (phi0, Q), sn, np
     
     def generator_step__synalgo(self, batch, **kwargs):
@@ -204,17 +208,10 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
 
-        # print(ln.shape)
-        # neon = Plot1D(xlabel='latent index', ylabel='codebook index')
-        # neon.plot(range(256), ln[0].cpu().detach().numpy(), label=f'Latent Code')
-        # neon.savefig('/content/plot.png')
-        # assert False
-
-
-        (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
-        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
+        # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
+        # (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
+        print(batch['x'])
         assert False
-
 
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
