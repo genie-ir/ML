@@ -196,7 +196,7 @@ class FUM(plModuleBase):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
         
         
-        self.vqgan.save_phi(torch.cat(PHI, dim=0), pathdir=self.pathdir, fname=f'PHI.png')
+        self.vqgan.save_phi(torch.cat(torch.tensor(PHI), dim=0), pathdir=self.pathdir, fname=f'PHI.png')
         neon = Plot1D(xlabel='Iteration', ylabel='Quantization Error')
         neon.plot(range(len(PHI_L)), PHI_L, label=f'convergence curve')
         neon.savefig('/content/convergence.png')
