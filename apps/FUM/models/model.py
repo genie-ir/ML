@@ -157,6 +157,8 @@ class FUM(plModuleBase):
         # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         # return phi, sn
 
+        cross = cross[0].unsqueeze(0)
+
         PHI = []
         PHI_L = []
         
@@ -178,9 +180,7 @@ class FUM(plModuleBase):
             # qe_mse = ((nl-nnl)**2).mean()
             qe_mse = ((nl-nnl).abs()).sum()
 
-            print('--------------->', qe_mse.shape)
-            assert False
-            PHI_L.append(qe_mse[0].item())
+            PHI_L.append(qe_mse.item())
 
             nl = nnl
             if qe_mse < 1e-6: 
