@@ -172,7 +172,7 @@ class FUM(plModuleBase):
             np = self.vqgan.lat2phi(nl)
 
 
-            PHI.append(np[0].cpu().detach().numpy())
+            PHI.append(np[0])
             
             
             # print(f'({N-1},{N})-------ssim-------->', SSIM(_np, np))
