@@ -44,6 +44,7 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 Transformer = A.Compose([
     # A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+    A.Resize(256, 256),
     ToTensorV2()
 ])
 
@@ -137,8 +138,8 @@ class FUM(plModuleBase):
         self.v_ypred = []
         self.v_ygrnt = []
         
-        # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
-        # self.vseg.requires_grad_(False)
+        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        self.vseg.requires_grad_(False)
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
@@ -219,12 +220,16 @@ class FUM(plModuleBase):
         # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
         # (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
         vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
+        B = []
         for b in batch['x']:
             bb = os.path.split(b)[1].replace('.npy', '.jpeg')
             bbb = np.array(Image.open(os.path.join(vqgan_dataset, bb))).astype(np.uint8)
-            bbb = (bbb/127.5 - 1.0).astype(np.float32)
+            # bbb = (bbb/127.5 - 1.0).astype(np.float32)
+            # bbb = Transformer(image=bbb)['image']
             bbb = Transformer(image=bbb)['image']
+            B.append(bbb)
             print(bbb.shape)
+        V = self.vseg(torch.cat(B, dim=0))
         print()
         assert False
 
