@@ -178,6 +178,8 @@ class FUM(plModuleBase):
             # qe_mse = ((nl-nnl)**2).mean()
             qe_mse = ((nl-nnl).abs()).sum()
 
+            print('--------------->', qe_mse.shape)
+            assert False
             PHI_L.append(qe_mse[0].item())
 
             nl = nnl
