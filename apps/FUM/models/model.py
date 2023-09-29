@@ -40,6 +40,10 @@ from libs.coding import random_string
 from dependency.MKCNet.dataset.dataset_manager import get_dataloader
 from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
 
+
+from utils.plots.plot1d import Plot1D
+
+
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
@@ -152,6 +156,9 @@ class FUM(plModuleBase):
         # phi = self.vqgan.lat2phi(cross)
         # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         # return phi, sn
+
+        PHI = []
+        PHI_L = []
         
         # IDEA s1 = phi0 # is better than --> torch.zeros((batch_size,) + self.phi_shape, device=self.device) --> becuse the first one is diffrentiable. NOTE: each time you must do: s1=s1+phi
         Q = self.vqgan.lat2qua(cross)
@@ -161,21 +168,38 @@ class FUM(plModuleBase):
         for N in range(1, self.phi_steps):
             # list_of_distance_to_mode.append(nl.flatten(1))
             np = self.vqgan.lat2phi(nl)
+
+
+            PHI.append(np[0].cpu().detach().numpy())
+            
+            
             # print(f'({N-1},{N})-------ssim-------->', SSIM(_np, np))
             nnl = self.vqgan.phi2lat(np).float()
-            qe_mse = ((nl-nnl)**2).mean()
+            # qe_mse = ((nl-nnl)**2).mean()
+            qe_mse = ((nl-nnl).abs()).sum()
+
+            PHI_L.append(qe_mse[0].item())
+
             nl = nnl
             if qe_mse < 1e-6: 
                 break
             # _np = np
             # print(f'{N} ---qe_mse-->', qe_mse.item())
-            self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'{tag}phi-{str(N)}.png')
+            # self.vqgan.save_phi(np, pathdir=self.pathdir, fname=f'{tag}phi-{str(N)}.png')
         # mue = (s1 / N).detach()
         sn = nl.flatten(1).detach()
         np = np.detach()
         # print('='*60)
         # for i, l in enumerate(list_of_distance_to_mode):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
+        
+        
+        print('QQQQQQQQQQQQQQQQQQQQQQQQQQ', PHI_L.shape)
+        self.vqgan.save_phi(torch.cat(PHI, dim=0), pathdir=self.pathdir, fname=f'PHI.png')
+        neon = Plot1D(xlabel='Iteration', ylabel='Quantization Error')
+        neon.plot(range(len(PHI_L)), PHI_L, label=f'convergence curve')
+        neon.savefig('/content/convergence.png')
+        assert False
         return (phi0, Q), sn, np
     
     def generator_step__synalgo(self, batch, **kwargs):
@@ -183,13 +207,11 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
 
-        print(ln.shape)
-        from utils.plots.plot1d import Plot1D
-
-        neon = Plot1D(xlabel='latent index', ylabel='codebook index')
-        neon.plot(range(256), ln[0].cpu().detach().numpy(), label=f'Latent Code')
-        neon.savefig('/content/plot.png')
-        assert False
+        # print(ln.shape)
+        # neon = Plot1D(xlabel='latent index', ylabel='codebook index')
+        # neon.plot(range(256), ln[0].cpu().detach().numpy(), label=f'Latent Code')
+        # neon.savefig('/content/plot.png')
+        # assert False
 
 
         (phi, q_phi), sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
