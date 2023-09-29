@@ -229,7 +229,10 @@ class FUM(plModuleBase):
             bbb = Transformer(image=bbb)['image'].unsqueeze(0)
             B.append(bbb)
             print(bbb.shape)
-        V = self.vseg(torch.cat(B, dim=0))
+        F = torch.cat(B, dim=0)
+        V = self.vseg(F)
+        signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(V, f'/content/V.png', stype='img', sparams={'chw2hwc': True})
         print(V.shape)
         assert False
 
