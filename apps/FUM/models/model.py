@@ -150,7 +150,7 @@ class FUM(plModuleBase):
         else:
             self.generator.dr_classifire = self.dr_classifire
 
-    def __c2phi(self, cross, tag='', phi_concept=None):
+    def __c2phi(self, cross, tag='', phi_concept=None, phiName='fundus'):
         # list_of_distance_to_mode = []
         # BASIC the very basic code of idea behind chaining concept.
         # phi = self.vqgan.lat2phi(cross)
@@ -196,11 +196,10 @@ class FUM(plModuleBase):
         #     print(f'{i}--->', ((l-sn)**2).mean().item())
         
         
-        self.vqgan.save_phi(torch.cat(PHI, dim=0), pathdir=self.pathdir, fname=f'PHI.png')
-        neon = Plot1D(xlabel='Iteration', ylabel='Quantization Error')
+        self.vqgan.save_phi(torch.cat(PHI, dim=0), pathdir=self.pathdir, fname=f'PHI_{phiName}.png')
+        neon = Plot1D(xlabel='Iteration', ylabel='Quantization Error | sum_absolute_error(z*[i], z*[i-1])')
         neon.plot(range(len(PHI_L)), PHI_L, label=f'convergence curve')
-        neon.savefig('/content/convergence.png')
-        assert False
+        neon.savefig(f'/content/convergence_{phiName}.png')
         return (phi0, Q), sn, np
     
     def generator_step__synalgo(self, batch, **kwargs):
@@ -215,8 +214,11 @@ class FUM(plModuleBase):
         # assert False
 
 
-        (phi, q_phi), sn, concept = self.__c2phi(ln) # NOTE `sn` and `concept` doesnt have derevetive.
-        
+        (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
+        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
+        assert False
+
+
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
         cphi_denormalized = dzq_dz_eq1(cphi_denormalized, cphi)

@@ -24,7 +24,7 @@ class D(D_Base):
         else:
             assert False
         return {
-            'X': np.load(signal_path),
+            'X0': np.load(signal_path),
             'y_edit': y_edit
         }
 
