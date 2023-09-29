@@ -170,17 +170,14 @@ class FUM(plModuleBase):
         for N in range(1, self.phi_steps):
             # list_of_distance_to_mode.append(nl.flatten(1))
             np = self.vqgan.lat2phi(nl)
-
-
-            PHI.append(np)
-            
-            
             # print(f'({N-1},{N})-------ssim-------->', SSIM(_np, np))
             nnl = self.vqgan.phi2lat(np).float()
             # qe_mse = ((nl-nnl)**2).mean()
             qe_mse = ((nl-nnl).abs()).sum()
 
-            PHI_L.append(qe_mse.item())
+            if N %5 == 0:
+                PHI.append(np)
+                PHI_L.append(qe_mse.item())
 
             nl = nnl
             if qe_mse < 1e-6: 
