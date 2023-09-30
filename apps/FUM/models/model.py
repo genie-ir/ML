@@ -97,7 +97,6 @@ class FUM(plModuleBase):
         # else:
         #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-        assert False
         return loss, dict(loss=loss.cpu().detach().item())
 
     
@@ -222,9 +221,9 @@ class FUM(plModuleBase):
             # bbb = Transformer(image=bbb)['image']
             bbb = Transformer(image=bbb)['image'].unsqueeze(0)
             B.append(bbb)
-            print(bbb.shape, bbb.min(), bbb.max())
+            # print(bbb.shape, bbb.min(), bbb.max())
         F = torch.cat(B, dim=0).to(self.device)
-        signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
         return F
     
     def generator_step__synalgo(self, batch, **kwargs):
