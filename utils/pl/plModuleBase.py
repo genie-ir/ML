@@ -296,7 +296,9 @@ class plModuleBase(pl.LightningModule):
     
     def getbatch(self, batch):
         """It can be overwrite in child class"""
-        batch['batch_size'] = batch[self.signal_key].shape[0]
+        # batch['batch_size'] = batch[self.signal_key].shape[0]
+        batch['batch_size'] = len(batch['x'])
+        print('--------------------------------------------------->', batch['batch_size'])
         batch['device'] = self.device
         batch['Self'] = self
         return batch
