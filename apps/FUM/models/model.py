@@ -43,8 +43,8 @@ from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretra
 import albumentations as A 
 from albumentations.pytorch import ToTensorV2
 Transformer = A.Compose([
-    # A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
     A.Resize(256, 256),
+    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
     ToTensorV2()
 ])
 
@@ -82,17 +82,14 @@ class FUM(plModuleBase):
     
     # NOTE: DR_CLASSIFIRE Training function.
     def generator_step__drcalgo(self, batch, **kwargs):
-        phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
+        # phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+        # phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
         # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
+        phi_denormalized = self.get_eyepacs_data_batch(batch)
         phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
-        
-        # print('11111111111111', dr_pred)
-        # print('groundtrouth -> y_edit', batch['y_edit'])
-        # print('------------------------->', loss)
         
         # if kwargs['split'] == 'train':
         #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
@@ -100,6 +97,7 @@ class FUM(plModuleBase):
         # else:
         #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        assert False
         return loss, dict(loss=loss.cpu().detach().item())
 
     
@@ -127,6 +125,9 @@ class FUM(plModuleBase):
             assert False, batch_idx
     
     def start(self, dr_vs_synthesis_flag=True):
+        self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
+
+
         self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
@@ -138,7 +139,7 @@ class FUM(plModuleBase):
         self.v_ypred = []
         self.v_ygrnt = []
         
-        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         # self.vseg.requires_grad_(False)
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
@@ -212,29 +213,42 @@ class FUM(plModuleBase):
         # neon.savefig(f'/content/convergence_{phiName}.png')
         return (phi0, Q), sn, np
     
+    def get_eyepacs_data_batch(self, batch):
+        B = []
+        for b in batch['x']:
+            bb = os.path.split(b)[1].replace('.npy', '.jpeg')
+            bbb = np.array(Image.open(os.path.join(self.vqgan_dataset, bb))).astype(np.uint8)
+            # bbb = (bbb/127.5 - 1.0).astype(np.float32)
+            # bbb = Transformer(image=bbb)['image']
+            bbb = Transformer(image=bbb)['image'].unsqueeze(0)
+            B.append(bbb)
+            print(bbb.shape, bbb.min(), bbb.max())
+        F = torch.cat(B, dim=0)
+        signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        return F
+    
     def generator_step__synalgo(self, batch, **kwargs):
         bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
 
         # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
-        # (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
-        vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
-        B = []
-        for b in batch['x']:
-            bb = os.path.split(b)[1].replace('.npy', '.jpeg')
-            bbb = np.array(Image.open(os.path.join(vqgan_dataset, bb))).astype(np.uint8)
-            # bbb = (bbb/127.5 - 1.0).astype(np.float32)
-            # bbb = Transformer(image=bbb)['image']
-            bbb = Transformer(image=bbb)['image'].unsqueeze(0)
-            B.append(bbb)
-            print(bbb.shape)
-        F = torch.cat(B, dim=0)
-        V = self.vseg(F)
-        signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
-        signal_save(V, f'/content/V.png', stype='img', sparams={'chw2hwc': True})
-        print(V.shape)
-        assert False
+        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # NOTE `sn` and `concept` doesnt have derevetive.
+        # B = []
+        # for b in batch['x']:
+        #     bb = os.path.split(b)[1].replace('.npy', '.jpeg')
+        #     bbb = np.array(Image.open(os.path.join(self.vqgan_dataset, bb))).astype(np.uint8)
+        #     # bbb = (bbb/127.5 - 1.0).astype(np.float32)
+        #     # bbb = Transformer(image=bbb)['image']
+        #     bbb = Transformer(image=bbb)['image'].unsqueeze(0)
+        #     B.append(bbb)
+        #     print(bbb.shape)
+        # F = torch.cat(B, dim=0)
+        # V = self.vseg(F)
+        # signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V, f'/content/V.png', stype='img', sparams={'chw2hwc': True})
+        # print(V.shape)
+        # assert False
 
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
