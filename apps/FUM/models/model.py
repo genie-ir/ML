@@ -223,7 +223,7 @@ class FUM(plModuleBase):
             bbb = Transformer(image=bbb)['image'].unsqueeze(0)
             B.append(bbb)
             print(bbb.shape, bbb.min(), bbb.max())
-        F = torch.cat(B, dim=0)
+        F = torch.cat(B, dim=0).to(self.device)
         signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
         return F
     
