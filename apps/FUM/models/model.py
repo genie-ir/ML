@@ -301,10 +301,10 @@ class FUM_DR(FUM):
     
     def validation_step(self, batch, batch_idx, split='val'):
         self.generator.dr_classifire.train()
-        self.generator.dr_classifire.requires_grad_(True)
+        torch.set_grad_enabled(True)
         super().training_step(batch, batch_idx, 'train')
-        self.generator.dr_classifire.train(False)
-        self.generator.dr_classifire.requires_grad_(False)
+        self.generator.dr_classifire.eval()
+        torch.set_grad_enabled(False)
         return super().validation_step(batch, batch_idx, split)
 
     # def on_train_epoch_end(self):
