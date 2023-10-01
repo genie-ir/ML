@@ -162,10 +162,12 @@ class VQModel(pl.LightningModule):
         V_rec = self.vseg(F_rec.cpu()).detach()
         F_org = ((Forg +1)*127.5).detach()
         V_org = self.vseg(F_org.cpu()).detach()
+        V_org = torch.cat([V_org,V_org,V_org], dim=0)
+        V_rec = torch.cat([V_rec,V_rec,V_rec], dim=0)
         # print('-----------F_rec---------------->', F_rec.shape)
         # print('-----------F_org---------------->', F_org.shape)
-        # print('-----------V_rec---------------->', V_rec.shape)
-        # print('-----------V_org---------------->', V_org.shape)
+        print('-----------V_rec---------------->', V_rec.shape)
+        print('-----------V_org---------------->', V_org.shape)
         # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
         # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
         # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
@@ -199,6 +201,12 @@ class VQModel(pl.LightningModule):
             # self.log_dict(log_dict_ae, prog_bar=True, logger=True, on_step=True, on_epoch=True)
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+            
+            print(aeloss.shape, aeloss)
+
+            VLOSS = ((Vrec-Vorg)**2).mean()
+            print(VLOSS.shape, VLOSS)
+            return VLOSS
             return aeloss
         if optimizer_idx == 1:
             # discriminator
