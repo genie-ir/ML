@@ -301,7 +301,7 @@ class FUM_DR(FUM):
     
     def validation_step(self, batch, batch_idx, split='val'):
 
-        self.super().training_step(batch, batch_idx, 'train')
+        super().training_step(batch, batch_idx, 'train')
         return super().validation_step(batch, batch_idx, split)
 
     # def on_train_epoch_end(self):
