@@ -79,12 +79,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return d_weight
 
     def forward(self, codebook_loss, inputs, reconstructions, optimizer_idx, global_step, last_layer=None, cond=None, split="train"):
-        R = self.vqgan_fn_phi_denormalize(reconstructions).detach()
-        V = self.vseg(R)
-        print('-----------R---------------->', R.shape)
-        print('-----------V---------------->', V.shape)
-        signal_save(R, f'/content/R.png', stype='img', sparams={'chw2hwc': True})
-        signal_save(V, f'/content/V.png', stype='img', sparams={'chw2hwc': True})
+        
         assert False
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:

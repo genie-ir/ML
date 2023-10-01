@@ -123,6 +123,7 @@ class FUM(plModuleBase):
         if batch_idx == 2:
             assert False, batch_idx
     
+    
     def start(self, dr_vs_synthesis_flag=True):
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 

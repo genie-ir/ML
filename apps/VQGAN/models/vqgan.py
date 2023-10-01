@@ -150,6 +150,23 @@ class VQModel(pl.LightningModule):
         dec = self.decode(quant)
         return dec, diff
 
+    
+    def get_V(self, Forg, Frec):
+        F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
+        V_rec = self.vseg(F_rec).detach()
+        F_org = ((Forg +1)*127.5).detach()
+        V_org = self.vseg(F_org).detach()
+        print('-----------F_rec---------------->', F_rec.shape)
+        print('-----------F_org---------------->', F_org.shape)
+        print('-----------V_rec---------------->', V_rec.shape)
+        print('-----------V_org---------------->', V_org.shape)
+        signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
+        assert False
+        return V_org, V_rec
+    
     def training_step_syn(self, batch, batch_idx, optimizer_idx):
         print(batch['x'], batch['x'].shape, batch['x'].dtype)
         print(batch['y'], batch['y'].shape, batch['y'].dtype)
@@ -157,12 +174,13 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
-        logged = self.log_images(batch, ignore=False)
-        assert False
+        # logged = self.log_images(batch, ignore=False)
+        # assert False
         # print('training_step')
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
-        vasl = None # self.get_input(batch, 'vasl')
+        Vorg, Vrec = self.get_V(x, xrec)
+        # vasl = None # self.get_input(batch, 'vasl')
         # vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:
             # autoencode
@@ -190,8 +208,8 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
-        logged = self.log_images(batch)
-        return
+        # logged = self.log_images(batch)
+        # return
         # T = A.Compose([
         #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
         #     ToTensorV2()
@@ -256,10 +274,11 @@ class VQModel(pl.LightningModule):
         
         
         
-        assert False
+        # assert False
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
-        vasl = None # self.get_input(batch, 'vasl')
+        Vorg, Vrec = self.get_V(x, xrec)
+        # vasl = None # self.get_input(batch, 'vasl')
         # vasl = self.get_input(batch, 'vasl')
         aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="val"
             # , cond=vasl
@@ -322,8 +341,8 @@ class VQModel(pl.LightningModule):
         signal_save(torch.cat([
             (x + 1 ) * 127.5,
             self.vqgan_fn_phi_denormalize(xrec)
-        ], dim=0), '/content/______D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        assert False
+        ], dim=0), '/content/rec.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # assert False
         return log
 
     def to_rgb(self, x):
