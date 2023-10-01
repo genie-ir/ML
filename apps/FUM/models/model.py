@@ -300,8 +300,10 @@ class FUM_DR(FUM):
         return super().start(dr_vs_synthesis_flag=False)
     
     def validation_step(self, batch, batch_idx, split='val'):
+        self.generator.dr_classifire.train()
         self.generator.dr_classifire.requires_grad_(True)
         super().training_step(batch, batch_idx, 'train')
+        self.generator.dr_classifire.train(False)
         self.generator.dr_classifire.requires_grad_(False)
         return super().validation_step(batch, batch_idx, split)
 
