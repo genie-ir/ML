@@ -196,16 +196,14 @@ class VQModel(pl.LightningModule):
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train"
                 # , cond=vasl
             )
+            VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+            log_dict_ae['train/VLOSS'] = VLOSS.detach()
             # self.log("train/aeloss", aeloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
             # self.log_dict(log_dict_ae, prog_bar=True, logger=True, on_step=True, on_epoch=True)
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             
-            print('aeloss', aeloss.shape, aeloss)
-            VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
-            print('VLOSS', VLOSS.shape, VLOSS)
-            return VLOSS
-            return aeloss
+            return VLOSS + aeloss
         if optimizer_idx == 1:
             # discriminator
             discloss, log_dict_disc = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train"
