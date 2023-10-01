@@ -308,8 +308,8 @@ class FUM_DR(FUM):
     #     return super().validation_step(batch, batch_idx, split)
 
     def on_train_epoch_end(self):
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True)
         assert False, 'END-TRAINING'
 
     def generator_step(self, batch, **kwargs):
