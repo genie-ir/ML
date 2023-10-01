@@ -22,6 +22,7 @@ import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
 
+from utils.pt.tricks.gradfns import dzq_dz_eq1
 class VQModel(pl.LightningModule):
     def __init__(self,
         ddconfig,
@@ -161,15 +162,15 @@ class VQModel(pl.LightningModule):
         V_rec = self.vseg(F_rec.cpu()).detach()
         F_org = ((Forg +1)*127.5).detach()
         V_org = self.vseg(F_org.cpu()).detach()
-        print('-----------F_rec---------------->', F_rec.shape)
-        print('-----------F_org---------------->', F_org.shape)
-        print('-----------V_rec---------------->', V_rec.shape)
-        print('-----------V_org---------------->', V_org.shape)
-        signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
-        signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
-        signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
-        signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
-        assert False
+        # print('-----------F_rec---------------->', F_rec.shape)
+        # print('-----------F_org---------------->', F_org.shape)
+        # print('-----------V_rec---------------->', V_rec.shape)
+        # print('-----------V_org---------------->', V_org.shape)
+        # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
+        # assert False
         return V_org, V_rec
     
     def training_step_syn(self, batch, batch_idx, optimizer_idx):
@@ -185,6 +186,7 @@ class VQModel(pl.LightningModule):
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
         Vorg, Vrec = self.get_V(x, xrec)
+        Vrec = dzq_dz_eq1(Vrec, xrec)
         # vasl = None # self.get_input(batch, 'vasl')
         # vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:

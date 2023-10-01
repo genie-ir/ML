@@ -79,9 +79,10 @@ class VQLPIPSWithDiscriminator(nn.Module):
 
     def forward(self, codebook_loss, inputs, reconstructions, optimizer_idx, global_step, last_layer=None, cond=None, split="train"):
         
-        assert False
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:
+            # print('JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ')
+            # assert False
             p_loss = self.perceptual_loss(inputs.contiguous(), reconstructions.contiguous())
             rec_loss = rec_loss + self.perceptual_weight * p_loss # what is p_loss shape? is scaller?
         else:
@@ -94,12 +95,14 @@ class VQLPIPSWithDiscriminator(nn.Module):
         # now the GAN part
         if optimizer_idx == 0:
             # generator update
+            cond = True
             if cond is None:
-                # assert not self.disc_conditional
                 logits_fake = self.discriminator(reconstructions.contiguous())
             else:
                 assert self.disc_conditional
+                cond = reconstructions
                 logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
+                print('--------------------------------->', logits_fake.shape)
             g_loss = -torch.mean(logits_fake)
 
             try:
