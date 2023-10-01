@@ -91,12 +91,12 @@ class FUM(plModuleBase):
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         
-        # if kwargs['split'] == 'train':
-        #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-        #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-        # else:
-        #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-        #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        if kwargs['split'] == 'train':
+            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        else:
+            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         return loss, dict(loss=loss.cpu().detach().item())
 
     
@@ -299,18 +299,18 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         return super().start(dr_vs_synthesis_flag=False)
     
-    def validation_step(self, batch, batch_idx, split='val'):
-        self.generator.dr_classifire.train()
-        torch.set_grad_enabled(True)
-        super().training_step(batch, batch_idx, 'train')
-        self.generator.dr_classifire.eval()
-        torch.set_grad_enabled(False)
-        return super().validation_step(batch, batch_idx, split)
+    # def validation_step(self, batch, batch_idx, split='val'):
+    #     self.generator.dr_classifire.train()
+    #     torch.set_grad_enabled(True)
+    #     super().training_step(batch, batch_idx, 'train')
+    #     self.generator.dr_classifire.eval()
+    #     torch.set_grad_enabled(False)
+    #     return super().validation_step(batch, batch_idx, split)
 
-    # def on_train_epoch_end(self):
-    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
-    #     assert False, 'END-TRAINING'
+    def on_train_epoch_end(self):
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
+        assert False, 'END-TRAINING'
 
     def generator_step(self, batch, **kwargs):
         return super().generator_step__drcalgo(batch, **kwargs)
