@@ -81,7 +81,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
         
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:
-            print('j'*100, self.perceptual_weight)
             p_loss = self.perceptual_loss(inputs.contiguous(), reconstructions.contiguous())
             rec_loss = rec_loss + self.perceptual_weight * p_loss # what is p_loss shape? is scaller?
         else:
@@ -94,7 +93,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
         # now the GAN part
         if optimizer_idx == 0:
             # generator update
-            cond = True
             if cond is None:
                 logits_fake = self.discriminator(reconstructions.contiguous())
             else:
