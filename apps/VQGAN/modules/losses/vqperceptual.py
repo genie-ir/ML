@@ -81,11 +81,13 @@ class VQLPIPSWithDiscriminator(nn.Module):
         
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:
-            # print('JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ')
-            # assert False
+            print('j'*100)
+            assert False
             p_loss = self.perceptual_loss(inputs.contiguous(), reconstructions.contiguous())
             rec_loss = rec_loss + self.perceptual_weight * p_loss # what is p_loss shape? is scaller?
         else:
+            print('O'*100)
+            assert False
             p_loss = torch.tensor([0.0])
 
         nll_loss = rec_loss

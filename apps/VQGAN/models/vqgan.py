@@ -187,6 +187,7 @@ class VQModel(pl.LightningModule):
         xrec, qloss = self(x)
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
+        print('ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         # vasl = None # self.get_input(batch, 'vasl')
         # vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:

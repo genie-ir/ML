@@ -22,7 +22,7 @@ model:
       target: apps.VQGAN.modules.losses.vqperceptual.VQLPIPSWithDiscriminator
       params:
         disc_conditional: True #False # True #False
-        disc_in_channels: 6 # 4 #3 #6 #3
+        disc_in_channels: 3 # 4 #3 #6 #3
         # disc_start: 250001
         disc_start: True
         disc_weight: 0.8 #2.0 #0.8
