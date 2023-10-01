@@ -99,7 +99,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 logits_fake = self.discriminator(reconstructions.contiguous())
             else:
                 assert self.disc_conditional
-                cond = reconstructions
                 logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
                 print('--------------------------------->', logits_fake.shape)
             g_loss = -torch.mean(logits_fake)
