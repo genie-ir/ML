@@ -78,10 +78,13 @@ def puml(src_fname: str, dst_fname: str, **kwargs):
     ))
 
 def cmatrix(y_true, y_pred, path, normalize=False):
-    conf_matrix = confusion_matrix(y_true=y_true, y_pred=y_pred, normalize='all')
-    # if normalize:
-    #     # conf_matrix = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis]
-    #     conf_matrix = conf_matrix / conf_matrix.astype('float').sum(axis=0)#[:, np.newaxis]
+    conf_matrix = confusion_matrix(y_true=y_true, y_pred=y_pred)
+    if normalize:
+        c = conf_matrix
+        normed_c = (c.T / c.astype(np.float).sum(axis=1)).T
+        conf_matrix = normed_c
+        # conf_matrix = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis]
+        # conf_matrix = conf_matrix / conf_matrix.astype('float').sum(axis=0)#[:, np.newaxis]
 
     fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
     plt.xlabel('Predictions', fontsize=18)
