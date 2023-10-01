@@ -189,7 +189,6 @@ class VQModel(pl.LightningModule):
         xrec, qloss = self(x)
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
-        print('ok!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         # vasl = None # self.get_input(batch, 'vasl')
         # vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:
@@ -202,10 +201,9 @@ class VQModel(pl.LightningModule):
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             
-            print(aeloss.shape, aeloss)
-
-            VLOSS = ((Vrec-Vorg)**2).mean()
-            print(VLOSS.shape, VLOSS)
+            print('aeloss', aeloss.shape, aeloss)
+            VLOSS = torch.abs(Vorg - Vrec) + 0.1 * self.perceptual_loss(Vorg, Vrec)
+            print('VLOSS', VLOSS.shape, VLOSS)
             return VLOSS
             return aeloss
         if optimizer_idx == 1:
