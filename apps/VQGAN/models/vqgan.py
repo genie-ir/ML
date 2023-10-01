@@ -182,7 +182,8 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
-        # logged = self.log_images(batch, ignore=False)
+        if batch_idx % 500 == 0:
+            self.log_images(batch, ignore=False)
         # assert False
         # print('training_step')
         x = self.get_input(batch, self.image_key)
