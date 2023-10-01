@@ -81,7 +81,7 @@ def cmatrix(y_true, y_pred, path, normalize=False):
     conf_matrix = confusion_matrix(y_true=y_true, y_pred=y_pred)
     if normalize:
         c = conf_matrix
-        normed_c = (c.T / c.astype(np.float).sum(axis=1)).T
+        normed_c = (c.T / c.astype('float').sum(axis=1)).T
         conf_matrix = normed_c
         # conf_matrix = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis]
         # conf_matrix = conf_matrix / conf_matrix.astype('float').sum(axis=0)#[:, np.newaxis]
