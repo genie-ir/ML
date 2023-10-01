@@ -4,6 +4,7 @@ from loguru import logger
 import torch.nn.functional as F
 from apps.VQGAN.modules.losses.lpips import LPIPS
 from apps.VQGAN.modules.discriminator.model import NLayerDiscriminator
+from libs.basicIO import signal_save
 
 
 class DummyLoss(nn.Module):
@@ -39,6 +40,12 @@ class VQLPIPSWithDiscriminator(nn.Module):
                  perceptual_weight=1.0, use_actnorm=False, disc_conditional=False,
                  disc_ndf=64, disc_loss="hinge"):
         super().__init__()
+        from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
+        self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
+        self.vseg.requires_grad_(False)
+        self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)#.transpose(0,1).transpose(1,2)
+
+
         assert disc_loss in ["hinge", "vanilla"]
         self.codebook_weight = codebook_weight
         self.pixel_weight = pixelloss_weight
@@ -72,6 +79,13 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return d_weight
 
     def forward(self, codebook_loss, inputs, reconstructions, optimizer_idx, global_step, last_layer=None, cond=None, split="train"):
+        R = self.vqgan_fn_phi_denormalize(reconstructions).detach()
+        V = self.vseg(R)
+        print('-----------R---------------->', R.shape)
+        print('-----------V---------------->', V.shape)
+        signal_save(R, f'/content/R.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(V, f'/content/V.png', stype='img', sparams={'chw2hwc': True})
+        assert False
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:
             p_loss = self.perceptual_loss(inputs.contiguous(), reconstructions.contiguous())
