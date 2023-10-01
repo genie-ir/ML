@@ -188,7 +188,7 @@ class VQModel(pl.LightningModule):
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
         Vorg, Vrec = self.get_V(x, xrec)
-        Vrec = dzq_dz_eq1(Vrec, xrec)
+        # Vrec = dzq_dz_eq1(Vrec, xrec)
         # vasl = None # self.get_input(batch, 'vasl')
         # vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:
