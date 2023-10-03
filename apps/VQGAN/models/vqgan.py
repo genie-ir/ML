@@ -216,12 +216,17 @@ class VQModel(pl.LightningModule):
             self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             return discloss
         
+    
+    
+    def on_validation_epoch_end(self, **k):
+        assert False
     def validation_step_syn(self, batch, batch_idx):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
-        # logged = self.log_images(batch)
+        logged = self.log_images(batch, fName=random_string())
+        return
         # return
         # T = A.Compose([
         #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
@@ -354,7 +359,7 @@ class VQModel(pl.LightningModule):
         signal_save(torch.cat([
             (x + 1 ) * 127.5,
             self.vqgan_fn_phi_denormalize(xrec)
-        ], dim=0), '/content/rec.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        ], dim=0), f'/content/{kwargs.get("fName", "rec")}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         # assert False
         return log
 
