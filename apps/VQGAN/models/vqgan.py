@@ -329,8 +329,8 @@ class VQModel(pl.LightningModule):
         return self.decoder.conv_out.weight
 
     def log_images(self, batch, **kwargs):
-        if kwargs.get('ignore', True):
-            return
+        # if kwargs.get('ignore', True):
+        #     return
         """this function is must be exist for ptCallback.ImageLoggerBase"""
         log = dict()
         x = self.get_input(batch, self.image_key)
