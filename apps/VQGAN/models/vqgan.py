@@ -182,6 +182,8 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
+        logged = self.log_images(batch, fName='badRec/' + random_string())
+        return
         if batch_idx % 500 == 0:
             self.log_images(batch, ignore=False)
         # assert False
@@ -218,14 +220,12 @@ class VQModel(pl.LightningModule):
         
     
     
-    def on_validation_epoch_end(self, **k):
-        assert False
     def validation_step_syn(self, batch, batch_idx):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
-        logged = self.log_images(batch, fName=random_string())
+        logged = self.log_images(batch, fName='badRec/' + random_string())
         return
         # return
         # T = A.Compose([
