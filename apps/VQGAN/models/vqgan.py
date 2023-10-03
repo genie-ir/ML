@@ -226,7 +226,6 @@ class VQModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
         logged = self.log_images(batch, fName='badRec/' + random_string())
-        assert False
         return
         # return
         # T = A.Compose([
@@ -362,7 +361,6 @@ class VQModel(pl.LightningModule):
             (x + 1 ) * 127.5,
             self.vqgan_fn_phi_denormalize(xrec)
         ], dim=0), pathimg, stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        assert False, pathimg
         return log
 
     def to_rgb(self, x):
