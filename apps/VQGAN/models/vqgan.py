@@ -356,11 +356,12 @@ class VQModel(pl.LightningModule):
             xrec = self.to_rgb(xrec)
         log["inputs"] = x
         log["reconstructions"] = xrec
+        pathimg = f'/content/{kwargs.get("fName", "rec")}.png'
         signal_save(torch.cat([
             (x + 1 ) * 127.5,
             self.vqgan_fn_phi_denormalize(xrec)
-        ], dim=0), f'/content/{kwargs.get("fName", "rec")}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        # assert False
+        ], dim=0), pathimg, stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        assert False, pathimg
         return log
 
     def to_rgb(self, x):
