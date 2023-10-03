@@ -226,6 +226,7 @@ class VQModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
         logged = self.log_images(batch, fName='badRec/' + random_string())
+        assert False
         return
         # return
         # T = A.Compose([
