@@ -224,13 +224,28 @@ class FUM(plModuleBase):
         return F
     
     def generator_step__synalgo(self, batch, **kwargs):
-        bidx = batch['bidx'] 
+        bidx = batch['bidx']
         cidx = batch['cidx']
         ln = batch[self.signal_key]
 
         # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
         (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # DELETE: this line is just for test and it must be delete after.
-        
+        # B = []
+        # for b in batch['x']:
+        #     bb = os.path.split(b)[1].replace('.npy', '.jpeg')
+        #     bbb = np.array(Image.open(os.path.join(self.vqgan_dataset, bb))).astype(np.uint8)
+        #     # bbb = (bbb/127.5 - 1.0).astype(np.float32)
+        #     # bbb = Transformer(image=bbb)['image']
+        #     bbb = Transformer(image=bbb)['image'].unsqueeze(0)
+        #     B.append(bbb)
+        #     print(bbb.shape)
+        # F = torch.cat(B, dim=0)
+        # V = self.vseg(F)
+        # signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V, f'/content/V.png', stype='img', sparams={'chw2hwc': True})
+        # print(V.shape)
+        # assert False
+
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
         cphi_denormalized = dzq_dz_eq1(cphi_denormalized, cphi)

@@ -182,8 +182,8 @@ class VQModel(pl.LightningModule):
         assert False
         return
     def training_step(self, batch, batch_idx, optimizer_idx):
-        logged = self.log_images(batch, fName='badRec/' + random_string())
-        return
+        # logged = self.log_images(batch, fName='badRec/' + random_string())
+        # return
         if batch_idx % 500 == 0:
             self.log_images(batch, ignore=False)
         # assert False
@@ -216,6 +216,8 @@ class VQModel(pl.LightningModule):
             # self.log_dict(log_dict_disc, prog_bar=True, logger=True, on_step=True, on_epoch=True)
             self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+            print('!!!!!!!!!!!!!', discloss, discloss.shape)
+            assert False
             return discloss
         
     
@@ -225,7 +227,7 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         # print('validation_step')
-        logged = self.log_images(batch, fName='badRec/' + random_string())
+        # logged = self.log_images(batch, fName='badRec/' + random_string())
         return
         # return
         # T = A.Compose([
