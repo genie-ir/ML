@@ -106,7 +106,7 @@ class FUM(plModuleBase):
         #     print('-'*60)
         #     print(self.generator.scodebook.embedding.weight)
         #     print('-'*60)
-        B = torch.tensor([2,3,4,5, 3612], device=self.device)
+        B = torch.tensor([2,3], device=self.device)
         # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
 
         # B = batch[self.signal_key]
