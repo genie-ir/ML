@@ -122,6 +122,7 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
+        self.gamma = .9
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 
 
@@ -266,6 +267,7 @@ class FUM(plModuleBase):
             Class=torch.tensor(float(cidx))
         )
         print(f'cidx={cidx}', lossdict)
+        print('dr_pred', dr_pred)
         print('----nidx------->', nidx)
         self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'final/concept.png')
         self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'final/phi_sprime.png')
