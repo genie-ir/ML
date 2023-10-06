@@ -237,7 +237,9 @@ class FUM(plModuleBase):
         cphi_denormalized = dzq_dz_eq1(cphi_denormalized, cphi)
         cphi_denormalized = (cphi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         output_DR, output_M, output_IQ = self.dr_classifire(cphi_denormalized)
+        print('1111111111111', output_DR.shape)
         dr_pred = self.generator.softmax(output_DR)
+        print('2222222222222', dr_pred.shape)
         drloss = self.lambda_drloss_scphi[cidx] * self.generator.ce(dr_pred, batch['y_edit'])
 
         nidx = self.generator.scodebook.fwd_getIndices(sn.unsqueeze(-1).unsqueeze(-1)).squeeze()
