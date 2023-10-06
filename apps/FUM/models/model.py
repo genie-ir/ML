@@ -102,23 +102,23 @@ class FUM(plModuleBase):
     
     # NOTE: Synthesis Algorithm.
     def training_step__synalgo(self, batch, batch_idx, split='train'):
-        if batch_idx == 0:
-            print('-'*60)
-            print(self.generator.scodebook.embedding.weight)
-            print('-'*60)
+        # if batch_idx == 0:
+        #     print('-'*60)
+        #     print(self.generator.scodebook.embedding.weight)
+        #     print('-'*60)
+        B = torch.tensor([2,3,4,5, 3612], device=self.device)
+        # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
 
         # B = batch[self.signal_key]
-        B = torch.tensor([2,3,4,5, 3612], device=self.device)
-        print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
         for cidx in range(self.nclasses):
             # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
             batch['bidx'] = batch_idx
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
             super().training_step(batch, batch_idx, split)
-        print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
-        if batch_idx == 2:
-            assert False, batch_idx
+        # print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
+        # if batch_idx == 2:
+        #     assert False, batch_idx
     
     
     def start(self, dr_vs_synthesis_flag=True):
@@ -229,8 +229,8 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
 
-        # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
-        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # DELETE: this line is just for test and it must be delete after.
+        (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
+        # (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # DELETE: this line is just for test and it must be delete after.
         
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
