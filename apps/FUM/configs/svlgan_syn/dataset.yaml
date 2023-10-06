@@ -115,7 +115,7 @@
 
 target: utils.pl.tools.dataset.DataModuleFromConfig
 params:
-  batch_size: 5
+  batch_size: 4
   num_workers: 2
   train:
     target: apps.FUM.data.eyepacs.eyepacsTrain
