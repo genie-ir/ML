@@ -236,6 +236,7 @@ class FUM(plModuleBase):
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
         cphi_denormalized = dzq_dz_eq1(cphi_denormalized, cphi)
         cphi_denormalized = (cphi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        print('0000000000000', cphi_denormalized.shape)
         output_DR, output_M, output_IQ = self.dr_classifire(cphi_denormalized)
         print('1111111111111', output_DR.shape)
         dr_pred = self.generator.softmax(output_DR)
