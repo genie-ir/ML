@@ -164,7 +164,7 @@ class FUM(plModuleBase):
         # sn = self.vqgan.phi2lat(phi).flatten(1).float().detach()
         # return phi, sn
 
-        cross = cross[0].unsqueeze(0)
+        # cross = cross[0].unsqueeze(0) #TODO: just for test you can use 1 sample per batch.
 
         # PHI = []
         # PHI_L = []
