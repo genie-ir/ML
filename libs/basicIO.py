@@ -79,6 +79,7 @@ def puml(src_fname: str, dst_fname: str, **kwargs):
 
 def cmatrix(y_true, y_pred, path, normalize=False):
     conf_matrix = confusion_matrix(y_true=y_true, y_pred=y_pred)
+    print(conf_matrix)
     if normalize:
         c = conf_matrix
         normed_c = (c.T / c.astype('float').sum(axis=1)).T
