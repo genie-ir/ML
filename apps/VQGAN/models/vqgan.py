@@ -129,6 +129,7 @@ class VQModel(pl.LightningModule):
         return self.quantize.fwd_bpi(x)
     def qua2phi(self, x):
         return self.decode(x)
+
     def save_phi(self, _dec, pathdir=None, fname=None, sreturn=False, afn=None, nrow=0):
         fname = fname if fname else f'{random_string()}.png'
         pathdir = os.getenv('GENIE_ML_CACHEDIR') if pathdir is None else pathdir
