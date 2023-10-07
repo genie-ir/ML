@@ -101,16 +101,8 @@ class FUM(plModuleBase):
 
     def getbatch(self, batch):
         return super().getbatch(batch, skey='Xidx')
-    
-    
-    
-    
-    
-    
-    
-    
     # NOTE: Synthesis Algorithm.
-    def __training_step__synalgo(self, batch, batch_idx, split='train'):
+    def training_step__synalgo(self, batch, batch_idx, split='train'):
         # if batch_idx == 0:
         #     print('-'*60)
         #     print(self.generator.scodebook.embedding.weight)
@@ -157,12 +149,11 @@ class FUM(plModuleBase):
             self.qshape = (self.qch, self.qwh, self.qwh)
             self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
             self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
-            # self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
-            # self.generator.mac = nn.Sequential(*[
-            #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
-            # ])
-            self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
-            self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
+            self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
+            # self.generator.ccodebook = VectorQuantizer(ncluster=(self.ncrosses * self.ncluster), dim=self.latent_dim, zwh=1)
+            self.generator.mac = nn.Sequential(*[
+                MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
+            ])
             self.dr_classifire.requires_grad_(False)
         else:
             self.generator.dr_classifire = self.dr_classifire
@@ -234,7 +225,7 @@ class FUM(plModuleBase):
         # signal_save(F, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
         return F
     
-    def __generator_step__synalgo(self, batch, **kwargs):
+    def generator_step__synalgo(self, batch, **kwargs):
         bidx = batch['bidx'] 
         cidx = batch['cidx']
         batch['y_edit'] = torch.tensor([cidx, cidx], device=self.device) # NOTE: batch size is 2 :)
@@ -290,14 +281,7 @@ class FUM(plModuleBase):
             self.vqgan.save_phi(cphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/cphi.png')
         return loss, lossdict
 
-    def generator_step__synalgo(self, batch, **kwargs):
-        print(batch['X'].shape)
-        signal_save(batch['X'], f'/content/F.png', stype='img', sparams={'chw2hwc': True})
-        assert False
-        # bidx = batch['bidx'] 
-        # cidx = batch['cidx']
-        # batch['y_edit'] = torch.tensor([cidx, cidx], device=self.device) # NOTE: batch size is 2 :)
-        # ln = batch[self.signal_key]
+
 
 class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
@@ -323,8 +307,8 @@ class FUM_Syn(FUM):
     def validation_step(self, batch, batch_idx, split='val'):
         return
 
-    # def training_step(self, batch, batch_idx, split='train'):
-    #     return super().training_step__synalgo(batch, batch_idx, split='train')
+    def training_step(self, batch, batch_idx, split='train'):
+        return super().training_step__synalgo(batch, batch_idx, split='train')
 
     def generator_step(self, batch, **kwargs):
         return super().generator_step__synalgo(batch, **kwargs)
