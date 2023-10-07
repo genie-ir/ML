@@ -300,7 +300,7 @@ class FUM(plModuleBase):
         print('L', latent.shape)
         print('Q', quant.shape)
         print('xrec', xrec.shape)
-        signal_save(batch['X']*127.5 +1, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        signal_save((batch['X'] +1)*127.5, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
         self.vqgan.save_phi(xrec, pathdir=self.pathdir, fname=f'/content/R.png')
         assert False
         # bidx = batch['bidx'] 
