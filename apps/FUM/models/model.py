@@ -292,8 +292,16 @@ class FUM(plModuleBase):
         return loss, lossdict
 
     def generator_step__synalgo(self, batch, **kwargs):
-        print(batch['X'].shape)
-        signal_save(batch['X'], f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        batch['X'] = (batch['X']/127.5 - 1.0).astype(np.float32)
+        latent = self.vqgan.phi2lat(batch['X'])
+        quant = self.vqgan.lat2qua(latent)
+        xrec = self.vqgan.qua2phi(quant)
+        print(batch['X'].shape, batch['X'].min(), batch['X'].max())
+        print('L', latent.shape)
+        print('Q', quant.shape)
+        print('xrec', xrec.shape)
+        signal_save(batch['X']*127.5 +1, f'/content/F.png', stype='img', sparams={'chw2hwc': True})
+        self.vqgan.save_phi(xrec, pathdir=self.pathdir, fname=f'/content/R.png')
         assert False
         # bidx = batch['bidx'] 
         # cidx = batch['cidx']
