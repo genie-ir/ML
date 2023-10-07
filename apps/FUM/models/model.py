@@ -91,12 +91,12 @@ class FUM(plModuleBase):
         dr_pred = self.generator.softmax(output)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         
-        # if kwargs['split'] == 'train':
-        #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-        #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-        # else:
-        #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-        #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        if kwargs['split'] == 'train':
+            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        else:
+            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         return loss, dict(loss=loss.cpu().detach().item())
 
     def getbatch(self, batch):
@@ -320,10 +320,10 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    # def on_train_epoch_end(self):
-    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True)
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True)
-    #     assert False, 'END-TRAINING'
+    def on_train_epoch_end(self):
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True)
+        assert False, 'END-TRAINING'
 
     def generator_step(self, batch, **kwargs):
         return super().generator_step__drcalgo(batch, **kwargs)
