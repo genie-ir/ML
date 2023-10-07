@@ -228,7 +228,7 @@ class FUM(plModuleBase):
     def generator_step__synalgo(self, batch, **kwargs):
         bidx = batch['bidx'] 
         cidx = batch['cidx']
-        batch['y_edit'] = cidx
+        batch['y_edit'] = torch.tensor(cidx, device=self.device)
         ln = batch[self.signal_key]
 
         (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
