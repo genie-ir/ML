@@ -85,7 +85,14 @@ class FUM(plModuleBase):
         # phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         # phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
         # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
-        phi_denormalized = self.get_eyepacs_data_batch(batch)
+        
+        
+        print(batch.keys())
+        assert False
+        
+        
+        # phi_denormalized = self.get_eyepacs_data_batch(batch)
+        phi_denormalized = batch['X0']
         phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
