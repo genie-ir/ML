@@ -7,7 +7,7 @@ lambda_loss_latent: 0.01
 lambda_drloss_scphi: 0.5
 nclasses: 3
 ncrosses: 30
-ncluster: 4000
+ncluster: 500
 latent_dim: 256
 # latent_range: 451
 

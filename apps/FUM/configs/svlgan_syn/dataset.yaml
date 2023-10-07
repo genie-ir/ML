@@ -6,12 +6,12 @@ params:
     params:
       config:
         key: Xidx
-        __len__: 4000
+        __len__: 500
   validation:
     params:
       config:
         key: Xidx
-        __len__: 4000
+        __len__: 500
 
 
 
