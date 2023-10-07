@@ -99,7 +99,8 @@ class FUM(plModuleBase):
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         return loss, dict(loss=loss.cpu().detach().item())
 
-    
+    def getbatch(self, batch):
+        return super().getbatch(batch, skey='Xidx')
     # NOTE: Synthesis Algorithm.
     def training_step__synalgo(self, batch, batch_idx, split='train'):
         # if batch_idx == 0:

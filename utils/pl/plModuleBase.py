@@ -294,10 +294,10 @@ class plModuleBase(pl.LightningModule):
             return getattr(self, pipline_name).forward(**batch)
         return predefined_net_step_slave
     
-    def getbatch(self, batch):
+    def getbatch(self, batch, skey='x'):
         """It can be overwrite in child class"""
         # batch['batch_size'] = batch[self.signal_key].shape[0]
-        batch['batch_size'] = len(batch['x'])
+        batch['batch_size'] = len(batch[skey])
         batch['device'] = self.device
         batch['Self'] = self
         return batch
