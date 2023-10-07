@@ -85,7 +85,8 @@ def cmatrix(y_true, y_pred, path, normalize=False):
         normed_c = (c.T / c.astype('float').sum(axis=1)).T
         conf_matrix = normed_c
 
-    fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens, show_absolute=False, show_normed=True)
+    # fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens, show_absolute=False, show_normed=True)
+    fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
     plt.xlabel('Predictions', fontsize=18)
     plt.ylabel('Actuals', fontsize=18)
     plt.title('Confusion Matrix', fontsize=18)
