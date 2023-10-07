@@ -100,7 +100,8 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
 
     def getbatch(self, batch):
-        return super().getbatch(batch, skey='Xidx')
+        # return super().getbatch(batch, skey='Xidx')
+        return super().getbatch(batch, skey='X')
     
     
     
