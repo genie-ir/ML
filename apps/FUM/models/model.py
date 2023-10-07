@@ -258,7 +258,8 @@ class FUM(plModuleBase):
         # loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         # loss_cphi = self.lambda_loss_phi * self.LeakyReLU(dloss_cphi - self.gamma)
         
-        loss = loss_phi + loss_cphi + convergenceloss + divergenceloss + drloss 
+        # loss = loss_phi + loss_cphi + convergenceloss + divergenceloss + drloss 
+        loss = loss_cphi + convergenceloss + divergenceloss + drloss 
         
         lossdict = self.generatorLoss.lossdict(
             loss=loss,
