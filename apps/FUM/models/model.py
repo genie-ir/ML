@@ -229,8 +229,8 @@ class FUM(plModuleBase):
         cidx = batch['cidx']
         ln = batch[self.signal_key]
 
-        (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
-        # (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # DELETE: this line is just for test and it must be delete after.
+        # (phi, q_phi), sn, concept = self.__c2phi(ln, phiName='random') # NOTE `sn` and `concept` doesnt have derevetive.
+        (phi, q_phi), sn, concept = self.__c2phi(batch['X0'].flatten(1).float(), phiName='orginal') # DELETE: this line is just for test and it must be delete after.
         
         cphi = self.vqgan.qua2phi(self.generator.mac[cidx](q_phi))
         cphi_denormalized = self.vqgan_fn_phi_denormalize(cphi).detach()
