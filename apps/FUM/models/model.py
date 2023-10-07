@@ -329,8 +329,8 @@ class FUM_DR(FUM):
         self.t_ygrnt = self.t_ygrnt + [1,2]
         self.v_ypred = self.v_ypred + [1,2]
         self.t_ypred = self.t_ypred + [1,2]
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True)
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
         assert False, 'END-TRAINING'
 
     def generator_step(self, batch, **kwargs):
