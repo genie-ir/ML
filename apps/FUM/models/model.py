@@ -122,7 +122,7 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
-        self.gamma = .9
+        self.gamma = - 0.1
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 
 
