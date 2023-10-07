@@ -87,12 +87,8 @@ class FUM(plModuleBase):
         # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
         
         
-        print(batch.keys())
-        assert False
-        
-        
         # phi_denormalized = self.get_eyepacs_data_batch(batch)
-        phi_denormalized = batch['X0']
+        phi_denormalized = batch['X']
         phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
         dr_pred = self.generator.softmax(output)
