@@ -318,7 +318,7 @@ class plModuleBase(pl.LightningModule):
                 continue
             
             cnet = self.optconfig['map'][optimizer_idx] # current network
-            loss, _ld = getattr(self, '{}_step'.format(cnet))(batch, split='train')
+            loss, _ld = getattr(self, '{}_step'.format(cnet))(batch, split='train', batch_idx=batch_idx)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig.get(cnet, dict()).get('metrics', ['loss']))
             log_dict = {**log_dict, **ld}
             self.manual_backward(loss)
@@ -337,7 +337,7 @@ class plModuleBase(pl.LightningModule):
 
         log_dict = {**self.empty_log_dict[split]}
         for cnet in self.netconfig:
-            loss, _ld = getattr(self, '{}_step'.format(cnet))(batch, split='val')
+            loss, _ld = getattr(self, '{}_step'.format(cnet))(batch, split='val', batch_idx=batch_idx)
             ld = dict(('{}/{}_{}'.format(split, cnet, cnet_metric), _ld[cnet_metric]) for cnet_metric in self.netconfig[cnet]['metrics'])
             log_dict = {**log_dict, **ld}
 

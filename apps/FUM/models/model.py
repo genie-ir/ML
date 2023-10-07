@@ -85,22 +85,48 @@ class FUM(plModuleBase):
         # phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
         # phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
         # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
-        
-        
         # phi_denormalized = self.get_eyepacs_data_batch(batch)
-        phi_denormalized = batch['X']
-        phi_denormalized = (phi_denormalized - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        output, output_M, output_IQ = self.generator.dr_classifire(phi_denormalized)
-        dr_pred = self.generator.softmax(output)
-        loss = self.generator.ce(dr_pred, batch['y_edit'])
         
-        if kwargs['split'] == 'train':
-            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-        else:
-            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-        return loss, dict(loss=loss.cpu().detach().item())
+        
+        
+        x = batch['X']
+        batchsize = x.shape[0]
+        x = (x / 127.5) -1
+        vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
+        vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
+        
+        if kwargs['batch_idx'] % 400 == 0:
+            signal_save(torch.cat([
+                (x+1) * 127.5,
+                self.vqgan_fn_phi_denormalize(xrec1).detach(),
+                self.vqgan_fn_phi_denormalize(xrec2).detach()
+            ], dim=0), f'/content/a.png', stype='img', sparams={'chw2hwc': True})
+
+        x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
+        x1 = dzq_dz_eq1(x1, xrec1)
+        x1 = (x1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        output1, output_M1, output_IQ1 = self.dr_classifire(x1)
+        dr_pred1 = self.generator.softmax(output1)
+        drloss1 = self.generator.ce(dr_pred1, torch.ones((batchsize,), device=self.device).long())
+
+        x2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
+        x2 = dzq_dz_eq1(x2, xrec2)
+        x2 = (x2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        output2, output_M2, output_IQ2 = self.dr_classifire(x2)
+        dr_pred2 = self.generator.softmax(output2)
+        drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
+        
+
+        print(vaeloss1.shape, vaeloss2.shape, drloss1.shape, drloss2.shape)
+        assert False
+
+        # if kwargs['split'] == 'train':
+        #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # else:
+        #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # return drloss, dict(drloss=drloss.cpu().detach().item())
 
     def getbatch(self, batch):
         # return super().getbatch(batch, skey='Xidx')
@@ -155,7 +181,14 @@ class FUM(plModuleBase):
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
+        self.dr_classifire.requires_grad_(False) # delete
         
+        self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
+        self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
+        self.generator.vqgan = self.vqgan
+        self.generator.vqgan.requires_grad_(True)
+
+
         if dr_vs_synthesis_flag:
             self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
             self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
@@ -166,11 +199,12 @@ class FUM(plModuleBase):
             # self.generator.mac = nn.Sequential(*[
             #     MAC(units=2, shape=self.qshape) for c in range(self.nclasses)
             # ])
-            self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
-            self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
+            # self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
+            # self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
             self.dr_classifire.requires_grad_(False)
         else:
-            self.generator.dr_classifire = self.dr_classifire
+            pass
+            # self.generator.dr_classifire = self.dr_classifire
 
     def __c2phi(self, cross, tag='', phi_concept=None, phiName='fundus'):
         # list_of_distance_to_mode = []
@@ -324,14 +358,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    def on_train_epoch_end(self):
-        self.v_ygrnt = self.v_ygrnt + [1,2]
-        self.t_ygrnt = self.t_ygrnt + [1,2]
-        self.v_ypred = self.v_ypred + [1,2]
-        self.t_ypred = self.t_ypred + [1,2]
-        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
-        assert False, 'END-TRAINING'
+    # def on_train_epoch_end(self):
+    #     self.v_ygrnt = self.v_ygrnt + [1,2]
+    #     self.t_ygrnt = self.t_ygrnt + [1,2]
+    #     self.v_ypred = self.v_ypred + [1,2]
+    #     self.t_ypred = self.t_ypred + [1,2]
+    #     # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
+    #     assert False, 'END-TRAINING'
 
     def generator_step(self, batch, **kwargs):
         return super().generator_step__drcalgo(batch, **kwargs)
