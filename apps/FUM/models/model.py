@@ -249,9 +249,12 @@ class FUM(plModuleBase):
         convergenceloss = self.lambda_loss_latent * self.generatorLoss.lossfn_p1log(ln, sn.detach())
 
         dloss_phi = -torch.mean(self.vqgan.loss.discriminator(phi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
-        loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
         dloss_cphi = -torch.mean(self.vqgan.loss.discriminator(cphi)) # NOTE DLOSS.shape=(B,1,30,30) float32.
-        loss_cphi = self.lambda_loss_phi * self.LeakyReLU(dloss_cphi - self.gamma)
+        
+        loss_phi = dloss_phi
+        loss_cphi = dloss_cphi
+        # loss_phi = self.lambda_loss_phi * self.LeakyReLU(dloss_phi - self.gamma)
+        # loss_cphi = self.lambda_loss_phi * self.LeakyReLU(dloss_cphi - self.gamma)
         
         loss = loss_phi + loss_cphi + convergenceloss + divergenceloss + drloss 
         
