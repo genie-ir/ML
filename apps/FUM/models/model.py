@@ -101,7 +101,8 @@ class FUM(plModuleBase):
 
     def getbatch(self, batch):
         # return super().getbatch(batch, skey='Xidx')
-        return super().getbatch(batch, skey='X')
+        # return super().getbatch(batch, skey='X')
+        return super().getbatch(batch, skey='x')
     
     
     
