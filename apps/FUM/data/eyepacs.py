@@ -30,6 +30,7 @@ class D(D_Base):
 
 
 dr_transformer = A.Compose([
+    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
     ToTensorV2()
 ])
 class D_DR(D_Base):
