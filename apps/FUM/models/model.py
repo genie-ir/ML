@@ -110,8 +110,6 @@ class FUM(plModuleBase):
         # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
 
         B = batch['Xidx']
-        print(B)
-        assert False
         for cidx in range(self.nclasses):
             # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
