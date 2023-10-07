@@ -106,10 +106,12 @@ class FUM(plModuleBase):
         #     print('-'*60)
         #     print(self.generator.scodebook.embedding.weight)
         #     print('-'*60)
-        B = torch.tensor([2,3], device=self.device)
+        # B = torch.tensor([2,3], device=self.device)
         # print(f'iter{batch_idx} | before', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
 
-        # B = batch[self.signal_key]
+        B = batch['Xidx']
+        print(B)
+        assert False
         for cidx in range(self.nclasses):
             # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
@@ -269,13 +271,13 @@ class FUM(plModuleBase):
             convergenceloss=convergenceloss,
             Class=torch.tensor(float(cidx))
         )
-        print(f'cidx={cidx}', lossdict)
-        self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'final/concept.png')
-        self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'final/phi_sprime.png')
-        self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'final/phi_szegond.png')
-        self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/phi.png')
-        self.vqgan.save_phi(cphi, pathdir=self.pathdir, fname=f'final/cphi.png')
-        assert False
+        if bidx % 500 == 0:
+            print(f'cidx={cidx} | bidx={bidx}', lossdict)
+            self.vqgan.save_phi(concept, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/concept.png')
+            self.vqgan.save_phi(phi_sprime, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi_sprime.png')
+            self.vqgan.save_phi(phi_szegond, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi_szegond.png')
+            self.vqgan.save_phi(phi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/phi.png')
+            self.vqgan.save_phi(cphi, pathdir=self.pathdir, fname=f'final/{bidx}-{cidx}/cphi.png')
         return loss, lossdict
 
 

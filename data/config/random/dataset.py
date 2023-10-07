@@ -4,7 +4,7 @@ from utils.pt.datasets.D import D_Base
 class D(D_Base):
     def start(self):
         self.shape = list(self.config.get('shape', []))
-        self.length = int(self.config.get('length', 1e3))
+        self.length = int(self.config.get('__len__', 1e3))
         self.key = str(self.config.get('key', 'indices'))
         self.getitemfn = str(self.config.get('getitemfn', 'identity'))
         self.set_length(self.length)
