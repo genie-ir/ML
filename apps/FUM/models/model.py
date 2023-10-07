@@ -293,7 +293,7 @@ class FUM(plModuleBase):
 
     def generator_step__synalgo(self, batch, **kwargs):
         batch['X'] = (batch['X']/127.5 - 1.0)
-        latent = self.vqgan.phi2lat(batch['X'])
+        latent = self.vqgan.phi2lat(batch['X']).flatten(1).float()
         quant = self.vqgan.lat2qua(latent)
         xrec = self.vqgan.qua2phi(quant)
         print(batch['X'].shape, batch['X'].min(), batch['X'].max(), batch['X'].dtype)
