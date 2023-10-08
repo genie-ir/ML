@@ -227,16 +227,19 @@ class VQModel(pl.LightningModule):
 
 
 
+    def drcQ(self, x, w):
+        quant, qloss = self.encode(x)
+        quant = w(quant)
+        xrec = self.decode(quant)
+        return xrec, qloss
+    
     def training_step_for_drc(self, x, w):
         # if batch_idx % 400 == 0:
         #     signal_save(x, f'/content/.png', stype='img', sparams={'chw2hwc': True})
         # xrec, qloss = self(x)
-
-        quant, qloss = self.encode(x)
-        quant = w(quant)
-        xrec = self.decode(quant)
         # return dec, qloss
 
+        xrec, qloss = self.drcQ(x, w)
 
         Vorg, Vrec = self.get_V(x, xrec)
         # Vrec = dzq_dz_eq1(Vrec, xrec)
