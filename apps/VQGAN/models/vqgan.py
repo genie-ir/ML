@@ -185,7 +185,7 @@ class VQModel(pl.LightningModule):
         return V_org, V_rec
     def get_V2(self, Forg, Frec):
         # F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
-        V_rec = self.vseg(Frec.cpu()).detach()
+        V_rec = self.vseg(Frec.cpu().detach()).detach()
         V_org = self.vseg((((Forg +1)*127.5).detach()).cpu()).detach()
         
         
