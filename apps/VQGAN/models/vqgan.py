@@ -244,11 +244,11 @@ class VQModel(pl.LightningModule):
             # , cond=vasl
         )
         VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
-        log_dict_ae['train/VLOSS'] = VLOSS.detach()
+        # log_dict_ae['train/VLOSS'] = VLOSS.detach()
         # self.log("train/aeloss", aeloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
         # self.log_dict(log_dict_ae, prog_bar=True, logger=True, on_step=True, on_epoch=True)
-        self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-        self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+        # self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+        # self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             
         return VLOSS + aeloss, xrec
         
