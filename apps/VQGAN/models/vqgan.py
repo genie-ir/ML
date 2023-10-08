@@ -253,8 +253,8 @@ class VQModel(pl.LightningModule):
 
     def drcQ(self, x, w):
         quant, qloss = self.encode(x)
-        quant_c = w(quant)
-        xrec = self.decode(quant + quant_c)
+        # quant_c = w(quant)
+        xrec = self.decode(quant)
         return xrec, qloss
     
     def training_step_for_drc(self, x, w, clabel, S, CE, DRC, bi, cv):
