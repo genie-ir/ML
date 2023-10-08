@@ -65,12 +65,14 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.disc_conditional = disc_conditional
 
     def calculate_adaptive_weight(self, nll_loss, g_loss, last_layer=None):
+        # retain_graph = True
+        retain_graph = False
         if last_layer is not None:
-            nll_grads = torch.autograd.grad(nll_loss, last_layer, retain_graph=True)[0]
-            g_grads = torch.autograd.grad(g_loss, last_layer, retain_graph=True)[0]
+            nll_grads = torch.autograd.grad(nll_loss, last_layer, retain_graph=retain_graph)[0]
+            g_grads = torch.autograd.grad(g_loss, last_layer, retain_graph=retain_graph)[0]
         else:
-            nll_grads = torch.autograd.grad(nll_loss, self.last_layer[0], retain_graph=True)[0]
-            g_grads = torch.autograd.grad(g_loss, self.last_layer[0], retain_graph=True)[0]
+            nll_grads = torch.autograd.grad(nll_loss, self.last_layer[0], retain_graph=retain_graph)[0]
+            g_grads = torch.autograd.grad(g_loss, self.last_layer[0], retain_graph=retain_graph)[0]
 
         d_weight = torch.norm(nll_grads) / (torch.norm(g_grads) + 1e-4)
         d_weight = torch.clamp(d_weight, 0.0, 1e4).detach()
