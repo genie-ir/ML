@@ -258,33 +258,29 @@ class VQModel(pl.LightningModule):
         return xrec, qloss
     
     def training_step_for_drc(self, x, w, clabel, S, CE, DRC):
-        # if batch_idx % 400 == 0:
-        #     signal_save(x, f'/content/.png', stype='img', sparams={'chw2hwc': True})
-        # xrec, qloss = self(x)
-        # return dec, qloss
-        Vorg = self.vseg((((x.cpu() +1)*127.5).detach())).detach()
+        # Vorg = self.vseg((((x.cpu() +1)*127.5).detach())).detach()
         xrec, qloss = self.drcQ(x, w)
 
         xr = self.vqgan_fn_phi_denormalize(xrec).detach()
-        Vrec = self.vseg(xr.cpu()).detach()
-        Vrec = dzq_dz_eq1(Vrec, xrec)
+        # Vrec = self.vseg(xr.cpu()).detach()
+        # Vrec = dzq_dz_eq1(Vrec, xrec)
         xr = dzq_dz_eq1(xr, xrec)
         xr = (xr - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        drloss = CE(S(DRC(xr)[0].detach()), clabel)
+        drloss = CE(S(DRC(xr)[0]), clabel)
 
 
         # Vorg, Vrec = self.get_V2(x, xr)
         
         
         
-        # aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
+        aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
             # , cond=vasl
-        # )
+        )
         
-        aeloss = torch.mean(torch.abs(x - xrec) + 0.1 * self.loss.perceptual_loss(x, xrec))
-        VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec)).log() #+ 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
-        print(VLOSS, aeloss, drloss)
-        return VLOSS + aeloss + drloss
+        # aeloss = torch.mean(torch.abs(x - xrec) + 0.1 * self.loss.perceptual_loss(x, xrec))
+        # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec)).log() #+ 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+        # print(VLOSS, aeloss, drloss)
+        return aeloss + drloss
         
         
         # if optimizer_idx == 1:
