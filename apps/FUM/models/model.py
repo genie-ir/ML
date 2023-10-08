@@ -108,8 +108,15 @@ class FUM(plModuleBase):
         drloss2 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr2)[0]), (2 * torch.ones((batchsize,), device=self.device)).long())
         # aeloss2, log_dict_ae = self.vqgan.loss(qloss2, x, xrec2, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
 
+        if kwargs['batch_idx'] % 400 == 0:
+            signal_save(torch.cat([
+                (x+1) * 127.5,
+                xr1 * (self.dr_classifire_normalize_std * 255) + (self.dr_classifire_normalize_mean * 255),
+                xr2 * (self.dr_classifire_normalize_std * 255) + (self.dr_classifire_normalize_mean * 255),
+            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
+        
+        
         loss = drloss1 + drloss2
-        print(loss)
         return loss, dict(loss=loss.cpu().detach().item())
 
 
