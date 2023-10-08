@@ -183,6 +183,26 @@ class VQModel(pl.LightningModule):
         # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
         # assert False
         return V_org, V_rec
+    def get_V2(self, Forg, Frec):
+        # F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
+        V_rec = self.vseg(Frec.cpu()).detach()
+        V_org = self.vseg((((Forg +1)*127.5).detach()).cpu()).detach()
+        
+        
+        # V_org = torch.cat([V_org,V_org,V_org], dim=1)
+        # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
+        
+        
+        # print('-----------F_rec---------------->', F_rec.shape)
+        # print('-----------F_org---------------->', F_org.shape)
+        # print('-----------V_rec---------------->', V_rec.shape)
+        # print('-----------V_org---------------->', V_org.shape)
+        # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
+        # assert False
+        return V_org, V_rec
     
     def training_step_syn(self, batch, batch_idx, optimizer_idx):
         print(batch['x'], batch['x'].shape, batch['x'].dtype)
@@ -251,7 +271,7 @@ class VQModel(pl.LightningModule):
         drloss = CE(S(DRC(xr)[0]), clabel)
 
 
-        Vorg, Vrec = self.get_V(x, xrec)
+        Vorg, Vrec = self.get_V2(x, xr)
         Vrec = dzq_dz_eq1(Vrec, xrec)
         aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
             # , cond=vasl
