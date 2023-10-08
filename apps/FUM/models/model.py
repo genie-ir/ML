@@ -98,7 +98,7 @@ class FUM(plModuleBase):
         xr1 = dzq_dz_eq1(xr1, xrec1)
         xr1 = (xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         drloss1 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr1)[0]), torch.ones((batchsize,), device=self.device).long())
-        aeloss1, log_dict_ae = self.loss(qloss1, x, xrec1, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
+        aeloss1, log_dict_ae = self.vqgan.loss(qloss1, x, xrec1, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
 
         Q, qloss2 = self.vqgan.encode(x)
         xrec2 = self.vqgan.decode(Q + self.generator.mac_class2(Q))
@@ -106,7 +106,7 @@ class FUM(plModuleBase):
         xr2 = dzq_dz_eq1(xr2, xrec2)
         xr2 = (xr2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
         drloss2 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr2)[0]), (2 * torch.ones((batchsize,), device=self.device)).long())
-        aeloss2, log_dict_ae = self.loss(qloss2, x, xrec2, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
+        aeloss2, log_dict_ae = self.vqgan.loss(qloss2, x, xrec2, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
 
         return aeloss1 + drloss1 #+ aeloss2 + drloss2
 
