@@ -110,13 +110,15 @@ class FUM(plModuleBase):
             total_loss = self.generator.vqgan.training_step_for_drc(
                 x, self.generator.mac_class1,
                 torch.ones((batchsize,), device=self.device).long(),
-                self.generator.softmax, self.generator.ce, self.dr_classifire
+                self.generator.softmax, self.generator.ce, self.dr_classifire,
+                kwargs['batch_idx'], 1
             )
         else:
             total_loss = self.generator.vqgan.training_step_for_drc(
                 x, self.generator.mac_class2,
                 (2 * torch.ones((batchsize,), device=self.device)).long(),
-                self.generator.softmax, self.generator.ce, self.dr_classifire
+                self.generator.softmax, self.generator.ce, self.dr_classifire,
+                kwargs['batch_idx'], 2
             )
             
         return total_loss, dict(loss=total_loss.cpu().detach().item())
