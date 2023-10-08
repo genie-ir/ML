@@ -92,15 +92,15 @@ class FUM(plModuleBase):
         x = batch['X']
         batchsize = x.shape[0]
         x = (x / 127.5) -1
-        vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
-        vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
+        vaeloss1, xrec1 = self.vqgan.training_step_for_drc(x, self.generator.mac_class1)
+        vaeloss2, xrec2 = self.vqgan.training_step_for_drc(x, self.generator.mac_class2)
         
         if kwargs['batch_idx'] % 400 == 0:
             signal_save(torch.cat([
                 (x+1) * 127.5,
                 self.vqgan_fn_phi_denormalize(xrec1).detach(),
                 self.vqgan_fn_phi_denormalize(xrec2).detach()
-            ], dim=0), f'/content/a.png', stype='img', sparams={'chw2hwc': True})
+            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True})
 
         x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
         x1 = dzq_dz_eq1(x1, xrec1)
@@ -116,9 +116,9 @@ class FUM(plModuleBase):
         dr_pred2 = self.generator.softmax(output2)
         drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
         
-
-        print(vaeloss1.shape, vaeloss2.shape, drloss1.shape, drloss2.shape)
-        assert False
+        loss = vaeloss1 + vaeloss2 + drloss1 + drloss2
+        print(loss, vaeloss1, vaeloss2, drloss1, drloss2)
+        # assert False
 
         # if kwargs['split'] == 'train':
         #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
@@ -126,6 +126,9 @@ class FUM(plModuleBase):
         # else:
         #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        return loss, dict(
+            loss=loss.cpu().detach().item()
+        )
         # return drloss, dict(drloss=drloss.cpu().detach().item())
 
     def getbatch(self, batch):
@@ -185,8 +188,8 @@ class FUM(plModuleBase):
         
         self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
         self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
-        self.generator.vqgan = self.vqgan
-        self.generator.vqgan.requires_grad_(True)
+        # self.generator.vqgan = self.vqgan
+        # self.generator.vqgan.requires_grad_(True)
 
 
         if dr_vs_synthesis_flag:
