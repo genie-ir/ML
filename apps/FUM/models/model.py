@@ -87,6 +87,41 @@ class FUM(plModuleBase):
         # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
         # phi_denormalized = self.get_eyepacs_data_batch(batch)
         
+        x = batch['X']
+        batchsize = x.shape[0]
+        x = (x / 127.5) - 1
+        
+        
+        xrec1, qloss1 = self.vqgan.drcQ(x, self.generator.mac_class1)
+        xr1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
+        xr1 = dzq_dz_eq1(xr1, xrec1)
+        xr1 = (xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        drloss1 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr1)[0]), torch.ones((batchsize,), device=self.device).long())
+        aeloss1, log_dict_ae = self.loss(qloss1, x, xrec1, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train"
+            # , cond=vasl
+        )
+
+        xrec2, qloss2 = self.vqgan.drcQ(x, self.generator.mac_class2)
+        xr2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
+        xr2 = dzq_dz_eq1(xr2, xrec2)
+        xr2 = (xr2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        drloss2 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr2)[0]), (2 * torch.ones((batchsize,), device=self.device)).long())
+        aeloss2, log_dict_ae = self.loss(qloss2, x, xrec2, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train"
+            # , cond=vasl
+        )
+
+        return aeloss1 + aeloss2 + drloss1 + drloss2
+
+
+
+
+
+    def __2generator_step__drcalgo(self, batch, **kwargs):
+        # phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
+        # phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
+        # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
+        # phi_denormalized = self.get_eyepacs_data_batch(batch)
+        
         
         
         x = batch['X']
@@ -124,7 +159,7 @@ class FUM(plModuleBase):
         return total_loss, dict(loss=total_loss.cpu().detach().item())
             # x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
             # x1 = dzq_dz_eq1(x1, xrec1)
-            # x1 = (x1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+            # x1 = (x1 - (self .dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
             
             
             
@@ -218,10 +253,9 @@ class FUM(plModuleBase):
 
         # self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
         # self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
-        self.generator.vqgan = self.vqgan
-        del self.vqgan
-        # del self.generator.vqgan.loss.discriminator
-        self.generator.vqgan.requires_grad_(True)
+        # self.generator.vqgan = self.vqgan
+        # del self.vqgan
+        # self.generator.vqgan.requires_grad_(True)
 
         # if dr_vs_synthesis_flag:
         #     self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
