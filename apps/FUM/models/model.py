@@ -92,7 +92,8 @@ class FUM(plModuleBase):
         x = (x / 127.5) - 1
         
         
-        xrec1, qloss1 = self.vqgan.drcQ(x, self.generator.mac_class1)
+        Q, qloss1 = self.vqgan.encode(x)
+        xrec1 = self.decode(Q + self.generator.mac_class1(Q))
         xr1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
         xr1 = dzq_dz_eq1(xr1, xrec1)
         xr1 = (xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
@@ -101,7 +102,8 @@ class FUM(plModuleBase):
             # , cond=vasl
         )
 
-        xrec2, qloss2 = self.vqgan.drcQ(x, self.generator.mac_class2)
+        Q, qloss2 = self.vqgan.encode(x)
+        xrec2 = self.decode(Q + self.generator.mac_class2(Q))
         xr2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
         xr2 = dzq_dz_eq1(xr2, xrec2)
         xr2 = (xr2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
