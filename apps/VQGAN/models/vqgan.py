@@ -253,7 +253,7 @@ class VQModel(pl.LightningModule):
 
     def drcQ(self, x, w):
         quant, qloss = self.encode(x)
-        quant_c = 100*w(quant)
+        quant_c = w(quant)
         xrec = self.decode(quant + quant_c)
         return xrec, qloss
     
