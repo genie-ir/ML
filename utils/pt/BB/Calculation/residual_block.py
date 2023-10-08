@@ -13,10 +13,10 @@ class MAC(BB):
         if self.fwd == 'fConv2d':
             ch = int(self.kwargs.get('ch', 3))
             self.w = [
-                torch.nn.Conv2d(ch,    30*ch, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None),
-                torch.nn.Conv2d(30*ch, 20*ch, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None),
-                torch.nn.Conv2d(20*ch, 10*ch, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None),
-                torch.nn.Conv2d(10*ch, ch,    1, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None)
+                torch.nn.Conv2d(ch,    3*ch, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None),
+                torch.nn.Conv2d(3*ch, 2*ch, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None),
+                torch.nn.Conv2d(2*ch, 2*ch, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None),
+                torch.nn.Conv2d(2*ch, ch,    1, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros', device='cuda', dtype=None)
                 #   for unit in range(self.units)
             ]
         else:
