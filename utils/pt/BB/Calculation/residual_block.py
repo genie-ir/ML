@@ -22,6 +22,7 @@ class MAC(BB):
         x0 = x
         for i, p in enumerate(self.w):
             x = swish(x0 + (self.w[i](x)))
+            x0 = x
         return x
     
     def f1(self, x):
