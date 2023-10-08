@@ -92,8 +92,8 @@ class FUM(plModuleBase):
         x = batch['X']
         batchsize = x.shape[0]
         x = (x / 127.5) -1
-        vaeloss1, xrec1 = self.vqgan.training_step_for_drc(x, self.mac_class1)
-        vaeloss2, xrec2 = self.vqgan.training_step_for_drc(x, self.mac_class2)
+        vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.mac_class1)
+        vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.mac_class2)
         
         if kwargs['batch_idx'] % 400 == 0:
             signal_save(torch.cat([
@@ -186,7 +186,7 @@ class FUM(plModuleBase):
         
         self.mac_class1 = MAC(units=2, shape=self.qshape)
         self.mac_class2 = MAC(units=2, shape=self.qshape)
-        # self.generator.vqgan = self.vqgan
+        self.generator.vqgan = self.vqgan
         # self.generator.vqgan.requires_grad_(True)
 
 
