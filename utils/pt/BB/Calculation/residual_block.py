@@ -25,7 +25,6 @@ class MAC(BB):
         setattr(self, 'forward', getattr(self, self.fwd))
 
     def fConv2d(self, x):
-        x0 = self.w[i](x)
         for i, p in enumerate(self.w):
             x = swish(self.w[i](x))
         return x
