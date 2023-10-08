@@ -239,21 +239,12 @@ class VQModel(pl.LightningModule):
 
 
         Vorg, Vrec = self.get_V(x, xrec)
-        Vrec = dzq_dz_eq1(Vrec, xrec)
-        # vasl = None # self.get_input(batch, 'vasl')
-        # vasl = self.get_input(batch, 'vasl')
-        # if optimizer_idx == 0:
-        # autoencode
+        # Vrec = dzq_dz_eq1(Vrec, xrec)
         aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
             # , cond=vasl
         )
-        VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
-        # log_dict_ae['train/VLOSS'] = VLOSS.detach()
-        # self.log("train/aeloss", aeloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
-        # self.log_dict(log_dict_ae, prog_bar=True, logger=True, on_step=True, on_epoch=True)
-        # self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-        # self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-            
+        # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+        VLOSS = 0
         return VLOSS + aeloss, xrec
         
         
