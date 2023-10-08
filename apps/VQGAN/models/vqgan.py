@@ -251,13 +251,13 @@ class VQModel(pl.LightningModule):
         drloss = CE(S(DRC(xr)[0]), clabel)
 
 
-        # Vorg, Vrec = self.get_V(x, xrec)
-        # Vrec = dzq_dz_eq1(Vrec, xrec)
+        Vorg, Vrec = self.get_V(x, xrec)
+        Vrec = dzq_dz_eq1(Vrec, xrec)
         aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
             # , cond=vasl
         )
-        # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
-        VLOSS = 0
+        VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+        print(VLOSS, aeloss, drloss)
         return VLOSS + aeloss + drloss
         
         
