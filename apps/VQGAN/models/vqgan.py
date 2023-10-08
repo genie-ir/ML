@@ -266,7 +266,7 @@ class VQModel(pl.LightningModule):
             signal_save(torch.cat([
                 (x+1) * 127.5,
                 xr,
-            ], dim=0), f'/content/syn_0to{cv}.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
+            ], dim=0), f'/content/syn_0to{cv}.png', stype='img', sparams={'chw2hwc': True, 'nrow': xr.shape[0]})
 
         # Vrec = self.vseg(xr.cpu()).detach()
         # Vrec = dzq_dz_eq1(Vrec, xrec)
