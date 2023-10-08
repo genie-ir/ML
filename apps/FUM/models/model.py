@@ -100,7 +100,7 @@ class FUM(plModuleBase):
                 (x+1) * 127.5,
                 self.vqgan_fn_phi_denormalize(xrec1).detach(),
                 self.vqgan_fn_phi_denormalize(xrec2).detach()
-            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True})
+            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
 
         x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
         x1 = dzq_dz_eq1(x1, xrec1)
@@ -187,7 +187,7 @@ class FUM(plModuleBase):
         self.mac_class1 = MAC(units=2, shape=self.qshape)
         self.mac_class2 = MAC(units=2, shape=self.qshape)
         self.generator.vqgan = self.vqgan
-        # self.generator.vqgan.requires_grad_(True)
+        self.generator.vqgan.requires_grad_(True)
 
 
         if dr_vs_synthesis_flag:
