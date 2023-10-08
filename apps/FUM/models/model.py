@@ -92,8 +92,8 @@ class FUM(plModuleBase):
         x = batch['X']
         batchsize = x.shape[0]
         x = (x / 127.5) -1
-        vaeloss1, xrec1 = self.vqgan.training_step_for_drc(x, self.generator.mac_class1)
-        vaeloss2, xrec2 = self.vqgan.training_step_for_drc(x, self.generator.mac_class2)
+        vaeloss1, xrec1 = self.vqgan.training_step_for_drc(x, self.mac_class1)
+        vaeloss2, xrec2 = self.vqgan.training_step_for_drc(x, self.mac_class2)
         
         if kwargs['batch_idx'] % 400 == 0:
             signal_save(torch.cat([
@@ -117,8 +117,6 @@ class FUM(plModuleBase):
         drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
         
         loss = vaeloss1 + vaeloss2 + drloss1 + drloss2
-        print(loss, vaeloss1, vaeloss2, drloss1, drloss2)
-        # assert False
 
         # if kwargs['split'] == 'train':
         #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
@@ -186,8 +184,8 @@ class FUM(plModuleBase):
         self.dr_classifire = self.dr_classifire.to('cuda')
         self.dr_classifire.requires_grad_(False) # delete
         
-        self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
-        self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
+        self.mac_class1 = MAC(units=2, shape=self.qshape)
+        self.mac_class2 = MAC(units=2, shape=self.qshape)
         # self.generator.vqgan = self.vqgan
         # self.generator.vqgan.requires_grad_(True)
 
