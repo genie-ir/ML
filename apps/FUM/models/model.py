@@ -108,6 +108,7 @@ class FUM(plModuleBase):
         drloss2 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr2)[0]), (2 * torch.ones((batchsize,), device=self.device)).long())
         # aeloss2, log_dict_ae = self.vqgan.loss(qloss2, x, xrec2, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
 
+        print(drloss1 + drloss2)
         return drloss1 + drloss2
 
 
