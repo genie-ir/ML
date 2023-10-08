@@ -200,6 +200,7 @@ class FUM(plModuleBase):
         self.generator.vqgan = self.vqgan
         self.generator.vqgan.requires_grad_(True)
         del self.vqgan
+        del self.generator.loss.discriminator
 
         # if dr_vs_synthesis_flag:
         #     self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
