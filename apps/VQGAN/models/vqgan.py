@@ -279,7 +279,7 @@ class VQModel(pl.LightningModule):
         
         # aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
             # , cond=vasl
-        )
+        # )
         
         aeloss = torch.mean(torch.abs(x - xrec) + 0.1 * self.loss.perceptual_loss(x, xrec))
         VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
