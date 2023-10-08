@@ -199,7 +199,7 @@ class FUM(plModuleBase):
         # self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
         self.generator.vqgan = self.vqgan
         del self.vqgan
-        del self.generator.vqgan.loss.discriminator
+        # del self.generator.vqgan.loss.discriminator
         self.generator.vqgan.requires_grad_(True)
 
         # if dr_vs_synthesis_flag:
