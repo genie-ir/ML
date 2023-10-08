@@ -15,7 +15,7 @@ class MAC(BB):
         else:
             self.w = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
             # self.b = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
-            setattr(self, 'forward', getattr(self, self.fwd))
+        setattr(self, 'forward', getattr(self, self.fwd))
 
     def fConv2d(self, x):
         x0 = x
