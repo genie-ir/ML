@@ -417,7 +417,7 @@ class FUM(plModuleBase):
 class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
-        self.generator.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
+        self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
     
     # def validation_step(self, batch, batch_idx, split='val'):
     #     self.generator.dr_classifire.train()
