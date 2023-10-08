@@ -11,16 +11,26 @@ class MAC(BB):
         self.units = int(self.kwargs.get('units', 1))
         self.shape = list(self.kwargs.get('shape', []))
         self.w = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
-        self.b = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
+        # self.b = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
         setattr(self, 'forward', getattr(self, self.fwd))
 
     def f1(self, x):
         x0 = x
         for i, p in enumerate(self.w):
-            x = swish(x0 + (self.w[i] * x + self.b[i]))
+            x = swish(x0 + (self.w[i] * x))
         return x
     
     def f2(self, x):
         for i, p in enumerate(self.w):
-            x = swish(x + (self.w[i] * x + self.b[i]))
+            x = swish(x + (self.w[i] * x))
         return x
+    # def f1(self, x):
+    #     x0 = x
+    #     for i, p in enumerate(self.w):
+    #         x = swish(x0 + (self.w[i] * x + self.b[i]))
+    #     return x
+    
+    # def f2(self, x):
+    #     for i, p in enumerate(self.w):
+    #         x = swish(x + (self.w[i] * x + self.b[i]))
+    #     return x
