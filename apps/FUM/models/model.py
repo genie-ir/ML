@@ -111,7 +111,7 @@ class FUM(plModuleBase):
             x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
             x1 = dzq_dz_eq1(x1, xrec1)
             x1 = (x1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-            output1, output_M1, output_IQ1 = self.dr_classifire(x1)
+            output1 = self.dr_classifire(x1)[0]#.detach()
             dr_pred1 = self.generator.softmax(output1)
             drloss1 = self.generator.ce(dr_pred1, torch.ones((batchsize,), device=self.device).long())
             vaeloss = vaeloss1
@@ -121,7 +121,7 @@ class FUM(plModuleBase):
             x2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
             x2 = dzq_dz_eq1(x2, xrec2)
             x2 = (x2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-            output2, output_M2, output_IQ2 = self.dr_classifire(x2)
+            output2 = self.dr_classifire(x2)[0]#.detach()
             dr_pred2 = self.generator.softmax(output2)
             drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
             drloss = drloss2

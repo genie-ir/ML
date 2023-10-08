@@ -37,7 +37,7 @@ class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
         return {
             'X': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
-            'y_edit': kwargs['y'] # DELETE: any other case of DR it must be comment out.
+            # 'y_edit': kwargs['y'] # DELETE: any other case of DR it must be comment out.
         }
 
 class eyepacsTrain(eyepacsTrainBase): 
