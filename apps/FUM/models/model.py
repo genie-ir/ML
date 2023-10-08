@@ -176,7 +176,7 @@ class FUM(plModuleBase):
         self.t_ygrnt = []
         self.v_ypred = []
         self.v_ygrnt = []
-        
+        self.qshape = (self.qch, self.qwh, self.qwh)
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
@@ -192,7 +192,7 @@ class FUM(plModuleBase):
         if dr_vs_synthesis_flag:
             self.hp('lambda_loss_scphi', (list, tuple), len=self.nclasses)
             self.hp('lambda_drloss_scphi', (list, tuple), len=self.nclasses)
-            self.qshape = (self.qch, self.qwh, self.qwh)
+            
             self.phi_shape = (self.phi_ch, self.phi_wh, self.phi_wh)
             self.LeakyReLU = torch.nn.LeakyReLU(negative_slope=self.negative_slope, inplace=False)
             # self.generator.scodebook = VectorQuantizer(ncluster=self.ncluster, dim=self.latent_dim, zwh=1)
