@@ -11,7 +11,8 @@ class MAC(BB):
         self.units = int(self.kwargs.get('units', 1))
         self.shape = list(self.kwargs.get('shape', []))
         if self.fwd == 'fConv2d':
-            self.w = [torch.nn.Conv2d(3, 3, 3, stride=1, padding=1, dilation=1, groups=1, bias=True, padding_mode='zeros', device=None, dtype=None) for unit in range(self.units)]
+            ch = int(self.kwargs.get('ch', 3))
+            self.w = [torch.nn.Conv2d(ch, ch, 1, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros', device=None, dtype=None) for unit in range(self.units)]
         else:
             self.w = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
             # self.b = nn.ParameterList([self.nnParameter(shape=self.shape) for unit in range(self.units)])
