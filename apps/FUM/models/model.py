@@ -93,26 +93,31 @@ class FUM(plModuleBase):
         batchsize = x.shape[0]
         x = (x / 127.5) -1
         
-        vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
-        vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
+        
         
         if kwargs['batch_idx'] % 400 == 0:
+            V, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
+            V, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
             signal_save(torch.cat([
                 (x+1) * 127.5,
                 self.vqgan_fn_phi_denormalize(xrec1).detach(),
                 self.vqgan_fn_phi_denormalize(xrec2).detach()
             ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
+            return
 
 
         if kwargs['batch_idx'] % 2 == 0:
+            vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
             x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
             x1 = dzq_dz_eq1(x1, xrec1)
             x1 = (x1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
             output1, output_M1, output_IQ1 = self.dr_classifire(x1)
             dr_pred1 = self.generator.softmax(output1)
             drloss1 = self.generator.ce(dr_pred1, torch.ones((batchsize,), device=self.device).long())
+            vaeloss = vaeloss1
             drloss = drloss1
         else:
+            vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
             x2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
             x2 = dzq_dz_eq1(x2, xrec2)
             x2 = (x2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
@@ -120,8 +125,9 @@ class FUM(plModuleBase):
             dr_pred2 = self.generator.softmax(output2)
             drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
             drloss = drloss2
+            vaeloss = vaeloss2
         
-        loss = vaeloss1 + vaeloss2 + drloss #drloss1 + drloss2
+        loss = vaeloss + drloss
 
         # if kwargs['split'] == 'train':
         #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
