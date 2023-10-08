@@ -106,7 +106,7 @@ class FUM(plModuleBase):
         #     return
 
 
-        if kwargs['batch_idx'] % 2 == 0:
+        if True or kwargs['batch_idx'] % 2 == 0:
             vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
             x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
             x1 = dzq_dz_eq1(x1, xrec1)
@@ -116,16 +116,16 @@ class FUM(plModuleBase):
             drloss1 = self.generator.ce(dr_pred1, torch.ones((batchsize,), device=self.device).long())
             vaeloss = vaeloss1
             drloss = drloss1
-        else:
-            vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
-            x2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
-            x2 = dzq_dz_eq1(x2, xrec2)
-            x2 = (x2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-            output2 = self.dr_classifire(x2)[0]#.detach()
-            dr_pred2 = self.generator.softmax(output2)
-            drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
-            drloss = drloss2
-            vaeloss = vaeloss2
+        # else:
+        #     vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
+        #     x2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
+        #     x2 = dzq_dz_eq1(x2, xrec2)
+        #     x2 = (x2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        #     output2 = self.dr_classifire(x2)[0]#.detach()
+        #     dr_pred2 = self.generator.softmax(output2)
+        #     drloss2 = self.generator.ce(dr_pred2, (2 * torch.ones((batchsize,), device=self.device)).long())
+        #     drloss = drloss2
+        #     vaeloss = vaeloss2
         
         loss = vaeloss + drloss
 
