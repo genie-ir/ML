@@ -95,15 +95,15 @@ class FUM(plModuleBase):
         
         
         
-        if kwargs['batch_idx'] % 400 == 0:
-            V, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
-            V, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
-            signal_save(torch.cat([
-                (x+1) * 127.5,
-                self.vqgan_fn_phi_denormalize(xrec1).detach(),
-                self.vqgan_fn_phi_denormalize(xrec2).detach()
-            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
-            return
+        # if kwargs['batch_idx'] % 400 == 0:
+        #     V, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
+        #     V, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
+        #     signal_save(torch.cat([
+        #         (x+1) * 127.5,
+        #         self.vqgan_fn_phi_denormalize(xrec1).detach(),
+        #         self.vqgan_fn_phi_denormalize(xrec2).detach()
+        #     ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
+        #     return
 
 
         if kwargs['batch_idx'] % 2 == 0:
@@ -193,8 +193,8 @@ class FUM(plModuleBase):
         self.dr_classifire = self.dr_classifire.to('cuda')
         self.dr_classifire.requires_grad_(False) # delete
         
-        self.generator.mac_class1 = MAC(units=1, shape=self.qshape)
-        self.generator.mac_class2 = MAC(units=1, shape=self.qshape)
+        self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
+        self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
         # self.generator.mac_class1 = MAC(units=2, shape=self.qshape)
         # self.generator.mac_class2 = MAC(units=2, shape=self.qshape)
         self.generator.vqgan = self.vqgan
