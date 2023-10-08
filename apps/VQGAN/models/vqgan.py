@@ -262,7 +262,7 @@ class VQModel(pl.LightningModule):
         xrec, qloss = self.drcQ(x, w)
 
         xr = self.vqgan_fn_phi_denormalize(xrec).detach()
-        if bi % 400 == 0:
+        if bi % 400 == 0 or (bi-1) % 400 == 0:
             signal_save(torch.cat([
                 (x+1) * 127.5,
                 xr,
