@@ -45,6 +45,10 @@ class VQModel(pl.LightningModule):
         self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
         self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)#.transpose(0,1).transpose(1,2)
 
+        self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+        self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
+
+
         self.counter_control = 0
         self.ddconfig = ddconfig
         self.Rfn = Rfn
@@ -233,7 +237,7 @@ class VQModel(pl.LightningModule):
         xrec = self.decode(quant)
         return xrec, qloss
     
-    def training_step_for_drc(self, x, w):
+    def training_step_for_drc(self, x, w, clabel, S, CE):
         # if batch_idx % 400 == 0:
         #     signal_save(x, f'/content/.png', stype='img', sparams={'chw2hwc': True})
         # xrec, qloss = self(x)
@@ -241,14 +245,20 @@ class VQModel(pl.LightningModule):
 
         xrec, qloss = self.drcQ(x, w)
 
-        Vorg, Vrec = self.get_V(x, xrec)
+        xr = self.vqgan_fn_phi_denormalize(xrec).detach()
+        xr = dzq_dz_eq1(xr, xrec)
+        xr = (xr - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+        drloss = CE(S(self.dr_classifire(xr)[0]), clabel)
+
+
+        # Vorg, Vrec = self.get_V(x, xrec)
         # Vrec = dzq_dz_eq1(Vrec, xrec)
         aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train"
             # , cond=vasl
         )
         # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
         VLOSS = 0
-        return VLOSS + aeloss, xrec
+        return VLOSS + aeloss + drloss
         
         
         # if optimizer_idx == 1:

@@ -106,16 +106,31 @@ class FUM(plModuleBase):
         #     return
 
 
-        if True or kwargs['batch_idx'] % 2 == 0:
-            vaeloss1, xrec1 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class1)
-            x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
-            x1 = dzq_dz_eq1(x1, xrec1)
-            x1 = (x1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-            output1 = self.dr_classifire(x1)[0]#.detach()
-            dr_pred1 = self.generator.softmax(output1)
-            drloss1 = self.generator.ce(dr_pred1, torch.ones((batchsize,), device=self.device).long())
-            vaeloss = vaeloss1
-            drloss = drloss1
+        if kwargs['batch_idx'] % 2 == 0:
+            total_loss = self.generator.vqgan.training_step_for_drc(
+                x, self.generator.mac_class1,
+                torch.ones((batchsize,), device=self.device).long(),
+                self.generator.softmax, self.generator.ce
+            )
+        else:
+            total_loss = self.generator.vqgan.training_step_for_drc(
+                x, self.generator.mac_class2,
+                (2 * torch.ones((batchsize,), device=self.device)).long(),
+                self.generator.softmax, self.generator.ce
+            )
+            
+        return total_loss, dict(loss=total_loss.cpu().detach().item())
+            # x1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
+            # x1 = dzq_dz_eq1(x1, xrec1)
+            # x1 = (x1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
+            
+            
+            
+            # output1 = self.dr_classifire(x1)[0]#.detach()
+            # dr_pred1 = self.generator.softmax(output1)
+            # drloss1 = self.generator.ce(dr_pred1, torch.ones((batchsize,), device=self.device).long())
+            # vaeloss = vaeloss1
+            # drloss = drloss1
         # else:
         #     vaeloss2, xrec2 = self.generator.vqgan.training_step_for_drc(x, self.generator.mac_class2)
         #     x2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
@@ -127,7 +142,7 @@ class FUM(plModuleBase):
         #     drloss = drloss2
         #     vaeloss = vaeloss2
         
-        loss = vaeloss + drloss
+        # loss = vaeloss + drloss
 
         # if kwargs['split'] == 'train':
         #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
@@ -135,7 +150,7 @@ class FUM(plModuleBase):
         # else:
         #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-        return loss, dict(loss=loss.cpu().detach().item())
+        # return loss, dict(loss=loss.cpu().detach().item())
         # return drloss, dict(drloss=drloss.cpu().detach().item())
 
     def getbatch(self, batch):
