@@ -268,7 +268,7 @@ class VQModel(pl.LightningModule):
         xr = self.vqgan_fn_phi_denormalize(xrec).detach()
         xr = dzq_dz_eq1(xr, xrec)
         xr = (xr - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        drloss = CE(S(DRC(xr)[0]), clabel)
+        drloss = CE(S(DRC(xr)[0].detach()), clabel)
 
 
         Vorg, Vrec = self.get_V2(x, xr)
