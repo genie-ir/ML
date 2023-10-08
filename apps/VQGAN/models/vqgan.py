@@ -237,7 +237,7 @@ class VQModel(pl.LightningModule):
         xrec = self.decode(quant)
         return xrec, qloss
     
-    def training_step_for_drc(self, x, w, clabel, S, CE):
+    def training_step_for_drc(self, x, w, clabel, S, CE, DRC):
         # if batch_idx % 400 == 0:
         #     signal_save(x, f'/content/.png', stype='img', sparams={'chw2hwc': True})
         # xrec, qloss = self(x)
@@ -248,7 +248,7 @@ class VQModel(pl.LightningModule):
         xr = self.vqgan_fn_phi_denormalize(xrec).detach()
         xr = dzq_dz_eq1(xr, xrec)
         xr = (xr - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        drloss = CE(S(self.dr_classifire(xr)[0]), clabel)
+        drloss = CE(S(DRC(xr)[0]), clabel)
 
 
         # Vorg, Vrec = self.get_V(x, xrec)
