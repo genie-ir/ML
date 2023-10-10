@@ -1,5 +1,5 @@
 # NOTE: YOU SHOUDE DELETE THIS FILE LATER
-
+import os
 import yaml
 import torch
 import numpy as np
@@ -37,13 +37,28 @@ class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
         print(signal_path)
         assert False
-        
+
         return {
             'xs': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
             'xc1': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
             'xc2': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
             # 'y_edit': kwargs['y'] # DELETE: any other case of DR it must be comment out.
         }
+
+
+class DDR_TRAIN(D_DR):
+    def start(self):
+        super().start()
+        self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
+        self.grade2 = os.listdir(self.path_grade2)
+        print('------------------------------------>', self.grade2, len(self.grade2))
+
+class DDR_VAL(D_DR):
+    def start(self):
+        super().start()
+        self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
+        self.grade2 = os.listdir(self.path_grade2)
+        print('------------------------------------>', self.grade2, len(self.grade2))
 
 class eyepacsTrain(eyepacsTrainBase): 
     def preparation(self, **kwargs):
@@ -68,7 +83,7 @@ class DTrain(ImageNetTrain):
         ))
     
     def preparation(self, **kwargs):
-        self.D = D_DR
+        self.D = DDR_TRAIN
     
 class DVal(ImageNetValidation):
     def download_dataset(self, **kwargs):
@@ -81,4 +96,4 @@ class DVal(ImageNetValidation):
         ))
     
     def preparation(self, **kwargs):
-        self.D = D_DR
+        self.D = DDR_VAL
