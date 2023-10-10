@@ -284,7 +284,7 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
-        self.generator.EncoderModel = torch.nn.Sequnetial(
+        self.generator.EncoderModel = torch.nn.Sequential(
             *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
         )
         
