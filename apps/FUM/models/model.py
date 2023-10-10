@@ -107,8 +107,7 @@ class FUM(plModuleBase):
         # ], dim=0), f'/content/test.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
 
         z = self.generator.EncoderModel(zs) # TODO
-        print('------------------>', self.generator.EncoderModel[0].linear1.weight.shape)
-        assert False
+        print('------------------>', self.generator.EncoderModel[0].linear1.weight[0,0])
 
 
         xrec1 = self.vqgan.lat2phi(z)
