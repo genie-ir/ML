@@ -47,7 +47,7 @@ class D_Base(Dataset):
         y = self.labels['y'][i]
         fpath = join(self.labels['#upper_path'], x)
         
-        example = self.fetch(fpath, **{'y': y}) # `example` must be `dict`
+        example = self.fetch(fpath, **{'y': y, 'i': i}) # `example` must be `dict`
 
         for k in self.labels: # (#:ignore) (@:function(y)) ($:function(x))
             if k[0] == '#':

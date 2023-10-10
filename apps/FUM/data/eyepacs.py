@@ -35,8 +35,13 @@ dr_transformer = A.Compose([
 ])
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
+        print(signal_path)
+        assert False
+        
         return {
-            'X': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
+            'xs': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
+            'xc1': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
+            'xc2': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
             # 'y_edit': kwargs['y'] # DELETE: any other case of DR it must be comment out.
         }
 

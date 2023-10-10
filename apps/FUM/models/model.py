@@ -79,45 +79,98 @@ class FUM(plModuleBase):
     #     model.fc = nn.Linear(model.fc.in_features, 1)
     #     return model
     
+
+    # NOTE: asli
+    # def generator_step__drcalgo(self, batch, **kwargs):
+    #     x = batch['X']
+    #     batchsize = x.shape[0]
+    #     x = (x / 127.5) - 1
+        
+
+
     
     # NOTE: DR_CLASSIFIRE Training function.
-    def generator_step__drcalgo(self, batch, **kwargs):
-        # phi = self.vqgan.lat2phi(batch['X'].flatten(1).float())
-        # phi_denormalized = self.vqgan_fn_phi_denormalize(phi).detach()
-        # signal_save(phi_denormalized, f'/content/a.png', stype='img', sparams={'chw2hwc': True})
-        # phi_denormalized = self.get_eyepacs_data_batch(batch)
+    
+    def compute_loss(self, batch, clable, batchsize): # x is in class 0 
+        # Q, qloss1 = self.vqgan.encode(x)
+        # xrec1 = self.vqgan.decode(Q + self.generator.mac_class[clable-1](Q))
         
+        zs = self.vqgan.phi2lat(batch['xs'])
+        # zc = self.vqgan.phi2lat(batch['xc'])
+
+        z = self.generator.EncoderModel(zs) # TODO
+        print(z.shape)
+
+
+
+        xrec1 = self.vqgan.lat2phi(z)
+        xr1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
+        xr1 = ((xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)).detach()
+        xr1 = dzq_dz_eq1(xr1, xrec1)
+
+        drloss1 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr1)[0]), (clable * torch.ones((batchsize,), device=self.device)).long())
+        aeloss1, log_dict_ae = self.vqgan.loss(0, batch['xs'], xrec1, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
+        return xrec1, drloss1, aeloss1
+
+    def generator_step__drcalgo(self, batch, **kwargs):
         x = batch['X']
         batchsize = x.shape[0]
         x = (x / 127.5) - 1
         
-        
-        Q, qloss1 = self.vqgan.encode(x)
-        xrec1 = self.vqgan.decode(Q + self.generator.mac_class1(Q))
-        xr1 = self.vqgan_fn_phi_denormalize(xrec1).detach()
-        xr1 = dzq_dz_eq1(xr1, xrec1)
-        xr1 = (xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        drloss1 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr1)[0]), torch.ones((batchsize,), device=self.device).long())
-        # aeloss1, log_dict_ae = self.vqgan.loss(qloss1, x, xrec1, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
-
-        Q, qloss2 = self.vqgan.encode(x)
-        xrec2 = self.vqgan.decode(Q + self.generator.mac_class2(Q))
-        xr2 = self.vqgan_fn_phi_denormalize(xrec2).detach()
-        xr2 = dzq_dz_eq1(xr2, xrec2)
-        xr2 = (xr2 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)
-        drloss2 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr2)[0]), (2 * torch.ones((batchsize,), device=self.device)).long())
-        # aeloss2, log_dict_ae = self.vqgan.loss(qloss2, x, xrec2, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
+        xrec1, drloss1, aeloss1 = self.compute_loss(x, 1, batchsize)
+        xrec2, drloss2, aeloss2 = self.compute_loss(x, 2, batchsize)
 
         if kwargs['batch_idx'] % 400 == 0:
             signal_save(torch.cat([
                 (x+1) * 127.5,
-                xr1 * (self.dr_classifire_normalize_std * 255) + (self.dr_classifire_normalize_mean * 255),
-                xr2 * (self.dr_classifire_normalize_std * 255) + (self.dr_classifire_normalize_mean * 255),
+                self.vqgan_fn_phi_denormalize(xrec1).detach(),
+                self.vqgan_fn_phi_denormalize(xrec2).detach()
             ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
         
-        
         loss = drloss1 + drloss2
+
+        print('loss', loss, drloss1, aeloss1)
+        assert False
         return loss, dict(loss=loss.cpu().detach().item())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -231,6 +284,15 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
+        self.generator.EncoderModel = torch.nn.Sequnetial(
+            *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
+        )
+        
+
+
+
+
+
         self.gamma = - 0.1
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 
@@ -254,7 +316,10 @@ class FUM(plModuleBase):
         
         self.generator.mac_class1 = MAC(fwd='fConv2d', ch=256)
         self.generator.mac_class2 = MAC(fwd='fConv2d', ch=256)
-
+        self.generator.mac_class = [
+            self.generator.mac_class1,
+            self.generator.mac_class2
+        ]
 
 
 

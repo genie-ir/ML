@@ -210,44 +210,99 @@ class VQModel(pl.LightningModule):
 
         assert False
         return
+    
+    # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
-        # logged = self.log_images(batch, fName='badRec/' + random_string())
-        # return
         if batch_idx % 500 == 0:
             self.log_images(batch, ignore=False)
-        # assert False
-        # print('training_step')
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
-        # vasl = None # self.get_input(batch, 'vasl')
-        # vasl = self.get_input(batch, 'vasl')
         if optimizer_idx == 0:
-            # autoencode
-            aeloss, log_dict_ae = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train"
-                # , cond=vasl
-            )
+            aeloss, log_dict_ae = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train")
             VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
-            # self.log("train/aeloss", aeloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
-            # self.log_dict(log_dict_ae, prog_bar=True, logger=True, on_step=True, on_epoch=True)
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-            
             return VLOSS + aeloss
         if optimizer_idx == 1:
-            # discriminator
-            discloss, log_dict_disc = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train"
-                # , cond=vasl 
-            )
-            # self.log("train/discloss", discloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
-            # self.log_dict(log_dict_disc, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+            discloss, log_dict_disc = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train")
             self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-            print('!!!!!!!!!!!!!', discloss, discloss.shape)
-            assert False
             return discloss
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # NOTE: real VQGAN training process
+    # def training_step(self, batch, batch_idx, optimizer_idx):
+    #     # logged = self.log_images(batch, fName='badRec/' + random_string())
+    #     # return
+    #     if batch_idx % 500 == 0:
+    #         self.log_images(batch, ignore=False)
+    #     # assert False
+    #     # print('training_step')
+    #     x = self.get_input(batch, self.image_key)
+    #     xrec, qloss = self(x)
+    #     Vorg, Vrec = self.get_V(x, xrec)
+    #     Vrec = dzq_dz_eq1(Vrec, xrec)
+    #     # vasl = None # self.get_input(batch, 'vasl')
+    #     # vasl = self.get_input(batch, 'vasl')
+    #     if optimizer_idx == 0:
+    #         # autoencode
+    #         aeloss, log_dict_ae = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train"
+    #             # , cond=vasl
+    #         )
+    #         VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+    #         log_dict_ae['train/VLOSS'] = VLOSS.detach()
+    #         # self.log("train/aeloss", aeloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+    #         # self.log_dict(log_dict_ae, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+    #         self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+    #         self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+            
+    #         return VLOSS + aeloss
+    #     if optimizer_idx == 1:
+    #         # discriminator
+    #         discloss, log_dict_disc = self.loss(qloss, x, xrec, optimizer_idx, self.global_step, last_layer=self.get_last_layer(), split="train"
+    #             # , cond=vasl 
+    #         )
+    #         # self.log("train/discloss", discloss, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+    #         # self.log_dict(log_dict_disc, prog_bar=True, logger=True, on_step=True, on_epoch=True)
+    #         self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+    #         self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+    #         print('!!!!!!!!!!!!!', discloss, discloss.shape)
+    #         assert False
+    #         return discloss
 
 
 
