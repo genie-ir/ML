@@ -36,13 +36,13 @@ dr_transformer = A.Compose([
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
         return {
-            'xs': dr_transformer(image=np.array(Image.open(signal_path)))['image'],
-            'xc1': dr_transformer(image=np.array(Image.open(
+            'xs': (dr_transformer(image=np.array(Image.open(signal_path)))['image'] / 127.5) - 1,
+            'xc1': (dr_transformer(image=np.array(Image.open(
                 os.path.join(self.path_grade2, self.grade2[kwargs['i'] % self.grade2_len])
-            )))['image'],
-            'xc2': dr_transformer(image=np.array(Image.open(
+            )))['image'] / 127.5) - 1,
+            'xc2': (dr_transformer(image=np.array(Image.open(
                 os.path.join(self.path_grade4, self.grade4[kwargs['i'] % self.grade4_len])
-            )))['image'],
+            )))['image'] / 127.5) - 1,
             # 'y_edit': kwargs['y'] # DELETE: any other case of DR it must be comment out.
         }
 

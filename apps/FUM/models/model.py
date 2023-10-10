@@ -97,8 +97,9 @@ class FUM(plModuleBase):
         zs = self.vqgan.phi2lat(batch['xs'])
         zc1 = self.vqgan.phi2lat(batch['xc1'])
         zc2 = self.vqgan.phi2lat(batch['xc2'])
-        print(batch['xs'].shape, batch['xc1'].shape, batch['xc2'].shape)
-        print(zs.shape, zc1.shape, zc2.shape)
+        
+        print('B', batch['xs'].shape, batch['xc1'].shape, batch['xc2'].shape)
+        print('Z', zs.shape, zc1.shape, zc2.shape)
 
         z = self.generator.EncoderModel(zs) # TODO
         print(z.shape)
@@ -115,16 +116,12 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
-        x = batch['X']
-        batchsize = x.shape[0]
-        x = (x / 127.5) - 1
-        
-        xrec1, drloss1, aeloss1 = self.compute_loss(x, 1, batchsize)
-        xrec2, drloss2, aeloss2 = self.compute_loss(x, 2, batchsize)
+        xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
+        xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
 
         if kwargs['batch_idx'] % 400 == 0:
             signal_save(torch.cat([
-                (x+1) * 127.5,
+                (batch['xs']+1) * 127.5,
                 self.vqgan_fn_phi_denormalize(xrec1).detach(),
                 self.vqgan_fn_phi_denormalize(xrec2).detach()
             ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
