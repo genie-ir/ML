@@ -94,9 +94,11 @@ class FUM(plModuleBase):
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
         # Q, qloss1 = self.vqgan.encode(x)
         # xrec1 = self.vqgan.decode(Q + self.generator.mac_class[clable-1](Q))
-        
         zs = self.vqgan.phi2lat(batch['xs'])
-        # zc = self.vqgan.phi2lat(batch['xc'])
+        zc1 = self.vqgan.phi2lat(batch['xc1'])
+        zc2 = self.vqgan.phi2lat(batch['xc2'])
+        print(batch['xs'].shape, batch['xc1'].shape, batch['xc2'].shape)
+        print(zs.shape, zc1.shape, zc2.shape)
 
         z = self.generator.EncoderModel(zs) # TODO
         print(z.shape)
