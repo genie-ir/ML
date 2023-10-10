@@ -107,6 +107,8 @@ class FUM(plModuleBase):
         # ], dim=0), f'/content/test.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
 
         z = self.generator.EncoderModel(zs) # TODO
+        print('------------------>', self.generator.EncoderModel[0])
+        assert False
 
 
         xrec1 = self.vqgan.lat2phi(z)
@@ -131,7 +133,7 @@ class FUM(plModuleBase):
         
         loss = drloss1 + drloss2 + aeloss1 + aeloss2
 
-        print('loss', loss, drloss1 + drloss2 + aeloss1 + aeloss2)
+        print('loss', loss, drloss1, drloss2, aeloss1, aeloss2)
         # assert False
         return loss, dict(loss=loss.cpu().detach().item())
 
