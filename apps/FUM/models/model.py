@@ -129,10 +129,10 @@ class FUM(plModuleBase):
                 self.vqgan_fn_phi_denormalize(xrec2).detach()
             ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batch['xs'].shape[0]})
         
-        loss = drloss1 + drloss2
+        loss = drloss1 + drloss2 + aeloss1 + aeloss2
 
-        print('loss', loss, drloss1, aeloss1)
-        assert False
+        print('loss', loss, drloss1 + drloss2 + aeloss1 + aeloss2)
+        # assert False
         return loss, dict(loss=loss.cpu().detach().item())
 
 
