@@ -35,7 +35,9 @@ dr_transformer = A.Compose([
 ])
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
-        print(signal_path)
+        print('xs', signal_path)
+        print('xc1', self.grade2[kwargs['i0'] % self.grade2_len])
+        print('xc2', self.grade4[kwargs['i0'] % self.grade4_len])
         assert False
 
         return {
@@ -51,14 +53,20 @@ class DDR_TRAIN(D_DR):
         super().start()
         self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
         self.grade2 = os.listdir(self.path_grade2)
-        print('------------------------------------>', self.grade2, len(self.grade2))
+        self.grade2_len = len(self.grade2)
+        self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
+        self.grade4 = os.listdir(self.path_grade4)
+        self.grade4_len = len(self.grade4)
 
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
         self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
         self.grade2 = os.listdir(self.path_grade2)
-        print('------------------------------------>', self.grade2, len(self.grade2))
+        self.grade2_len = len(self.grade2)
+        self.path_grade4 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
+        self.grade4 = os.listdir(self.path_grade4)
+        self.grade4_len = len(self.grade4)
 
 class eyepacsTrain(eyepacsTrainBase): 
     def preparation(self, **kwargs):
