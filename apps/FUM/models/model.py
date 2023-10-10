@@ -100,18 +100,13 @@ class FUM(plModuleBase):
 
 
 
-        signal_save(torch.cat([
-            self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zs)).detach(),
-            self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc1)).detach(),
-            self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc2)).detach()
-        ], dim=0), f'/content/test.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
-
-        print('B', batch['xs'].shape, batch['xc1'].shape, batch['xc2'].shape)
-        print('Z', zs.shape, zc1.shape, zc2.shape)
+        # signal_save(torch.cat([
+        #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zs)).detach(),
+        #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc1)).detach(),
+        #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc2)).detach()
+        # ], dim=0), f'/content/test.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
 
         z = self.generator.EncoderModel(zs) # TODO
-        print(z.shape)
-
 
 
         xrec1 = self.vqgan.lat2phi(z)
