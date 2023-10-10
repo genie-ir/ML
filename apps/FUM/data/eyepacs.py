@@ -54,7 +54,7 @@ class DDR_TRAIN(D_DR):
         self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
         self.grade2 = os.listdir(self.path_grade2)
         self.grade2_len = len(self.grade2)
-        self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
+        self.path_grade4 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
         self.grade4 = os.listdir(self.path_grade4)
         self.grade4_len = len(self.grade4)
 
