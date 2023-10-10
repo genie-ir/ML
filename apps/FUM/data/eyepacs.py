@@ -35,9 +35,9 @@ dr_transformer = A.Compose([
 ])
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
-        print('xs', signal_path)
-        print('xc1', self.grade2[kwargs['i0'] % self.grade2_len])
-        print('xc2', self.grade4[kwargs['i0'] % self.grade4_len])
+        print(signal_path, 
+              self.grade2[kwargs['i0'] % self.grade2_len],
+              self.grade4[kwargs['i0'] % self.grade4_len])
         assert False
 
         return {
