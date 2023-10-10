@@ -316,12 +316,12 @@ class FUM(plModuleBase):
         self.dr_classifire = self.dr_classifire.to('cuda')
         self.dr_classifire.requires_grad_(False) # delete
         
-        self.generator.mac_class1 = MAC(fwd='fConv2d', ch=256)
-        self.generator.mac_class2 = MAC(fwd='fConv2d', ch=256)
-        self.generator.mac_class = [
-            self.generator.mac_class1,
-            self.generator.mac_class2
-        ]
+        # self.generator.mac_class1 = MAC(fwd='fConv2d', ch=256)
+        # self.generator.mac_class2 = MAC(fwd='fConv2d', ch=256)
+        # self.generator.mac_class = [
+        #     self.generator.mac_class1,
+        #     self.generator.mac_class2
+        # ]
 
 
 
