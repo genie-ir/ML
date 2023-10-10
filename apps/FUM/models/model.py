@@ -127,7 +127,7 @@ class FUM(plModuleBase):
                 (batch['xs']+1) * 127.5,
                 self.vqgan_fn_phi_denormalize(xrec1).detach(),
                 self.vqgan_fn_phi_denormalize(xrec2).detach()
-            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
+            ], dim=0), f'/content/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': batch['xs'].shape[0]})
         
         loss = drloss1 + drloss2
 
