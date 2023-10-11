@@ -3,7 +3,7 @@ import collections
 # from torch._six import string_classes
 string_classes = str
 from torch.utils.data._utils.collate import np_str_obj_array_pattern, default_collate_err_msg_format
-
+from apps.VQGAN.data.helper_types import Annotation
 
 # Note: This passage is aboute `transformer data pipline` but It can clearly tell the idea of `collate` function.
 # As seen in the ``Data Sourcing and Processing`` section, our data iterator yields a pair of raw strings.
