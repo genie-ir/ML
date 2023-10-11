@@ -96,7 +96,6 @@ class FUM(plModuleBase):
     
     def check_dr(self, batch, split, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
-        batch['y_edit'] = batch['y_edit']
         if split == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
@@ -523,12 +522,13 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
         ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/last.ckpt'
+        print(self.dr_classifire)
         self.generator.dr_classifire = self.dr_classifire
         self.init_from_ckpt(ckpt)
         self.dr_classifire = self.generator.dr_classifire
         del self.generator.dr_classifire
         self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
-
+        assert False
     # def validation_step(self, batch, batch_idx, split='val'):
     #     self.generator.dr_classifire.train()
     #     torch.set_grad_enabled(True)
