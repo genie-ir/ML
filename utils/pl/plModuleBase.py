@@ -256,7 +256,7 @@ class plModuleBase(pl.LightningModule):
     def net2pipline(self, netname):
         return f'{netname}Step'
     
-    def init_from_ckpt(self, path, ignore_keys=list()):
+    def init_from_ckpt(self, path, ignore_keys=list(), strict=False):
         """It can be overwrite in child class"""
         print('@@@@@@@@@@@@@@@', self.load_from_checkpoint) # self.load_from_checkpoint('.ckpt')
         # assert False
@@ -279,7 +279,7 @@ class plModuleBase(pl.LightningModule):
                 if k.startswith(ik):
                     print('Deleting key {} from state_dict.'.format(k))
                     del sd[k]
-        self.load_state_dict(sd, strict=False)
+        self.load_state_dict(sd, strict=strict)
     
     def predefined_net_step_master0(self, net):
         pipline_name = f'{net}_step'
