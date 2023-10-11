@@ -77,7 +77,7 @@ class Plot1D:
         plt.close(self.fig)
         return savefig_result
 
-    def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None, grid=None, **kwargs_plot):
+    def plot(self, x=None, y=None, ax=None, label=None, plt_show=False, smoothing=False, smooth_k=3, smooth_dpi=300, ffty=False, ffty_div2N=False, passive_fn=None, grid=None, plot_type='plot', **kwargs_plot):
         if (x is None) and (not (y is None)):
             len_y_shape = len(y.shape)
             if len_y_shape == 1:
@@ -102,7 +102,7 @@ class Plot1D:
             _label = (lbl or label or None)
             line, = axis.plot(X_data, Y_data, lw=1, zorder=6, label=_label, **kwargs_plot)
             for cont in range(6, 1, -1):
-                axis.plot(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
+                getattr(axis, plot_type)(X_data, Y_data, lw=cont, color=line.get_color(), zorder=5, alpha=0.05)
             if _label:
                 axis.legend()
             if self.hide_axis:

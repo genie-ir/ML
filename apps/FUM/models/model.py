@@ -95,19 +95,20 @@ class FUM(plModuleBase):
         # Q, qloss1 = self.vqgan.encode(x)
         # xrec1 = self.vqgan.decode(Q + self.generator.mac_class[clable-1](Q))
         zs = self.vqgan.phi2lat(batch['xs']).float().flatten(1)
-        zc1 = self.vqgan.phi2lat(batch['xc1']).float().flatten(1)
-        zc2 = self.vqgan.phi2lat(batch['xc2']).float().flatten(1)
+        zc = self.vqgan.phi2lat(batch['xc'][clable-1]).float().flatten(1)
 
-
-
+        Pbenuli = torch.sigmoid(self.generator.P).round()
+        z = Pbenuli * zs + (1 - Pbenuli) * zc
+        print('!!!!!!!!!!!!', z.shape)
         # signal_save(torch.cat([
         #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zs)).detach(),
         #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc1)).detach(),
         #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc2)).detach()
         # ], dim=0), f'/content/test.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
 
-        z = self.generator.EncoderModel(zs) # TODO
-        print('------------------>', self.generator.EncoderModel[0].linear1.weight[0,0])
+        z = self.generator.EncoderModel(z) # TODO
+        print('@@@@@@@@@@@@', z.shape)
+        # print('------------------>', self.generator.EncoderModel[0].linear1.weight[0,0])
 
 
         xrec1 = self.vqgan.lat2phi(z)
@@ -124,6 +125,14 @@ class FUM(plModuleBase):
         xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
 
         if kwargs['batch_idx'] % 400 == 0:
+            Pbenuli = torch.sigmoid(self.generator.P).round()
+            neon = Plot1D(xlabel='cluster', ylabel='selection for xs')
+            neonc = Plot1D(xlabel='cluster', ylabel='selection for xc')
+            neon.plot(range(256), Pbenuli.detach().cpu().numpy(), label=f'Adaptive filter', plot_type='step')
+            neonc.plot(range(256), (1-Pbenuli).detach().cpu().numpy(), label=f'Adaptive filter', plot_type='step')
+            neon.savefig(f'/content/filter_selection_style.png')
+            neonc.savefig(f'/content/filter_selection_class.png')
+
             signal_save(torch.cat([
                 (batch['xs']+1) * 127.5,
                 self.vqgan_fn_phi_denormalize(xrec1).detach(),
@@ -287,6 +296,8 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
+        self.generator.P = nn.Parameter(torch.randn((256,)))
+
         self.generator.EncoderModel = torch.nn.Sequential(
             *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
         )
