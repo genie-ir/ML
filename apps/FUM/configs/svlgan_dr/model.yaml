@@ -1,6 +1,5 @@
 generator:
   params:
-    ckpt: /content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/e370.ckpt
     optimizer:
       params:
         lr: 0.001

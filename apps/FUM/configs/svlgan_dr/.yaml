@@ -9,7 +9,7 @@ $vars:
 data: !include [!join [*CONFIG_DIR, dataset]]
 model:
   target: !join [*MODEL_DIR, model, FUM_DR]
-  params: 
+  params:
     !merge [
       !include [!join [*CONFIG_DIR, args]],
       !include [!join [*CONFIG_DIR, loss], lossconfig],
