@@ -92,7 +92,7 @@ class FUM(plModuleBase):
     # NOTE: DR_CLASSIFIRE Training function.
     
     def check_dr(self, batch, split, dr_pred):
-        batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
+        # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
         if split == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
@@ -531,7 +531,7 @@ class FUM_DR(FUM):
         self.t_ygrnt = self.t_ygrnt + [1,2]
         self.v_ypred = self.v_ypred + [1,2]
         self.t_ypred = self.t_ypred + [1,2]
-        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
         assert False, 'END-TRAINING'
 

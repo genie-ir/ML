@@ -57,10 +57,14 @@ params:
         S_WSTAR: '**/train/Grade_0'
         PATH_TO_CLASS_MAP:
           /dataset/train/Grade_0: 0
-          # /dataset/train/Grade_1: 1
-          # /dataset/train/Grade_2: 2
-          # /dataset/train/Grade_3: 3
-          # /dataset/train/Grade_4: 4
+
+
+          /dataset/train/Grade_1: 1
+          /dataset/train/Grade_2: 2
+          /dataset/train/Grade_3: 3
+          /dataset/train/Grade_4: 4
+        
+        
         DF_NAME: fum_dataset_train.csv
         DF_KEY: image_id # select row inside dataframe
         DF_VAL: dr # class value -> It can be exact one of this: int, float, str
@@ -87,10 +91,15 @@ params:
         S_WSTAR: '**/val/Grade_0'
         PATH_TO_CLASS_MAP:
           /dataset/val/Grade_0: 0
-          # /dataset/val/Grade_1: 1
-          # /dataset/val/Grade_2: 2
-          # /dataset/val/Grade_3: 3
-          # /dataset/val/Grade_4: 4
+
+
+          /dataset/val/Grade_1: 1
+          /dataset/val/Grade_2: 2
+          /dataset/val/Grade_3: 3
+          /dataset/val/Grade_4: 4
+
+
+
         DF_NAME: fum_dataset.csv
         DF_KEY: image_id # select row inside dataframe
         DF_VAL: dr # class value -> It can be exact one of this: int, float, str
