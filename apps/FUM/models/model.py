@@ -100,7 +100,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'])
+        loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'].to('cuda'))
         return loss, dict(loss=loss.cpu().detach().item())
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
