@@ -129,8 +129,7 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         
-        self.check_dr(batch, kwargs['split'],
-                              (self.generator.softmax(self.dr_classifire((batch['xs']+1) * 127.5)[0]), (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()))
+        self.check_dr(batch, kwargs['split'], self.generator.softmax(self.dr_classifire((batch['xs']+1) * 127.5)[0]))
         
         return
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
