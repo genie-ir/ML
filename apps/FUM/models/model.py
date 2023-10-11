@@ -91,6 +91,15 @@ class FUM(plModuleBase):
     
     # NOTE: DR_CLASSIFIRE Training function.
     
+    def check_dr(self, batch, split, dr_pred):
+        if split == 'train':
+            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        else:
+            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+
+    
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
         # Q, qloss1 = self.vqgan.encode(x)
         # xrec1 = self.vqgan.decode(Q + self.generator.mac_class[clable-1](Q))
@@ -119,6 +128,10 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
+        self.check_dr(batch, kwargs['split'], 
+                      self.generator.ce(self.generator.softmax(self.dr_classifire((batch['xs']+1) * 127.5)[0]), (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()))
+        
+        return
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
         xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
 
@@ -510,14 +523,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    # def on_train_epoch_end(self):
-    #     self.v_ygrnt = self.v_ygrnt + [1,2]
-    #     self.t_ygrnt = self.t_ygrnt + [1,2]
-    #     self.v_ypred = self.v_ypred + [1,2]
-    #     self.t_ypred = self.t_ypred + [1,2]
-    #     # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
-    #     assert False, 'END-TRAINING'
+    def on_train_epoch_end(self):
+        self.v_ygrnt = self.v_ygrnt + [1,2]
+        self.t_ygrnt = self.t_ygrnt + [1,2]
+        self.v_ypred = self.v_ypred + [1,2]
+        self.t_ypred = self.t_ypred + [1,2]
+        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=False)
+        assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
