@@ -330,9 +330,9 @@ class FUM(plModuleBase):
         self.qshape = (self.qch, self.qwh, self.qwh)
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
 
-        self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.dr_classifire = self.dr_classifire.to('cuda')
-        self.dr_classifire.requires_grad_(False) # delete
+        # self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        # self.dr_classifire = self.dr_classifire.to('cuda')
+        # self.dr_classifire.requires_grad_(False) # delete
         
         # self.generator.mac_class1 = MAC(fwd='fConv2d', ch=256)
         # self.generator.mac_class2 = MAC(fwd='fConv2d', ch=256)
@@ -509,14 +509,20 @@ class FUM(plModuleBase):
 class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
+
+        self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        self.generator.dr_classifire = self.dr_classifire.to('cuda')
+        # self.dr_classifire.requires_grad_(False) # delete
+
+
+
         ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/last.ckpt'
-        print('before', self.dr_classifire.classifier3[0].weight[0,:5])
-        self.generator.dr_classifire = self.dr_classifire
+        print('before', self.generator.dr_classifire.classifier3[0].weight[0,:5])
         self.init_from_ckpt(ckpt, strict=True)
-        self.dr_classifire = self.generator.dr_classifire
-        del self.generator.dr_classifire
-        print('after', self.dr_classifire.classifier3[0].weight[0,:5])
+        print('after', self.generator.dr_classifire.classifier3[0].weight[0,:5])
         self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
+        print('after2', self.generator.dr_classifire.classifier3[0].weight[0,:5])
+        assert False
         
         
         
