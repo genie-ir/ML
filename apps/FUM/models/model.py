@@ -534,7 +534,7 @@ class FUM_DR(FUM):
         # self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
         # print('after2', self.generator.dr_classifire.classifier3[0].weight[i,:5])
         # assert False
-        self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
+        # self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
         
         
         # TODO uncumment
