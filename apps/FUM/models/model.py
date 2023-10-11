@@ -100,7 +100,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'])
         return loss, dict(loss=loss.cpu().detach().item())
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
@@ -308,6 +308,7 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
+        self.generator.testvar = nn.Parameter(torch.randn((1,)))
         self.generator.P = nn.Parameter(torch.randn((256,)))
 
         self.generator.EncoderModel = torch.nn.Sequential(
