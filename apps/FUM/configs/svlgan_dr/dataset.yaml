@@ -45,7 +45,7 @@
 # #NOTE: dataset drclassifire
 target: utils.pl.tools.dataset.DataModuleFromConfig
 params:
-  batch_size: 2
+  batch_size: 8
   num_workers: 2
   train:
     target: apps.FUM.data.eyepacs.DTrain
