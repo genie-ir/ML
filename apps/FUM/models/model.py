@@ -512,23 +512,23 @@ class FUM_DR(FUM):
 
         self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.dr_classifire = self.dr_classifire.to('cuda')
-        self.generator.dr_classifire = self.dr_classifire
+        # self.generator.dr_classifire = self.dr_classifire
         # self.dr_classifire.requires_grad_(False) # delete
 
 
-        model_dict = self.state_dict()
-        print('@@@@@@@@@@@@@@', model_dict)
-        ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/last.ckpt'
-        i=15
-        print('before', self.generator.dr_classifire.classifier3[0].weight[i,:5])
-        sd = torch.load(ckpt, map_location='cpu')['state_dict']
-        sd = {k: v for k, v in sd.items() if k in model_dict}
-        model_dict.update(sd)
-        self.load_state_dict(sd)
-        print('after', self.generator.dr_classifire.classifier3[0].weight[i,:5])
-        self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
-        print('after2', self.generator.dr_classifire.classifier3[0].weight[i,:5])
-        assert False
+        # model_dict = self.state_dict()
+        # ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/last.ckpt'
+        # i=15
+        # print('before', self.generator.dr_classifire.classifier3[0].weight[i,:5])
+        # sd = torch.load(ckpt, map_location='cpu')['state_dict']
+        # sd = {k: v for k, v in sd.items() if k in model_dict}
+        # model_dict.update(sd)
+        # self.load_state_dict(sd)
+        # print('after', self.generator.dr_classifire.classifier3[0].weight[i,:5])
+        # self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
+        # print('after2', self.generator.dr_classifire.classifier3[0].weight[i,:5])
+        # assert False
+        self.vqgan.incit_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
         
         
         
