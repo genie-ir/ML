@@ -313,18 +313,6 @@ class FUM(plModuleBase):
     
     
     def start(self, dr_vs_synthesis_flag=True):
-        self.generator.testvar = nn.Parameter(torch.randn((1,)))
-        self.generator.P = nn.Parameter(torch.randn((256,)))
-
-        self.generator.EncoderModel = torch.nn.Sequential(
-            *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
-        )
-        
-
-
-
-
-
         self.gamma = - 0.1
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 
@@ -533,6 +521,17 @@ class FUM_DR(FUM):
         del self.generator.dr_classifire
         print('after', self.dr_classifire.classifier3[0].weight[0,:5])
         self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
+        
+        
+        
+        self.generator.testvar = nn.Parameter(torch.randn((1,)))
+        self.generator.P = nn.Parameter(torch.randn((256,)))
+
+        self.generator.EncoderModel = torch.nn.Sequential(
+            *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
+        )
+        
+        
         assert False
     
     # def validation_step(self, batch, batch_idx, split='val'):
