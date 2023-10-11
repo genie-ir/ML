@@ -99,7 +99,7 @@ class FUM(plModuleBase):
         else:
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-
+        return self.generator.ce(dr_pred, batch['y_edit'])
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
         # Q, qloss1 = self.vqgan.encode(x)
@@ -130,9 +130,8 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         
-        self.check_dr(batch, kwargs['split'], self.generator.softmax(self.dr_classifire((batch['xs']+1) * 127.5)[0]))
+        return self.check_dr(batch, kwargs['split'], self.generator.softmax(self.dr_classifire((batch['xs']+1) * 127.5)[0]))
         
-        return
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
         xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
 
