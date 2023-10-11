@@ -93,6 +93,8 @@ class FUM(plModuleBase):
     
     def check_dr(self, batch, split, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
+        batch['y_edit'] = batch['y_edit'].to('cuda')
+        print('!!!!!!!!!!!!!!!', batch['y_edit'])
         if split == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
@@ -100,7 +102,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'].to('cuda'))
+        loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'])
         return loss, dict(loss=loss.cpu().detach().item())
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 

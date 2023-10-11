@@ -35,6 +35,18 @@ dr_transformer = A.Compose([
 ])
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
+        y = kwargs['y']
+        # print('--------------------------------->', y)
+        if y == 0 or y == 1:
+            y_edit = 0
+        elif y == 2 or y == 3:
+            y_edit = 1
+        elif y == 4:
+            y_edit = 2
+        else:
+            assert False
+
+
         xc1 = (dr_transformer(image=np.array(Image.open(
                 os.path.join(self.path_grade2, self.grade2[kwargs['i'] % self.grade2_len])
             )))['image'] / 127.5) - 1
@@ -47,7 +59,7 @@ class D_DR(D_Base):
             'xc': [
                 xc1, xc2
             ],
-            'y_edit': kwargs['y'] # DELETE: any other case of DR it must be comment out.
+            'y_edit': y_edit # DELETE: any other case of DR it must be comment out.
         }
 
 
