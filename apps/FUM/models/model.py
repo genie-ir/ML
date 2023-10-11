@@ -99,7 +99,9 @@ class FUM(plModuleBase):
         else:
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
-        return self.generator.ce(dr_pred, batch['y_edit'])
+        
+        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        return loss, dict(loss=loss.cpu().detach().item())
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
         # Q, qloss1 = self.vqgan.encode(x)
