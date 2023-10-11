@@ -90,6 +90,9 @@ class FUM(plModuleBase):
 
     
     # NOTE: DR_CLASSIFIRE Training function.
+    def normal_for_drc(self, xr1):
+        xr1 = ((xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)).detach()
+        return xr1
     
     def check_dr(self, batch, split, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
@@ -133,7 +136,9 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         
-        return self.check_dr(batch, kwargs['split'], self.generator.softmax(self.dr_classifire((batch['xs']+1) * 127.5)[0]))
+        return self.check_dr(batch, kwargs['split'], self.generator.softmax(self.dr_classifire(
+            self.normal_for_drc((batch['xs']+1) * 127.5)
+            )[0]))
         
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
         xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
