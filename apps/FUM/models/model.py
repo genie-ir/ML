@@ -512,11 +512,7 @@ class FUM_DR(FUM):
         ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/last.ckpt'
         print('before', self.dr_classifire.classifier3[0].weight[0,:5])
         self.generator.dr_classifire = self.dr_classifire
-        self.init_from_ckpt(ckpt, strict=True, ignore_keys=[
-            'generator.testvar',
-            'generator.P',
-            'generator.EncoderModel'
-        ])
+        self.init_from_ckpt(ckpt, strict=True)
         self.dr_classifire = self.generator.dr_classifire
         del self.generator.dr_classifire
         print('after', self.dr_classifire.classifier3[0].weight[0,:5])

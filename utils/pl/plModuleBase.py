@@ -258,11 +258,12 @@ class plModuleBase(pl.LightningModule):
     
     def init_from_ckpt(self, path, ignore_keys=list(), strict=False):
         """It can be overwrite in child class"""
-        print('@@@@@@@@@@@@@@@', self.load_from_checkpoint) # self.load_from_checkpoint('.ckpt')
+        # print('@@@@@@@@@@@@@@@', self.load_from_checkpoint) # self.load_from_checkpoint('.ckpt')
         # assert False
+        
         logger.critical(f'Restored from {path}')
         sd = torch.load(path, map_location='cpu')['state_dict'] # real code
-        
+        print(sd.keys())
         
         
         test_ckpt = torch.load(path, map_location=lambda storage, loc: storage)
