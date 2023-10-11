@@ -94,7 +94,7 @@ class FUM(plModuleBase):
         xr1 = ((xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)).detach()
         return xr1
     
-    def check_dr(self, batch, split, dr_pred):
+    def check_dr(self, batch, split, batch_index, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
         
         
@@ -108,6 +108,8 @@ class FUM(plModuleBase):
         
         # loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'])
         loss = self.generator.ce(dr_pred, batch['y_edit'])
+        if batch_index % 400 == 0:
+            print('loss --->', loss.cpu().detach().item())
         return loss, dict(loss=loss.cpu().detach().item())
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
@@ -139,7 +141,7 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         
-        return self.check_dr(batch, kwargs['split'], self.generator.softmax(self.generator.dr_classifire(
+        return self.check_dr(batch, kwargs['split'], kwargs['batch_index'], self.generator.softmax(self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
             )[0]))
         
