@@ -540,8 +540,6 @@ class FUM_DR(FUM):
         )
         
         
-        assert False
-    
     # def validation_step(self, batch, batch_idx, split='val'):
     #     self.generator.dr_classifire.train()
     #     torch.set_grad_enabled(True)
