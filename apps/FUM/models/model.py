@@ -103,7 +103,8 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'])
+        # loss = self.generator.testvar * self.generator.ce(dr_pred, batch['y_edit'])
+        loss = self.generator.ce(dr_pred, batch['y_edit'])
         return loss, dict(loss=loss.cpu().detach().item())
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
@@ -135,7 +136,7 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         
-        return self.check_dr(batch, kwargs['split'], self.generator.softmax(self.dr_classifire(
+        return self.check_dr(batch, kwargs['split'], self.generator.softmax(self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
             )[0]))
         
@@ -510,8 +511,8 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
 
-        self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.dr_classifire = self.dr_classifire.to('cuda')
+        self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        self.generator.dr_classifire = self.dr_classifire.to('cuda')
         # self.generator.dr_classifire = self.dr_classifire
         # self.dr_classifire.requires_grad_(False) # delete
 
@@ -531,13 +532,13 @@ class FUM_DR(FUM):
         self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
         
         
-        
-        self.generator.testvar = nn.Parameter(torch.randn((1,)))
-        self.generator.P = nn.Parameter(torch.randn((256,)))
+        # TODO uncumment
+        # self.generator.testvar = nn.Parameter(torch.randn((1,)))
+        # self.generator.P = nn.Parameter(torch.randn((256,)))
 
-        self.generator.EncoderModel = torch.nn.Sequential(
-            *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
-        )
+        # self.generator.EncoderModel = torch.nn.Sequential(
+        #     *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
+        # )
         
         
     # def validation_step(self, batch, batch_idx, split='val'):
