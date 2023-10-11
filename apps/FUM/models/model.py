@@ -518,7 +518,7 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
         self.vqgan.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt')
-        ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/e370.ckpt'
+        ckpt = '/content/drive/MyDrive/storage/ML_Framework/_jadid__FUM/logs/2023-09-22T12-23-17_svlgan_dr/checkpoints/last.ckpt'
         self.init_from_ckpt(ckpt)
 
     # def validation_step(self, batch, batch_idx, split='val'):
