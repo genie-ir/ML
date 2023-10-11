@@ -510,8 +510,9 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
 
-        self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
+        self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        self.dr_classifire = self.dr_classifire.to('cuda')
+        self.generator.dr_classifire = self.dr_classifire
         # self.dr_classifire.requires_grad_(False) # delete
 
 
