@@ -141,7 +141,7 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         
-        return self.check_dr(batch, kwargs['split'], kwargs['batch_index'], self.generator.softmax(self.generator.dr_classifire(
+        return self.check_dr(batch, kwargs['split'], kwargs['batch_idx'], self.generator.softmax(self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
             )[0]))
         
