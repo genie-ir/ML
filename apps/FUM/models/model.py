@@ -130,9 +130,13 @@ class FUM(plModuleBase):
 
     def generator_step__drcalgo(self, batch, **kwargs):
         dr_logits = self.dr_classifire((batch['xs']+1) * 127.5)[0]
+        drs = self.generator.softmax(dr_logits)
+        drce = self.generator.ce(drs, (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long())
         print(batch['xs'].shape, dr_logits.shape)
-        self.check_dr(batch, kwargs['split'], 
-                      self.generator.ce(self.generator.softmax(dr_logits), (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()))
+        print(drs.shape)
+        print(drce)
+        assert False
+        # self.check_dr(batch, kwargs['split'])
         
         return
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
