@@ -92,7 +92,6 @@ class FUM(plModuleBase):
     # NOTE: DR_CLASSIFIRE Training function.
     
     def check_dr(self, batch, split, dr_pred):
-        print(dr_pred.shape)
         if split == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
@@ -129,14 +128,9 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
-        dr_logits = self.dr_classifire((batch['xs']+1) * 127.5)[0]
-        drs = self.generator.softmax(dr_logits)
-        drce = self.generator.ce(drs, (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long())
-        print(batch['xs'].shape, dr_logits.shape)
-        print(drs.shape)
-        print(drce)
-        assert False
-        # self.check_dr(batch, kwargs['split'])
+        
+        self.check_dr(batch, kwargs['split'],
+                              (self.generator.softmax(dr_logits = self.dr_classifire((batch['xs']+1) * 127.5)[0]), (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()))
         
         return
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
