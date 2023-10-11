@@ -92,6 +92,7 @@ class FUM(plModuleBase):
     # NOTE: DR_CLASSIFIRE Training function.
     
     def check_dr(self, batch, split, dr_pred):
+        batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
         if split == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
