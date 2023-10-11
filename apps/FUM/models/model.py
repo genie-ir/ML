@@ -99,7 +99,6 @@ class FUM(plModuleBase):
 
         Pbenuli = torch.sigmoid(self.generator.P).round()
         z = Pbenuli * zs + (1 - Pbenuli) * zc
-        print('!!!!!!!!!!!!', z.shape)
         # signal_save(torch.cat([
         #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zs)).detach(),
         #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zc1)).detach(),
@@ -107,7 +106,6 @@ class FUM(plModuleBase):
         # ], dim=0), f'/content/test.png', stype='img', sparams={'chw2hwc': True, 'nrow': batchsize})
 
         z = self.generator.EncoderModel(z) # TODO
-        print('@@@@@@@@@@@@', z.shape)
         # print('------------------>', self.generator.EncoderModel[0].linear1.weight[0,0])
 
 
@@ -141,7 +139,6 @@ class FUM(plModuleBase):
         
         loss = drloss1 + drloss2 + aeloss1 + aeloss2
 
-        print('loss', loss, drloss1, drloss2, aeloss1, aeloss2)
         # assert False
         return loss, dict(loss=loss.cpu().detach().item())
 
