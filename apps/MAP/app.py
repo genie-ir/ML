@@ -26,7 +26,8 @@ class App(AppBase):
             cls.validate()
             try:
                 cls.fit()
-            except Exception:
+            except Exception as e:
+                logger.error(e)
                 SignalHandler.melk()
                 raise
             cls.validate()
