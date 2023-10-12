@@ -130,7 +130,7 @@ class ConfigBase:
         
         config.model['params']['ckpt'] = str(opt.resume_from_checkpoint or config.model['params'].get('ckpt', ''))
         if opt.resume_from_checkpoint:
-            opt.resume_from_checkpoint = 'opt.resume_from_checkpoint'
+            opt.resume_from_checkpoint = None
             # opt.resume_from_checkpoint = {
             #     'file': opt.resume_from_checkpoint,
             #     'strict': False
