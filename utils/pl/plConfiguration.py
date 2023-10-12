@@ -129,7 +129,11 @@ class ConfigBase:
             config.model['params']['Rfn'] = opt.Rfn
         
         config.model['params']['ckpt'] = str(opt.resume_from_checkpoint or config.model['params'].get('ckpt', ''))
-        
+        if opt.resume_from_checkpoint:
+            opt.resume_from_checkpoint = {
+                'file': opt.resume_from_checkpoint,
+                'strict': False
+            }
         config.model['params']['set_default_tensor_type'] = str(config.model['params'].get('set_default_tensor_type', 'float32'))
         if config.model['params']['set_default_tensor_type'] == 'float64':
             torch.set_default_tensor_type(torch.DoubleTensor) # change default from torch.float32 -> torch.float64
