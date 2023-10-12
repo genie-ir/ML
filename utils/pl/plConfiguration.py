@@ -290,7 +290,6 @@ class ConfigBase:
         # del trainer_kwargs['']
         trainer_opt.resume_from_checkpoint = {'file': trainer_opt.resume_from_checkpoint, 'strict': False}
         print(trainer_opt)
-        assert False
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
         for tl in trainer.loggers:
             handiCall = getattr(tl, 'setter_handiCall', lambda *args, **kwargs: None)
