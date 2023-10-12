@@ -288,8 +288,8 @@ class ConfigBase:
             trainer_kwargs['callbacks'].append(_checkpoint_callback)
 
         # del trainer_kwargs['']
-        # trainer_opt.resume_from_checkpoint = None # {'file': trainer_opt.resume_from_checkpoint, 'strict': False}
-        trainer_opt.strict = False
+        trainer_opt.resume_from_checkpoint = None # {'file': trainer_opt.resume_from_checkpoint, 'strict': False}
+        # trainer_opt.strict = False
         print(trainer_opt)
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
         for tl in trainer.loggers:
