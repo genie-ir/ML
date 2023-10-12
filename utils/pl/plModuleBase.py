@@ -211,12 +211,14 @@ class plModuleBase(pl.LightningModule):
 
         self.ignore_keys = list(kwargs.get('ignore_keys', []))
         self.ckpt = str(kwargs.get('ckpt', ''))
-        if bool(self.ckpt):
-            self.init_from_ckpt(self.ckpt, strict=False, ignore_keys=self.ignore_keys)
-        
+        self.call_init_from_ckpt()
         self.__ebb = EBB(DEBUG=bool(kwargs.get('DEBUG', False)))
         
         self.start()
+
+    def call_init_from_ckpt(self):
+        if bool(self.ckpt):
+            self.init_from_ckpt(self.ckpt, strict=False, ignore_keys=self.ignore_keys)
 
     def start(self):
         pass
@@ -256,7 +258,7 @@ class plModuleBase(pl.LightningModule):
     def net2pipline(self, netname):
         return f'{netname}Step'
     
-    def init_from_ckpt(self, path, ignore_keys=list(), strict=False):
+    def init_from_ckpt(self, path, ignore_keys=list(), strict=False, just_return_sd=False):
         """It can be overwrite in child class"""
         # print('@@@@@@@@@@@@@@@', self.load_from_checkpoint) # self.load_from_checkpoint('.ckpt')
         # assert False
@@ -265,7 +267,8 @@ class plModuleBase(pl.LightningModule):
         logger.critical(f'Restored from {path}')
         sd = torch.load(path, map_location='cpu')['state_dict'] # real code
         print(sd.keys())
-        
+        if just_return_sd:
+            return sd
         
         # test_ckpt = torch.load(path, map_location=lambda storage, loc: storage)
         # test_sd = test_ckpt['state_dict']
