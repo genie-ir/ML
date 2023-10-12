@@ -327,7 +327,6 @@ class FUM(plModuleBase):
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
         self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)#.transpose(0,1).transpose(1,2)
-        self.generator.ce = nn.CrossEntropyLoss(weight=self.dr_weight)
         self.generator.softmax = torch.nn.Softmax(dim=1)
         self.t_ypred = []
         self.t_ygrnt = []
@@ -522,7 +521,7 @@ class FUM_DR(FUM):
             '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
         )
         self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
-        
+        self.generator.ce = nn.CrossEntropyLoss(weight=self.dr_weight)
         
         
         
