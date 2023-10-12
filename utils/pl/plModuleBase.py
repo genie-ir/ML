@@ -280,7 +280,7 @@ class plModuleBase(pl.LightningModule):
                 if k.startswith(ik):
                     print('Deleting key {} from state_dict.'.format(k))
                     del sd[k]
-        self.load_state_dict(sd, strict=strict)
+        self.load_state_dict(sd, strict=False)
     
     def predefined_net_step_master0(self, net):
         pipline_name = f'{net}_step'
