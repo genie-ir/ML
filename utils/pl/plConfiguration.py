@@ -129,8 +129,7 @@ class ConfigBase:
             config.model['params']['Rfn'] = opt.Rfn
         
         config.model['params']['ckpt'] = str(opt.resume_from_checkpoint or config.model['params'].get('ckpt', ''))
-        if opt.resume_from_checkpoint:
-            opt.resume_from_checkpoint = None
+        # if opt.resume_from_checkpoint:
             # opt.resume_from_checkpoint = {
             #     'file': opt.resume_from_checkpoint,
             #     'strict': False
@@ -289,6 +288,7 @@ class ConfigBase:
             trainer_kwargs['callbacks'].append(_checkpoint_callback)
 
         # del trainer_kwargs['']
+        trainer_opt.resume_from_checkpoint = {'file': trainer_opt.resume_from_checkpoint, 'strict': False}
         print(trainer_opt)
         assert False
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
