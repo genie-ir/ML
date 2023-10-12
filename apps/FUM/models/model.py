@@ -106,7 +106,7 @@ class FUM(plModuleBase):
         #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.ce(dr_pred, batch['y_edit'], weight=self.dr_weight)
+        loss = self.generator.ce(dr_pred, batch['y_edit'])
         
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
@@ -327,7 +327,7 @@ class FUM(plModuleBase):
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
         self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)#.transpose(0,1).transpose(1,2)
-        self.generator.ce = nn.CrossEntropyLoss()
+        self.generator.ce = nn.CrossEntropyLoss(weight=self.dr_weight)
         self.generator.softmax = torch.nn.Softmax(dim=1)
         self.t_ypred = []
         self.t_ygrnt = []
