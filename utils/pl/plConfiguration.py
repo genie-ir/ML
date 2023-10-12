@@ -289,7 +289,7 @@ class ConfigBase:
             trainer_kwargs['callbacks'].append(_checkpoint_callback)
 
         # del trainer_kwargs['']
-        print(trainer_kwargs)
+        print(trainer_opt)
         assert False
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
         for tl in trainer.loggers:
