@@ -120,6 +120,7 @@ class FUM(plModuleBase):
         zc = self.vqgan.phi2lat(batch['xc'][clable-1]).float().flatten(1)
 
         Pbenuli = torch.sigmoid(self.generator.P).round()
+
         z = Pbenuli * zs + (1 - Pbenuli) * zc
         # signal_save(torch.cat([
         #     self.vqgan_fn_phi_denormalize(self.vqgan.lat2phi(zs)).detach(),
@@ -311,7 +312,7 @@ class FUM(plModuleBase):
         for cidx in range(self.nclasses):
             # print('----grad---->', self.generator.scodebook.embedding.weight.grad)
             batch['cidx'] = cidx
-            batch['bidx'] = batch_idx
+            batch['bidx'] = batch_idx 
             batch[self.signal_key] = self.generator.scodebook.fwd_nbpi(B).exp() #.clone()
             super().training_step(batch, batch_idx, split)
         # print(f'iter{batch_idx} | after', self.generator.scodebook.embedding.weight[B[0],0], self.generator.scodebook.embedding.weight[B[0],0].exp())
