@@ -523,7 +523,6 @@ class FUM_DR(FUM):
         # )
         self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
         self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
-        assert False
         
         
         
