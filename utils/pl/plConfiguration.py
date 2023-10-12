@@ -288,6 +288,9 @@ class ConfigBase:
         if app_cfg_master['callback']['bestCKPT'].get('@off', False) == False:
             trainer_kwargs['callbacks'].append(_checkpoint_callback)
 
+        # del trainer_kwargs['']
+        print(trainer_kwargs)
+        assert False
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
         for tl in trainer.loggers:
             handiCall = getattr(tl, 'setter_handiCall', lambda *args, **kwargs: None)
