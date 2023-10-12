@@ -519,9 +519,10 @@ class FUM_DR(FUM):
         super().start(dr_vs_synthesis_flag=False)
         self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
-        print(self.generator.dr_classifire)
+        print('before', self.generator.dr_classifire.classifier1[2].weight[10, :10])
         # self.generator.dr_classifire.requires_grad_(False) # delete
         self.init_from_ckpt('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt')
+        print('after', self.generator.dr_classifire.classifier1[2].weight[10, :10])
         # self.generator.dr_classifire.load_state_dict(sd, strict=False)
         self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
         self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
