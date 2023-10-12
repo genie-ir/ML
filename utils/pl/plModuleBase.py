@@ -212,7 +212,7 @@ class plModuleBase(pl.LightningModule):
         self.ignore_keys = list(kwargs.get('ignore_keys', []))
         self.ckpt = str(kwargs.get('ckpt', ''))
         if bool(self.ckpt):
-            self.init_from_ckpt(self.ckpt, ignore_keys=self.ignore_keys)
+            self.init_from_ckpt(self.ckpt, strict=False, ignore_keys=self.ignore_keys)
         
         self.__ebb = EBB(DEBUG=bool(kwargs.get('DEBUG', False)))
         
