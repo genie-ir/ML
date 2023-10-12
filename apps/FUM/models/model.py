@@ -106,7 +106,7 @@ class FUM(plModuleBase):
         #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
         #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        loss = self.generator.cew(dr_pred, batch['y_edit'])
         
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
@@ -135,7 +135,7 @@ class FUM(plModuleBase):
         xr1 = ((xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)).detach()
         xr1 = dzq_dz_eq1(xr1, xrec1)
 
-        drloss1 = self.generator.ce(self.generator.softmax(self.dr_classifire(xr1)[0]), (clable * torch.ones((batchsize,), device=self.device)).long())
+        drloss1 = self.generator.cew(self.generator.softmax(self.dr_classifire(xr1)[0]), (clable * torch.ones((batchsize,), device=self.device)).long())
         aeloss1, log_dict_ae = self.vqgan.loss(0, batch['xs'], xrec1, 0, self.global_step, last_layer=self.vqgan.get_last_layer(), split="train")
         return xrec1, drloss1, aeloss1
 
@@ -322,7 +322,7 @@ class FUM(plModuleBase):
         self.gamma = - 0.1
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 
-
+        self.generator.ce = nn.CrossEntropyLoss()
         self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
@@ -521,7 +521,7 @@ class FUM_DR(FUM):
             '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
         )
         self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
-        self.generator.ce = nn.CrossEntropyLoss(weight=self.dr_weight)
+        self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
         
         
         
