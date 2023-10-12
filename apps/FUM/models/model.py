@@ -78,8 +78,8 @@ class FUM(plModuleBase):
     # def resnet50(self, model):
     #     model.fc = nn.Linear(model.fc.in_features, 1)
     #     return model
-    def call_init_from_ckpt(self):
-        pass
+    # def call_init_from_ckpt(self):
+    #     pass
 
     # NOTE: asli
     # def generator_step__drcalgo(self, batch, **kwargs):
@@ -519,12 +519,12 @@ class FUM_DR(FUM):
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         # self.generator.dr_classifire.requires_grad_(False) # delete
         # self.init_from_ckpt
-        sd = self.init_from_ckpt(
-            '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt', just_return_sd=True)
-        self.generator.dr_classifire.load_state_dict(sd, strict=False)
+        # sd = self.init_from_ckpt(
+        #     '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt', just_return_sd=True)
+        # self.generator.dr_classifire.load_state_dict(sd, strict=False)
         self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
         self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
-        
+        print('999999999999999999999999999999999999999999999999999999')
         
         
         
