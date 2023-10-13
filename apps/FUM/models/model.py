@@ -145,8 +145,9 @@ class FUM(plModuleBase):
     def generator_step__drcalgo(self, batch, **kwargs):
         drpred = self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
-        )[0]
+        )[0].unsqueeze(0)
         print('dr_pred', drpred, drpred.shape)
+        assert False
         return self.check_dr(
             batch, kwargs['split'], 
             kwargs['batch_idx'], 
@@ -530,7 +531,7 @@ class FUM_DR(FUM):
         self.generator.dr_classifire = vgg16(pretrained=True)
         self.generator.dr_classifire.classifier[-1] = nn.Linear(in_features=4096, out_features=3)
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
-        print(self.generator.dr_classifire )
+        # print(self.generator.dr_classifire )
         # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         
