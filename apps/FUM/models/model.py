@@ -528,8 +528,9 @@ class FUM_DR(FUM):
         super().start(dr_vs_synthesis_flag=False)
         from torchvision.models import vgg16
         self.generator.dr_classifire = vgg16(pretrained=True)
-        self.generator.dr_classifire.classifier[-1].out_features = 3 
+        self.generator.dr_classifire.classifier[-1] = nn.Linear(in_features=4096, out_features=3)
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
+        print(self.generator.dr_classifire )
         # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         
