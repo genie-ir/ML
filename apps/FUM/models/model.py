@@ -531,7 +531,7 @@ class FUM_DR(FUM):
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         for param in self.generator.dr_classifire.parameters():
             param.requires_grad = False
-        for i in [0, 3, 6]:
+        for i in [3, 6]:
             for param in self.generator.dr_classifire.classifier[i].parameters():
                 param.requires_grad = True
         # print(self.generator.dr_classifire )
