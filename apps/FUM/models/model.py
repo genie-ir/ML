@@ -110,7 +110,7 @@ class FUM(plModuleBase):
         
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         
-        if batch_index % 400 == 0:
+        if batch_index % 1000 == 0:
             print('loss --->', loss.cpu().detach().item())
         return loss, dict(loss=loss.cpu().detach().item())
     
