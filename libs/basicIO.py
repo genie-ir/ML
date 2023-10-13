@@ -77,7 +77,7 @@ def puml(src_fname: str, dst_fname: str, **kwargs):
         join(kwargs.get('dst_dpath', getenv('GENIE_ML_REPORT')), dst_fname)
     ))
 
-def cmatrix(y_true, y_pred, path, normalize=False):
+def cmatrix(y_true, y_pred, path, normalize=False, title='Confusion Matrix'):
     conf_matrix = confusion_matrix(y_true=y_true, y_pred=y_pred)
     print(conf_matrix)
     if normalize:
@@ -89,7 +89,7 @@ def cmatrix(y_true, y_pred, path, normalize=False):
     fig, ax = plot_confusion_matrix(conf_mat=conf_matrix, figsize=(6, 6), cmap=plt.cm.Greens)
     plt.xlabel('Predictions', fontsize=18)
     plt.ylabel('Actuals', fontsize=18)
-    plt.title('Confusion Matrix', fontsize=18)
+    plt.title(title, fontsize=18)
     fig.savefig(path, dpi=1200)
     # cm_analysis(list(y_true), list(y_pred), [
     #     'NO-DR','NPDR','PDR'
