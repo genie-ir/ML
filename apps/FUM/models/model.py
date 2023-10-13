@@ -566,13 +566,13 @@ class FUM_DR(FUM):
         # )
         
         
-    def validation_step(self, batch, batch_idx, split='val'):
-        self.generator.dr_classifire.train()
-        torch.set_grad_enabled(True)
-        super().training_step(batch, batch_idx, 'train')
-        self.generator.dr_classifire.eval()
-        torch.set_grad_enabled(False)
-        return super().validation_step(batch, batch_idx, split)
+    # def validation_step(self, batch, batch_idx, split='val'):
+    #     self.generator.dr_classifire.train()
+    #     torch.set_grad_enabled(True)
+    #     super().training_step(batch, batch_idx, 'train')
+    #     self.generator.dr_classifire.eval()
+    #     torch.set_grad_enabled(False)
+    #     return super().validation_step(batch, batch_idx, split)
 
     def on_train_epoch_end(self):
         self.v_ygrnt = self.v_ygrnt + [1,2]
