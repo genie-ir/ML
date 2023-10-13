@@ -100,12 +100,12 @@ class FUM(plModuleBase):
         
         
         # TODO uncomment it
-        if split == 'train':
-            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-        else:
-            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # if split == 'train':
+        #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # else:
+        #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
         
         loss = self.generator.ce(dr_pred, batch['y_edit'])
@@ -529,6 +529,12 @@ class FUM_DR(FUM):
         self.generator.dr_classifire = vgg16(pretrained=True)
         self.generator.dr_classifire.classifier[-1] = nn.Linear(in_features=4096, out_features=3)
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
+        for param in self.generator.dr_classifire.parameters():
+            param.requires_grad = False
+        for param in self.generator.dr_classifire.classifier[-1].parameters():
+            param.requires_grad = True
+            print(param)
+        assert False
         # print(self.generator.dr_classifire )
         # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
@@ -537,11 +543,11 @@ class FUM_DR(FUM):
         
         # print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.generator.dr_classifire.requires_grad_(False) # delete
-        self.init_from_ckpt(
-            # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
-            # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-12T14-34-38_svlgan_dr/checkpoints/e300pretrain.ckpt'
-            '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T11-24-18_svlgan_dr/checkpoints/E56.ckpt'
-        )
+        # self.init_from_ckpt(
+        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
+        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-12T14-34-38_svlgan_dr/checkpoints/e300pretrain.ckpt'
+        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T11-24-18_svlgan_dr/checkpoints/E56.ckpt'
+        # )
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
         # self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
@@ -582,14 +588,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    def on_train_epoch_end(self):
-        self.v_ygrnt = self.v_ygrnt + [1,2]
-        self.t_ygrnt = self.t_ygrnt + [1,2]
-        self.v_ypred = self.v_ypred + [1,2]
-        self.t_ypred = self.t_ypred + [1,2]
-        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before')
-        assert False, 'END-TRAINING'
+    # def on_train_epoch_end(self):
+    #     self.v_ygrnt = self.v_ygrnt + [1,2]
+    #     self.t_ygrnt = self.t_ygrnt + [1,2]
+    #     self.v_ypred = self.v_ypred + [1,2]
+    #     self.t_ypred = self.t_ypred + [1,2]
+    #     # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before')
+    #     assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
