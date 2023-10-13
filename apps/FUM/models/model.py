@@ -107,7 +107,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        print('dr_pred', dr_pred, dr_pred.shape)
+        
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         
         if batch_index % 400 == 0:
@@ -143,10 +143,17 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
-        
-        return self.check_dr(batch, kwargs['split'], kwargs['batch_idx'], self.generator.softmax(self.generator.dr_classifire(
+        drpred = self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
-            )[0]))
+        )[0]
+        print('dr_pred', drpred, drpred.shape)
+        return self.check_dr(
+            batch, kwargs['split'], 
+            kwargs['batch_idx'], 
+            self.generator.softmax(
+                drpred
+            )
+        )
         
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
         xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
