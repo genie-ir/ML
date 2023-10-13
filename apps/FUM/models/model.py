@@ -107,6 +107,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
+        print('dr_pred', dr_pred, dr_pred.shape)
         loss = self.generator.ce(dr_pred, batch['y_edit'])
         
         if batch_index % 400 == 0:
