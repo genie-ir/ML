@@ -45,11 +45,31 @@ class D_DR(D_Base):
         #     y_edit = 2
         # else:
         #     assert False
+
+
+        
+        # [[575 105   0]
+        #  [ 57 392   0]
+        #  [ 11  61   1]]
+        # if y == 0 or y == 1:
+        #     y_edit = 0
+        # elif y == 2 or y == 3:
+        #     y_edit = 1
+        # elif y == 4:
+        #     y_edit = 2
+        # else:
+        #     assert False
+        
+        
+        
+        
+        
+        
         if y == 0 or y == 1:
             y_edit = 0
-        elif y == 2 or y == 3:
+        elif y == 2:
             y_edit = 1
-        elif y == 4:
+        elif y == 3 or y == 4:
             y_edit = 2
         else:
             assert False

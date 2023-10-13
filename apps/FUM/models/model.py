@@ -107,7 +107,7 @@ class FUM(plModuleBase):
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
-        loss = self.generator.cew(dr_pred, batch['y_edit'])
+        loss = self.generator.ce(dr_pred, batch['y_edit'])
         
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
@@ -518,18 +518,25 @@ class FUM_DR(FUM):
         pass
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
-        self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        from torchvision.models import vgg16
+        self.generator.dr_classifire = vgg16(pretrained=True)
+        print(self.generator.dr_classifire)
+        self.generator.dr_classifire.classifier[-1] = nn.Linear(in_features=4096, out_features=3)
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
+        # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
+        
+        
+        
         # print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.generator.dr_classifire.requires_grad_(False) # delete
-        self.init_from_ckpt(
-            # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
-            '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-12T14-34-38_svlgan_dr/checkpoints/e300pretrain.ckpt'
-        )
+        # self.init_from_ckpt(
+        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
+        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-12T14-34-38_svlgan_dr/checkpoints/e300pretrain.ckpt'
+        # )
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        # self.generator.dr_classifire.load_state_dict(sd, strict=False)
-        self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
-        self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
+        # self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
+        # self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
         # assert False
         
         
@@ -559,13 +566,13 @@ class FUM_DR(FUM):
         # )
         
         
-    # def validation_step(self, batch, batch_idx, split='val'):
-    #     self.generator.dr_classifire.train()
-    #     torch.set_grad_enabled(True)
-    #     super().training_step(batch, batch_idx, 'train')
-    #     self.generator.dr_classifire.eval()
-    #     torch.set_grad_enabled(False)
-    #     return super().validation_step(batch, batch_idx, split)
+    def validation_step(self, batch, batch_idx, split='val'):
+        self.generator.dr_classifire.train()
+        torch.set_grad_enabled(True)
+        super().training_step(batch, batch_idx, 'train')
+        self.generator.dr_classifire.eval()
+        torch.set_grad_enabled(False)
+        return super().validation_step(batch, batch_idx, split)
 
     def on_train_epoch_end(self):
         self.v_ygrnt = self.v_ygrnt + [1,2]
