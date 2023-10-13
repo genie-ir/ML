@@ -533,6 +533,8 @@ class FUM_DR(FUM):
             param.requires_grad = False
         for param in self.generator.dr_classifire.classifier[-1].parameters():
             param.requires_grad = True
+        print(self.generator.dr_classifire)
+        assert False
         # print(self.generator.dr_classifire )
         # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
