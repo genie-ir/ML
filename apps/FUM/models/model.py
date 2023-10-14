@@ -116,16 +116,24 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.generator.dr_classifire(
-            self.normal_for_drc((batch['xs']+1) * 127.5)
-        )[0] #.unsqueeze(0)
-        return self.check_dr(
-            batch, kwargs['split'], 
-            kwargs['batch_idx'], 
-            self.generator.softmax(
-                drpred
-            )
-        )
+        # drpred = self.generator.dr_classifire(
+        #     self.normal_for_drc((batch['xs']+1) * 127.5)
+        # )[0] #.unsqueeze(0)
+        # return self.check_dr(
+        #     batch, kwargs['split'], 
+        #     kwargs['batch_idx'], 
+        #     self.generator.softmax(
+        #         drpred
+        #     )
+        # )
+        
+        drpred = self.generator.vggout(self.generator.vgg16(
+            batch['xs'] # normalized like this: xs = xs/127.5 - 1
+        )).unsqueeze(0)
+        print(drpred, drpred.shape)
+        assert False
+
+
     
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
         # Q, qloss1 = self.vqgan.encode(x)
@@ -531,33 +539,37 @@ class FUM_DR(FUM):
         super().start(dr_vs_synthesis_flag=False)
         
         from torchvision.models import vgg16
-        self.vgg16 = vgg16(pretrained=True)
-        print(self.vgg16)
-        for param in self.vgg16.parameters():
+        self.generator.vgg16 = vgg16(pretrained=True)
+        print(self.generator.vgg16)
+        for param in self.generator.vgg16.parameters():
             param.requires_grad = False
-        self.generator.vggout = nn.Linear(in_features=4096, out_features=3)
+        for i in [3, 6]:
+            for param in self.generator.vgg16.classifier[i].parameters():
+                param.requires_grad = True
+        self.generator.vggout = nn.Linear(in_features=1000, out_features=3)
         
-        assert False
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         # for i in [3, 6]:
         #     for param in self.generator.dr_classifire.classifier[i].parameters():
         #         param.requires_grad = True
         # print(self.generator.dr_classifire )
         
-        self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
-        self.generator.dr_classifire.requires_grad_(True)
-        self.generator.dr_classifire.train()
-        # self.generator.ptest_landa = nn.Parameter(torch.rand((1,)))
-        print(self.generator.dr_classifire)
-        print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        sd = torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict']
-        self.load_state_dict(
-            sd, strict=False        
-        )
-        print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        # assert False
+        # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
+        # self.generator.dr_classifire.requires_grad_(True)
+        # self.generator.dr_classifire.train()
+        # print(self.generator.dr_classifire)
+        # print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
+        # sd = torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict']
+        # self.load_state_dict(
+        #     sd, strict=False        
+        # )
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
+        # assert False
+        
+        
+        
+        
         # self.generator.dr_classifire.classifier1[2].weight.register_hook(lambda grad: print(grad.abs().sum().item()))
         # self.generator.ptest_landa.register_hook(lambda grad: print('landa', grad))
         
@@ -601,14 +613,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    # def on_train_epoch_end(self):
-    #     self.v_ygrnt = self.v_ygrnt + [1,2]
-    #     self.t_ygrnt = self.t_ygrnt + [1,2]
-    #     self.v_ypred = self.v_ypred + [1,2]
-    #     self.t_ypred = self.t_ypred + [1,2]
-    #     # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
-    #     assert False, 'END-TRAINING'
+    def on_train_epoch_end(self):
+        self.v_ygrnt = self.v_ygrnt + [1,2]
+        self.t_ygrnt = self.t_ygrnt + [1,2]
+        self.v_ypred = self.v_ypred + [1,2]
+        self.t_ypred = self.t_ypred + [1,2]
+        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
+        assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
