@@ -551,8 +551,9 @@ class FUM_DR(FUM):
         #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T14-14-11_svlgan_dr/checkpoints/e100.ckpt'
         #     '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt'
         # )
-        self.generator.dr_classifire.load(
-            torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict']
+        self.generator.dr_classifire.load_state_dict(
+            torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict'],
+            strict=False        
         )
         print('after', self.generator.dr_classifire.classifier3[0].weight[10, :10])
 
