@@ -544,7 +544,7 @@ class FUM_DR(FUM):
         self.generator.dr_classifire.train()
         # self.generator.ptest_landa = nn.Parameter(torch.rand((1,)))
         print(self.generator.dr_classifire)
-        print('before', self.generator.dr_classifire.classifier3[0].weight[10, :10])
+        print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.generator.dr_classifire.requires_grad_(False) # delete
         # self.init_from_ckpt(
         #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
@@ -557,8 +557,8 @@ class FUM_DR(FUM):
             torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict'],
             strict=False        
         )
-        print('after', self.generator.dr_classifire.classifier3[0].weight[10, :10])
-        self.generator.dr_classifire.classifier3[2].weight.register_hook(lambda grad: print(grad))
+        print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
+        self.generator.dr_classifire.classifier1[2].weight.register_hook(lambda grad: print(grad))
         # self.generator.ptest_landa.register_hook(lambda grad: print('landa', grad))
         
         # assert False

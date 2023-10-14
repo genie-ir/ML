@@ -200,7 +200,6 @@ class TaskNet(nn.Module):
             x1 = torch.cat((x1_bam, UM_att), dim = 1)
 
             out_T = self.classifier1(x1)
-            print(out_T, out_T.shape)
             out_M = self.classifier2(x2_bam)
             out_IQ = self.classifier3(x3_bam)
         
