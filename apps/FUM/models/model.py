@@ -116,7 +116,7 @@ class FUM(plModuleBase):
         drpred = self.generator.vggout(self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
         ))
-        drpred.register_hook(lambda grad: print('drpred', grad))
+        # drpred.register_hook(lambda grad: print('drpred', grad))
         return self.check_dr(
             batch['y_edit'], kwargs['split'], kwargs['batch_idx'], 
             # self.generator.softmax(
@@ -615,7 +615,7 @@ class FUM_DR(FUM):
         self.v_ypred = self.v_ypred + [1,2]
         self.t_ypred = self.t_ypred + [1,2]
         # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before DR classifire')
         assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
