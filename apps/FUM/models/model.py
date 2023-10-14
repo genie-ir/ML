@@ -96,16 +96,17 @@ class FUM(plModuleBase):
         return xr1
     
     def check_dr(self, y_edit, split, batch_index, dr_pred):
+        dr_pred_s = self.generator.softmax(dr_pred)
         # TODO uncomment it
         if split == 'train':
-            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.t_ypred = self.t_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
             self.t_ygrnt = self.t_ygrnt + list(y_edit.cpu().numpy())
         else:
-            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+            self.v_ypred = self.v_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
             self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
         
         
-        loss = self.generator.ce(dr_pred, y_edit)
+        loss = self.generator.ce(dr_pred, y_edit) # cross entropy doing softmax inide of own.
         
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
@@ -129,9 +130,9 @@ class FUM(plModuleBase):
         drpred.register_hook(lambda grad: print('drpred', grad))
         return self.check_dr(
             batch['y_edit'], kwargs['split'], kwargs['batch_idx'], 
-            self.generator.softmax(
+            # self.generator.softmax(
                 drpred
-            )
+            # )
         )
 
 
