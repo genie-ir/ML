@@ -532,7 +532,7 @@ class FUM_DR(FUM):
         
         from torchvision.models import vgg16
         self.vgg16 = vgg16(pretrained=True)
-        print(self.vgg)
+        print(self.vgg16)
         for param in self.vgg16.parameters():
             param.requires_grad = False
         self.generator.vggout = nn.Linear(in_features=4096, out_features=3)
