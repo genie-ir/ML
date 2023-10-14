@@ -101,12 +101,12 @@ class FUM(plModuleBase):
         # print('-->', self.generator.dr_classifire.classifier3[0].weight[10, :10])
         
         # TODO uncomment it
-        if split == 'train':
-            self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
-        else:
-            self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # if split == 'train':
+        #     self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+        # else:
+        #     self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
+        #     self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
         
         loss = self.generator.ce(dr_pred, batch['y_edit'])
@@ -605,14 +605,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    def on_train_epoch_end(self):
-        self.v_ygrnt = self.v_ygrnt + [1,2]
-        self.t_ygrnt = self.t_ygrnt + [1,2]
-        self.v_ypred = self.v_ypred + [1,2]
-        self.t_ypred = self.t_ypred + [1,2]
-        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
-        assert False, 'END-TRAINING'
+    # def on_train_epoch_end(self):
+    #     self.v_ygrnt = self.v_ygrnt + [1,2]
+    #     self.t_ygrnt = self.t_ygrnt + [1,2]
+    #     self.v_ypred = self.v_ypred + [1,2]
+    #     self.t_ypred = self.t_ypred + [1,2]
+    #     # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
+    #     assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
