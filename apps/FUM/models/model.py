@@ -557,7 +557,7 @@ class FUM_DR(FUM):
             strict=False        
         )
         print('after', self.generator.dr_classifire.classifier3[0].weight[10, :10])
-        self.generator.dr_classifire.classifier3[0].weight.register_hook(lambda grad: print(grad))
+        self.generator.dr_classifire.classifier3[2].weight.register_hook(lambda grad: print(grad))
         # assert False
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
