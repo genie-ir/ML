@@ -98,7 +98,7 @@ class FUM(plModuleBase):
     def check_dr(self, batch, split, batch_index, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
         
-        print('-->', self.dr_classifire.classifier3[0].weight[10, :10])
+        print('-->', self.generator.dr_classifire.classifier3[0].weight[10, :10])
         
         # TODO uncomment it
         if split == 'train':
@@ -538,9 +538,8 @@ class FUM_DR(FUM):
         #         param.requires_grad = True
         # print(self.generator.dr_classifire )
         
-        self.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
-        self.dr_classifire = self.dr_classifire.to('cuda')
-        self.generator.dr_classifire = self.dr_classifire
+        self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
+        self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         
         print(self.generator.dr_classifire)
         print('before', self.generator.dr_classifire.classifier3[0].weight[10, :10])
@@ -589,7 +588,10 @@ class FUM_DR(FUM):
         # self.generator.EncoderModel = torch.nn.Sequential(
         #     *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
         # )
-        
+    
+    def configure_optimizers(self):
+        print('22222222222222222222222222222222222222222222222222222222')
+        return super().configure_optimizers()
         
     # def validation_step(self, batch, batch_idx, split='val'):
     #     self.generator.dr_classifire.train()
