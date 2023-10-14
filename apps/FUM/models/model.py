@@ -98,7 +98,7 @@ class FUM(plModuleBase):
     def check_dr(self, batch, split, batch_index, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
         
-        print('-->', self.generator.dr_classifire.classifier3[0].weight[10, :10])
+        print('-->', self.dr_classifire.classifier3[0].weight[10, :10])
         
         # TODO uncomment it
         if split == 'train':
@@ -144,7 +144,7 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
-        drpred = self.generator.dr_classifire(
+        drpred = self.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
         )[0] #.unsqueeze(0)
         return self.check_dr(
