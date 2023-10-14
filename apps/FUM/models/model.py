@@ -115,6 +115,18 @@ class FUM(plModuleBase):
             print('loss --->', loss.cpu().detach().item())
         return loss, dict(loss=loss.cpu().detach().item())
     
+    def drc_master(self, batch, **kwargs):
+        drpred = self.generator.dr_classifire(
+            self.normal_for_drc((batch['xs']+1) * 127.5)
+        )[0] #.unsqueeze(0)
+        return self.check_dr(
+            batch, kwargs['split'], 
+            kwargs['batch_idx'], 
+            self.generator.softmax(
+                drpred
+            )
+        )
+    
     def compute_loss(self, batch, clable, batchsize): # x is in class 0 
         # Q, qloss1 = self.vqgan.encode(x)
         # xrec1 = self.vqgan.decode(Q + self.generator.mac_class[clable-1](Q))
@@ -144,18 +156,8 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
-        # print('-->', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        drpred = self.generator.dr_classifire(
-            self.normal_for_drc((batch['xs']+1) * 127.5)
-        )[0] #.unsqueeze(0)
-        return self.check_dr(
-            batch, kwargs['split'], 
-            kwargs['batch_idx'], 
-            self.generator.softmax(
-                drpred
-            )
-        )
-        
+        return self.drc_master(batch, **kwargs)
+    
         xrec1, drloss1, aeloss1 = self.compute_loss(batch, 1, batch['xs'].shape[0])
         xrec2, drloss2, aeloss2 = self.compute_loss(batch, 2, batch['xs'].shape[0])
 
@@ -528,12 +530,15 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
         
-        # from torchvision.models import vgg16
-        # self.generator.dr_classifire = vgg16(pretrained=True)
-        # self.generator.dr_classifire.classifier[-1] = nn.Linear(in_features=4096, out_features=3)
+        from torchvision.models import vgg16
+        self.vgg16 = vgg16(pretrained=True)
+        print(self.vgg)
+        for param in self.vgg16.parameters():
+            param.requires_grad = False
+        self.generator.vggout = nn.Linear(in_features=4096, out_features=3)
+        
+        assert False
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
-        # for param in self.generator.dr_classifire.parameters():
-        #     param.requires_grad = False
         # for i in [3, 6]:
         #     for param in self.generator.dr_classifire.classifier[i].parameters():
         #         param.requires_grad = True
@@ -546,16 +551,7 @@ class FUM_DR(FUM):
         # self.generator.ptest_landa = nn.Parameter(torch.rand((1,)))
         print(self.generator.dr_classifire)
         print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        # self.generator.dr_classifire.requires_grad_(False) # delete
-        # self.init_from_ckpt(
-        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-11T21-37-15_svlgan_dr/checkpoints/e450.ckpt'
-        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-12T14-34-38_svlgan_dr/checkpoints/e300pretrain.ckpt'
-        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T11-24-18_svlgan_dr/checkpoints/E56.ckpt'
-        #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T14-14-11_svlgan_dr/checkpoints/e100.ckpt'
-        #     '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt'
-        # )
         sd = torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict']
-        print(sd.keys())
         self.load_state_dict(
             sd, strict=False        
         )
@@ -597,10 +593,6 @@ class FUM_DR(FUM):
         #     *[nn.TransformerEncoderLayer(d_model=256, nhead=8, batch_first=True) for n in range(8)]
         # )
     
-    def configure_optimizers(self):
-        print('22222222222222222222222222222222222222222222222222222222')
-        return super().configure_optimizers()
-        
     # def validation_step(self, batch, batch_idx, split='val'):
     #     self.generator.dr_classifire.train()
     #     torch.set_grad_enabled(True)
@@ -609,14 +601,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    def on_train_epoch_end(self):
-        self.v_ygrnt = self.v_ygrnt + [1,2]
-        self.t_ygrnt = self.t_ygrnt + [1,2]
-        self.v_ypred = self.v_ypred + [1,2]
-        self.t_ypred = self.t_ypred + [1,2]
-        # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
-        assert False, 'END-TRAINING'
+    # def on_train_epoch_end(self):
+    #     self.v_ygrnt = self.v_ygrnt + [1,2]
+    #     self.t_ygrnt = self.t_ygrnt + [1,2]
+    #     self.v_ypred = self.v_ypred + [1,2]
+    #     self.t_ypred = self.t_ypred + [1,2]
+    #     # cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=False)
+    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 300E DR classifire')
+    #     assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
