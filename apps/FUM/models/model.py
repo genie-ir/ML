@@ -125,8 +125,9 @@ class FUM(plModuleBase):
         
         drlogits = self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).unsqueeze(0)
+        )
         print(drlogits.shape)
+        print(self.generator.vggout(drlogits).shape)
         assert False
         drpred = self.generator.vggout(drlogits.sigmoid())
         drpred.register_hook(lambda grad: print('drpred', grad))
@@ -544,14 +545,18 @@ class FUM_DR(FUM):
         
         from torchvision.models import vgg16
         self.generator.vgg16 = vgg16(pretrained=True)
-        self.generator.vgg16.classifier[6] = nn.Linear(in_features=1024, out_features=300)
+        self.generator.vgg16.classifier[6] = nn.Linear(in_features=4096, out_features=300)
         print(self.generator.vgg16)
         for param in self.generator.vgg16.parameters():
             param.requires_grad = False
         for i in [3, 6]:
             for param in self.generator.vgg16.classifier[i].parameters():
                 param.requires_grad = True
-        self.generator.vggout = nn.Linear(in_features=300, out_features=3)
+        self.generator.vggout = nn.Sequential(
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.5, inplace=False),
+            nn.Linear(in_features=300, out_features=3)
+        ) 
         
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         # for i in [3, 6]:
