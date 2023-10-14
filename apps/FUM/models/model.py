@@ -109,7 +109,7 @@ class FUM(plModuleBase):
             self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
         
         
-        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        loss = self.generator.ptest_landa * self.generator.ce(dr_pred, batch['y_edit'])
         
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
@@ -541,7 +541,9 @@ class FUM_DR(FUM):
         
         self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
-        
+        self.generator.dr_classifire.requires_grad_(True)
+        self.generator.dr_classifire.train()
+        self.generator.ptest_landa = nn.Parammetter(torch.rand((1,)))
         print(self.generator.dr_classifire)
         print('before', self.generator.dr_classifire.classifier3[0].weight[10, :10])
         # self.generator.dr_classifire.requires_grad_(False) # delete
@@ -558,6 +560,8 @@ class FUM_DR(FUM):
         )
         print('after', self.generator.dr_classifire.classifier3[0].weight[10, :10])
         self.generator.dr_classifire.classifier3[2].weight.register_hook(lambda grad: print(grad))
+        self.generator.ptest_landa.register_hook(lambda grad: print('landa', grad))
+        
         # assert False
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
