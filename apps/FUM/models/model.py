@@ -144,6 +144,7 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
+        print('-->', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         drpred = self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
         )[0] #.unsqueeze(0)
@@ -558,7 +559,6 @@ class FUM_DR(FUM):
             strict=False        
         )
         print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        assert False
         # self.generator.dr_classifire.classifier1[2].weight.register_hook(lambda grad: print(grad.abs().sum().item()))
         # self.generator.ptest_landa.register_hook(lambda grad: print('landa', grad))
         
