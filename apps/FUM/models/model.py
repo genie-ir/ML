@@ -558,7 +558,8 @@ class FUM_DR(FUM):
             strict=False        
         )
         print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        self.generator.dr_classifire.classifier1[2].weight.register_hook(lambda grad: print(grad.abs().sum().item()))
+        assert False
+        # self.generator.dr_classifire.classifier1[2].weight.register_hook(lambda grad: print(grad.abs().sum().item()))
         # self.generator.ptest_landa.register_hook(lambda grad: print('landa', grad))
         
         # assert False
