@@ -147,7 +147,7 @@ class FUM(plModuleBase):
         drpred = self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
         )[0] #.unsqueeze(0)
-        drpred.register_hook(lambda grad: print(grad))
+        self.generator.dr_classifire.classifier3[0].weight.register_hook(lambda grad: print(grad))
         return self.check_dr(
             batch, kwargs['split'], 
             kwargs['batch_idx'], 
