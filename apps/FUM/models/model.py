@@ -123,13 +123,9 @@ class FUM(plModuleBase):
         #     )
         # )
         
-        drlogits = self.generator.vgg16(
+        drpred = self.generator.vggout(self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        )
-        print(drlogits.shape)
-        print(self.generator.vggout(drlogits).shape)
-        assert False
-        drpred = self.generator.vggout(drlogits.sigmoid())
+        ))
         drpred.register_hook(lambda grad: print('drpred', grad))
         return self.check_dr(
             batch['y_edit'], kwargs['split'], kwargs['batch_idx'], 
