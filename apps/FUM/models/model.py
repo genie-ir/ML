@@ -95,21 +95,17 @@ class FUM(plModuleBase):
         xr1 = ((xr1 - (self.dr_classifire_normalize_mean * 255)) / (self.dr_classifire_normalize_std * 255)).detach()
         return xr1
     
-    def check_dr(self, batch, split, batch_index, dr_pred):
-        # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
-        
-        # print('-->', self.generator.dr_classifire.classifier3[0].weight[10, :10])
-        
+    def check_dr(self, y_edit, split, batch_index, dr_pred):
         # TODO uncomment it
         if split == 'train':
             self.t_ypred = self.t_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.t_ygrnt = self.t_ygrnt + list(batch['y_edit'].cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(y_edit.cpu().numpy())
         else:
             self.v_ypred = self.v_ypred + list(dr_pred.argmax(dim=1).cpu().numpy())
-            self.v_ygrnt = self.v_ygrnt + list(batch['y_edit'].cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
         
         
-        loss = self.generator.ce(dr_pred, batch['y_edit'])
+        loss = self.generator.ce(dr_pred, y_edit)
         
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
@@ -130,8 +126,13 @@ class FUM(plModuleBase):
         drpred = self.generator.vggout(self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
         ))
-        print(drpred, drpred.shape)
-        assert False
+        drpred.register_hook(lambda grad: print('drpred', grad))
+        return self.check_dr(
+            batch['y_edit'], kwargs['split'], kwargs['batch_idx'], 
+            self.generator.softmax(
+                drpred
+            )
+        )
 
 
     
