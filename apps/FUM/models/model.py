@@ -144,9 +144,10 @@ class FUM(plModuleBase):
         return xrec1, drloss1, aeloss1
 
     def generator_step__drcalgo(self, batch, **kwargs):
-        drpred = self.dr_classifire(
+        drpred = self.generator.dr_classifire(
             self.normal_for_drc((batch['xs']+1) * 127.5)
         )[0] #.unsqueeze(0)
+        drpred.register_hook(lambda grad: print(grad))
         return self.check_dr(
             batch, kwargs['split'], 
             kwargs['batch_idx'], 
