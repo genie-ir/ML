@@ -554,10 +554,13 @@ class FUM_DR(FUM):
         #     # '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T14-14-11_svlgan_dr/checkpoints/e100.ckpt'
         #     '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt'
         # )
+        sd = torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict']
+        print(sd.keys())
+        assert False
         self.generator.dr_classifire.load_state_dict(
-            torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict'],
-            strict=False        
+            sd, strict=False        
         )
+        print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.generator.dr_classifire.classifier1[2].weight.register_hook(lambda grad: print(grad.abs().sum().item()))
         # self.generator.ptest_landa.register_hook(lambda grad: print('landa', grad))
