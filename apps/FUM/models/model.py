@@ -543,7 +543,7 @@ class FUM_DR(FUM):
         self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
         self.generator.dr_classifire.requires_grad_(True)
         self.generator.dr_classifire.train()
-        self.generator.ptest_landa = nn.Parammetter(torch.rand((1,)))
+        self.generator.ptest_landa = nn.Parameter(torch.rand((1,)))
         print(self.generator.dr_classifire)
         print('before', self.generator.dr_classifire.classifier3[0].weight[10, :10])
         # self.generator.dr_classifire.requires_grad_(False) # delete
