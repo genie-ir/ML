@@ -190,7 +190,6 @@ class TaskNet(nn.Module):
     def forward(self, x, weights=None):
         if weights is None:
             x = self.model(x)
-            print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             # task specific feature
             x1_bam = self.branch_bam1(x)
             x2_bam = self.branch_bam2(x)
@@ -201,11 +200,11 @@ class TaskNet(nn.Module):
             x1 = torch.cat((x1_bam, UM_att), dim = 1)
 
             out_T = self.classifier1(x1)
+            print(out_T, out_T.shape)
             out_M = self.classifier2(x2_bam)
             out_IQ = self.classifier3(x3_bam)
         
         else:
-            print('else else else else !!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
             block1 = self.conv_layer_ff(x, weights, 1)
             block2 = self.conv_layer_ff(block1, weights, 2)
             block3 = self.conv_layer_ff(block2, weights, 3)
