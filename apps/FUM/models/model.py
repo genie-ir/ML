@@ -113,17 +113,6 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        # drpred = self.generator.dr_classifire(
-        #     self.normal_for_drc((batch['xs']+1) * 127.5)
-        # )[0] #.unsqueeze(0)
-        # return self.check_dr(
-        #     batch, kwargs['split'], 
-        #     kwargs['batch_idx'], 
-        #     self.generator.softmax(
-        #         drpred
-        #     )
-        # )
-        
         drpred = self.generator.vggout(self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
         ))
