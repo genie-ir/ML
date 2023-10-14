@@ -613,8 +613,8 @@ class FUM_DR(FUM):
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before')
         assert False, 'END-TRAINING'
 
-    def validation_step(self, batch, batch_idx, split='val'):
-        return
+    # def validation_step(self, batch, batch_idx, split='val'):
+    #     return
     def generator_step(self, batch, **kwargs):
         return super().generator_step__drcalgo(batch, **kwargs)
     
