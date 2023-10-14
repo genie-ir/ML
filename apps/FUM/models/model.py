@@ -129,7 +129,7 @@ class FUM(plModuleBase):
         
         drpred = self.generator.vggout(self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        )).unsqueeze(0)
+        ))
         print(drpred, drpred.shape)
         assert False
 
