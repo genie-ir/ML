@@ -98,6 +98,7 @@ class FUM(plModuleBase):
     def check_dr(self, batch, split, batch_index, dr_pred):
         # batch['y_edit'] = (0 * torch.ones((batch['xs'].shape[0],), device=self.device)).long()
         
+        print('-->', self.generator.dr_classifire.classifier3[0].weight[10, :10])
         
         # TODO uncomment it
         if split == 'train':
@@ -557,7 +558,7 @@ class FUM_DR(FUM):
         )
         print('after', self.generator.dr_classifire.classifier3[0].weight[10, :10])
 
-        assert False
+        # assert False
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # self.dr_weight = torch.tensor([1, 1.5 ,9.4], dtype=torch.float32).to('cuda')
         # self.generator.cew = nn.CrossEntropyLoss(weight=self.dr_weight)
