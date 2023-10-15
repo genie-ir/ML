@@ -329,7 +329,7 @@ class FUM(plModuleBase):
         self.gamma = - 0.1
         self.vqgan_dataset = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all/data/eyepacs_all_ims'
 
-        self.generator.ce = nn.CrossEntropyLoss()
+        self.generator.ce = nn.CrossEntropyLoss(weight=torch.tensor([1, 5, 10]))
         self.dr_classifire_normalize_std = torch.tensor([0.1252, 0.0857, 0.0814]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
         self.dr_classifire_normalize_mean = torch.tensor([0.3771, 0.2320, 0.1395]).unsqueeze(0).unsqueeze(-1).unsqueeze(-1).to('cuda')
 
@@ -525,6 +525,12 @@ class FUM_DR(FUM):
         super().start(dr_vs_synthesis_flag=False)
         
         from torchvision.models import vgg16
+        self.vgg16 = vgg16(pretrained=True)
+        print('vgg16 shape', self.vgg16(torch.rand(16,3,64,64)).shape)
+
+
+
+        assert False
         self.generator.vgg16 = vgg16(pretrained=True)
         self.generator.vgg16.classifier[6] = nn.Linear(in_features=4096, out_features=300)
         print(self.generator.vgg16)
