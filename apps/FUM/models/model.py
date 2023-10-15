@@ -97,13 +97,13 @@ class FUM(plModuleBase):
     
     def check_dr(self, y_edit, split, batch_index, dr_pred):
         # TODO uncomment it
-        # dr_pred_s = self.generator.softmax(dr_pred)
-        # if split == 'train':
-        #     self.t_ypred = self.t_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
-        #     self.t_ygrnt = self.t_ygrnt + list(y_edit.cpu().numpy())
-        # else:
-        #     self.v_ypred = self.v_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
-        #     self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
+        dr_pred_s = self.generator.softmax(dr_pred)
+        if split == 'train':
+            self.t_ypred = self.t_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(y_edit.cpu().numpy())
+        else:
+            self.v_ypred = self.v_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
         
         
         loss = self.generator.ce(dr_pred, y_edit) # cross entropy doing softmax inide of own.
@@ -538,12 +538,16 @@ class FUM_DR(FUM):
             nn.Dropout(p=0.5, inplace=False),
             nn.Linear(in_features=300, out_features=3)
         ) 
-        
-        # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
-        # for i in [3, 6]:
-        #     for param in self.generator.dr_classifire.classifier[i].parameters():
-        #         param.requires_grad = True
-        # print(self.generator.dr_classifire )
+
+        sd = torch.load(
+            '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-14T22-18-59_svlgan_dr/checkpoints/e450.ckpt'
+        )['state_dict']
+        self.load_state_dict(
+            sd, strict=False        
+        )
+
+
+
         
         # self.generator.dr_classifire, cfg = makeDRclassifire('/content/drive/MyDrive/storage/dr_classifire/best_model.pth')
         # self.generator.dr_classifire = self.generator.dr_classifire.to('cuda')
@@ -551,10 +555,6 @@ class FUM_DR(FUM):
         # self.generator.dr_classifire.train()
         # print(self.generator.dr_classifire)
         # print('before', self.generator.dr_classifire.classifier1[0].weight[10, :10])
-        # sd = torch.load('/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-13T15-25-43_svlgan_dr/checkpoints/e300.ckpt')['state_dict']
-        # self.load_state_dict(
-        #     sd, strict=False        
-        # )
         # print('after', self.generator.dr_classifire.classifier1[0].weight[10, :10])
         # assert False
         
@@ -604,14 +604,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    # def on_train_epoch_end(self):
-    #     self.v_ygrnt = self.v_ygrnt + [1,2]
-    #     self.t_ygrnt = self.t_ygrnt + [1,2]
-    #     self.v_ypred = self.v_ypred + [1,2]
-    #     self.t_ypred = self.t_ypred + [1,2]
-    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True)
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before')
-    #     assert False, 'END-TRAINING'
+    def on_train_epoch_end(self):
+        self.v_ygrnt = self.v_ygrnt + [1,2]
+        self.t_ygrnt = self.t_ygrnt + [1,2]
+        self.v_ypred = self.v_ypred + [1,2]
+        self.t_ypred = self.t_ypred + [1,2]
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True)
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before')
+        assert False, 'END-TRAINING'
 
     # def validation_step(self, batch, batch_idx, split='val'):
     #     return
