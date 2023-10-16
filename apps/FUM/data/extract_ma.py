@@ -1,7 +1,12 @@
 import os
-from dependency.SimpleCV.SimpleCV import Image, Color
-from cv2 import Color
 import csv
+
+try:
+    from dependency.SimpleCV.SimpleCV import Image, Color
+except Exception as e:
+    print(e)
+    assert False
+
 
 def findMA(path, file_name_without_extension):
     eye = Image(path)

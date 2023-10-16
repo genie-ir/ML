@@ -12,11 +12,7 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 from libs.basicIO import signal_save
 
-try:
-    from apps.FUM.data.extract_ma import findMA
-except Exception as e:
-    print(e)
-    assert False
+from apps.FUM.data.extract_ma import findMA
 
 class D(D_Base):
     def fetch(self, signal_path, **kwargs):
