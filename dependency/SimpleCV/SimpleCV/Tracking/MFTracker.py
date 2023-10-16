@@ -135,7 +135,8 @@ def fbtrack(imgI, imgJ, bb, numM=10, numN=10,margin=5,winsize_ncc=10, winsize_lk
     nRealPoints = 0
 
     for i in range(nPoints):
-        if ptTracked[M*i] is not -1:
+        # if ptTracked[M*i] is not -1:
+        if ptTracked[M*i] != -1:
             startPoints.append((pt[2 * i],pt[2*i+1]))
             targetPoints.append((ptTracked[2 * i], ptTracked[2 * i + 1]))
             fbLKCleaned[nRealPoints]=fb[i]
