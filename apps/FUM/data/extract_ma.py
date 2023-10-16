@@ -3,6 +3,7 @@ import csv
 
 try:
     from dependency.SimpleCV.SimpleCV import Image, Color
+    
 except Exception as e:
     print(e)
     assert False
