@@ -1,8 +1,8 @@
 from __future__ import print_function
-from SimpleCV.base import *
-from SimpleCV.ImageClass import Image, ImageSet
-from SimpleCV.DrawingLayer import *
-from SimpleCV.Features import FeatureExtractorBase
+from ..base import *
+from ..ImageClass import Image, ImageSet
+from ..DrawingLayer import *
+from ..Features import FeatureExtractorBase
 """
 This class is encapsulates almost everything needed to train, test, and deploy a
 multiclass support vector machine for an image classifier. Training data should
