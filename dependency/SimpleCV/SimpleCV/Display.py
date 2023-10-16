@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from SimpleCV.base import *
+from .base import *
 import SimpleCV.ImageClass
 try:
     import queue # Note: This is unused.
