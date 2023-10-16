@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from SimpleCV import Image, Display,Camera,Color
+from ... import Image, Display,Camera,Color
 import glob,os
 import pygame as pg
 from .CardUtil import SUITS, RANKS, MISC

@@ -1,2 +1,2 @@
-from SimpleCV.Features.PlayingCards.PlayingCard import *
-from SimpleCV.Features.PlayingCards.PlayingCardFactory import *
+from ...Features.PlayingCards.PlayingCard import *
+from ...Features.PlayingCards.PlayingCardFactory import *

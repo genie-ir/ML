@@ -1,7 +1,7 @@
-from SimpleCV.base import *
-from SimpleCV.ImageClass import *
-from SimpleCV.Color import *
-from SimpleCV.Features.Features import Feature, FeatureSet
+from ...base import *
+from ...ImageClass import *
+from ...Color import *
+from ...Features.Features import Feature, FeatureSet
 
 class PlayingCard(Feature):
     def __init__(self, i, at_x, at_y, rank=None,suit=None):

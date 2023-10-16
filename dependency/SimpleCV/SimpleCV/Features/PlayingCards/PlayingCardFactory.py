@@ -1,9 +1,9 @@
 from __future__ import print_function
-from SimpleCV.base import *
-from SimpleCV.ImageClass import *
-from SimpleCV.Color import *
-from SimpleCV.Features.Features import Feature, FeatureSet
-from SimpleCV.Features.PlayingCards.PlayingCard import *
+from ...base import *
+from ...ImageClass import *
+from ...Color import *
+from ...Features.Features import Feature, FeatureSet
+from ...Features.PlayingCards.PlayingCard import *
 class CardError(Exception):
     def __init__(self, card=None,message=None):
         self.card = card

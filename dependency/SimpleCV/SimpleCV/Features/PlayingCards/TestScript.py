@@ -1,6 +1,6 @@
 from __future__ import print_function
 from __future__ import absolute_import
-from SimpleCV import *
+from ... import *
 #from FeatureUtils import *
 from .CardUtil import *
 from .PlayingCardFactory import *
