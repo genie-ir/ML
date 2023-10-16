@@ -1,5 +1,6 @@
 import os
-from SimpleCV import Image, Color
+from dependency.SimpleCV.SimpleCV import Image, Color
+from cv2 import Color
 import csv
 
 def findMA(path, file_name_without_extension):
