@@ -3,16 +3,19 @@ import csv
 
 try:
     from dependency.SimpleCV.SimpleCV import Image, Color
-    
+    import cv2
 except Exception as e:
     print(e)
     assert False
 
 
 def findMA(path, file_name_without_extension=None):
-    eye = Image(path)
+    # eye = Image(path)
+    eye = cv2.imread(path)
 
     (empty, eye_green, emptier) = eye.splitChannels(False)
+
+    print('------------------->', eye_green.shape)
 
     eye_green = eye_green * 2.5
     eye_gray = eye_green.grayscale()
