@@ -1,7 +1,7 @@
 from __future__ import print_function
-from SimpleCV.base import *
-from SimpleCV.ImageClass import Image
-from SimpleCV.Features.FeatureExtractorBase import *
+from ..base import *
+from ..ImageClass import Image
+from ..Features.FeatureExtractorBase import *
 
 class BOFFeatureExtractor(object):
     """
