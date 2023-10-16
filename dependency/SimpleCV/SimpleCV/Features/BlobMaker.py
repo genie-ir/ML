@@ -1,4 +1,4 @@
-from SimpleCV.base import *
+from ..base import *
 #import cv2 as cv2
 
 class BlobMaker:
