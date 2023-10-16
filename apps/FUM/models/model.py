@@ -524,10 +524,19 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
         
+        self.generator.vggout = nn.Sequential(
+            nn.Linear(in_features=1000, out_features=300),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.5, inplace=False),
+            nn.Linear(in_features=300, out_features=3)
+        ) 
+
         from torchvision.models import vgg16
         self.vgg16 = vgg16(pretrained=True)
-        print('vgg16 shape', self.vgg16(torch.rand(16,3,64,64)).shape)
-
+        for param in self.vgg16.parameters():
+            param.requires_grad = False
+        print('vgg16 shape', self.vgg16(torch.rand(8,16,3,64,64)).shape) # torch.Size([16, 1000])
+        
 
 
         assert False

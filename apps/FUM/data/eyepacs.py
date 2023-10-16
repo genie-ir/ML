@@ -10,6 +10,8 @@ from utils.pt.datasets.D import D_Base
 from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValidation as eyepacsValidationBase
 from albumentations.pytorch import ToTensorV2
 import albumentations as A
+from apps.FUM.data.extract_ma import findMA
+from libs.basicIO import signal_save
 
 class D(D_Base):
     def fetch(self, signal_path, **kwargs):
@@ -29,8 +31,11 @@ class D(D_Base):
         }
 
 
+dr_transformer0 = A.Compose([
+    ToTensorV2()
+])
 dr_transformer = A.Compose([
-    # A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
+    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=0.5),
     ToTensorV2()
 ])
 class D_DR(D_Base):
@@ -80,8 +85,15 @@ class D_DR(D_Base):
         
         
         
-        
-        
+        xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
+
+        eye_final = dr_transformer0(image=findMA(signal_path))['image'].unsqueeze(0)
+        print(eye_final.shape)
+        signal_save(torch.cat([xs.unsqueeze(0), eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
+
+
+
+        assert False
         
         # xc1 = (dr_transformer(image=np.array(Image.open(
         #         os.path.join(self.path_grade2, self.grade2[kwargs['i'] % self.grade2_len])
@@ -91,7 +103,8 @@ class D_DR(D_Base):
         #     )))['image'] / 127.5) - 1
 
         return {
-            'xs': (dr_transformer(image=np.array(Image.open(signal_path)))['image'] / 127.5) - 1,
+            'xs': (xs / 127.5) - 1,
+            'xs_ma': findMA(xs),
             # 'xc': [
             #     xc1, xc2
             # ],
