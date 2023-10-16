@@ -1,6 +1,6 @@
-from SimpleCV.Features import Feature, FeatureSet, BlobMaker
-from SimpleCV.ImageClass import Image
-from SimpleCV.Segmentation.SegmentationBase import SegmentationBase
+from ..Features import Feature, FeatureSet, BlobMaker
+from ..ImageClass import Image
+from ..Segmentation.SegmentationBase import SegmentationBase
 
 class MOGSegmentation(SegmentationBase):
     """

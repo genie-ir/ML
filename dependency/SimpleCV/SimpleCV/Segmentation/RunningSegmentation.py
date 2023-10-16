@@ -1,7 +1,7 @@
-from SimpleCV.base import *
-from SimpleCV.Features import Feature, FeatureSet, BlobMaker
-from SimpleCV.ImageClass import Image
-from SimpleCV.Segmentation.SegmentationBase import SegmentationBase
+from ..base import *
+from ..Features import Feature, FeatureSet, BlobMaker
+from ..ImageClass import Image
+from ..Segmentation.SegmentationBase import SegmentationBase
 
 class RunningSegmentation(SegmentationBase):
     """
