@@ -89,7 +89,6 @@ class D_DR(D_Base):
         xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
 
         eye_final = dr_transformer0(image=findMA(signal_path))['image'].unsqueeze(0)
-        print(eye_final.shape)
         signal_save(torch.cat([xs.unsqueeze(0), eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
 
