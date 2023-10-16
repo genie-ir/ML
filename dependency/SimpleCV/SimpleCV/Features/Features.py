@@ -14,8 +14,8 @@
 
 
 #load system libraries
-from SimpleCV.base import *
-from SimpleCV.Color import *
+from .base import *
+from .Color import *
 import copy
 
 
