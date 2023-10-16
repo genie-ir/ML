@@ -1,7 +1,7 @@
-from SimpleCV.base import *
-from SimpleCV.Features import Feature, FeatureSet
-from SimpleCV.Color import Color
-from SimpleCV.ImageClass import Image
+from ..base import *
+from ..Features import Feature, FeatureSet
+from ..Color import Color
+from ..ImageClass import Image
 
 class SegmentationBase(object):
     """
