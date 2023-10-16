@@ -535,7 +535,8 @@ class FUM_DR(FUM):
         self.vgg16 = vgg16(pretrained=True)
         for param in self.vgg16.parameters():
             param.requires_grad = False
-        print('vgg16 shape', self.vgg16(torch.rand(8,16,3,64,64)).shape) # torch.Size([16, 1000])
+        return
+        # print('vgg16 shape', self.vgg16(torch.rand(8,16,3,64,64)).shape) # torch.Size([16, 1000])
         
 
 
