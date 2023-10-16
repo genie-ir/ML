@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from SimpleCV.base import *
+from .base import *
 import scipy.signal as sps
 import scipy.optimize as spo
 import numpy as np

@@ -4,7 +4,7 @@ import sys
 import os
 import svgwrite
 #from SimpleCV.base import *
-from SimpleCV.Color import *
+from .Color import *
 
 
 

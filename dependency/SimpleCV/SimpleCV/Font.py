@@ -4,7 +4,7 @@ from __future__ import print_function
 # This library is used to add fonts to images
 
 #load required libraries
-from SimpleCV.base import *
+from .base import *
 
 
 class Font:

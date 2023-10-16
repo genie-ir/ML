@@ -2,10 +2,10 @@ from __future__ import print_function
 # SimpleCV Cameras & Devices
 
 #load system libraries
-from SimpleCV.base import *
-from SimpleCV.ImageClass import Image, ImageSet, ColorSpace
-from SimpleCV.Display import Display
-from SimpleCV.Color import Color
+from .base import *
+from .ImageClass import Image, ImageSet, ColorSpace
+from .Display import Display
+from .Color import Color
 from collections import deque
 import time
 import ctypes as ct

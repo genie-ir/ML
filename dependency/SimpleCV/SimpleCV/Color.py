@@ -5,8 +5,8 @@ from __future__ import print_function
 
 #load required libraries
 import random
-from SimpleCV.base import *
-from SimpleCV.ImageClass import *
+from .base import *
+from .ImageClass import *
 
 
 class Color:
