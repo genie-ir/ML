@@ -14,8 +14,8 @@
 
 
 #load system libraries
-from .base import *
-from .Color import *
+from ..base import *
+from ..Color import *
 import copy
 
 
