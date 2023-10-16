@@ -1,6 +1,6 @@
-from SimpleCV.base import *
-from SimpleCV.ImageClass import Image
-from SimpleCV.Features.FeatureExtractorBase import *
+from ..base import *
+from ..ImageClass import Image
+from ..Features.FeatureExtractorBase import *
 
 class HueHistogramFeatureExtractor(FeatureExtractorBase):
     """
