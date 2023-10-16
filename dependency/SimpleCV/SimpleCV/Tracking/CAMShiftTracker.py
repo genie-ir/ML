@@ -1,4 +1,4 @@
-from SimpleCV.base import np
+from ..base import np
 try:
     import cv2
 except ImportError:
@@ -115,4 +115,4 @@ def camshiftTracker(img, bb, ts, **kwargs):
 
     return track
 
-from SimpleCV.Tracking import CAMShiftTrack
+from ..Tracking import CAMShiftTrack

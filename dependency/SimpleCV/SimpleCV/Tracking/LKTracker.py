@@ -1,5 +1,5 @@
 from __future__ import print_function
-from SimpleCV.base import np, itertools
+from ..base import np, itertools
 try:
     import cv2
 except ImportError:
@@ -159,4 +159,4 @@ def lkTracker(img, bb, ts, oldimg, **kwargs):
     track = LKTrack(img, bb1, new_pts)    
     return track
 
-from SimpleCV.Tracking import LKTrack
+from ..Tracking import LKTrack

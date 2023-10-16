@@ -1,6 +1,6 @@
-from SimpleCV.Tracking.TrackClass import Track, CAMShiftTrack, SURFTrack, LKTrack, MFTrack
-from SimpleCV.Tracking.CAMShiftTracker import camshiftTracker
-from SimpleCV.Tracking.LKTracker import lkTracker
-from SimpleCV.Tracking.SURFTracker import surfTracker
-from SimpleCV.Tracking.MFTracker import mfTracker
-from SimpleCV.Tracking.TrackSet import TrackSet
+from ..Tracking.TrackClass import Track, CAMShiftTrack, SURFTrack, LKTrack, MFTrack
+from ..Tracking.CAMShiftTracker import camshiftTracker
+from ..Tracking.LKTracker import lkTracker
+from ..Tracking.SURFTracker import surfTracker
+from ..Tracking.MFTracker import mfTracker
+from ..Tracking.TrackSet import TrackSet

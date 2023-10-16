@@ -1,5 +1,5 @@
 from __future__ import print_function
-from SimpleCV.base import np, itertools
+from ..base import np, itertools
 try:
     import cv2
 except ImportError:
@@ -151,4 +151,4 @@ def surfTracker(img, bb, ts, **kwargs):
 
     return track
 
-from SimpleCV.Tracking import SURFTrack
+from ..Tracking import SURFTrack

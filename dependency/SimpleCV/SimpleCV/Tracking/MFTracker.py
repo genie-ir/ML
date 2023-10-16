@@ -1,4 +1,4 @@
-from SimpleCV.base import np, cv, math, time, spsd
+from ..base import np, cv, math, time, spsd
 from copy import copy
 try:
     import cv2
@@ -488,4 +488,4 @@ def normCrossCorrelation(img1, img2, pt0, pt1, status, winsize, method=cv2.TM_CC
         match[i] = cv2.matchTemplate(patch1,patch2,method)
     return match
 
-from SimpleCV.Tracking import MFTrack
+from ..Tracking import MFTrack
