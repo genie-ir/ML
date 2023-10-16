@@ -13,9 +13,10 @@ def findMA(path, file_name_without_extension=None):
     # eye = Image(path)
     eye = cv2.imread(path)
 
-    (empty, eye_green, emptier) = eye.splitChannels(False)
+    # (empty, eye_green, emptier) = eye.splitChannels(False)
 
-    print('------------------->', eye_green.shape)
+    print('------------------->', eye.shape)
+    assert False
 
     eye_green = eye_green * 2.5
     eye_gray = eye_green.grayscale()
