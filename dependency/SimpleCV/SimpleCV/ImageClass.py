@@ -14749,9 +14749,9 @@ class Image:
         filteredimage = flt.applyFilter(self, grayscale)
         return filteredimage
 
-from SimpleCV.Features import FeatureSet, Feature, Barcode, Corner, HaarFeature, Line, Chessboard, TemplateMatch, BlobMaker, Circle, KeyPoint, Motion, KeypointMatch, FaceRecognizer
-from SimpleCV.Tracking import camshiftTracker, lkTracker, surfTracker, mfTracker, TrackSet
-from SimpleCV.Stream import JpegStreamer
-from SimpleCV.Font import *
-from SimpleCV.DrawingLayer import *
-from SimpleCV.DFT import DFT
+from .Features import FeatureSet, Feature, Barcode, Corner, HaarFeature, Line, Chessboard, TemplateMatch, BlobMaker, Circle, KeyPoint, Motion, KeypointMatch, FaceRecognizer
+from .Tracking import camshiftTracker, lkTracker, surfTracker, mfTracker, TrackSet
+from .Stream import JpegStreamer
+from .Font import *
+from .DrawingLayer import *
+from .DFT import DFT
