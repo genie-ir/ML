@@ -1,4 +1,4 @@
-from SimpleCV.base import *
+from ..base import *
 
 class HaarCascade():
     """
