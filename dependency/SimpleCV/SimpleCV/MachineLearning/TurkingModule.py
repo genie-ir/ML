@@ -1,5 +1,5 @@
 from __future__ import print_function
-from SimpleCV import Display, Image, Color, ImageSet
+from .. import Display, Image, Color, ImageSet
 import os
 import os.path as osp
 import time

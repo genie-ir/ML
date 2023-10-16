@@ -1,5 +1,5 @@
 from __future__ import print_function
-from SimpleCV import Image, ImageSet, Camera, VirtualCamera, ROI, Color, LineScan
+from .. import Image, ImageSet, Camera, VirtualCamera, ROI, Color, LineScan
 import numpy as np
 import scipy.signal as sps
 import warnings

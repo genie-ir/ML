@@ -1,9 +1,9 @@
 from __future__ import print_function
-from SimpleCV.base import *
-from SimpleCV.Features.Features import Feature, FeatureSet
-from SimpleCV.Color import Color
-from SimpleCV.ImageClass import Image
-from SimpleCV.Features.Detection import ShapeContextDescriptor
+from ..base import *
+from ..Features.Features import Feature, FeatureSet
+from ..Color import Color
+from ..ImageClass import Image
+from ..Features.Detection import ShapeContextDescriptor
 import math
 import scipy.stats as sps
 

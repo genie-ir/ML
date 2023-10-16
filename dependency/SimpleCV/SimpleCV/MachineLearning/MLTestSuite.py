@@ -1,5 +1,5 @@
 from __future__ import print_function
-from SimpleCV import *
+from .. import *
 
 print("")
 print("This program runs a list of test for machine learning on")
