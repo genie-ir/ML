@@ -9,7 +9,7 @@ except Exception as e:
     assert False
 
 
-def findMA(path, file_name_without_extension):
+def findMA(path, file_name_without_extension=None):
     eye = Image(path)
 
     (empty, eye_green, emptier) = eye.splitChannels(False)
