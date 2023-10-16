@@ -1,6 +1,6 @@
-from SimpleCV.Color import Color
-from SimpleCV.base import time, np
-from SimpleCV.Features.Features import Feature, FeatureSet
+from ..Color import Color
+from ..base import time, np
+from ..Features.Features import Feature, FeatureSet
 try:
     import cv2
 except ImportError:
