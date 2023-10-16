@@ -13885,7 +13885,8 @@ class Image:
             warnings.warn("0 intensity means no blurring")
             return self
 
-        elif intensity % 2 is 0:
+        # elif intensity % 2 is 0:
+        elif intensity % 2 == 0:
             div=mid
             for i in range(mid, intensity-1):
                 tmp[i][i] = 0
