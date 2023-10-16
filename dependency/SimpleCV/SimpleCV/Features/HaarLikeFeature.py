@@ -1,5 +1,5 @@
-from SimpleCV.base import *
-from SimpleCV.ImageClass import Image
+from ..base import *
+from ..ImageClass import Image
 
 
 class HaarLikeFeature():

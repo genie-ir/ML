@@ -1,7 +1,7 @@
-from SimpleCV.base import *
-from SimpleCV.ImageClass import Image
-from SimpleCV.Features.HaarLikeFeature import *
-from SimpleCV.Features.FeatureExtractorBase import *
+from ..base import *
+from ..ImageClass import Image
+from ..Features.HaarLikeFeature import *
+from ..Features.FeatureExtractorBase import *
 
 class HaarLikeFeatureExtractor(FeatureExtractorBase):
     """
