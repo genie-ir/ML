@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from .base import *
-import SimpleCV.ImageClass
+# import .ImageClass
 try:
     import queue # Note: This is unused.
 except ImportError:
