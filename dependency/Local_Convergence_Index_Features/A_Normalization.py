@@ -1,6 +1,6 @@
 import cv2, os
 import numpy as np
-from AuxFuncs import cvShow, mask_generator
+from .AuxFuncs import cvShow, mask_generator
 np.seterr(divide='ignore', invalid='ignore')
 
 def patchsize(img, patch_nums):
