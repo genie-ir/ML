@@ -11,7 +11,8 @@ def patchsize(img, patch_nums):
     return H, W, blockR, blockC
 
 def patchsize_matlab(img, patch_nums):
-    return 1000, 1000, 200, 200
+    # return 1000, 1000, 200, 200
+    return 256, 256, 64, 64
 
 def LCN(img, patch_nums):
     # luminosity and contrast normalization
