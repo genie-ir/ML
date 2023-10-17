@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
-from AuxFuncs import cvShow
-from A_Normalization import LCN
+from .AuxFuncs import cvShow
+from .A_Normalization import LCN
 from skimage import measure
 
 def Gauss_Derivative_Kernel(sig, theta): #高斯偏导核 顺时针移动 theta
