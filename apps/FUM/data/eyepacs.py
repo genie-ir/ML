@@ -12,7 +12,8 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 from libs.basicIO import signal_save
 
-from apps.FUM.data.extract_ma import findMA
+# from apps.FUM.data.extract_ma import findMA
+from dependency.Local_Convergence_Index_Features.B_GadientWeighting import main as ma_ditector_fn
 
 class D(D_Base):
     def fetch(self, signal_path, **kwargs):
@@ -88,7 +89,10 @@ class D_DR(D_Base):
         
         xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
 
-        eye_final = dr_transformer0(image=findMA(signal_path))['image'].unsqueeze(0)
+        # eye_final = dr_transformer0(image=findMA(signal_path))['image'].unsqueeze(0)
+        eye_final = ma_ditector_fn(signal_path)
+        print('#########################', eye_final)
+        assert False
         signal_save(torch.cat([xs.unsqueeze(0), eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
 

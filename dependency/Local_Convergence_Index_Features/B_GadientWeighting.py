@@ -56,10 +56,11 @@ def Iteration_Threshold_With_Gauss_Derivative_Conv(img): #此处img非int8型
     MA_labels = measure.label(M,connectivity=2)
     return MA_labels
 
-if __name__ == '__main__':
-    kerDx, kerDy = Gauss_Derivative_Kernel(3, np.pi/3)
-    imgpath = './Images/IDRiD_27.jpg'
+kerDx, kerDy = Gauss_Derivative_Kernel(3, np.pi/3)
+
+def main(imgpath):
     img = cv2.imread(imgpath)
     normalized = LCN(img[:,:,1], 5)
     MA_labels = Iteration_Threshold_With_Gauss_Derivative_Conv(normalized)
+    return MA_labels
     cvShow(MA_labels>0)
