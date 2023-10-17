@@ -113,9 +113,13 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.generator.vggout(self.vgg16(
+        drpred = self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ))
+        )
+
+        # drpred = self.generator.vggout(self.vgg16(
+        #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
+        # ))
         # drpred_ma = self.generator.vggout(self.vgg16(
         #     batch['xs_ma'] # normalized like this: xs = xs/127.5 - 1
         # ))
