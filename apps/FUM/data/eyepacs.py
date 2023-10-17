@@ -95,10 +95,10 @@ class D_DR(D_Base):
         
         
         xs = np.array(Image.open(signal_path))
-        xs_ma = (dr_transformer0(image=ma_ditector_fn(xs))['image'] > 0).float()
+        # xs_ma = (dr_transformer0(image=ma_ditector_fn(xs))['image'] > 0).float()
+        # emetric = torch.tensor((xs_ma.sum().item() / LANDA)).exp().item()
         xs = dr_transformer(image=xs)['image']
 
-        emetric = torch.tensor((xs_ma.sum().item() / LANDA)).exp().item()
         # print(xs_ma.shape, xs_ma.min(), xs_ma.max())
         # print(emetric)
         
@@ -121,7 +121,7 @@ class D_DR(D_Base):
 
         return {
             'xs': (xs / 127.5) - 1,
-            'xs_ma': (xs_ma / 127.5) -1,
+            # 'xs_ma': (xs_ma / 127.5) -1,
             # 'xc': [
             #     xc1, xc2
             # ],

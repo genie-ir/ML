@@ -539,7 +539,7 @@ class FUM_DR(FUM):
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5, inplace=False),
             nn.Linear(in_features=300, out_features=3)
-        ) 
+        )
 
         from torchvision.models import vgg16
         self.vgg16 = vgg16(pretrained=True).features
