@@ -99,8 +99,8 @@ class D_DR(D_Base):
 
         xs_ma = (dr_transformer0(image=ma_ditector_fn(signal_path))['image'] > 0).float()
         emetric = torch.tensor((xs_ma.sum().item() / LANDA)).exp().item()
-        print(xs_ma.shape, xs_ma.min(), xs_ma.max())
-        print(emetric)
+        # print(xs_ma.shape, xs_ma.min(), xs_ma.max())
+        # print(emetric)
         
         
         # eye_final = eye_final.squeeze().unsqueeze(0)

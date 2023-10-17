@@ -113,10 +113,10 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.generator.vggout(self.generator.vgg16(
+        drpred = self.generator.vggout(self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
         ))
-        drpred_ma = self.generator.vggout(self.generator.vgg16(
+        drpred_ma = self.generator.vggout(self.vgg16(
             batch['xs_ma'] # normalized like this: xs = xs/127.5 - 1
         ))
         print('00000000000000', drpred.shape)
@@ -635,8 +635,8 @@ class FUM_DR(FUM):
         cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 400E')
         assert False, 'END-TRAINING'
 
-    # def validation_step(self, batch, batch_idx, split='val'):
-    #     return
+    def validation_step(self, batch, batch_idx, split='val'):
+        return
     def generator_step(self, batch, **kwargs):
         return super().generator_step__drcalgo(batch, **kwargs)
     
