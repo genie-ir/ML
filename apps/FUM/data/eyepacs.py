@@ -97,22 +97,21 @@ class D_DR(D_Base):
         
         xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
 
-        eye_final = (dr_transformer0(image=ma_ditector_fn(signal_path))['image'] > 0).float()
-        print(eye_final.shape)
-        print(eye_final.sum().item() / LANDA)
+        xs_ma = (dr_transformer0(image=ma_ditector_fn(signal_path))['image'] > 0).float()
+        emetric = (xs_ma.sum().item() / LANDA).exp()
+        print(xs_ma.shape)
+        print(emetric)
         
         
-        eye_final = eye_final.squeeze().unsqueeze(0)
-        eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
-        xs=xs.unsqueeze(0)
-        eye_final=eye_final * 255
-        eye_final = (eye_final + .2 *xs).clamp(0, 255)
-        signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
+        # eye_final = eye_final.squeeze().unsqueeze(0)
+        # eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
+        # xs=xs.unsqueeze(0)
+        # eye_final=eye_final * 255
+        # eye_final = (eye_final + .2 *xs).clamp(0, 255)
+        # signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
 
 
-        assert False
-        
         # xc1 = (dr_transformer(image=np.array(Image.open(
         #         os.path.join(self.path_grade2, self.grade2[kwargs['i'] % self.grade2_len])
         #     )))['image'] / 127.5) - 1
@@ -122,7 +121,7 @@ class D_DR(D_Base):
 
         return {
             'xs': (xs / 127.5) - 1,
-            'xs_ma': findMA(xs),
+            'xs_ma': (xs_ma / 127.5) -1,
             # 'xc': [
             #     xc1, xc2
             # ],

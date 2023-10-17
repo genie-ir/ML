@@ -116,6 +116,12 @@ class FUM(plModuleBase):
         drpred = self.generator.vggout(self.generator.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
         ))
+        drpred_ma = self.generator.vggout(self.generator.vgg16(
+            batch['xs_ma'] # normalized like this: xs = xs/127.5 - 1
+        ))
+        print('00000000000000', drpred.shape)
+
+
         # drpred.register_hook(lambda grad: print('drpred', grad))
         return self.check_dr(batch['y_edit'], kwargs['split'], kwargs['batch_idx'], drpred)
 
