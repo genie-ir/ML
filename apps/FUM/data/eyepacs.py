@@ -37,6 +37,10 @@ class D(D_Base):
         }
 
 
+
+
+LANDA = (256*256)
+
 dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
@@ -93,19 +97,17 @@ class D_DR(D_Base):
         
         xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
 
-        eye_final = dr_transformer0(image=ma_ditector_fn(signal_path))['image']###.squeeze().unsqueeze(0)
-        print(eye_final.sum().item() / (256*256))
-        # eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
-
-
-        # xs=xs.unsqueeze(0)
-        # eye_final=(eye_final.unsqueeze(0) >0).float() * 255
+        eye_final = (dr_transformer0(image=ma_ditector_fn(signal_path))['image'] > 0).float()
+        print(eye_final.shape)
+        print(eye_final.sum().item() / LANDA)
         
         
-        
-        # eye_final = eye_final + (255-eye_final) * .2 * xs
-        # print(xs.shape, eye_final.shape, eye_final.sum().item())
-        # signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
+        eye_final = eye_final.squeeze().unsqueeze(0)
+        eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
+        xs=xs.unsqueeze(0)
+        eye_final=eye_final * 255
+        eye_final = (eye_final + .2 *xs).clamp(0, 255)
+        signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
 
 
