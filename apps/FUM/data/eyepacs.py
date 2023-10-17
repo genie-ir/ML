@@ -94,8 +94,8 @@ class D_DR(D_Base):
         
         xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
 
-        eye_final = (ma_ditector_fn(signal_path)).squeeze().unsqueeze(0)
-        eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
+        eye_final = (ma_ditector_fn(signal_path))#.squeeze().unsqueeze(0)
+        # eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
         print('#########################', xs.shape, eye_final.shape)
         
         
