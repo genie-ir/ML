@@ -4,6 +4,8 @@ from .AuxFuncs import cvShow
 from .A_Normalization import LCN
 from skimage import measure
 
+np.int = np.int32
+
 def Gauss_Derivative_Kernel(sig, theta): #高斯偏导核 顺时针移动 theta
     def angle(x,y): # 点的夹角
         if x==0:
