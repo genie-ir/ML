@@ -99,6 +99,10 @@ class D_DR(D_Base):
 
         xs=xs.unsqueeze(0)
         eye_final=(eye_final.unsqueeze(0) >0).float() * 255
+        
+        
+        
+        eye_final = eye_final + .2 * xs
         print(xs.shape, eye_final.shape, eye_final.sum().item())
         signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
