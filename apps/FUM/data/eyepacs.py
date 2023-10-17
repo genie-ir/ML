@@ -38,7 +38,7 @@ class D(D_Base):
 
 
 dr_transformer0 = A.Compose([
-    A.Resize((256,256)),
+    A.Resize(256, 256),
     ToTensorV2()
 ])
 dr_transformer = A.Compose([
