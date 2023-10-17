@@ -102,7 +102,7 @@ class D_DR(D_Base):
         
         
         
-        eye_final = eye_final + .2 * xs
+        eye_final = eye_final + (1-eye_final) * .2 * xs
         print(xs.shape, eye_final.shape, eye_final.sum().item())
         signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
