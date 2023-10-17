@@ -95,7 +95,7 @@ class D_DR(D_Base):
 
         # eye_final = dr_transformer0(image=findMA(signal_path))['image'].unsqueeze(0)
         eye_final = ma_ditector_fn(signal_path)
-        print('#########################', eye_final)
+        print('#########################', eye_final.shape, eye_final.dtype)
         assert False
         signal_save(torch.cat([xs.unsqueeze(0), eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
