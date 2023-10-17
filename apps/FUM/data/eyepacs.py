@@ -13,7 +13,11 @@ import albumentations as A
 from libs.basicIO import signal_save
 
 # from apps.FUM.data.extract_ma import findMA
-from dependency.Local_Convergence_Index_Features.B_GadientWeighting import main as ma_ditector_fn
+try:
+    from dependency.Local_Convergence_Index_Features.B_GadientWeighting import main as ma_ditector_fn
+except Exception as e:
+    print(e)
+    assert False
 
 class D(D_Base):
     def fetch(self, signal_path, **kwargs):
