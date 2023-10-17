@@ -543,7 +543,7 @@ class FUM_DR(FUM):
 
         from torchvision.models import vgg16
         self.vgg16 = vgg16(pretrained=True)
-        # print(self.vgg16)
+        print(self.vgg16)
         for param in self.vgg16.parameters():
             param.requires_grad = False
         return
