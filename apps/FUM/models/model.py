@@ -115,7 +115,7 @@ class FUM(plModuleBase):
     def drc_master(self, batch, **kwargs):
         drpred = self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        )
+        ).flatten(1)
 
         # drpred = self.generator.vggout(self.vgg16(
         #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
