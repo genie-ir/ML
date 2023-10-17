@@ -113,9 +113,9 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.vgg16(
+        drpred = self.vgg16.classifire[0](self.vgg16.features(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).flatten(1)
+        ).flatten(1))
 
         # drpred = self.generator.vggout(self.vgg16(
         #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
@@ -542,7 +542,7 @@ class FUM_DR(FUM):
         )
 
         from torchvision.models import vgg16
-        self.vgg16 = vgg16(pretrained=True).features
+        self.vgg16 = vgg16(pretrained=True)
         for param in self.vgg16.parameters():
             param.requires_grad = False
         return
