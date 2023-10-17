@@ -38,6 +38,7 @@ class D(D_Base):
 
 
 dr_transformer0 = A.Compose([
+    A.Resize((256,256)),
     ToTensorV2()
 ])
 dr_transformer = A.Compose([
@@ -93,10 +94,10 @@ class D_DR(D_Base):
         
         xs = dr_transformer(image=np.array(Image.open(signal_path)))['image']
 
-        eye_final = dr_transformer0(image=ma_ditector_fn(signal_path))['image'].unsqueeze(0).unsqueeze(0)
-        eye_final = torch.cat([eye_final,eye_final,eye_final], dim=1)
+        eye_final = dr_transformer0(image=ma_ditector_fn(signal_path))['image'].squeeze().unsqueeze(0)
+        eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
         print('#########################', xs.shape, eye_final.shape)
-        signal_save(torch.cat([xs.unsqueeze(0), (eye_final>0).float()], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
+        signal_save(torch.cat([xs.unsqueeze(0), (eye_final>0).float().unsqueeze(0)], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
 
 
 
