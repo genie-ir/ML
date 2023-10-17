@@ -10,6 +10,6 @@ class DataModuleFromConfig(DataModuleFromConfigBase):
         # kwargs['wrap']=True # this line it shoulde be remove. TODO
 
         kwargs['wrap_cls'] = kwargs.get('wrap_cls', WrappedDataset)
-        kwargs['custom_collate'] = kwargs.get('custom_collate', custom_collate)
+        # kwargs['custom_collate'] = kwargs.get('custom_collate', custom_collate)
         kwargs['instantiate_from_config'] = instantiate_from_config
         super().__init__(**kwargs)
