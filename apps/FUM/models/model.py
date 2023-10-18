@@ -122,9 +122,9 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.vgg16(
+        drpred = self.generator.c2d(self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).reshape(-1, 1, 64, 64)
+        ).reshape(-1, 1, 64, 64))
 
         # drpred = self.generator.vggout(self.vgg16(
         #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
@@ -543,7 +543,7 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
         
-        self.generator.c2d = torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=True, padding_mode='zeros', device=None, dtype=None)
+        self.generator.c2d = torch.nn.Conv2d(1, 1, 3, stride=2, padding=1)
         self.generator.vggout = nn.Sequential(
             nn.Linear(in_features=1000, out_features=300),
             nn.ReLU(inplace=True),
