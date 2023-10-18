@@ -53,6 +53,15 @@ import os
 import numpy as np
 from PIL import Image
 
+
+class Identity(nn.Module):
+    def __init__(self):
+        super(Identity, self).__init__()
+        
+    def forward(self, x):
+        return x
+
+
 # TODO we looking for uniqness.
 class VectorQuantizer(VectorQuantizerBase):
     def embedding_weight_init(self):
@@ -113,9 +122,9 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.vgg16.avgpool(self.vgg16.features(
+        drpred = self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).flatten(1).unsqueeze(0))
+        )
 
         # drpred = self.generator.vggout(self.vgg16(
         #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
@@ -547,6 +556,12 @@ class FUM_DR(FUM):
         for param in self.vgg16.parameters():
             param.requires_grad = False
         return
+        self.vgg16.classifier[1] = Identity()
+        self.vgg16.classifier[2] = Identity()
+        self.vgg16.classifier[3] = Identity()
+        self.vgg16.classifier[4] = Identity()
+        self.vgg16.classifier[5] = Identity()
+        self.vgg16.classifier[6] = Identity()
         # print('vgg16 shape', self.vgg16(torch.rand(8,16,3,64,64)).shape) # torch.Size([16, 1000])
         
 
