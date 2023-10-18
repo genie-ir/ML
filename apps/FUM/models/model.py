@@ -555,13 +555,13 @@ class FUM_DR(FUM):
         print(self.vgg16)
         for param in self.vgg16.parameters():
             param.requires_grad = False
-        return
         self.vgg16.classifier[1] = Identity()
         self.vgg16.classifier[2] = Identity()
         self.vgg16.classifier[3] = Identity()
         self.vgg16.classifier[4] = Identity()
         self.vgg16.classifier[5] = Identity()
         self.vgg16.classifier[6] = Identity()
+        return
         # print('vgg16 shape', self.vgg16(torch.rand(8,16,3,64,64)).shape) # torch.Size([16, 1000])
         
 
