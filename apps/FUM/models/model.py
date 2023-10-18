@@ -124,7 +124,7 @@ class FUM(plModuleBase):
     def drc_master(self, batch, **kwargs):
         drpred = self.generator.c2d(self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).reshape(-1, 1, 64, 64))
+        ).reshape(-1, 1, 64, 64)).flatten(1)
 
         # drpred = self.generator.vggout(self.vgg16(
         #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
