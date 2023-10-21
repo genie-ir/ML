@@ -1,5 +1,7 @@
 bestCKPT:
-  '@off': True
+  '@off': False
+  'mode': min
+  'monitor': val/generator_loss_epoch
 
 signal_logger:
   '@off': True
