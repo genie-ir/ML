@@ -536,16 +536,16 @@ class FUM_DR(FUM):
         self.generator.c2d = nn.Sequential(
             torch.nn.Conv2d(1, 16, 3, stride=2, padding=1),
             nn.ReLU(inplace=True),
+            torch.nn.Conv2d(16, 16, 3, stride=2, padding=1),
+            nn.ReLU(inplace=True),
             torch.nn.Conv2d(16, 32, 3, stride=2, padding=1),
             nn.ReLU(inplace=True),
             torch.nn.Conv2d(32, 32, 3, stride=2, padding=1),
             nn.ReLU(inplace=True),
-            torch.nn.Conv2d(32, 64, 3, stride=2, padding=1),
-            nn.ReLU(inplace=True),
             torch.nn.MaxPool2d(4)
         )
         self.generator.vggout = nn.Sequential(
-            nn.Linear(in_features=64, out_features=16),
+            nn.Linear(in_features=32, out_features=16),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5, inplace=False),
             nn.Linear(in_features=16, out_features=3)
