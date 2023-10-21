@@ -534,22 +534,29 @@ class FUM_DR(FUM):
         super().start(dr_vs_synthesis_flag=False)
         
         self.generator.c2d = nn.Sequential(
-            torch.nn.Conv2d(1, 30, 3, stride=2, padding=1),
-            torch.nn.Conv2d(30, 1, 3, stride=2, padding=1)
+            torch.nn.Conv2d(1, 16, 3, stride=2, padding=1),
+            nn.ReLU(inplace=True),
+            torch.nn.Conv2d(16, 32, 3, stride=2, padding=1),
+            nn.ReLU(inplace=True),
+            torch.nn.Conv2d(32, 32, 3, stride=2, padding=1),
+            nn.ReLU(inplace=True),
+            torch.nn.Conv2d(32, 64, 3, stride=2, padding=1),
+            nn.ReLU(inplace=True),
+            torch.nn.MaxPool2d(4)
         )
         self.generator.vggout = nn.Sequential(
-            nn.Linear(in_features=256, out_features=128),
+            nn.Linear(in_features=64, out_features=16),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5, inplace=False),
-            nn.Linear(in_features=128, out_features=3)
+            nn.Linear(in_features=16, out_features=3)
         )
 
-        sd = torch.load(
-            '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-21T19-55-38_svlgan_dr/checkpoints/e350.ckpt'
-        )['state_dict']
-        self.load_state_dict(
-            sd, strict=False        
-        )
+        # sd = torch.load(
+        #     '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-21T19-55-38_svlgan_dr/checkpoints/e350.ckpt'
+        # )['state_dict']
+        # self.load_state_dict(
+        #     sd, strict=False        
+        # )
 
         from torchvision.models import vgg16
         self.vgg16 = vgg16(pretrained=True)
