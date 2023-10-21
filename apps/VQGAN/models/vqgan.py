@@ -78,6 +78,19 @@ class VQModel(pl.LightningModule):
             for fnName in rfn_list:
                 setattr(self, fnName[:RfnLen], getattr(self, fnName))
         
+        self.start()
+
+    def false_all_params(self, m):
+        for param in m.parameters():
+            param.requires_grad = False
+    
+    def start(self): # TODO
+        self.false_all_params(self.encoder)
+        self.false_all_params(self.decoder)
+        self.false_all_params(self.quant_conv)
+        self.false_all_params(self.post_quant_conv)
+        self.false_all_params(self.quantize)
+
     def init_from_ckpt(self, path, ignore_keys=list()):
         sd = torch.load(path, map_location="cpu")["state_dict"]
         keys = list(sd.keys())
