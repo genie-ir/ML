@@ -106,13 +106,13 @@ class FUM(plModuleBase):
     
     def check_dr(self, y_edit, split, batch_index, dr_pred):
         # TODO uncomment it
-        # dr_pred_s = self.generator.softmax(dr_pred)
-        # if split == 'train':
-        #     self.t_ypred = self.t_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
-        #     self.t_ygrnt = self.t_ygrnt + list(y_edit.cpu().numpy())
-        # else:
-        #     self.v_ypred = self.v_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
-        #     self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
+        dr_pred_s = self.generator.softmax(dr_pred)
+        if split == 'train':
+            self.t_ypred = self.t_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
+            self.t_ygrnt = self.t_ygrnt + list(y_edit.cpu().numpy())
+        else:
+            self.v_ypred = self.v_ypred + list(dr_pred_s.argmax(dim=1).cpu().numpy())
+            self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
         
         
         loss = self.generator.ce(dr_pred, y_edit) # cross entropy doing softmax inide of own.
@@ -126,8 +126,6 @@ class FUM(plModuleBase):
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
         ).reshape(-1, 1, 64, 64)).flatten(1))
 
-        print('00000000000000', drpred.shape)
-        assert False
 
         # drpred.register_hook(lambda grad: print('drpred', grad))
         return self.check_dr(batch['y_edit'], kwargs['split'], kwargs['batch_idx'], drpred)
@@ -647,8 +645,8 @@ class FUM_DR(FUM):
         self.t_ygrnt = self.t_ygrnt + [1,2]
         self.v_ypred = self.v_ypred + [1,2]
         self.t_ypred = self.t_ypred + [1,2]
-        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True, title='after 400E')
-        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 400E')
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True, title='before')
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='before')
         assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
