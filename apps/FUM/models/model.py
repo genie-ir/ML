@@ -122,16 +122,10 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.generator.c2d(self.vgg16(
+        drpred = self.generator.vggout(self.generator.c2d(self.vgg16(
             batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).reshape(-1, 1, 64, 64)).flatten(1)
+        ).reshape(-1, 1, 64, 64)).flatten(1))
 
-        # drpred = self.generator.vggout(self.vgg16(
-        #     batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        # ))
-        # drpred_ma = self.generator.vggout(self.vgg16(
-        #     batch['xs_ma'] # normalized like this: xs = xs/127.5 - 1
-        # ))
         print('00000000000000', drpred.shape)
         assert False
 
@@ -648,14 +642,14 @@ class FUM_DR(FUM):
     #     torch.set_grad_enabled(False)
     #     return super().validation_step(batch, batch_idx, split)
 
-    # def on_train_epoch_end(self):
-    #     self.v_ygrnt = self.v_ygrnt + [1,2]
-    #     self.t_ygrnt = self.t_ygrnt + [1,2]
-    #     self.v_ypred = self.v_ypred + [1,2]
-    #     self.t_ypred = self.t_ypred + [1,2]
-    #     cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True, title='after 400E')
-    #     cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 400E')
-    #     assert False, 'END-TRAINING'
+    def on_train_epoch_end(self):
+        self.v_ygrnt = self.v_ygrnt + [1,2]
+        self.t_ygrnt = self.t_ygrnt + [1,2]
+        self.v_ypred = self.v_ypred + [1,2]
+        self.t_ypred = self.t_ypred + [1,2]
+        cmatrix(self.v_ygrnt, self.v_ypred, f'/content/e0_val_cmat_before.png', normalize=True, title='after 400E')
+        cmatrix(self.t_ygrnt, self.t_ypred, f'/content/e0_train_cmat_before.png', normalize=True, title='after 400E')
+        assert False, 'END-TRAINING'
 
     def validation_step(self, batch, batch_idx, split='val'):
         return
