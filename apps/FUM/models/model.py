@@ -115,7 +115,7 @@ class FUM(plModuleBase):
             self.v_ygrnt = self.v_ygrnt + list(y_edit.cpu().numpy())
         
         print(dr_pred, y_edit)
-        loss = self.generator.ce(dr_pred, y_edit) # cross entropy doing softmax inide of own.
+        loss = self.generator.ce(dr_pred, y_edit.long()) # cross entropy doing softmax inide of own.
         print(loss, loss.dtype)
         if batch_index % 400 == 0:
             print('loss --->', loss.cpu().detach().item())
