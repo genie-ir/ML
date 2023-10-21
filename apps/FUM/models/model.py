@@ -545,7 +545,7 @@ class FUM_DR(FUM):
         
         self.generator.c2d = torch.nn.Conv2d(1, 1, 3, stride=2, padding=1)
         self.generator.vggout = nn.Sequential(
-            nn.Linear(in_features=1000, out_features=300),
+            nn.Linear(in_features=1024, out_features=300),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5, inplace=False),
             nn.Linear(in_features=300, out_features=3)
@@ -554,6 +554,7 @@ class FUM_DR(FUM):
         from torchvision.models import vgg16
         self.vgg16 = vgg16(pretrained=True)
         print(self.vgg16)
+        
         for param in self.vgg16.parameters():
             param.requires_grad = False
         self.vgg16.classifier[1] = Identity()
