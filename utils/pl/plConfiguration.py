@@ -197,7 +197,7 @@ class ConfigBase:
                 'every_n_epochs': 0,
                 'dirpath': ckptdir,
                 'verbose': True,
-                'save_last': True
+                # 'save_last': True # for best weights we need to monitor val/metric
             }, **app_ctrl_cfg(app_cfg_master['callback'].get('bestCKPT', dict()))}
         }
         if app_cfg_master['callback']['bestCKPT'].get('@off', False) == False:
