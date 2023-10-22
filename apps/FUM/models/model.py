@@ -56,10 +56,18 @@ from PIL import Image
 
 class Identity(nn.Module):
     def __init__(self):
-        super(Identity, self).__init__()
+        super().__init__()
         
     def forward(self, x):
         return x
+
+class Reshape(nn.Module):
+    def __init__(self, xshape):
+        super().__init__()
+        self.xshape = xshape
+        
+    def forward(self, x):
+        return x.reshape(self.xshape)
 
 
 # TODO we looking for uniqness.
@@ -120,9 +128,9 @@ class FUM(plModuleBase):
         return loss, dict(loss=loss.cpu().detach().item())
     
     def drc_master(self, batch, **kwargs):
-        drpred = self.generator.vggout(self.generator.c2d(self.vgg16(
-            batch['xs'] # normalized like this: xs = xs/127.5 - 1
-        ).reshape(-1, 1, 64, 64)).flatten(1))
+        drpred = self.generator.vggout(self.vgg16(
+            batch['xs'] # Normalized as /127.5 - 1
+        ))
 
 
         # drpred.register_hook(lambda grad: print('drpred', grad))
@@ -533,22 +541,23 @@ class FUM_DR(FUM):
     def start(self, dr_vs_synthesis_flag=True):
         super().start(dr_vs_synthesis_flag=False)
         
-        self.generator.c2d = nn.Sequential(
-            torch.nn.Conv2d(1, 16, 3, stride=2, padding=1),
-            nn.ReLU(inplace=True),
-            torch.nn.Conv2d(16, 16, 3, stride=2, padding=1),
-            nn.ReLU(inplace=True),
-            torch.nn.Conv2d(16, 32, 3, stride=2, padding=1),
-            nn.ReLU(inplace=True),
-            torch.nn.Conv2d(32, 32, 3, stride=2, padding=1),
-            nn.ReLU(inplace=True),
-            torch.nn.MaxPool2d(4)
-        )
         self.generator.vggout = nn.Sequential(
-            nn.Linear(in_features=32, out_features=16),
+            Reshape((-1,1,64,64)),
+            torch.nn.Conv2d(1, 1, 3, stride=2, padding=1),
+            nn.Flatten(1),
+            nn.Linear(in_features=1024, out_features=512),
             nn.ReLU(inplace=True),
             nn.Dropout(p=0.5, inplace=False),
-            nn.Linear(in_features=16, out_features=3)
+            Reshape((-1,2,16,16)),
+            torch.nn.Conv2d(2, 4, 3, stride=2, padding=1),
+            nn.Flatten(1),
+            nn.Linear(in_features=256, out_features=128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.5, inplace=False),
+            Reshape((-1,2,8,8)),
+            torch.nn.Conv2d(2, 1, 3, stride=2, padding=1),
+            nn.Flatten(1),
+            nn.Linear(in_features=16, out_features=3),
         )
 
         # sd = torch.load(
