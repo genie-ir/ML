@@ -555,7 +555,7 @@ class FUM_DR(FUM):
         #     '/content/drive/MyDrive/storage/ML_Framework/FUM/logs/2023-10-21T19-55-38_svlgan_dr/checkpoints/e350.ckpt'
         # )['state_dict']
         # self.load_state_dict(
-        #     sd, strict=False        
+        #      sd, strict=False        
         # )
 
         from torchvision.models import vgg16
@@ -572,7 +572,7 @@ class FUM_DR(FUM):
         self.vgg16.classifier[6] = Identity()
         return
         # print('vgg16 shape', self.vgg16(torch.rand(8,16,3,64,64)).shape) # torch.Size([16, 1000])
-        
+         
 
 
         assert False
