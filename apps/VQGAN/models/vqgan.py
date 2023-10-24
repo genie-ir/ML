@@ -120,7 +120,7 @@ class VQModel(pl.LightningModule):
         return dec
 
     def get_input(self, batch, k):
-        k = 'xs'
+        return batch['xs'].float()
         if self.Rfn == 'syn':
             return {'x': batch[k], 'y': batch['y']}
         x = batch[k]
