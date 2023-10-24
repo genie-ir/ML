@@ -61,6 +61,7 @@ mapdict = {
 
 class eyepacsTrain(ImageNetTrain):
     def download_dataset(self, **kwargs):
+        assert False
         system('kaggle datasets download -d {} -p {}'.format(
             'agaldran/eyepacs',
             kwargs['real_fdir']
