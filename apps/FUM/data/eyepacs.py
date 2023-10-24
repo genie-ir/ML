@@ -1,3 +1,6 @@
+
+APP_NAME = 'VQGAN' # FUM/VQGAN
+
 # NOTE: YOU SHOUDE DELETE THIS FILE LATER
 import os
 import yaml
@@ -132,20 +135,20 @@ class D_DR(D_Base):
 class DDR_TRAIN(D_DR):
     def start(self):
         super().start()
-        self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
+        self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
         self.grade2 = os.listdir(self.path_grade2)
         self.grade2_len = len(self.grade2)
-        self.path_grade4 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
+        self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
         self.grade4 = os.listdir(self.path_grade4)
         self.grade4_len = len(self.grade4)
 
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
-        self.path_grade2 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
+        self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
         self.grade2 = os.listdir(self.path_grade2)
         self.grade2_len = len(self.grade2)
-        self.path_grade4 = '/content/root/ML_Framework/FUM/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
+        self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
         self.grade4 = os.listdir(self.path_grade4)
         self.grade4_len = len(self.grade4)
 
