@@ -30,48 +30,127 @@ model:
         perceptual_weight: 0.1
         codebook_weight: 1.0
 
+# data:
+#   target: apps.VQGAN.modules.dataset.DataModuleFromConfig
+#   params:
+#     batch_size: 2 #1 # 4 # 1 #4
+#     num_workers: 2 #24
+#     train:
+#       target: apps.VQGAN.data.eyepacs.eyepacsTrain
+#       params:
+#         config:
+#           DF_NAME: train_eyepacs.csv
+#           DF_KEY: image_id # select row inside dataframe
+#           DF_VAL: dr # class value -> It can be exact one of this: int, float, str
+#           DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+#           DF_CANDIDATE:
+#             MAX_N_IN_CAT: 500
+#           MODE_VAL: 1 #1
+#           EXT: jpeg
+#           SIZE: 256
+#           HOST_DIR: $KAGGLE_PATH
+#           NAME: eyepacs_all
+#           URL:
+#             synset: //data/config/eyepacs/synset_human.txt
+#             iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
+#           FILES:
+#             - eyepacs.zip
+#     validation:
+#       target: apps.VQGAN.data.eyepacs.eyepacsValidation
+#       params:
+#         config:
+#           DF_NAME: val_eyepacs.csv
+#           DF_KEY: image_id # select row inside dataframe
+#           DF_VAL: dr # class value -> It can be exact one of this: int, float, str
+#           DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
+#           DF_CANDIDATE:
+#             MAX_N_IN_CAT: 100
+#           MODE_VAL: 1 #1
+#           EXT: jpeg
+#           SIZE: 256
+#           HOST_DIR: $KAGGLE_PATH
+#           NAME: eyepacs_all
+#           URL:
+#             synset: //data/config/eyepacs/synset_human.txt
+#             iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
+#           FILES:
+#             - eyepacs.zip
+
+
+# #NOTE: dataset drclassifire
 data:
-  target: apps.VQGAN.modules.dataset.DataModuleFromConfig
+  target: utils.pl.tools.dataset.DataModuleFromConfig
   params:
-    batch_size: 2 #1 # 4 # 1 #4
-    num_workers: 2 #24
+    batch_size: 8
+    num_workers: 2
     train:
-      target: apps.VQGAN.data.eyepacs.eyepacsTrain
+      target: apps.FUM.data.eyepacs.DTrain
       params:
         config:
-          DF_NAME: train_eyepacs.csv
+          txt_filelist: train_filelist.txt
+          SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
+          N_WSTAR: -1
+          # S_WSTAR: '**/train/Grade_0'
+          S_WSTAR: '**/train/**'
+          PATH_TO_CLASS_MAP:
+            /dataset/train/Grade_0: 0
+
+
+            /dataset/train/Grade_1: 1
+            /dataset/train/Grade_2: 2
+            /dataset/train/Grade_3: 3
+            /dataset/train/Grade_4: 4
+          
+          
+          DF_NAME: fum_dataset_train.csv
           DF_KEY: image_id # select row inside dataframe
           DF_VAL: dr # class value -> It can be exact one of this: int, float, str
           DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
           DF_CANDIDATE:
-            MAX_N_IN_CAT: 500
-          MODE_VAL: 1 #1
-          EXT: jpeg
+            MAX_N_IN_CAT: 1000000
+          MODE_VAL: 1
+          EXT: png
           SIZE: 256
-          HOST_DIR: $KAGGLE_PATH
-          NAME: eyepacs_all
+          HOST_DIR: //data/external
+          NAME: fum_dataset
           URL:
             synset: //data/config/eyepacs/synset_human.txt
             iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
           FILES:
-            - eyepacs.zip
+            - datasetfile.zip
     validation:
-      target: apps.VQGAN.data.eyepacs.eyepacsValidation
+      target: apps.FUM.data.eyepacs.DVal
       params:
         config:
-          DF_NAME: val_eyepacs.csv
+          txt_filelist: val_filelist.txt
+          SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
+          N_WSTAR: -1
+          # S_WSTAR: '**/val/Grade_0'
+          S_WSTAR: '**/val/**'
+          PATH_TO_CLASS_MAP:
+            /dataset/val/Grade_0: 0
+
+
+            /dataset/val/Grade_1: 1
+            /dataset/val/Grade_2: 2
+            /dataset/val/Grade_3: 3
+            /dataset/val/Grade_4: 4
+
+
+
+          DF_NAME: fum_dataset.csv
           DF_KEY: image_id # select row inside dataframe
           DF_VAL: dr # class value -> It can be exact one of this: int, float, str
           DF_CLASS_TYPE: int # [default: int(for classification)], float(for regression), str(for classification)
           DF_CANDIDATE:
-            MAX_N_IN_CAT: 100
-          MODE_VAL: 1 #1
-          EXT: jpeg
+            MAX_N_IN_CAT: 1000000
+          MODE_VAL: 1
+          EXT: png
           SIZE: 256
           HOST_DIR: $KAGGLE_PATH
-          NAME: eyepacs_all
+          NAME: fum_dataset
           URL:
             synset: //data/config/eyepacs/synset_human.txt
             iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
           FILES:
-            - eyepacs.zip
+            - datasetfile.zip
