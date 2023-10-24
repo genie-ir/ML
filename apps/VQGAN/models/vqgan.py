@@ -503,7 +503,7 @@ class VQModel(pl.LightningModule):
         # x = torch.cat(R, dim=0)
         # print('--------------------->', x.shape)
 
-        
+        print(x.shape)
         xrec, _ = self(x)
         if x.shape[1] > 3:
             # colorize with random projection
