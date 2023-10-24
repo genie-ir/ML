@@ -230,6 +230,9 @@ class VQModel(pl.LightningModule):
         if batch_idx % 500 == 0:
             self.log_images(batch, ignore=False)
         x = self.get_input(batch, self.image_key)
+
+        print(x.shape)
+        assert False
         xrec, qloss = self(x)
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
