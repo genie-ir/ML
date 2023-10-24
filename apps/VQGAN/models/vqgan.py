@@ -89,7 +89,7 @@ class VQModel(pl.LightningModule):
         self.false_all_params(self.decoder)
         self.false_all_params(self.quant_conv)
         self.false_all_params(self.post_quant_conv)
-        self.false_all_params(self.quantize)
+        # self.false_all_params(self.quantize)
 
     def init_from_ckpt(self, path, ignore_keys=list()):
         sd = torch.load(path, map_location="cpu")["state_dict"]
