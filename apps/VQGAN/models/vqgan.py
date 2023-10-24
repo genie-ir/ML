@@ -85,6 +85,7 @@ class VQModel(pl.LightningModule):
             param.requires_grad = False
     
     def start(self): # TODO
+        self.false_all_params(self.loss)
         self.false_all_params(self.encoder)
         self.false_all_params(self.decoder)
         self.false_all_params(self.quant_conv)
