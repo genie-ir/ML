@@ -243,7 +243,8 @@ class VQModel(pl.LightningModule):
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-            
+            VLOSS.register_hook(lambda grad: print('VLOSS', grad))
+            aeloss.register_hook(lambda grad: print('aeloss', grad))
             print(VLOSS, aeloss)
             
             return VLOSS + aeloss
