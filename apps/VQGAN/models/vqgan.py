@@ -252,16 +252,15 @@ class VQModel(pl.LightningModule):
             
             # VLOSS.register_hook(lambda grad: print('VLOSS', grad))
             # aeloss.register_hook(lambda grad: print('aeloss', grad))
-            print(VLOSS, aeloss)
             
             return VLOSS + aeloss
-        else:
-            assert False
-        # if optimizer_idx == 1:
-        #     discloss, log_dict_disc = self.loss(qloss, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
-        #     self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-        #     self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-        #     return discloss
+        
+        if optimizer_idx == 1:
+            print('DDDDDDDDDDDDDDDDDDDDDDDD')
+            discloss, log_dict_disc = self.loss(qloss, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
+            self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+            self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+            return discloss
     
 
 
@@ -493,8 +492,8 @@ class VQModel(pl.LightningModule):
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
                                     lr=lr, betas=(0.5, 0.9))
-        # return [opt_ae, opt_disc], []
-        return [opt_ae], []
+        return [opt_ae, opt_disc], []
+        # return [opt_ae], []
 
     def get_last_layer(self):
         return self.decoder.conv_out.weight
