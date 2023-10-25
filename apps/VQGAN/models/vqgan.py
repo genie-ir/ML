@@ -477,11 +477,11 @@ class VQModel(pl.LightningModule):
     def configure_optimizers(self):
         lr = self.learning_rate
         opt_ae = torch.optim.Adam(
-                                  list(self.encoder.parameters())+
-                                  list(self.decoder.parameters())+
-                                  list(self.quantize.parameters())+
-                                  list(self.quant_conv.parameters())+
-                                  list(self.post_quant_conv.parameters()),
+                                #   list(self.encoder.parameters())+
+                                #   list(self.decoder.parameters())+
+                                  list(self.quantize.parameters()), #+
+                                #   list(self.quant_conv.parameters())+
+                                #   list(self.post_quant_conv.parameters()),
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
                                     lr=lr, betas=(0.5, 0.9))
