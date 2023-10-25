@@ -243,6 +243,9 @@ class VQModel(pl.LightningModule):
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
+            
+            print(VLOSS, aeloss)
+            
             return VLOSS + aeloss
         # if optimizer_idx == 1:
         #     discloss, log_dict_disc = self.loss(qloss, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
