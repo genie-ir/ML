@@ -85,12 +85,13 @@ class VQModel(pl.LightningModule):
             param.requires_grad = False
     
     def start(self): # TODO
-        self.false_all_params(self.loss)
-        self.false_all_params(self.encoder)
-        self.false_all_params(self.decoder)
-        self.false_all_params(self.quant_conv)
-        self.false_all_params(self.post_quant_conv)
+        # self.false_all_params(self.loss)
+        # self.false_all_params(self.encoder)
+        # self.false_all_params(self.decoder)
+        # self.false_all_params(self.quant_conv)
+        # self.false_all_params(self.post_quant_conv)
         # self.false_all_params(self.quantize)
+        pass
 
     def init_from_ckpt(self, path, ignore_keys=list()):
         sd = torch.load(path, map_location="cpu")["state_dict"]
@@ -475,11 +476,12 @@ class VQModel(pl.LightningModule):
 
     def configure_optimizers(self):
         lr = self.learning_rate
-        opt_ae = torch.optim.Adam(list(self.encoder.parameters())+
-                                  list(self.decoder.parameters())+
-                                  list(self.quantize.parameters())+
-                                  list(self.quant_conv.parameters())+
-                                  list(self.post_quant_conv.parameters()),
+        opt_ae = torch.optim.Adam(
+                                #   list(self.encoder.parameters())+
+                                #   list(self.decoder.parameters())+
+                                  list(self.quantize.parameters()),#+
+                                #   list(self.quant_conv.parameters())+
+                                #   list(self.post_quant_conv.parameters()),
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
                                     lr=lr, betas=(0.5, 0.9))
