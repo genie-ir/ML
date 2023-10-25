@@ -492,7 +492,7 @@ class VQModel(pl.LightningModule):
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
                                     lr=lr, betas=(0.5, 0.9))
-        # return [opt_ae, opt_disc], []
+        return [opt_ae, opt_disc], []
         return [opt_ae], []
 
     def get_last_layer(self):
