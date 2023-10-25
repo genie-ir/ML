@@ -85,11 +85,11 @@ class VQModel(pl.LightningModule):
             param.requires_grad = False
     
     def start(self): # TODO
-        # self.false_all_params(self.loss)
-        # self.false_all_params(self.encoder)
-        # self.false_all_params(self.decoder)
-        # self.false_all_params(self.quant_conv)
-        # self.false_all_params(self.post_quant_conv)
+        self.false_all_params(self.loss)
+        self.false_all_params(self.encoder)
+        self.false_all_params(self.decoder)
+        self.false_all_params(self.quant_conv)
+        self.false_all_params(self.post_quant_conv)
         # self.false_all_params(self.quantize)
         pass
 
@@ -236,7 +236,7 @@ class VQModel(pl.LightningModule):
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
 
-        print(x.shape, xrec.shape, Vorg.shape, Vrec.shape)
+        print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
 
         if optimizer_idx == 0 or optimizer_idx == 1:
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
@@ -477,15 +477,16 @@ class VQModel(pl.LightningModule):
     def configure_optimizers(self):
         lr = self.learning_rate
         opt_ae = torch.optim.Adam(
-                                #   list(self.encoder.parameters())+
-                                #   list(self.decoder.parameters())+
-                                  list(self.quantize.parameters()),#+
-                                #   list(self.quant_conv.parameters())+
-                                #   list(self.post_quant_conv.parameters()),
+                                  list(self.encoder.parameters())+
+                                  list(self.decoder.parameters())+
+                                  list(self.quantize.parameters())+
+                                  list(self.quant_conv.parameters())+
+                                  list(self.post_quant_conv.parameters()),
                                   lr=lr, betas=(0.5, 0.9))
         opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
                                     lr=lr, betas=(0.5, 0.9))
-        return [opt_ae, opt_disc], []
+        # return [opt_ae, opt_disc], []
+        return [opt_ae], []
 
     def get_last_layer(self):
         return self.decoder.conv_out.weight
