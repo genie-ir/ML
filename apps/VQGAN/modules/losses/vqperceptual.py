@@ -67,7 +67,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.start()
 
     def start(self):
-        # print(self.discriminator)
+        print(self.discriminator)
         # assert False
         pass
 
