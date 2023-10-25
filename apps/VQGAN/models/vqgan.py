@@ -85,11 +85,11 @@ class VQModel(pl.LightningModule):
             param.requires_grad = False
     
     def start(self): # TODO
-        self.false_all_params(self.loss)
         self.false_all_params(self.encoder)
-        # self.false_all_params(self.decoder)
+        self.false_all_params(self.decoder)
         self.false_all_params(self.quant_conv)
         self.false_all_params(self.post_quant_conv)
+        # self.false_all_params(self.loss)
         # self.false_all_params(self.quantize)
         pass
 
@@ -238,7 +238,7 @@ class VQModel(pl.LightningModule):
 
         print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
 
-        if optimizer_idx == 0 or optimizer_idx == 1:
+        if optimizer_idx == 0:
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
             VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
@@ -246,11 +246,13 @@ class VQModel(pl.LightningModule):
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             
             
-            VLOSS.register_hook(lambda grad: print('VLOSS', grad))
-            aeloss.register_hook(lambda grad: print('aeloss', grad))
+            # VLOSS.register_hook(lambda grad: print('VLOSS', grad))
+            # aeloss.register_hook(lambda grad: print('aeloss', grad))
             print(VLOSS, aeloss)
             
             return VLOSS + aeloss
+        else:
+            assert False
         # if optimizer_idx == 1:
         #     discloss, log_dict_disc = self.loss(qloss, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
         #     self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)

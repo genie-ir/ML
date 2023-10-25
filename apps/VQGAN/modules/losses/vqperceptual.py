@@ -64,6 +64,12 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.discriminator_weight = disc_weight
         self.disc_conditional = disc_conditional
 
+        self.start()
+
+    def start(self):
+        print(self.discriminator)
+        assert False
+
     def calculate_adaptive_weight(self, nll_loss, g_loss, last_layer=None):
         # retain_graph = True
         retain_graph = False
