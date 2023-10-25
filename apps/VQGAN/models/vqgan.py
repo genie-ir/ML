@@ -83,13 +83,17 @@ class VQModel(pl.LightningModule):
     def false_all_params(self, m):
         for param in m.parameters():
             param.requires_grad = False
+    def true_all_params(self, m):
+        for param in m.parameters():
+            param.requires_grad = True
     
     def start(self): # TODO
         self.false_all_params(self.encoder)
         self.false_all_params(self.decoder)
         self.false_all_params(self.quant_conv)
         self.false_all_params(self.post_quant_conv)
-        # self.false_all_params(self.loss)
+        self.false_all_params(self.loss)
+        self.true_all_params(self.loss.discriminator)
         # self.false_all_params(self.quantize)
         pass
 
