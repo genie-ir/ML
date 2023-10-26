@@ -189,6 +189,9 @@ class VQModel(pl.LightningModule):
         V_org = self.vseg(F_org.cpu()).detach()
         V_org = torch.cat([V_org,V_org,V_org], dim=1).detach()
         
+
+        V_org = ((V_org / 127.5) - 1).detach()
+        V_rec = ((V_rec / 127.5) - 1).detach()
         
         # V_org = torch.cat([V_org,V_org,V_org], dim=1)
         # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
