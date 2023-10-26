@@ -187,6 +187,7 @@ class VQModel(pl.LightningModule):
         V_rec = self.vseg(F_rec.cpu()).detach()
         F_org = ((Forg +1)*127.5).detach()
         V_org = self.vseg(F_org.cpu()).detach()
+        V_org = torch.cat([V_org,V_org,V_org], dim=0).detach()
         
         
         # V_org = torch.cat([V_org,V_org,V_org], dim=1)
@@ -238,13 +239,16 @@ class VQModel(pl.LightningModule):
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
 
-        if optimizer_idx == 0:
-            Vorg, Vrec = self.get_V(x, xrec)
-            Vrec = dzq_dz_eq1(Vrec, xrec)
-            print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
+        Vorg, Vrec = self.get_V(x, xrec)
+        Vrec = dzq_dz_eq1(Vrec, xrec)
+        print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
 
+        if optimizer_idx == 0:
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
             VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+            
+            print('00', VLOSS.shape)
+            
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
@@ -257,7 +261,9 @@ class VQModel(pl.LightningModule):
         
         if optimizer_idx == 1:
             print('DDDDDDDDDDDDDDDDDDDDDDDD')
-            discloss, log_dict_disc = self.loss(qloss, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
+            discloss, log_dict_disc = self.loss(None, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
+            discloss_v, log_dict_disc_v = self.loss(None, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
+            print('11', discloss_v.shape)
             self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             return discloss
@@ -518,7 +524,6 @@ class VQModel(pl.LightningModule):
         # x = torch.cat(R, dim=0)
         # print('--------------------->', x.shape)
 
-        print(x.shape)
         xrec, _ = self(x)
         if x.shape[1] > 3:
             # colorize with random projection
