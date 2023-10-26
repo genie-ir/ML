@@ -3,8 +3,8 @@ model:
   target: apps.VQGAN.models.vqgan.VQModel
   params:
     Rfn: '' # _syn
-    ckpt: /content/drive/MyDrive/storage/Pretrained_1024cluster_0.ckpt
-    # ckpt: /content/drive/MyDrive/storage/ML_Framework/VQGAN_OK/logs/2023-10-01T21-31-26_eyepacs_vqgan/checkpoints/lastV6.ckpt
+    # ckpt: /content/drive/MyDrive/storage/Pretrained_1024cluster_0.ckpt
+    ckpt: /content/drive/MyDrive/storage/ML_Framework/VQGAN/logs/2023-10-26T18-07-53_eyepacs_vqgan/checkpoints/e10.ckpt
     embed_dim: 256
     n_embed: 1024
     ddconfig:
