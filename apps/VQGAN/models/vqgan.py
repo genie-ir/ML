@@ -237,12 +237,12 @@ class VQModel(pl.LightningModule):
             self.log_images(batch, ignore=False)
         x = self.get_input(batch, self.image_key)
         xrec, qloss = self(x)
-        Vorg, Vrec = self.get_V(x, xrec)
-        Vrec = dzq_dz_eq1(Vrec, xrec)
-
-        print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
 
         if optimizer_idx == 0:
+            Vorg, Vrec = self.get_V(x, xrec)
+            Vrec = dzq_dz_eq1(Vrec, xrec)
+            print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
+
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
             VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
