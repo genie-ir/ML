@@ -241,13 +241,13 @@ class VQModel(pl.LightningModule):
 
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
-        print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape)
+        print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape, Vorg.min(), Vorg.max(), Vrec.min(), Vrec.max())
 
         if optimizer_idx == 0:
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
             VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
             
-            print('00', VLOSS.shape)
+            print('00', VLOSS, aeloss)
             
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
@@ -263,7 +263,7 @@ class VQModel(pl.LightningModule):
             print('DDDDDDDDDDDDDDDDDDDDDDDD')
             discloss, log_dict_disc = self.loss(None, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
             discloss_v, log_dict_disc_v = self.loss(None, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
-            print('11', discloss_v.shape)
+            print('11', discloss_v, discloss)
             self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             return discloss
