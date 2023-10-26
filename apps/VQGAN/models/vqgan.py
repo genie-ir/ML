@@ -249,7 +249,7 @@ class VQModel(pl.LightningModule):
 
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
-        print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape, Vorg.min(), Vorg.max(), Vrec.min(), Vrec.max())
+        # print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape, Vorg.min(), Vorg.max(), Vrec.min(), Vrec.max())
 
         if optimizer_idx == 0:
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
