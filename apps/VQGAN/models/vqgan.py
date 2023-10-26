@@ -257,7 +257,7 @@ class VQModel(pl.LightningModule):
             # DELETE
             # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
             vintersection = (Vorg * Vrec)
-            VLOSS =  1 - (vintersection / (Vorg + Vrec - vintersection).clamp(1e-8, 1)).mean()
+            VLOSS =  1 - (vintersection / (Vorg + Vrec - vintersection).clamp(1e-8, 1).detach()).mean()
 
 
             print('00', VLOSS, aeloss)
