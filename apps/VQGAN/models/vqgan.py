@@ -260,26 +260,20 @@ class VQModel(pl.LightningModule):
             VLOSS =  1 - (vintersection / (Vorg + Vrec - vintersection).clamp(1e-8, 1).detach()).mean()
 
 
-            print('00', VLOSS, aeloss)
-            
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             
             
-            # VLOSS.register_hook(lambda grad: print('VLOSS', grad))
-            # aeloss.register_hook(lambda grad: print('aeloss', grad))
-            
             return VLOSS + aeloss
         
         if optimizer_idx == 1:
-            print('DDDDDDDDDDDDDDDDDDDDDDDD')
             discloss, log_dict_disc = self.loss(None, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
             discloss_v, log_dict_disc_v = self.loss(None, Vorg, Vrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")
-            print('11', discloss_v, discloss)
             self.log("train/discloss", discloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=False)
-            return discloss
+            # print('11', discloss_v, discloss)
+            return discloss + discloss_v
     
 
 
