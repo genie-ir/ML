@@ -190,9 +190,14 @@ class VQModel(pl.LightningModule):
         V_org = torch.cat([V_org,V_org,V_org], dim=1).detach()
         
 
-        V_org = ((V_org / 127.5) - 1).detach()
-        V_rec = ((V_rec / 127.5) - 1).detach()
+        V_org = ((V_org / 255)).detach()
+        V_rec = ((V_rec / 255)).detach()
+        # V_org = ((V_org / 127.5) - 1).detach()
+        # V_rec = ((V_rec / 127.5) - 1).detach()
         
+
+
+
         # V_org = torch.cat([V_org,V_org,V_org], dim=1)
         # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
         
@@ -248,8 +253,13 @@ class VQModel(pl.LightningModule):
 
         if optimizer_idx == 0:
             aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="train")
-            VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
             
+            # DELETE
+            # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
+            vintersection = (Vorg * Vrec)
+            VLOSS =  1 - (vintersection / (Vorg + Vrec - vintersection).clamp(1e-8, 1)).mean()
+
+
             print('00', VLOSS, aeloss)
             
             log_dict_ae['train/VLOSS'] = VLOSS.detach()
