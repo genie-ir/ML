@@ -91,7 +91,7 @@ class VQModel(pl.LightningModule):
         self.false_all_params(self.encoder)
         self.false_all_params(self.decoder)
         self.false_all_params(self.quant_conv)
-        self.false_all_params(self.post_quant_conv)
+        # self.false_all_params(self.post_quant_conv)
         self.false_all_params(self.loss)
         self.true_all_params(self.loss.discriminator)
         # self.false_all_params(self.quantize)
