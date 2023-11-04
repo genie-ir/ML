@@ -345,6 +345,10 @@ class Encoder(nn.Module):
                  resolution, z_channels, double_z=True, returnSkipPath=False, **ignore_kwargs):
         super().__init__()
         self.returnSkipPath = returnSkipPath
+        if self.returnSkipPath:
+            setattr(self, 'forward', self.forward_yes_skip)
+        else:
+            setattr(self, 'forward', self.forward_no_skip)
         self.ch = ch
         self.temb_ch = 0
         self.num_resolutions = len(ch_mult)
@@ -404,8 +408,55 @@ class Encoder(nn.Module):
                                         padding=1)
 
 
-    def forward(self, x):
-        print('@@@@@@@@@@@@@@@@@@@@@', self.returnSkipPath)
+    def forward_yes_skip(self, x):
+        taildict = dict()
+        #assert x.shape[2] == x.shape[3] == self.resolution, "{}, {}, {}".format(x.shape[2], x.shape[3], self.resolution)
+
+        # timestep embedding
+        temb = None
+
+        # downsampling
+        hs = [self.conv_in(x)]
+        for i_level in range(self.num_resolutions):
+            if i_level == 1: # 2x128x256x256
+                taildict['h_ilevel1'] = h
+            # if i_level >= 1:
+            #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
+            #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])
+            #     # E - i_level=3 -> h.shape= torch.Size([2, 256, 64, 64])
+            #     # E - i_level=4 -> h.shape= torch.Size([2, 256, 32, 32])
+            #     print(f'E - i_level={i_level} -> h.shape=', h.shape)
+            for i_block in range(self.num_res_blocks):
+                h = self.down[i_level].block[i_block](hs[-1], temb)
+                if len(self.down[i_level].attn) > 0:
+                    h = self.down[i_level].attn[i_block](h)
+                hs.append(h)
+            if i_level != self.num_resolutions-1:
+                hs.append(self.down[i_level].downsample(hs[-1]))
+
+
+        # Note: endDownSampling
+        taildict['h_endDownSampling'] = h
+        # print('E - endDownSampling', h.shape) # E - endDownSampling torch.Size([2, 512, 16, 16])
+        
+        
+        
+        # middle
+        h = hs[-1]
+        h = self.mid.block_1(h, temb)
+        h = self.mid.attn_1(h)
+        h = self.mid.block_2(h, temb)
+        # print('E - endMiddlePart', h.shape) # E - endMiddlePart torch.Size([2, 512, 16, 16])
+
+        # end
+        h = self.norm_out(h)
+        h = nonlinearity(h)
+        h = self.conv_out(h)
+        # print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
+        return h, taildict
+    
+    
+    def forward_no_skip(self, x):
         #assert x.shape[2] == x.shape[3] == self.resolution, "{}, {}, {}".format(x.shape[2], x.shape[3], self.resolution)
 
         # timestep embedding
@@ -517,7 +568,7 @@ class Decoder(nn.Module):
                                         stride=1,
                                         padding=1)
 
-    def forward(self, z):
+    def forward(self, z, taildict=None):
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape
 
@@ -535,7 +586,8 @@ class Decoder(nn.Module):
         
         
         # note: connect to E:endDownSampling ([2, 512, 16, 16])
-        print('DecoderPart, middleEnd', h.shape) # DecoderPart, middleEnd torch.Size([2, 512, 16, 16])
+        h = h + taildict['h_endDownSampling']
+        # print('DecoderPart, middleEnd', h.shape) # DecoderPart, middleEnd torch.Size([2, 512, 16, 16])
         
         
         
@@ -550,10 +602,13 @@ class Decoder(nn.Module):
             if i_level != 0:
                 h = self.up[i_level].upsample(h)
 
+
+
         
         
-        # Note connection to E:ilevel1
-        print('DecoderPart, upsampleEnd', h.shape) # DecoderPart, upsampleEnd torch.Size([2, 128, 256, 256]) #Note -> connect to ilevel1
+        # Note connect to E:ilevel1
+        h = h + taildict['h_ilevel1']
+        # print('DecoderPart, upsampleEnd', h.shape) # DecoderPart, upsampleEnd torch.Size([2, 128, 256, 256]) #Note -> connect to ilevel1
         
 
         
@@ -565,7 +620,7 @@ class Decoder(nn.Module):
         h = nonlinearity(h)
         h = self.conv_out(h)
 
-        print('DecoderPart, endEnd', h.shape) # DecoderPart, endEnd torch.Size([2, 3, 256, 256])
+        # print('DecoderPart, endEnd', h.shape) # DecoderPart, endEnd torch.Size([2, 3, 256, 256])
 
         return h
 

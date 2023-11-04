@@ -184,11 +184,11 @@ class VQModel(pl.LightningModule):
     
     
     def forward(self, input):
-        h = self.encoder(input)
+        h, taildict = self.encoder(input)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
-        dec = self.decoder(Q + h) # Note: add skip connection
+        dec = self.decoder(Q + h, taildict=taildict) # Note: add skip connection
 
 
         assert False
