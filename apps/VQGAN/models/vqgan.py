@@ -174,11 +174,26 @@ class VQModel(pl.LightningModule):
     #     afn = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255).transpose(0,1).transpose(1,2)
     #     signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
     #     return None, None
-    def forward(self, input):
-        # print('forward')
-        # quant, diff, R = self.encode(input)
+    
+    
+    
+    def forward00(self, input):
         quant, diff = self.encode(input)
         dec = self.decode(quant)
+        return dec, diff
+    
+    
+    def forward(self, input):
+        h = self.encoder(input)
+        h = self.quant_conv(h)
+        quant, diff = self.quantize(h)
+
+        Q = self.post_quant_conv(quant)
+        dec = self.decoder(Q + h) # Note: add skip connection
+
+
+        assert False
+
         return dec, diff
 
     

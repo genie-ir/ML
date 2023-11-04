@@ -421,16 +421,20 @@ class Encoder(nn.Module):
             if i_level != self.num_resolutions-1:
                 hs.append(self.down[i_level].downsample(hs[-1]))
 
+
+        print('E - endDownSampling', h.shape)
         # middle
         h = hs[-1]
         h = self.mid.block_1(h, temb)
         h = self.mid.attn_1(h)
         h = self.mid.block_2(h, temb)
+        print('E - endMiddlePart', h.shape)
 
         # end
         h = self.norm_out(h)
         h = nonlinearity(h)
         h = self.conv_out(h)
+        print('E - endEndpart', h.shape)
         return h
 
 
@@ -519,6 +523,7 @@ class Decoder(nn.Module):
         h = self.mid.attn_1(h)
         h = self.mid.block_2(h, temb)
 
+        print('DecoderPart, middleEnd', h.shape)
         # upsampling
         for i_level in reversed(range(self.num_resolutions)):
             for i_block in range(self.num_res_blocks+1):
@@ -528,6 +533,7 @@ class Decoder(nn.Module):
             if i_level != 0:
                 h = self.up[i_level].upsample(h)
 
+        print('DecoderPart, upsampleEnd', h.shape)
         # end
         if self.give_pre_end:
             return h
@@ -535,6 +541,9 @@ class Decoder(nn.Module):
         h = self.norm_out(h)
         h = nonlinearity(h)
         h = self.conv_out(h)
+
+        print('DecoderPart, endEnd', h.shape)
+
         return h
 
 
