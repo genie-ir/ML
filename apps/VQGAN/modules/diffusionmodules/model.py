@@ -413,7 +413,8 @@ class Encoder(nn.Module):
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):
-            print(f'E - i_level={i_level}')
+            if i_level >= 1:
+                print(f'E - i_level={i_level} -> h.shape=', h.shape)
             for i_block in range(self.num_res_blocks):
                 h = self.down[i_level].block[i_block](hs[-1], temb)
                 if len(self.down[i_level].attn) > 0:
