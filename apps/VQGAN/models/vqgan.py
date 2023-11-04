@@ -53,7 +53,7 @@ class VQModel(pl.LightningModule):
         self.ddconfig = ddconfig
         self.Rfn = Rfn
         self.image_key = image_key
-        self.encoder = Encoder(**ddconfig)
+        self.encoder = Encoder(**ddconfig, returnSkipPath=True)
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
         self.quantize = VectorQuantizer(n_e=n_embed, e_dim=embed_dim, beta=0.25, remap=remap, sane_index_shape=sane_index_shape)
@@ -186,11 +186,8 @@ class VQModel(pl.LightningModule):
     def forward(self, input):
         h = self.encoder(input)
         h = self.quant_conv(h)
-        print('----------------> E', h.shape)
         quant, diff = self.quantize(h)
-
         Q = self.post_quant_conv(quant)
-        print('----------------> Q', Q.shape)
         dec = self.decoder(Q + h) # Note: add skip connection
 
 
