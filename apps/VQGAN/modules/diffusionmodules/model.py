@@ -413,6 +413,7 @@ class Encoder(nn.Module):
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):
+            print(f'E - i_level={i_level}')
             for i_block in range(self.num_res_blocks):
                 h = self.down[i_level].block[i_block](hs[-1], temb)
                 if len(self.down[i_level].attn) > 0:
@@ -422,19 +423,19 @@ class Encoder(nn.Module):
                 hs.append(self.down[i_level].downsample(hs[-1]))
 
 
-        print('E - endDownSampling', h.shape)
+        print('E - endDownSampling', h.shape) # E - endDownSampling torch.Size([2, 512, 16, 16])
         # middle
         h = hs[-1]
         h = self.mid.block_1(h, temb)
         h = self.mid.attn_1(h)
         h = self.mid.block_2(h, temb)
-        print('E - endMiddlePart', h.shape)
+        print('E - endMiddlePart', h.shape) # E - endMiddlePart torch.Size([2, 512, 16, 16])
 
         # end
         h = self.norm_out(h)
         h = nonlinearity(h)
         h = self.conv_out(h)
-        print('E - endEndpart', h.shape)
+        print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
         return h
 
 
@@ -523,7 +524,7 @@ class Decoder(nn.Module):
         h = self.mid.attn_1(h)
         h = self.mid.block_2(h, temb)
 
-        print('DecoderPart, middleEnd', h.shape)
+        print('DecoderPart, middleEnd', h.shape) # DecoderPart, middleEnd torch.Size([2, 512, 16, 16])
         # upsampling
         for i_level in reversed(range(self.num_resolutions)):
             for i_block in range(self.num_res_blocks+1):
@@ -533,7 +534,7 @@ class Decoder(nn.Module):
             if i_level != 0:
                 h = self.up[i_level].upsample(h)
 
-        print('DecoderPart, upsampleEnd', h.shape)
+        print('DecoderPart, upsampleEnd', h.shape) # DecoderPart, upsampleEnd torch.Size([2, 128, 256, 256])
         # end
         if self.give_pre_end:
             return h
@@ -542,7 +543,7 @@ class Decoder(nn.Module):
         h = nonlinearity(h)
         h = self.conv_out(h)
 
-        print('DecoderPart, endEnd', h.shape)
+        print('DecoderPart, endEnd', h.shape) # DecoderPart, endEnd torch.Size([2, 3, 256, 256])
 
         return h
 
