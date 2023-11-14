@@ -168,7 +168,8 @@ from utils.pt.datasets.imageNet import ImageNetTrain, ImageNetValidation
 
 class DTrain(ImageNetTrain):
     def download_dataset(self, **kwargs):
-        src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
+        # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
+        src = self.config.get('SRC')
         if not exists(src):
             src = join('/content', self.config.get('SRC'))
         system('cp -R {} {}/datasetfile.zip'.format(
@@ -181,7 +182,8 @@ class DTrain(ImageNetTrain):
     
 class DVal(ImageNetValidation):
     def download_dataset(self, **kwargs):
-        src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
+        # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
+        src = self.config.get('SRC')
         if not exists(src):
             src = join('/content', self.config.get('SRC'))
         system('cp -R {} {}/datasetfile.zip'.format(
