@@ -89,7 +89,7 @@ data:
         config:
           txt_filelist: train_filelist.txt
           # SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
-          SRC: apps/VQGAN/configs/eyepacs_vqgan.yaml
+          SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/train/Grade_0'
           S_WSTAR: '**/train/**'
@@ -123,7 +123,7 @@ data:
         config:
           txt_filelist: val_filelist.txt
           # SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
-          SRC: apps/VQGAN/configs/eyepacs_vqgan.yaml
+          SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/val/Grade_0'
           S_WSTAR: '**/val/**'
