@@ -178,6 +178,10 @@ class DTrain(ImageNetTrain):
             kwargs['real_fdir']
         ))
     
+    def extract_dataset(self, **kwargs):
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        return super().extract_dataset(**kwargs)
+
     def preparation(self, **kwargs):
         self.D = DDR_TRAIN
     
@@ -192,6 +196,8 @@ class DVal(ImageNetValidation):
             src,
             kwargs['real_fdir']
         ))
-    
+    def extract_dataset(self, **kwargs):
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        return super().extract_dataset(**kwargs)
     def preparation(self, **kwargs):
         self.D = DDR_VAL
