@@ -104,7 +104,7 @@ class ImageNetBase(Dataset):
                         makedirs(real_fdir, exist_ok=True)
                         makedirs(getenv('GENIE_ML_STORAGE0'), exist_ok=True)
                         self.download_dataset(real_fdir=real_fdir, api=self.config.get('api', None))
-                        # print('--------------------->', real_fpath)
+                        print('hoooooooo --------------------->', real_fpath)
                         real_fpath = glob.glob(real_fpath + '*')[0]
                     
                     print('real_fpath', real_fpath)
