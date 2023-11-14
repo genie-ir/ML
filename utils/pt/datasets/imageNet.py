@@ -126,7 +126,7 @@ class ImageNetBase(Dataset):
             glob_path = join(datadir, inpalceWSTAR, '*.{}'.format(self.config['EXT']))
             # print('glob_path', glob_path)
             filelist = glob.glob(glob_path) # inside datadir we scaped one level directories and we select specefic `.EXT` files
-            print('hoooooooooooooo', filelist)
+            # print('hoooooooooooooo', filelist)
             filelist = [relpath(p, start=datadir) for p in filelist]
             filelist = sorted(filelist)
             filelist = '\n'.join(filelist) + '\n'
