@@ -116,7 +116,7 @@ data:
             synset: //data/config/eyepacs/synset_human.txt
             iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
           FILES:
-            - datasetfile.zip
+            - fumdata.zip
     validation:
       target: apps.FUM.data.eyepacs.DVal
       params:
@@ -151,4 +151,4 @@ data:
             synset: //data/config/eyepacs/synset_human.txt
             iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml
           FILES:
-            - datasetfile.zip
+            - fumdata.zip
