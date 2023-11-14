@@ -92,13 +92,13 @@ data:
           SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/train/Grade_0'
-          S_WSTAR: '**/train/**'
+          S_WSTAR: '**/fundus/**'
           PATH_TO_CLASS_MAP:
-            /dataset/train/Grade_0: 0
-            /dataset/train/Grade_1: 1
-            # /dataset/train/Grade_2: 2
-            # /dataset/train/Grade_3: 3
-            # /dataset/train/Grade_4: 4
+            /fumdata/fundus/0: 0
+            /fumdata/fundus/1: 1
+            /fumdata/fundus/2: 2
+            /fumdata/fundus/3: 3
+            /fumdata/fundus/4: 4
           
           
           DF_NAME: fum_dataset_train.csv
@@ -108,7 +108,7 @@ data:
           DF_CANDIDATE:
             MAX_N_IN_CAT: 1000000
           MODE_VAL: 1
-          EXT: png
+          EXT: jpg
           SIZE: 256
           HOST_DIR: //data/external
           NAME: eyepacs_all_for_cgan
@@ -126,13 +126,13 @@ data:
           SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/val/Grade_0'
-          S_WSTAR: '**/val/**'
+          S_WSTAR: '**/fundus/**'
           PATH_TO_CLASS_MAP:
-            /dataset/val/Grade_0: 0
-            /dataset/val/Grade_1: 1
-            # /dataset/val/Grade_2: 2
-            # /dataset/val/Grade_3: 3
-            # /dataset/val/Grade_4: 4
+            /fumdata/fundus/0: 0
+            /fumdata/fundus/1: 1
+            /fumdata/fundus/2: 2
+            /fumdata/fundus/3: 3
+            /fumdata/fundus/4: 4
 
 
 
@@ -143,7 +143,7 @@ data:
           DF_CANDIDATE:
             MAX_N_IN_CAT: 1000000
           MODE_VAL: 1
-          EXT: png
+          EXT: jpg
           SIZE: 256
           HOST_DIR: $KAGGLE_PATH
           NAME: eyepacs_all_for_cgan

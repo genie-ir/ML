@@ -22,6 +22,10 @@ except Exception as e:
     print(e)
     assert False
 
+
+DATASET_PATH = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata'
+
+
 class D(D_Base):
     def fetch(self, signal_path, **kwargs):
         y = kwargs['y']
@@ -137,22 +141,22 @@ class D_DR(D_Base):
 class DDR_TRAIN(D_DR):
     def start(self):
         super().start()
-        self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
-        self.grade2 = os.listdir(self.path_grade2)
-        self.grade2_len = len(self.grade2)
-        self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
-        self.grade4 = os.listdir(self.path_grade4)
-        self.grade4_len = len(self.grade4)
+        # self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
+        # self.grade2 = os.listdir(self.path_grade2)
+        # self.grade2_len = len(self.grade2)
+        # self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
+        # self.grade4 = os.listdir(self.path_grade4)
+        # self.grade4_len = len(self.grade4)
 
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
         self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
-        self.grade2 = os.listdir(self.path_grade2)
-        self.grade2_len = len(self.grade2)
-        self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
-        self.grade4 = os.listdir(self.path_grade4)
-        self.grade4_len = len(self.grade4)
+        # self.grade2 = os.listdir(self.path_grade2)
+        # self.grade2_len = len(self.grade2)
+        # self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
+        # self.grade4 = os.listdir(self.path_grade4)
+        # self.grade4_len = len(self.grade4)
 
 class eyepacsTrain(eyepacsTrainBase): 
     def preparation(self, **kwargs):
@@ -179,10 +183,6 @@ class DTrain(ImageNetTrain):
             kwargs['real_fdir']
         ))
     
-    # def extract_dataset(self, **kwargs):
-    #     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    #     return super().extract_dataset(**kwargs)
-
     def preparation(self, **kwargs):
         self.D = DDR_TRAIN
     
@@ -198,8 +198,6 @@ class DVal(ImageNetValidation):
             src,
             kwargs['real_fdir']
         ))
-    # def extract_dataset(self, **kwargs):
-    #     print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-    #     return super().extract_dataset(**kwargs)
+
     def preparation(self, **kwargs):
         self.D = DDR_VAL
