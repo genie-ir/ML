@@ -174,7 +174,7 @@ class DTrain(ImageNetTrain):
         print(src)
         # if not exists(src):
         #     src = join('/content', self.config.get('SRC'))
-        system('cp -R {} {}/datasetfile.zip'.format(
+        system('cp -R {} {}/fumdata.zip'.format(
             src,
             kwargs['real_fdir']
         ))
@@ -194,7 +194,7 @@ class DVal(ImageNetValidation):
         print(src)
         # if not exists(src):
         #     src = join('/content', self.config.get('SRC'))
-        system('cp -R {} {}/datasetfile.zip'.format(
+        system('cp -R {} {}/fumdata.zip'.format(
             src,
             kwargs['real_fdir']
         ))
