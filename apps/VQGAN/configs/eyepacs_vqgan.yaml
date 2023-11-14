@@ -88,18 +88,17 @@ data:
       params:
         config:
           txt_filelist: train_filelist.txt
-          SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
+          # SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
+          SRC: apps/VQGAN/configs/eyepacs_vqgan.yaml
           N_WSTAR: -1
           # S_WSTAR: '**/train/Grade_0'
           S_WSTAR: '**/train/**'
           PATH_TO_CLASS_MAP:
             /dataset/train/Grade_0: 0
-
-
             /dataset/train/Grade_1: 1
-            /dataset/train/Grade_2: 2
-            /dataset/train/Grade_3: 3
-            /dataset/train/Grade_4: 4
+            # /dataset/train/Grade_2: 2
+            # /dataset/train/Grade_3: 3
+            # /dataset/train/Grade_4: 4
           
           
           DF_NAME: fum_dataset_train.csv
@@ -123,18 +122,17 @@ data:
       params:
         config:
           txt_filelist: val_filelist.txt
-          SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
+          # SRC: /content/drive/MyDrive/storage/dependency/fum_dataset.zip
+          SRC: apps/VQGAN/configs/eyepacs_vqgan.yaml
           N_WSTAR: -1
           # S_WSTAR: '**/val/Grade_0'
           S_WSTAR: '**/val/**'
           PATH_TO_CLASS_MAP:
             /dataset/val/Grade_0: 0
-
-
             /dataset/val/Grade_1: 1
-            /dataset/val/Grade_2: 2
-            /dataset/val/Grade_3: 3
-            /dataset/val/Grade_4: 4
+            # /dataset/val/Grade_2: 2
+            # /dataset/val/Grade_3: 3
+            # /dataset/val/Grade_4: 4
 
 
 

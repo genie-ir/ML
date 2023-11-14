@@ -95,7 +95,9 @@ class D_DR(D_Base):
 
         
         
-        
+        print(signal_path)
+
+        assert False
         
         xs = np.array(Image.open(signal_path))
         # xs_ma = (dr_transformer0(image=ma_ditector_fn(xs))['image'] > 0).float()
