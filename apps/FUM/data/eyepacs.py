@@ -168,7 +168,7 @@ from utils.pt.datasets.imageNet import ImageNetTrain, ImageNetValidation
 
 class DTrain(ImageNetTrain):
     def download_dataset(self, **kwargs):
-        kwargs['real_fdir'] = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan'
+        # kwargs['real_fdir'] = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan'
         # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         src = self.config.get('SRC')
         print(src)
@@ -188,7 +188,7 @@ class DTrain(ImageNetTrain):
     
 class DVal(ImageNetValidation):
     def download_dataset(self, **kwargs):
-        kwargs['real_fdir'] = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan'
+        # kwargs['real_fdir'] = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan'
         # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         src = self.config.get('SRC')
         print(src)
