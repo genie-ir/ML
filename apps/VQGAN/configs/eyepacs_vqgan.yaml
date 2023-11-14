@@ -111,7 +111,7 @@ data:
           EXT: png
           SIZE: 256
           HOST_DIR: //data/external
-          NAME: fum_dataset
+          NAME: eyepacs_all_for_cgan
           URL:
             synset: //data/config/eyepacs/synset_human.txt
             iSynset: $5 # or we can write this -> //data/config/eyepacs/index_synset.yaml
@@ -146,7 +146,7 @@ data:
           EXT: png
           SIZE: 256
           HOST_DIR: $KAGGLE_PATH
-          NAME: fum_dataset
+          NAME: eyepacs_all_for_cgan
           URL:
             synset: //data/config/eyepacs/synset_human.txt
             iSynset: $5 # or insteadly we can write this -> //data/config/eyepacs/index_synset.yaml

@@ -168,8 +168,6 @@ from utils.pt.datasets.imageNet import ImageNetTrain, ImageNetValidation
 
 class DTrain(ImageNetTrain):
     def download_dataset(self, **kwargs):
-        print(kwargs['real_fdir'])
-        assert False
         # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         src = self.config.get('SRC')
         print(src)
@@ -185,8 +183,6 @@ class DTrain(ImageNetTrain):
     
 class DVal(ImageNetValidation):
     def download_dataset(self, **kwargs):
-        print(kwargs['real_fdir'])
-        assert False
         # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         src = self.config.get('SRC')
         print(src)
