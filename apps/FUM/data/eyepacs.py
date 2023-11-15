@@ -141,6 +141,7 @@ class D_DR(D_Base):
 class DDR_TRAIN(D_DR):
     def start(self):
         super().start()
+        print('TRAIN', self.__length)
         # self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
         # self.grade2 = os.listdir(self.path_grade2)
         # self.grade2_len = len(self.grade2)
@@ -151,7 +152,8 @@ class DDR_TRAIN(D_DR):
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
-        self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
+        print('VAL', self.__length)
+        # self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
         # self.grade2 = os.listdir(self.path_grade2)
         # self.grade2_len = len(self.grade2)
         # self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
