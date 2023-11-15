@@ -103,10 +103,11 @@ class D_DR(D_Base):
 
         
         xs_fundus = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
-        xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', 'lesion'))))['image']
-        xs_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', 'cunvexhull'))))['image']
-        xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', 'fundus-mask'))))['image']
+        xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
+        xs_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
+        xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
 
+        assert False
 
         # xc1 = (dr_transformer(image=np.array(Image.open(
         #         os.path.join(self.path_grade2, self.grade2[kwargs['i'] % self.grade2_len])
@@ -161,7 +162,7 @@ class DDR_VAL(D_DR):
         # print('VAL', self.__len__())
 
 
-        category = 'gg'
+        category = 'val'
         self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/2/*.jpg'
         self.grade2 = glob.glob(self.path_grade2)
         self.grade2_len = len(self.grade2)
