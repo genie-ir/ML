@@ -14,7 +14,7 @@ from data.config.eyepacs.D import eyepacsTrain as eyepacsTrainBase, eyepacsValid
 from albumentations.pytorch import ToTensorV2
 import albumentations as A
 from libs.basicIO import signal_save
-
+import glob
 # from apps.FUM.data.extract_ma import findMA
 try:
     from dependency.Local_Convergence_Index_Features.B_GadientWeighting import main as ma_ditector_fn
@@ -51,10 +51,10 @@ LANDA = (256*256)
 dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
-dr_transformer = A.Compose([
-    A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=0.5),
-    ToTensorV2()
-])
+# dr_transformer = A.Compose([
+#     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=0.5),
+#     ToTensorV2()
+# ])
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
         y = kwargs['y']
@@ -101,24 +101,11 @@ class D_DR(D_Base):
         
         print(signal_path)
 
-        assert False
         
-        xs = np.array(Image.open(signal_path))
-        # xs_ma = (dr_transformer0(image=ma_ditector_fn(xs))['image'] > 0).float()
-        # emetric = torch.tensor((xs_ma.sum().item() / LANDA)).exp().item()
-        xs = dr_transformer(image=xs)['image']
-
-        # print(xs_ma.shape, xs_ma.min(), xs_ma.max())
-        # print(emetric)
-        
-        
-        # eye_final = eye_final.squeeze().unsqueeze(0)
-        # eye_final = torch.cat([eye_final,eye_final,eye_final], dim=0)
-        # xs=xs.unsqueeze(0)
-        # eye_final=eye_final * 255
-        # eye_final = (eye_final + .2 *xs).clamp(0, 255)
-        # signal_save(torch.cat([xs, eye_final], dim=0), f'/content/MA.png', stype='img', sparams={'chw2hwc': True})
-
+        xs_fundus = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
+        xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', 'lesion'))))['image']
+        xs_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', 'cunvexhull'))))['image']
+        xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', 'fundus-mask'))))['image']
 
 
         # xc1 = (dr_transformer(image=np.array(Image.open(
@@ -129,7 +116,10 @@ class D_DR(D_Base):
         #     )))['image'] / 127.5) - 1
 
         return {
-            'xs': (xs / 127.5) - 1,
+            'xs_fundus': (xs_fundus / 127.5) - 1,
+            'xs_lesion': (xs_lesion / 127.5) - 1,
+            'xs_cunvechull': (xs_cunvechull / 127.5) - 1,
+            'xs_fundusmask': (xs_fundusmask / 127.5) - 1,
             # 'xs_ma': (xs_ma / 127.5) -1,
             # 'xc': [
             #     xc1, xc2
@@ -141,10 +131,12 @@ class D_DR(D_Base):
 class DDR_TRAIN(D_DR):
     def start(self):
         super().start()
-        print('TRAIN', self.__len__())
-        # self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_2'
-        # self.grade2 = os.listdir(self.path_grade2)
-        # self.grade2_len = len(self.grade2)
+        # print('TRAIN', self.__len__())
+        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train'
+        self.grade2 = glob.glob(self.path_grade2)
+        print('@@@@@@@@@@@@2', self.grade2)
+        assert False
+        self.grade2_len = len(self.grade2)
         # self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/train/Grade_4'
         # self.grade4 = os.listdir(self.path_grade4)
         # self.grade4_len = len(self.grade4)
@@ -152,7 +144,7 @@ class DDR_TRAIN(D_DR):
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
-        print('VAL', self.__len__())
+        # print('VAL', self.__len__())
         # self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
         # self.grade2 = os.listdir(self.path_grade2)
         # self.grade2_len = len(self.grade2)
