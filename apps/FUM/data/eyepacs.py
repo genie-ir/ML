@@ -132,36 +132,49 @@ class DDR_TRAIN(D_DR):
     def start(self):
         super().start()
         # print('TRAIN', self.__len__())
-        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/2/*.jpg'
+        
+        
+        category = 'train'
+        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/2/*.jpg'
         self.grade2 = glob.glob(self.path_grade2)
         self.grade2_len = len(self.grade2)
         
         
-        self.path_grade01 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/[01]/*.jpg'
+        self.path_grade01 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[01]/*.jpg'
         self.grade01 = glob.glob(self.path_grade01)
         self.grade01_len = len(self.grade01)
         
         
-        self.path_grade34 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/[34]/*.jpg'
+        self.path_grade34 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[34]/*.jpg'
         self.grade34 = glob.glob(self.path_grade34)
         self.grade34_len = len(self.grade34)
         
         
         
-        print('@@@@@@@@@@@@2', self.grade2_len, self.grade2)
-        print('@@@@@@@@@@@@34', self.grade34_len, self.grade34)
-        print('@@@@@@@@@@@@01', self.grade01_len, self.grade01)
+        # print('@@@@@@@@@@@@2', self.grade2_len, self.grade2)
+        # print('@@@@@@@@@@@@34', self.grade34_len, self.grade34)
+        # print('@@@@@@@@@@@@01', self.grade01_len, self.grade01)
 
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
         # print('VAL', self.__len__())
-        # self.path_grade2 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_2'
-        # self.grade2 = os.listdir(self.path_grade2)
-        # self.grade2_len = len(self.grade2)
-        # self.path_grade4 = f'/content/root/ML_Framework/{APP_NAME}/cache/autoencoders/data/fum_dataset/data/dataset/val/Grade_4'
-        # self.grade4 = os.listdir(self.path_grade4)
-        # self.grade4_len = len(self.grade4)
+
+
+        category = 'gg'
+        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/2/*.jpg'
+        self.grade2 = glob.glob(self.path_grade2)
+        self.grade2_len = len(self.grade2)
+        
+        
+        self.path_grade01 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[01]/*.jpg'
+        self.grade01 = glob.glob(self.path_grade01)
+        self.grade01_len = len(self.grade01)
+        
+        
+        self.path_grade34 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[34]/*.jpg'
+        self.grade34 = glob.glob(self.path_grade34)
+        self.grade34_len = len(self.grade34)
 
 class eyepacsTrain(eyepacsTrainBase): 
     def preparation(self, **kwargs):
