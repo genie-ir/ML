@@ -139,7 +139,7 @@ class DDR_TRAIN(D_DR):
         self.grade34 = glob.glob(self.path_grade34)
         self.grade34_len = len(self.grade34)
         print('@@@@@@@@@@@@2', self.grade2_len, self.grade2)
-        print('@@@@@@@@@@@@34', self.grade34_len, self.grade2)
+        print('@@@@@@@@@@@@34', self.grade34_len, self.grade34)
         assert False
 
 class DDR_VAL(D_DR):
