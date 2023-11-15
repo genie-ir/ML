@@ -132,7 +132,7 @@ class DDR_TRAIN(D_DR):
     def start(self):
         super().start()
         # print('TRAIN', self.__len__())
-        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/*.jpg'
+        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/**'
         self.grade2 = glob.glob(self.path_grade2)
         print('@@@@@@@@@@@@2', self.grade2)
         assert False
