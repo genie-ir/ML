@@ -92,13 +92,14 @@ data:
           SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/train/Grade_0'
-          S_WSTAR: '**/train/fundus/[01]'
+          # S_WSTAR: '**/train/fundus/[01]'
+          S_WSTAR: '**/train/fundus/**'
           PATH_TO_CLASS_MAP:
             /fumdata/train/fundus/0: 0
             /fumdata/train/fundus/1: 1
-            # /fumdata/train/fundus/2: 2
-            # /fumdata/train/fundus/3: 3
-            # /fumdata/train/fundus/4: 4
+            /fumdata/train/fundus/2: 2
+            /fumdata/train/fundus/3: 3
+            /fumdata/train/fundus/4: 4
           
           
           DF_NAME: fum_dataset_train.csv
@@ -126,13 +127,14 @@ data:
           SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/val/Grade_0'
-          S_WSTAR: '**/val/fundus/[01]'
+          # S_WSTAR: '**/val/fundus/[01]'
+          S_WSTAR: '**/val/fundus/**'
           PATH_TO_CLASS_MAP:
             /fumdata/val/fundus/0: 0
             /fumdata/val/fundus/1: 1
-            # /fumdata/val/fundus/2: 2
-            # /fumdata/val/fundus/3: 3
-            # /fumdata/val/fundus/4: 4
+            /fumdata/val/fundus/2: 2
+            /fumdata/val/fundus/3: 3
+            /fumdata/val/fundus/4: 4
 
 
 
