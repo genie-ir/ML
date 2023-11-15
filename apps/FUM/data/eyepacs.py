@@ -151,7 +151,6 @@ class DDR_TRAIN(D_DR):
         print('@@@@@@@@@@@@2', self.grade2_len, self.grade2)
         print('@@@@@@@@@@@@34', self.grade34_len, self.grade34)
         print('@@@@@@@@@@@@01', self.grade01_len, self.grade01)
-        assert False
 
 class DDR_VAL(D_DR):
     def start(self):
