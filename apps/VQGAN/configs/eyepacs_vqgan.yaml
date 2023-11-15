@@ -92,7 +92,7 @@ data:
           SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/train/Grade_0'
-          S_WSTAR: '**/train/fundus/**'
+          S_WSTAR: '**/train/fundus/[0][1]'
           PATH_TO_CLASS_MAP:
             /fumdata/train/fundus/0: 0
             /fumdata/train/fundus/1: 1
@@ -126,7 +126,7 @@ data:
           SRC: /content/drive/MyDrive/storage/dependency/fumdata.zip
           N_WSTAR: -1
           # S_WSTAR: '**/val/Grade_0'
-          S_WSTAR: '**/val/fundus/**'
+          S_WSTAR: '**/val/fundus/[0][1]'
           PATH_TO_CLASS_MAP:
             /fumdata/val/fundus/0: 0
             /fumdata/val/fundus/1: 1
