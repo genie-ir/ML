@@ -135,11 +135,22 @@ class DDR_TRAIN(D_DR):
         self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/2/*.jpg'
         self.grade2 = glob.glob(self.path_grade2)
         self.grade2_len = len(self.grade2)
+        
+        
+        self.path_grade01 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/[01]/*.jpg'
+        self.grade01 = glob.glob(self.path_grade01)
+        self.grade01_len = len(self.grade01)
+        
+        
         self.path_grade34 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/train/fundus/[34]/*.jpg'
         self.grade34 = glob.glob(self.path_grade34)
         self.grade34_len = len(self.grade34)
+        
+        
+        
         print('@@@@@@@@@@@@2', self.grade2_len, self.grade2)
         print('@@@@@@@@@@@@34', self.grade34_len, self.grade34)
+        print('@@@@@@@@@@@@01', self.grade01_len, self.grade01)
         assert False
 
 class DDR_VAL(D_DR):
