@@ -117,7 +117,7 @@ class DDR_TRAIN(D_DR):
         category = 'train'
         self.grade = []
         self.grade_len = []
-        for cidx, cval in ['[01]', '2', '[34]']:
+        for cidx, cval in enumerate(['[01]', '2', '[34]']):
             path_grade = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/{cval}/*.jpg'
             self.grade[cval] = glob.glob(path_grade)
             self.grade_len[cval] = len(self.grade[cval])
