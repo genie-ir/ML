@@ -61,7 +61,6 @@ def imgNormalizer(img):
 # ])
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
-        print('!!!!!!!!!!!!!!!!!!!!', self.__len__())
         y = kwargs['y']
         
         if y == 0 or y == 1:

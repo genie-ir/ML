@@ -188,8 +188,8 @@ class VQModel(pl.LightningModule):
         return dec, diff
     
     
-    def forward(self, input):
-        h, taildict = self.encoder(input)
+    def forward(self, xs, xc):
+        h, taildict = self.encoder(xs)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
@@ -274,10 +274,12 @@ class VQModel(pl.LightningModule):
         #     else:
         #         print(i, batch[i].shape)
 
+        xs = batch['xs']
+        xc = batch['xc']
+        print(xs.dtype, xs.shape)
 
-
+        xrec, qloss = self(xs, xc)
         assert False
-        xrec, qloss = self(x)
 
         Vorg, Vrec = self.get_V(x, xrec)
         Vrec = dzq_dz_eq1(Vrec, xrec)
