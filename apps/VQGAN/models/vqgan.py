@@ -268,7 +268,11 @@ class VQModel(pl.LightningModule):
         print(batch.keys())
         print(batch['y'])
         for i in ['xs', 'xs_lesion', 'xs_cunvexhull', 'xs_fundusmask', 'xc', 'xc_lesion', 'xc_cunvexhull', 'xc_fundusmask']:
-            print(i, batch[i].shape)
+            if isinstance(batch[i], list):
+                for j in batch[i]:
+                    print(i, '->', j.shape)
+            else:
+                print(i, batch[i].shape)
         assert False
         xrec, qloss = self(x)
 
