@@ -123,11 +123,6 @@ class DDR_TRAIN(D_DR):
             self.grade_len[cval] = len(self.grade[cval])
         
         
-        print('@@@@@@@@@@@@', self.grade_len, self.grade)
-
-        assert False
-
-
 class DDR_VAL(D_DR):
     def start(self):
         super().start()
