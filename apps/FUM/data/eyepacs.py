@@ -86,7 +86,8 @@ class D_DR(D_Base):
         xc_cunvexchull = []
         xc_fundusmask = []
         for cidx, cval in enumerate(['[01]', '2', '[34]']):
-            print(cidx, cval, self.grade[cval])
+            xc_idx = self.kwargs['i'] % self.grade_len[cval]
+            print(cidx, cval, self.kwargs['i'], self.grade_len[cval], xc_idx, self.grade[cval][xc_idx])
             # xc_fundus[cidx] = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
             # xc_lesion[cidx] = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
             # xc_cunvexchull[cidx] = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
