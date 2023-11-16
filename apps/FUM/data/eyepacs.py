@@ -51,6 +51,10 @@ LANDA = (256*256)
 dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
+
+def imgNormalizer(img):
+    return (img / 127.5) - 1 
+
 # dr_transformer = A.Compose([
 #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=0.5),
 #     ToTensorV2()
@@ -76,45 +80,34 @@ class D_DR(D_Base):
         print(kwargs['i'], kwargs['i'] % self.grade_len['[34]'])
         xs = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
         xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
-        xs_cunvexchull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
+        xs_cunvexhull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
         xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
 
 
         print('!!!!!!!!!!!!!!!!', self.grade_len, self.grade)
-        xc_fundus = []
+        xc = []
         xc_lesion = []
-        xc_cunvexchull = []
+        xc_cunvexhull = []
         xc_fundusmask = []
         for cidx, cval in enumerate(['[01]', '2', '[34]']):
             xc_idx = kwargs['i'] % self.grade_len[cval]
-            print(cidx, cval, kwargs['i'], self.grade_len[cval], xc_idx, self.grade[cval][xc_idx])
-            # xc_fundus[cidx] = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
-            # xc_lesion[cidx] = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
-            # xc_cunvexchull[cidx] = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
-            # xc_fundusmask[cidx] = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
-
-
-
-
-        assert False
-
-        # xc1 = (dr_transformer(image=np.array(Image.open(
-        #         os.path.join(self.path_grade2, self.grade2[kwargs['i'] % self.grade2_len])
-        #     )))['image'] / 127.5) - 1
-        # xc2 = (dr_transformer(image=np.array(Image.open(
-        #         os.path.join(self.path_grade4, self.grade4[kwargs['i'] % self.grade4_len])
-        #     )))['image'] / 127.5) - 1
+            cpath = self.grade[cval][xc_idx]
+            
+            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image'])
+            xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image'])
+            xc_cunvexhull[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))))['image'])
+            xc_fundusmask[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))))['image'])
 
         return {
-            'xs': (xs / 127.5) - 1,
-            'xs_lesion': (xs_lesion / 127.5) - 1,
-            'xs_cunvexchull': (xs_cunvexchull / 127.5) - 1,
-            'xs_fundusmask': (xs_fundusmask / 127.5) - 1,
-            # 'xs_ma': (xs_ma / 127.5) -1,
-            # 'xc': [
-            #     xc1, xc2
-            # ],
-            'y_edit': y_edit # DELETE: any other case of DR it must be comment out.
+            'xs': imgNormalizer(xs),
+            'xs_lesion': imgNormalizer(xs_lesion),
+            'xs_cunvexhull': imgNormalizer(xs_cunvexhull),
+            'xs_fundusmask': imgNormalizer(xs_fundusmask),
+            'xc': xc,
+            'xc_lesion': xc_lesion,
+            'xc_cunvexhull': xc_cunvexhull,
+            'xc_fundusmask': xc_fundusmask,
+            'y_edit': y_edit
         }
 
 

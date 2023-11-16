@@ -261,9 +261,13 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
-        if batch_idx % 500 == 0:
-            self.log_images(batch, ignore=False)
-        x = self.get_input(batch, self.image_key)
+        # if batch_idx % 500 == 0:
+        #     self.log_images(batch, ignore=False)
+        # x = self.get_input(batch, self.image_key)
+
+        print(batch.keys())
+
+        assert False
         xrec, qloss = self(x)
 
         Vorg, Vrec = self.get_V(x, xrec)
