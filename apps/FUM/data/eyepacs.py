@@ -72,16 +72,18 @@ class D_DR(D_Base):
         print(signal_path)
 
         
-        xs_fundus = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
+        xs = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
         xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
-        xs_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
+        xs_cunvexchull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
         xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
 
-        for cidx, cval in enumerate(['[01]', '2', '[34]']):
-            xc_fundus = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
-            xc_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
-            xc_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
-            xc_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
+
+        print('!!!!!!!!!!!!!!!!', self.grade_len, self.grade)
+        # for cidx, cval in enumerate(['[01]', '2', '[34]']):
+        #     xc_fundus = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
+        #     xc_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
+        #     xc_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
+        #     xc_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
 
 
 
@@ -96,9 +98,9 @@ class D_DR(D_Base):
         #     )))['image'] / 127.5) - 1
 
         return {
-            'xs_fundus': (xs_fundus / 127.5) - 1,
+            'xs': (xs / 127.5) - 1,
             'xs_lesion': (xs_lesion / 127.5) - 1,
-            'xs_cunvechull': (xs_cunvechull / 127.5) - 1,
+            'xs_cunvexchull': (xs_cunvexchull / 127.5) - 1,
             'xs_fundusmask': (xs_fundusmask / 127.5) - 1,
             # 'xs_ma': (xs_ma / 127.5) -1,
             # 'xc': [
