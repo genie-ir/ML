@@ -58,34 +58,6 @@ dr_transformer0 = A.Compose([
 class D_DR(D_Base):
     def fetch(self, signal_path, **kwargs):
         y = kwargs['y']
-        # print('--------------------------------->', y)
-        # if y == 0:
-        #     y_edit = 0
-        # elif y == 1 or y == 2 or y == 3:
-        #     y_edit = 1
-        # elif y == 4:
-        #     y_edit = 2
-        # else:
-        #     assert False
-
-
-        
-        # [[575 105   0]
-        #  [ 57 392   0]
-        #  [ 11  61   1]]
-        # if y == 0 or y == 1:
-        #     y_edit = 0
-        # elif y == 2 or y == 3:
-        #     y_edit = 1
-        # elif y == 4:
-        #     y_edit = 2
-        # else:
-        #     assert False
-        
-        
-        
-        
-        
         
         if y == 0 or y == 1:
             y_edit = 0
@@ -96,8 +68,6 @@ class D_DR(D_Base):
         else:
             assert False
 
-
-        
         
         print(signal_path)
 
@@ -106,6 +76,15 @@ class D_DR(D_Base):
         xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
         xs_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
         xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
+
+        for cidx, cval in enumerate(['[01]', '2', '[34]']):
+            xc_fundus = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
+            xc_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
+            xc_cunvechull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
+            xc_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
+
+
+
 
         assert False
 
@@ -136,25 +115,18 @@ class DDR_TRAIN(D_DR):
         
         
         category = 'train'
-        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/2/*.jpg'
-        self.grade2 = glob.glob(self.path_grade2)
-        self.grade2_len = len(self.grade2)
+        self.grade = []
+        self.grade_len = []
+        for cidx, cval in ['[01]', '2', '[34]']:
+            path_grade = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/{cval}/*.jpg'
+            self.grade[cval] = glob.glob(path_grade)
+            self.grade_len[cval] = len(self.grade[cval])
         
         
-        self.path_grade01 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[01]/*.jpg'
-        self.grade01 = glob.glob(self.path_grade01)
-        self.grade01_len = len(self.grade01)
-        
-        
-        self.path_grade34 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[34]/*.jpg'
-        self.grade34 = glob.glob(self.path_grade34)
-        self.grade34_len = len(self.grade34)
-        
-        
-        
-        # print('@@@@@@@@@@@@2', self.grade2_len, self.grade2)
-        # print('@@@@@@@@@@@@34', self.grade34_len, self.grade34)
-        # print('@@@@@@@@@@@@01', self.grade01_len, self.grade01)
+        print('@@@@@@@@@@@@', self.grade_len, self.grade)
+
+        assert False
+
 
 class DDR_VAL(D_DR):
     def start(self):
@@ -163,19 +135,12 @@ class DDR_VAL(D_DR):
 
 
         category = 'val'
-        self.path_grade2 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/2/*.jpg'
-        self.grade2 = glob.glob(self.path_grade2)
-        self.grade2_len = len(self.grade2)
-        
-        
-        self.path_grade01 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[01]/*.jpg'
-        self.grade01 = glob.glob(self.path_grade01)
-        self.grade01_len = len(self.grade01)
-        
-        
-        self.path_grade34 = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/[34]/*.jpg'
-        self.grade34 = glob.glob(self.path_grade34)
-        self.grade34_len = len(self.grade34)
+        self.grade = []
+        self.grade_len = []
+        for cidx, cval in ['[01]', '2', '[34]']:
+            path_grade = f'/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata/{category}/fundus/{cval}/*.jpg'
+            self.grade[cval] = glob.glob(path_grade)
+            self.grade_len[cval] = len(self.grade[cval])
 
 class eyepacsTrain(eyepacsTrainBase): 
     def preparation(self, **kwargs):
