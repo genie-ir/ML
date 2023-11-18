@@ -409,7 +409,9 @@ class Encoder(nn.Module):
 
 
     def forward_yes_skip(self, x):
-        taildict = dict()
+        # taildict = dict()
+        h_ilevel1 = None
+        h_endDownSampling = None
         #assert x.shape[2] == x.shape[3] == self.resolution, "{}, {}, {}".format(x.shape[2], x.shape[3], self.resolution)
 
         # timestep embedding
@@ -419,7 +421,7 @@ class Encoder(nn.Module):
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):
             if i_level == 1: # 2x128x256x256
-                taildict['h_ilevel1'] = h
+                h_ilevel1 = h
             # if i_level >= 1:
             #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
             #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])
@@ -436,7 +438,7 @@ class Encoder(nn.Module):
 
 
         # Note: endDownSampling
-        taildict['h_endDownSampling'] = h
+        h_endDownSampling = h
         # print('E - endDownSampling', h.shape) # E - endDownSampling torch.Size([2, 512, 16, 16])
         
         
@@ -453,7 +455,7 @@ class Encoder(nn.Module):
         h = nonlinearity(h)
         h = self.conv_out(h)
         # print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
-        return h, taildict
+        return h, h_ilevel1, h_endDownSampling
     
     
     def forward_no_skip(self, x):
@@ -498,6 +500,8 @@ class Encoder(nn.Module):
         return h
 
 
+
+from utils.pt.BB.Calculation.SPADE import SPADE
 class Decoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
@@ -568,7 +572,13 @@ class Decoder(nn.Module):
                                         stride=1,
                                         padding=1)
 
-    def forward(self, z, taildict=None):
+        self.start()
+    
+    def start(self):
+        self.spade_ilevel1 = SPADE(fch=128, xch=3, alphach=64, betach=128, gammach=128) # ([B, 128, 256, 256])
+        self.spade_endDownSampling = SPADE(fch=2, xch=3, alphach=2) # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
+    
+    def forward(self, z, xc_lesion, h_ilevel1, h_endDownSampling):
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape
 
@@ -586,7 +596,8 @@ class Decoder(nn.Module):
         
         
         # note: connect to E:endDownSampling ([2, 512, 16, 16])
-        h = h + taildict['h_endDownSampling']
+        h = self.spade_endDownSampling(xc_lesion, h + h_endDownSampling)
+        
         # print('DecoderPart, middleEnd', h.shape) # DecoderPart, middleEnd torch.Size([2, 512, 16, 16])
         
         
@@ -606,8 +617,8 @@ class Decoder(nn.Module):
 
         
         
-        # Note connect to E:ilevel1
-        h = h + taildict['h_ilevel1']
+        # Note connect to E:ilevel1([2, 128, 256, 256])
+        h = self.spade_ilevel1(xc_lesion, h + h_ilevel1)
         # print('DecoderPart, upsampleEnd', h.shape) # DecoderPart, upsampleEnd torch.Size([2, 128, 256, 256]) #Note -> connect to ilevel1
         
 

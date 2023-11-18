@@ -188,12 +188,21 @@ class VQModel(pl.LightningModule):
         return dec, diff
     
     
-    def forward(self, xs, xc):
-        h, taildict = self.encoder(xs)
+    
+    
+    
+    
+    
+    
+    
+    def forward(self, xs, xc_lesion):
+        h, h_ilevel1, h_endDownSampling = self.encoder(xs)
+        print('h_ilevel1', h_ilevel1.shape)
+        print('h_endDownSampling', h_endDownSampling.shape)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
-        dec = self.decoder(Q + h, taildict=taildict) # Note: add skip connection
+        dec = self.decoder(Q + h, xc_lesion, h_ilevel1, h_endDownSampling) # Note: add skip connection
 
 
         assert False
@@ -274,11 +283,11 @@ class VQModel(pl.LightningModule):
         #     else:
         #         print(i, batch[i].shape)
 
-        xs = batch['xs']
-        xc = batch['xc']
-        print(xs.dtype, xs.shape)
 
-        xrec, qloss = self(xs, xc)
+        cidx = 1 # 0 1 2
+        xs = batch['xs']
+        xc_lesion = batch['xc_lesion'][cidx]
+        xrec, qloss = self(xs, xc_lesion)
         assert False
 
         Vorg, Vrec = self.get_V(x, xrec)
