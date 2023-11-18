@@ -31,7 +31,7 @@ class SPADE(BB):
             self.alphaconv = nn.Sequential(
                 torch.nn.Conv2d(self.xch, self.alphach, int(self.alphaconv_ksp[0]), stride=int(self.alphaconv_ksp[1]), padding=int(self.alphaconv_ksp[2])),
                 torch.nn.Conv2d(self.alphach, 2*self.alphach, int(self.alphaconv_ksp[0]), stride=int(self.alphaconv_ksp[1]), padding=int(self.alphaconv_ksp[2])),
-                torch.nn.BatchNorm2d(self.fch),
+                torch.nn.BatchNorm2d(2*self.alphach),
                 torch.nn.Conv2d(2*self.alphach, 4*self.alphach, int(self.alphaconv_ksp[0]), stride=int(self.alphaconv_ksp[1]), padding=int(self.alphaconv_ksp[2])),
                 torch.nn.Conv2d(4*self.alphach, 8*self.alphach, int(self.alphaconv_ksp[0]), stride=int(self.alphaconv_ksp[1]), padding=int(self.alphaconv_ksp[2]))
             )
