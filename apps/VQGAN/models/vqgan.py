@@ -288,6 +288,7 @@ class VQModel(pl.LightningModule):
         xs = batch['xs']
         xc_lesion = batch['xc_lesion'][cidx]
         xrec, qloss = self(xs, xc_lesion)
+        print('xrec', xrec.shape)
         assert False
 
         Vorg, Vrec = self.get_V(x, xrec)
