@@ -580,7 +580,9 @@ class Decoder(nn.Module):
         self.spade_ilevel1 = lambda x, *ar: x
         self.spade_endDownSampling = lambda x, *ar: x
     
-    def forward(self, z, xc_lesion, h_ilevel1, h_endDownSampling):
+    def forward(self, z, xc_lesion, 
+                # h_ilevel1, h_endDownSampling
+                ):
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape
 
