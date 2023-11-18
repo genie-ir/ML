@@ -23,7 +23,7 @@ class SPADE(BB):
         self.gammaconv_ksp = str(self.kwargs.get('gammaconv_ksp', self.ksp))
         
         
-        self.bn = torch.nn.BatchNorm2d(self.chin)
+        self.bn = torch.nn.BatchNorm2d(self.fch)
         self.fconv = torch.nn.Conv2d(self.fch, self.gammach, int(self.fconv_ksp[0]), stride=int(self.fconv_ksp[1]), padding=int(self.fconv_ksp[2]))
         
         
