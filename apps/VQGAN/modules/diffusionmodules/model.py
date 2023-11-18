@@ -576,7 +576,7 @@ class Decoder(nn.Module):
     
     def start(self):
         self.spade_ilevel1 = SPADE(fch=128, xch=3, alphach=64, betach=128, gammach=128) # ([B, 128, 256, 256])
-        self.spade_endDownSampling = SPADE(fch=512, xch=3, alphach=64, betach=2, gammach=2, alphaconv_ksp='421', fwd='fwd2') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
+        self.spade_endDownSampling = SPADE(fch=512, xch=3, alphach=64, betach=512, gammach=512, alphaconv_ksp='421', fwd='fwd2') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
     def forward(self, z, xc_lesion, h_ilevel1, h_endDownSampling):
         #assert z.shape[1:] == self.z_shape[1:]
