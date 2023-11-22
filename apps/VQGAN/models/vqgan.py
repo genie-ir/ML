@@ -150,7 +150,7 @@ class VQModel(pl.LightningModule):
         
         self.cnn_xscl_1024x4_1024x1 = torch.nn.Conv2d(1024, 1024, 4,2,0)
 
-        self.fc_xscl = torch.Sequential(
+        self.fc_xscl = torch.nn.Sequential(
             torch.Linear(1024, 256),
             torch.nn.ReLU(),
             torch.nn.Dropout(0.2),
@@ -158,15 +158,15 @@ class VQModel(pl.LightningModule):
             torch.nn.ReLU(),
             torch.nn.Dropout(0.2),
         )
-        self.fc_xscl_theta = torch.Sequential(
+        self.fc_xscl_theta = torch.nn.Sequential(
             torch.Linear(32, 1),
             torch.nn.Tanh()
         )
-        self.fc_xscl_tx = torch.Sequential(
+        self.fc_xscl_tx = torch.nn.Sequential(
             torch.Linear(32, 1),
             torch.nn.Tanh()
         )
-        self.fc_xscl_ty = torch.Sequential(
+        self.fc_xscl_ty = torch.nn.Sequential(
             torch.Linear(32, 1),
             torch.nn.Tanh()
         )
