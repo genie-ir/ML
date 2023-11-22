@@ -288,8 +288,8 @@ class VQModel(pl.LightningModule):
 
         theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs, h_ilevel4_xcl)
         
-        print('before theta, tx, ty', theta, tx, ty)
-        print('after  theta, tx, ty', 180*theta, 128*tx, 128*ty)
+        print('before theta, tx, ty', theta.item(), tx.item(), ty.item())
+        print('after theta, tx, ty', 180*theta.item(), 128*tx.item(), 128*ty.item())
 
 
         return dec, diff, theta, tx, ty
@@ -391,8 +391,8 @@ class VQModel(pl.LightningModule):
         xs = batch['xs']
         xs_fundusmask = batch['xs_fundusmask']
         xc_lesion = batch['xc_lesion'][cidx]
-        xc_lesion_np = batch['xc_lesion_np'][cidx]
-        xc_cunvexhull = batch['xc_cunvexhull'][cidx]
+        xc_lesion_np = batch['xc_lesion_np'][cidx].numpy()
+        xc_cunvexhull = batch['xc_cunvexhull'][cidx].numpy()
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
 
         print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
