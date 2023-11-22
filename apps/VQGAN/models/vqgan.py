@@ -361,6 +361,7 @@ class VQModel(pl.LightningModule):
     
     
     def dice_lossfn(self, inputs, target):
+        print('************* 0', inputs.shape, target.shape)
         num = target.shape[0]
         inputs = inputs.reshape(num, -1)
         target = target.reshape(num, -1).detach()
