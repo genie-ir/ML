@@ -410,7 +410,7 @@ class VQModel(pl.LightningModule):
         print('xrec', xrec.shape)
         print('qloss', qloss.shape)
 
-        iou = self.dice_lossfn(mue, xs_fundusmask)
+        iou = self.dice_lossfn(mue, xs_fundusmask.cpu().numpy())
         iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
         print('iou', iou.shape, iou.mean().item())
         
