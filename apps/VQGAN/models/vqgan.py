@@ -394,6 +394,8 @@ class VQModel(pl.LightningModule):
         xc_cunvexhull = batch['xc_cunvexhull'][cidx]
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
 
+        print('xc_lesion', xc_lesion.dtype, xc_lesion.shape)
+        print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
         m = ROT(xc_lesion, theta=theta, tx=tx, ty=ty) # is a lead node, considere as a groundtrouth.
         mue = ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty) # this shoulde be define as intermediate node
         
