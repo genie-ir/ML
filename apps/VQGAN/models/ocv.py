@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 def affine(img, M, **kwargs):
     """M is affine_matrix."""
     h, w = img.shape[:2]
+    print(h, w, M, img.shape)
     return cv2.warpAffine(img, np.float32(M), (w, h))
 
 def translation(img, tx, ty, **kwargs):
