@@ -397,6 +397,9 @@ class VQModel(pl.LightningModule):
         xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy()
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy()
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
+        theta.register_hook(lambda grad: print('theta', grad))
+        tx.register_hook(lambda grad: print('tx', grad))
+        ty.register_hook(lambda grad: print('ty', grad))
 
         print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
@@ -408,7 +411,7 @@ class VQModel(pl.LightningModule):
         print('qloss', qloss.shape)
 
         iou = self.dice_lossfn(mue, xs_fundusmask)
-        # iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
+        iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
         print('iou', iou.shape, iou.mean().item())
         
         print(ROT)
