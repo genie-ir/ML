@@ -29,6 +29,10 @@ from utils.pt.tricks.gradfns import dzq_dz_eq1
 
 from .ocv import ROT
 
+
+dr_transformer0 = A.Compose([
+    ToTensorV2()
+])
 class VQModel(pl.LightningModule):
     def __init__(self,
         ddconfig,
@@ -397,8 +401,8 @@ class VQModel(pl.LightningModule):
 
         print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
-        m = ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty) # is a lead node, considere as a groundtrouth.
-        mue = ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty) # this shoulde be define as intermediate node
+        m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'] # is a lead node, considere as a groundtrouth.
+        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'] # this shoulde be define as intermediate node
         
         iou = self.dice_lossfn(mue, xs_fundusmask)
         iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
