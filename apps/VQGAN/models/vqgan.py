@@ -361,15 +361,12 @@ class VQModel(pl.LightningModule):
     
     
     def dice_lossfn(self, inputs, target):
-        print('************* 0', inputs.shape, target.shape)
         num = target.shape[0]
         inputs = inputs.reshape(num, -1)
         target = target.reshape(num, -1).detach()
 
-        print('************* 1', inputs.shape, target.shape)
         intersection = (inputs * target).sum(1)
         union = (inputs.sum(1) + target.sum(1)).detach()
-        print('************* 2', intersection.shape, union.shape)
         dice = (2. * intersection) / (union + 1e-8)
         print('intersection, union', intersection.shape, union.shape)
         print('dicr', dice.shape)
@@ -411,7 +408,7 @@ class VQModel(pl.LightningModule):
         print('qloss', qloss.shape)
 
         iou = self.dice_lossfn(mue, xs_fundusmask)
-        iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
+        # iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
         print('iou', iou.shape, iou.mean().item())
         
         print(ROT)
