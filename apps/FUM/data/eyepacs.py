@@ -83,6 +83,7 @@ class D_DR(D_Base):
 
         xc = [None for n in range(3)]
         xc_lesion = [None for n in range(3)]
+        xc_lesion_np = [None for n in range(3)]
         xc_cunvexhull = [None for n in range(3)]
         xc_fundusmask = [None for n in range(3)]
         for cidx, cval in enumerate(['[01]', '2', '[34]']):
@@ -90,7 +91,8 @@ class D_DR(D_Base):
             cpath = self.grade[cval][xc_idx]
             
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image'])
-            xc_lesion[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image'])
+            xc_lesion[cidx] = imgNormalizer(xc_lesion(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image'])
+            xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image'])
             xc_cunvexhull[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))))['image'])
             xc_fundusmask[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))))['image'])
 
@@ -101,6 +103,7 @@ class D_DR(D_Base):
             'xs_fundusmask': imgNormalizer(xs_fundusmask),
             'xc': xc,
             'xc_lesion': xc_lesion,
+            'xc_lesion_np': xc_lesion_np,
             'xc_cunvexhull': xc_cunvexhull,
             'xc_fundusmask': xc_fundusmask,
             'y_edit': y_edit

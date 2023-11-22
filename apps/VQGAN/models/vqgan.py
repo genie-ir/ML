@@ -391,12 +391,13 @@ class VQModel(pl.LightningModule):
         xs = batch['xs']
         xs_fundusmask = batch['xs_fundusmask']
         xc_lesion = batch['xc_lesion'][cidx]
+        xc_lesion_np = batch['xc_lesion_np'][cidx]
         xc_cunvexhull = batch['xc_cunvexhull'][cidx]
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
 
-        print('xc_lesion', xc_lesion.dtype, xc_lesion.shape)
+        print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
-        m = ROT(xc_lesion, theta=theta, tx=tx, ty=ty) # is a lead node, considere as a groundtrouth.
+        m = ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty) # is a lead node, considere as a groundtrouth.
         mue = ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty) # this shoulde be define as intermediate node
         
         iou = self.dice_lossfn(mue, xs_fundusmask)
