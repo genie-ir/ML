@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch.cuda.amp import custom_bwd, custom_fwd
 
-def dzq_dz_eq1(zq, z):
+def dzq_dz_eq1(zq, z, w=1):
     """
         transfer gradients from `zq` to `z`  | (zq -> z)
         `zq` and `z` must be the same shape
@@ -10,7 +10,7 @@ def dzq_dz_eq1(zq, z):
         Example: 
             zq = dzq_dz_eq1(zq, z)
     """
-    return z + (zq - z).detach()
+    return (w * z) + (zq - (w * z)).detach()
 
 ######################################################################################
 

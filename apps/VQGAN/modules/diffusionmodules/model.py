@@ -411,6 +411,7 @@ class Encoder(nn.Module):
     def forward_yes_skip(self, x):
         # taildict = dict()
         h_ilevel1 = None
+        h_ilevel4 = None
         h_endDownSampling = None
         #assert x.shape[2] == x.shape[3] == self.resolution, "{}, {}, {}".format(x.shape[2], x.shape[3], self.resolution)
 
@@ -420,8 +421,10 @@ class Encoder(nn.Module):
         # downsampling
         hs = [self.conv_in(x)]
         for i_level in range(self.num_resolutions):
-            if i_level == 1: # 2x128x256x256
+            if i_level == 1: # Bx128x256x256
                 h_ilevel1 = h
+            if i_level == 4: # Bx256x32x32
+                h_ilevel4 = h
             # if i_level >= 1:
             #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
             #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])
@@ -455,7 +458,7 @@ class Encoder(nn.Module):
         h = nonlinearity(h)
         h = self.conv_out(h)
         # print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
-        return h, h_ilevel1, h_endDownSampling
+        return h, h_ilevel1, h_endDownSampling, h_ilevel4
     
     
     def forward_no_skip(self, x):

@@ -23,6 +23,12 @@ from albumentations.pytorch import ToTensorV2
 
 
 from utils.pt.tricks.gradfns import dzq_dz_eq1
+
+
+
+
+from .ocv import ROT
+
 class VQModel(pl.LightningModule):
     def __init__(self,
         ddconfig,
@@ -92,7 +98,79 @@ class VQModel(pl.LightningModule):
         for param in m.parameters():
             param.requires_grad = True
     
+    
+    def get_theta_tx_ty(self, xs_256ch, xcl_256ch):
+        print('before xs_256ch', xs_256ch.shape)
+        print('before xcl_256ch', xcl_256ch.shape)
+
+        xs_256ch = self.cnn_xscl_256x32_256x16(xs_256ch)
+        xs_256ch = xs_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xs_256ch))
+        xs_256ch = self.cnn_xscl_bn256(xs_256ch)
+        
+        xcl_256ch = self.cnn_xscl_256x32_256x16(xcl_256ch)
+        xcl_256ch = xcl_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xcl_256ch))
+        xcl_256ch = self.cnn_xscl_bn256(xcl_256ch)
+
+        print('after xs_256ch', xs_256ch.shape)
+        print('after xcl_256ch', xcl_256ch.shape)
+
+        x = torch.cat([xs_256ch, xcl_256ch], dim=1) # Bx512x16x16
+        print('cat', x.shape)
+
+        x = self.cnn_xscl_512x16_512x8(x)
+        x = x + torch.relu(self.cnn_xscl_512x8_512x8(x))
+        x = self.cnn_xscl_bn512(x)
+
+        x = self.cnn_xscl_512x8_1024x4(x)
+        x = x + torch.relu(self.cnn_xscl_1024x4_1024x4(x))
+        x = self.cnn_xscl_bn1024(x)
+
+        x = self.cnn_xscl_1024x4_1024x1(x).flatten(1) # Bx1024
+        print('end_cnn x', x.shape)
+
+        x = self.fc_xscl(x)
+        print('end_cnn x', x.shape)
+        theta = self.fc_xscl_theta(x)
+        tx = self.fc_xscl_tx(x)
+        ty = self.fc_xscl_ty(x)
+        return theta, tx, ty
+        
     def start(self): # TODO
+        self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1)
+        self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
+        self.cnn_xscl_bn256 = torch.nn.BatchNorm2d(256)
+        
+        self.cnn_xscl_512x16_512x8 = torch.nn.Conv2d(512, 512, 4,2,1)
+        self.cnn_xscl_512x8_512x8 = torch.nn.Conv2d(512, 512, 3,1,1)
+        self.cnn_xscl_bn512 = torch.nn.BatchNorm2d(512)
+        
+        self.cnn_xscl_512x8_1024x4 = torch.nn.Conv2d(512, 1024, 4,2,1)
+        self.cnn_xscl_1024x4_1024x4 = torch.nn.Conv2d(1024, 1024, 3,1,1)
+        self.cnn_xscl_bn1024 = torch.nn.BatchNorm2d(1024)
+        
+        self.cnn_xscl_1024x4_1024x1 = torch.nn.Conv2d(1024, 1024, 4,2,0)
+
+        self.fc_xscl = torch.Sequential(
+            torch.Linear(1024, 256),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(0.2),
+            torch.Linear(256, 32),
+            torch.nn.ReLU(),
+            torch.nn.Dropout(0.2),
+        )
+        self.fc_xscl_theta = torch.Sequential(
+            torch.Linear(32, 1),
+            torch.nn.Tanh()
+        )
+        self.fc_xscl_tx = torch.Sequential(
+            torch.Linear(32, 1),
+            torch.nn.Tanh()
+        )
+        self.fc_xscl_ty = torch.Sequential(
+            torch.Linear(32, 1),
+            torch.nn.Tanh()
+        )
+
         # delete
         # self.false_all_params(self.encoder)
         # self.false_all_params(self.decoder)
@@ -201,14 +279,20 @@ class VQModel(pl.LightningModule):
     
     
     def forward(self, xs, xc_lesion):
-        h, h_ilevel1, h_endDownSampling = self.encoder(xs)
+        _, _, _, h_ilevel4_xcl = self.encoder(xc_lesion)
+        h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
         dec = self.decoder(Q + h, xc_lesion, h_ilevel1, h_endDownSampling) # Note: add skip connection
 
+        theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs, h_ilevel4_xcl)
+        
+        print('before theta, tx, ty', theta, tx, ty)
+        print('after  theta, tx, ty', 180*theta, 128*tx, 128*ty)
 
-        return dec, diff
+
+        return dec, diff, theta, tx, ty
 
     
     def get_V(self, Forg, Frec):
@@ -269,6 +353,24 @@ class VQModel(pl.LightningModule):
         assert False
         return
     
+    
+    
+    
+    def dice_lossfn(self, inputs, target):
+        num = target.shape[0]
+        inputs = inputs.reshape(num, -1)
+        target = target.reshape(num, -1).detach()
+
+        intersection = (inputs * target).sum(1)
+        union = (inputs.sum(1) + target.sum(1)).detach()
+
+        dice = (2. * intersection) / (union + 1e-8)
+        print('intersection, union', intersection.shape, union.shape)
+        print('dicr', dice.shape)
+        return -dice.log()
+        # dice = dice.sum()/num
+        # return dice
+    
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
         # if batch_idx % 500 == 0:
@@ -287,10 +389,22 @@ class VQModel(pl.LightningModule):
 
         cidx = 1 # 0 1 2
         xs = batch['xs']
+        xs_fundusmask = batch['xs_fundusmask']
         xc_lesion = batch['xc_lesion'][cidx]
-        xrec, qloss = self(xs, xc_lesion)
+        xc_cunvexhull = batch['xc_cunvexhull'][cidx]
+        xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
+
+        m = ROT(xc_lesion, theta, tx, ty) # is a lead node, considere as a groundtrouth.
+        mue = ROT(xc_cunvexhull, theta, tx, ty) # this shoulde be define as intermediate node
+        
+        iou = self.dice_lossfn(mue, xs_fundusmask)
+        iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
+        print('iou', iou.shape, iou.mean().item())
+        
+        print('m, mue', m.shape, mue.shape)
         print('xrec', xrec.shape)
         print('qloss', qloss.shape)
+        print(ROT)
         assert False
 
         Vorg, Vrec = self.get_V(x, xrec)
