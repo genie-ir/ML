@@ -367,7 +367,7 @@ class VQModel(pl.LightningModule):
 
         intersection = (inputs * target).sum(1)
         union = (inputs.sum(1) + target.sum(1)).detach()
-
+        print('*************', intersection.shape, union.shape)
         dice = (2. * intersection) / (union + 1e-8)
         print('intersection, union', intersection.shape, union.shape)
         print('dicr', dice.shape)
@@ -401,8 +401,8 @@ class VQModel(pl.LightningModule):
 
         print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
-        m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'] # is a lead node, considere as a groundtrouth.
-        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'] # this shoulde be define as intermediate node
+        m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
+        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # this shoulde be define as intermediate node
         
         print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype)
         print('xrec', xrec.shape)
