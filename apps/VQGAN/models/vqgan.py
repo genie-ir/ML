@@ -404,13 +404,13 @@ class VQModel(pl.LightningModule):
         print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
         m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
-        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # this shoulde be define as intermediate node
+        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
         
         print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype)
         print('xrec', xrec.shape)
         print('qloss', qloss.shape)
 
-        iou = self.dice_lossfn(mue, xs_fundusmask.cpu().numpy())
+        iou = self.dice_lossfn(mue, xs_fundusmask)
         iou = dzq_dz_eq1(iou, theta + tx + ty, 1/3)
         print('iou', iou.shape, iou.mean().item())
         
