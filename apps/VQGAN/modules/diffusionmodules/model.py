@@ -409,6 +409,7 @@ class Encoder(nn.Module):
 
 
     def forward_yes_skip(self, x):
+        print('!!!!!!!!!!!!', x.shape)
         # taildict = dict()
         h_ilevel1 = None
         h_ilevel4 = None
