@@ -427,7 +427,10 @@ class Encoder(nn.Module):
                 h_ilevel1 = h
             if i_level == 4: # Bx256x32x32
                 h_ilevel4 = h
-            print(i_level, '222222', h.shape, h.sum())
+            
+            
+            if i_level >= 1:
+                print(i_level, '222222', h.shape, h.sum())
             # if i_level >= 1:
             #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
             #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])
