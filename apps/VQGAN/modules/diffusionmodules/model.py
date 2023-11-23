@@ -409,7 +409,7 @@ class Encoder(nn.Module):
 
 
     def forward_yes_skip(self, x):
-        print('!!!!!!!!!!!!', x.shape) # !!!!!!!!!!!! torch.Size([B, 3, 256, 256])
+        print('!!!!!!!!!!!!', x.shape, x.sum()) # !!!!!!!!!!!! torch.Size([B, 3, 256, 256])
         # taildict = dict()
         # h_ilevel1 = None
         # h_ilevel4 = None
