@@ -290,7 +290,8 @@ class VQModel(pl.LightningModule):
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
         dec = self.decoder(Q + h, xc_lesion, h_ilevel1, h_endDownSampling) # Note: add skip connection
-
+        print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
+        print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
         theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs, h_ilevel4_xcl)
         
         return dec, diff, theta, tx, ty
