@@ -46,10 +46,11 @@ def ROT(img, **kwargs):
     """
         params: theta, tx, ty
     """
-    kwargs['theta'] = int(180*kwargs['theta'].round().item())
-    kwargs['tx'] = int(128*kwargs['tx'].round().item())
-    kwargs['ty'] = int(128*kwargs['ty'].round().item())
-    print('*************', kwargs['theta'],kwargs['tx'],kwargs['ty'])
+    print('before *************', (180*kwargs['theta']), (128*kwargs['tx']), (128*kwargs['ty']))
+    kwargs['theta'] = int((180*kwargs['theta']).round().item())
+    kwargs['tx'] = int((128*kwargs['tx']).round().item())
+    kwargs['ty'] = int((128*kwargs['ty']).round().item())
+    print('after *************', kwargs['theta'],kwargs['tx'],kwargs['ty'])
     R = rotation(img, **kwargs, return_M=True)
     T = translation(img, **kwargs, return_M=True)
     T[:, :-1] = 0
