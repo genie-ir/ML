@@ -376,6 +376,7 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
+        h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
         #     self.log_images(batch, ignore=False)
         # x = self.get_input(batch, self.image_key)
@@ -405,7 +406,8 @@ class VQModel(pl.LightningModule):
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
         m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        
+        mue_plus_h = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx + h, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
+        assert False
         print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype)
         print('xrec', xrec.shape)
         print('qloss', qloss.shape)
