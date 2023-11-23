@@ -421,7 +421,7 @@ class Encoder(nn.Module):
 
         # downsampling
         hs = [self.conv_in(x)]
-        print('111111111111111111', hs[0].shape, hs[0].sum(), hs.dtype)
+        print('111111111111111111', hs[0].shape, hs[0].sum(), hs[0].dtype)
         for i_level in range(self.num_resolutions):
             if i_level == 1: # Bx128x256x256
                 h_ilevel1 = h
