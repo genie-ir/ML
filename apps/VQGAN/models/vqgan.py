@@ -410,9 +410,9 @@ class VQModel(pl.LightningModule):
         
         iou = self.dice_lossfn(mue, xs_fundusmask).detach()
         iou_plus_h = self.dice_lossfn(mue_plus_h, xs_fundusmask).detach()
-        D_tx = 1
-        D_ty = 1
-        D_theta = 1
+        D_tx = ((iou_plus_h - iou) / h).detach()
+        D_ty = ((iou_plus_h - iou) / h).detach()
+        D_theta = ((iou_plus_h - iou) / h).detach()
         iou = dzq_dz_eq1(iou, D_theta * theta + D_tx * tx + D_ty * ty)
         print('iou', iou.shape, iou.mean().item())
         
