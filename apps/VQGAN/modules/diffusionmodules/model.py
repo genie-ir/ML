@@ -445,6 +445,7 @@ class Encoder(nn.Module):
         h_endDownSampling = h
         # print('E - endDownSampling', h.shape) # E - endDownSampling torch.Size([2, 512, 16, 16])
         
+        print('aaaaaaaaaaaaaaaaaaaaaa', h_ilevel1.sum(), h_endDownSampling.sum(), h_ilevel4.sum())
         
         
         # middle
@@ -460,8 +461,7 @@ class Encoder(nn.Module):
         h = self.conv_out(h)
         # print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
         
-        print('aaaaaaaaaaaaaaaaaaaaaa', h_ilevel1.sum(), h_endDownSampling.sum(), h_ilevel4.sum())
-        
+        assert False
         return h, h_ilevel1, h_endDownSampling, h_ilevel4
     
     
