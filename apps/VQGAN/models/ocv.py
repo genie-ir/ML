@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 def affine(img, M, **kwargs):
     """M is affine_matrix."""
     h, w = img.shape[:2]
-    print(h, w, M, img.shape)
     return cv2.warpAffine(img, np.float32(M), (w, h))
 
 def translation(img, tx, ty, **kwargs):
@@ -46,12 +45,9 @@ def ROT(img, **kwargs):
     """
         params: theta, tx, ty
     """
-    print('before pure *************', (kwargs['theta']), (kwargs['tx']), (kwargs['ty']))
-    print('before *************', (180*kwargs['theta']), (128*kwargs['tx']), (128*kwargs['ty']))
     kwargs['theta'] = int((180*kwargs['theta']).round().item())
     kwargs['tx'] = int((128*kwargs['tx']).round().item())
     kwargs['ty'] = int((128*kwargs['ty']).round().item())
-    print('after *************', kwargs['theta'],kwargs['tx'],kwargs['ty'])
     R = rotation(img, **kwargs, return_M=True)
     T = translation(img, **kwargs, return_M=True)
     T[:, :-1] = 0
