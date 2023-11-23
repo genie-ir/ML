@@ -466,7 +466,6 @@ class Encoder(nn.Module):
         h = self.conv_out(h)
         # print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
         
-        assert False
         return h, h_ilevel1, h_endDownSampling, h_ilevel4
     
     
