@@ -421,11 +421,13 @@ class Encoder(nn.Module):
 
         # downsampling
         hs = [self.conv_in(x)]
+        print('111111111111111111', hs.shape, hs.sum())
         for i_level in range(self.num_resolutions):
             if i_level == 1: # Bx128x256x256
                 h_ilevel1 = h
             if i_level == 4: # Bx256x32x32
                 h_ilevel4 = h
+            print(i_level, '222222', h.shape, h.sum())
             # if i_level >= 1:
             #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
             #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])
