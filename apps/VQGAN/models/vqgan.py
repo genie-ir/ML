@@ -284,6 +284,8 @@ class VQModel(pl.LightningModule):
     
     
     def forward(self, xs, xc_lesion):
+        print('################ xs', xs.shape, xs.sum())
+        print('################ xc_lesion', xc_lesion.shape, xc_lesion.sum())
         _, _, _, h_ilevel4_xcl = self.encoder(xc_lesion)
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
         h = self.quant_conv(h)
