@@ -409,7 +409,7 @@ class Encoder(nn.Module):
 
 
     def forward_yes_skip(self, x):
-        print('!!!!!!!!!!!!', x.shape, x.sum()) # !!!!!!!!!!!! torch.Size([B, 3, 256, 256])
+        print('!!!!!!!!!!!!', x.shape, x.sum(), x.dtype) # !!!!!!!!!!!! torch.Size([B, 3, 256, 256])
         # taildict = dict()
         # h_ilevel1 = None
         # h_ilevel4 = None
@@ -421,7 +421,7 @@ class Encoder(nn.Module):
 
         # downsampling
         hs = [self.conv_in(x)]
-        print('111111111111111111', hs[0].shape, hs[0].sum())
+        print('111111111111111111', hs[0].shape, hs[0].sum(), hs.dtype)
         for i_level in range(self.num_resolutions):
             if i_level == 1: # Bx128x256x256
                 h_ilevel1 = h
@@ -430,7 +430,7 @@ class Encoder(nn.Module):
             
             
             if i_level >= 1:
-                print(i_level, '222222', h.shape, h.sum())
+                print(i_level, '222222', h.shape, h.sum(), h.dtype)
             # if i_level >= 1:
             #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
             #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])

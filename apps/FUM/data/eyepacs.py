@@ -77,9 +77,9 @@ class D_DR(D_Base):
 
         
         xs = dr_transformer0(image=np.array(Image.open(signal_path)))['image']
-        xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image']
-        xs_cunvexhull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image']
-        xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image']
+        xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))))['image'].float()
+        xs_cunvexhull = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))))['image'].float()
+        xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))))['image'].float()
 
         xc = [None for n in range(3)]
         xc_lesion = [None for n in range(3)]
@@ -90,11 +90,11 @@ class D_DR(D_Base):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
             
-            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image'])
-            xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image'])
-            xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image'])
-            xc_cunvexhull[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))))['image'])[:,:,0:1]
-            xc_fundusmask[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))))['image'])
+            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image']).float()
+            xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image']).float()
+            xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))))['image']).float()
+            xc_cunvexhull[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))))['image'])[:,:,0:1].float()
+            xc_fundusmask[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))))['image']).float()
 
         return {
             'xs': imgNormalizer(xs),
