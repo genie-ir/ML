@@ -46,6 +46,7 @@ def ROT(img, **kwargs):
     """
         params: theta, tx, ty
     """
+    print('before pure *************', (kwargs['theta']), (kwargs['tx']), (kwargs['ty']))
     print('before *************', (180*kwargs['theta']), (128*kwargs['tx']), (128*kwargs['ty']))
     kwargs['theta'] = int((180*kwargs['theta']).round().item())
     kwargs['tx'] = int((128*kwargs['tx']).round().item())
