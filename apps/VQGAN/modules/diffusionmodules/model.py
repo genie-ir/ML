@@ -459,6 +459,9 @@ class Encoder(nn.Module):
         h = nonlinearity(h)
         h = self.conv_out(h)
         # print('E - endEndpart', h.shape) # E - endEndpart torch.Size([2, 256, 16, 16])
+        
+        print('aaaaaaaaaaaaaaaaaaaaaa', h_ilevel1.sum(), h_endDownSampling.sum(), h_ilevel4.sum())
+        
         return h, h_ilevel1, h_endDownSampling, h_ilevel4
     
     
