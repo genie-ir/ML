@@ -133,7 +133,7 @@ class VQModel(pl.LightningModule):
         print('end_cnn x', x.shape)
 
         x = self.fc_xscl(x)
-        print('end_cnn x', x.shape)
+        print('end_cnn x', x.shape, x.sum())
         theta = self.fc_xscl_theta(x)
         tx = self.fc_xscl_tx(x)
         ty = self.fc_xscl_ty(x)
