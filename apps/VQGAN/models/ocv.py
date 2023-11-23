@@ -49,7 +49,7 @@ def ROT(img, **kwargs):
     kwargs['theta'] = int(kwargs['theta'].round().item())
     kwargs['tx'] = int(kwargs['tx'].round().item())
     kwargs['ty'] = int(kwargs['ty'].round().item())
-    
+    print('*************', kwargs['theta'],kwargs['tx'],kwargs['ty'])
     R = rotation(img, **kwargs, return_M=True)
     T = translation(img, **kwargs, return_M=True)
     T[:, :-1] = 0
