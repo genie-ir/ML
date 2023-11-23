@@ -403,6 +403,7 @@ class VQModel(pl.LightningModule):
         m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
         mue_plus_h = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx + h, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
+        print('mue_plus_h', mue_plus_h.dtype, mue_plus_h.shape)
         print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype)
         print('xrec', xrec.shape)
         print('qloss', qloss.shape)
