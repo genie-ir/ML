@@ -137,6 +137,7 @@ class VQModel(pl.LightningModule):
         theta = self.fc_xscl_theta(x)
         tx = self.fc_xscl_tx(x)
         ty = self.fc_xscl_ty(x)
+        print('theta, tx, ty', theta, tx, ty)
         return theta, tx, ty
         
     def start(self): # TODO
@@ -394,9 +395,9 @@ class VQModel(pl.LightningModule):
         xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy()
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy()
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
-        # theta.register_hook(lambda grad: print('theta', grad))
-        # tx.register_hook(lambda grad: print('tx', grad))
-        # ty.register_hook(lambda grad: print('ty', grad))
+        theta.register_hook(lambda grad: print('theta', grad))
+        tx.register_hook(lambda grad: print('tx', grad))
+        ty.register_hook(lambda grad: print('ty', grad))
 
         print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
         print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
