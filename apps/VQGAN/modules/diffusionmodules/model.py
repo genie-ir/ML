@@ -421,7 +421,7 @@ class Encoder(nn.Module):
 
         # downsampling
         hs = [self.conv_in(x)]
-        print('111111111111111111', hs[0].shape, hs[0].sum(), hs[0].dtype)
+        # print('111111111111111111', hs[0].shape, hs[0].sum(), hs[0].dtype)
         for i_level in range(self.num_resolutions):
             if i_level == 1: # Bx128x256x256
                 h_ilevel1 = h
@@ -429,8 +429,10 @@ class Encoder(nn.Module):
                 h_ilevel4 = h
             
             
-            if i_level >= 1:
-                print(i_level, '222222', h.shape, h.sum(), h.dtype)
+            # if i_level >= 1:
+            #     print(i_level, '222222', h.shape, h.sum(), h.dtype)
+
+
             # if i_level >= 1:
             #     # E - i_level=1 -> h.shape= torch.Size([2, 128, 256, 256])
             #     # E - i_level=2 -> h.shape= torch.Size([2, 128, 128, 128])
@@ -450,7 +452,7 @@ class Encoder(nn.Module):
         h_endDownSampling = h
         # print('E - endDownSampling', h.shape) # E - endDownSampling torch.Size([2, 512, 16, 16])
         
-        print('aaaaaaaaaaaaaaaaaaaaaa', h_ilevel1.sum(), h_endDownSampling.sum(), h_ilevel4.sum())
+        # print('aaaaaaaaaaaaaaaaaaaaaa', h_ilevel1.sum(), h_endDownSampling.sum(), h_ilevel4.sum())
         
         
         # middle

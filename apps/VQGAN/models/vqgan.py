@@ -104,8 +104,8 @@ class VQModel(pl.LightningModule):
     
     
     def get_theta_tx_ty(self, xs_256ch, xcl_256ch):
-        print('before xs_256ch', xs_256ch.shape)
-        print('before xcl_256ch', xcl_256ch.shape)
+        # print('before xs_256ch', xs_256ch.shape)
+        # print('before xcl_256ch', xcl_256ch.shape)
 
         xs_256ch = self.cnn_xscl_256x32_256x16(xs_256ch)
         xs_256ch = xs_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xs_256ch))
@@ -115,11 +115,11 @@ class VQModel(pl.LightningModule):
         xcl_256ch = xcl_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xcl_256ch))
         xcl_256ch = self.cnn_xscl_bn256(xcl_256ch)
 
-        print('after xs_256ch', xs_256ch.shape)
-        print('after xcl_256ch', xcl_256ch.shape)
+        # print('after xs_256ch', xs_256ch.shape)
+        # print('after xcl_256ch', xcl_256ch.shape)
 
         x = torch.cat([xs_256ch, xcl_256ch], dim=1) # Bx512x16x16
-        print('cat', x.shape)
+        # print('cat', x.shape)
 
         x = self.cnn_xscl_512x16_512x8(x)
         x = x + torch.relu(self.cnn_xscl_512x8_512x8(x))
@@ -130,14 +130,14 @@ class VQModel(pl.LightningModule):
         x = self.cnn_xscl_bn1024(x)
 
         x = self.cnn_xscl_1024x4_1024x1(x).flatten(1) # Bx1024
-        print('end_cnn x', x.shape)
+        # print('end_cnn x', x.shape)
 
         x = self.fc_xscl(x)
-        print('end_cnn x', x.shape, x.sum())
+        # print('end_cnn x', x.shape, x.sum())
         theta = self.fc_xscl_theta(x)
         tx = self.fc_xscl_tx(x)
         ty = self.fc_xscl_ty(x)
-        print('theta, tx, ty', theta, tx, ty)
+        # print('theta, tx, ty', theta, tx, ty)
         return theta, tx, ty
         
     def start(self): # TODO
@@ -286,14 +286,14 @@ class VQModel(pl.LightningModule):
     def forward(self, xs, xc_lesion):
         _, _, _, h_ilevel4_xcl = self.encoder(xc_lesion)
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
-        print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
-        print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
+        # print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
+        # print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
         dec = self.decoder(Q + h, xc_lesion, h_ilevel1, h_endDownSampling) # Note: add skip connection
-        print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
-        print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
+        # print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
+        # print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
         theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs, h_ilevel4_xcl)
         
         return dec, diff, theta, tx, ty
@@ -368,9 +368,9 @@ class VQModel(pl.LightningModule):
         intersection = (inputs * target).sum(1)
         union = (inputs.sum(1) + target.sum(1)).detach()
         dice = (2. * intersection) / (union + 1e-8)
-        print()
-        print('intersection, union', intersection.shape, union.shape, intersection.sum(), union.sum())
-        print('dice', dice.shape, dice.dtype, dice.sum(), -dice.log())
+        # print()
+        # print('intersection, union', intersection.shape, union.shape, intersection.sum(), union.sum())
+        # print('dice', dice.shape, dice.dtype, dice.sum(), -dice.log())
         return -dice.log()
         # dice = dice.sum()/num
         # return dice
@@ -403,25 +403,25 @@ class VQModel(pl.LightningModule):
         tx.register_hook(lambda grad: print('tx', grad))
         ty.register_hook(lambda grad: print('ty', grad))
 
-        print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape, xc_lesion_np.sum())
-        print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape, xc_cunvexhull.sum())
+        # print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape, xc_lesion_np.sum())
+        # print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape, xc_cunvexhull.sum())
         m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype, m.sum(), mue.sum())
+        # print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype, m.sum(), mue.sum())
         mue_plus_h = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx + h, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        print('mue_plus_h', mue_plus_h.dtype, mue_plus_h.shape, mue_plus_h.sum())
-        print('xrec', xrec.shape, xrec.sum())
-        print('qloss', qloss.shape, qloss.sum())
+        # print('mue_plus_h', mue_plus_h.dtype, mue_plus_h.shape, mue_plus_h.sum())
+        # print('xrec', xrec.shape, xrec.sum())
+        # print('qloss', qloss.shape, qloss.sum())
 
         
         iou = self.dice_lossfn(mue, xs_fundusmask).detach()
         iou_plus_h = self.dice_lossfn(mue_plus_h, xs_fundusmask).detach()
-        print('$$$$$$$$$$$$$$$$$$$$$', (iou_plus_h - iou), h)
-        D_tx = ((iou_plus_h - iou) / h).detach()
+        # print('$$$$$$$$$$$$$$$$$$$$$', (iou_plus_h - iou), h)
+        D_tx = ((iou_plus_h - iou) / h).flatten().detach()
         D_ty = D_tx.detach()
         D_theta = D_tx.detach()
         iou = dzq_dz_eq1(iou, D_theta * theta + D_tx * tx + D_ty * ty)
-        print('iou', iou.shape, iou.mean().item())
+        print('D_tx', D_tx.shape, D_tx)
         
         return iou
         assert False
