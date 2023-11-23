@@ -368,8 +368,8 @@ class VQModel(pl.LightningModule):
         intersection = (inputs * target).sum(1)
         union = (inputs.sum(1) + target.sum(1)).detach()
         dice = (2. * intersection) / (union + 1e-8)
-        print('intersection, union', intersection.shape, union.shape)
-        print('dicr', dice.shape)
+        print('intersection, union', intersection.shape, union.shape, intersection.sum(), union.sum())
+        print('dice', dice.shape, dice.dtype, dice.sum(), -dice.log())
         return -dice.log()
         # dice = dice.sum()/num
         # return dice
