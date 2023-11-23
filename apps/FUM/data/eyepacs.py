@@ -84,8 +84,8 @@ class D_DR(D_Base):
         xc = [None for n in range(3)]
         xc_lesion = [None for n in range(3)]
         xc_lesion_np = [None for n in range(3)]
-        xc_cunvexhull = [None for n in range(3)]
-        xc_fundusmask = [None for n in range(3)]
+        xc_cunvexhull = [None for n in range(3)] # binary
+        xc_fundusmask = [None for n in range(3)] # binary
         for cidx, cval in enumerate(['[01]', '2', '[34]']):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
@@ -93,14 +93,14 @@ class D_DR(D_Base):
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image']).float()
             xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
             xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
-            xc_cunvexhull[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0:1]
-            xc_fundusmask[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'])
+            xc_cunvexhull[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0:1] / 255.0 # binary
+            xc_fundusmask[cidx] = (dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image']) / 255.0 # binary
 
         return {
             'xs': imgNormalizer(xs),
             'xs_lesion': imgNormalizer(xs_lesion),
-            'xs_cunvexhull': imgNormalizer(xs_cunvexhull),
-            'xs_fundusmask': imgNormalizer(xs_fundusmask),
+            'xs_cunvexhull': xs_cunvexhull / 255.0, # binary
+            'xs_fundusmask': xs_fundusmask / 255.0, # binary
             'xc': xc,
             'xc_lesion': xc_lesion,
             'xc_lesion_np': xc_lesion_np,

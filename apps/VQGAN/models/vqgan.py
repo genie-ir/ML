@@ -368,6 +368,7 @@ class VQModel(pl.LightningModule):
         intersection = (inputs * target).sum(1)
         union = (inputs.sum(1) + target.sum(1)).detach()
         dice = (2. * intersection) / (union + 1e-8)
+        print()
         print('intersection, union', intersection.shape, union.shape, intersection.sum(), union.sum())
         print('dice', dice.shape, dice.dtype, dice.sum(), -dice.log())
         return -dice.log()
@@ -393,10 +394,10 @@ class VQModel(pl.LightningModule):
 
         cidx = 1 # 0 1 2
         xs = batch['xs']
-        xs_fundusmask = batch['xs_fundusmask']
+        xs_fundusmask = batch['xs_fundusmask'] # binary
         xc_lesion = batch['xc_lesion'][cidx]
         xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy()
-        xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy()
+        xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy() # binary
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
         theta.register_hook(lambda grad: print('theta', grad))
         tx.register_hook(lambda grad: print('tx', grad))
