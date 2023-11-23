@@ -292,10 +292,6 @@ class VQModel(pl.LightningModule):
 
         theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs, h_ilevel4_xcl)
         
-        print('before theta, tx, ty', theta.item(), tx.item(), ty.item())
-        print('after theta, tx, ty', 180*theta.item(), 128*tx.item(), 128*ty.item())
-
-
         return dec, diff, theta, tx, ty
 
     
