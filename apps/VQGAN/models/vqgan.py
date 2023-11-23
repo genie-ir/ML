@@ -402,15 +402,15 @@ class VQModel(pl.LightningModule):
         tx.register_hook(lambda grad: print('tx', grad))
         ty.register_hook(lambda grad: print('ty', grad))
 
-        print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape)
-        print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape)
+        print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape, xc_lesion_np.sum())
+        print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape, xc_cunvexhull.sum())
         m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype)
+        print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype, m.sum(), mue.sum())
         mue_plus_h = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx + h, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        print('mue_plus_h', mue_plus_h.dtype, mue_plus_h.shape)
-        print('xrec', xrec.shape)
-        print('qloss', qloss.shape)
+        print('mue_plus_h', mue_plus_h.dtype, mue_plus_h.shape, mue_plus_h.sum())
+        print('xrec', xrec.shape, xrec.sum())
+        print('qloss', qloss.shape, qloss.sum())
 
         
         iou = self.dice_lossfn(mue, xs_fundusmask).detach()
