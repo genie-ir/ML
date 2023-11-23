@@ -360,7 +360,7 @@ class VQModel(pl.LightningModule):
     
     
     
-    def dice_lossfn(self, inputs, target):
+    def dice_static_metric(self, inputs, target):
         num = target.shape[0]
         inputs = inputs.reshape(num, -1)
         target = target.reshape(num, -1).detach()
@@ -393,9 +393,13 @@ class VQModel(pl.LightningModule):
 
 
         cidx = 1 # 0 1 2
+        Lmask_xs = batch['Lmask_xs'] # binary of diesis features
+        Lmask_xc = batch['Lmask_xc'][cidx]
+        
+        
         xs = batch['xs']
         xs_fundusmask = batch['xs_fundusmask'] # binary
-        xc_lesion = batch['xc_lesion'][cidx]
+        xc_lesion = batch['mask_xc'][cidx] # binary of diesis features
         xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy()
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy() # binary
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
@@ -403,26 +407,44 @@ class VQModel(pl.LightningModule):
         tx.register_hook(lambda grad: print('tx', grad))
         ty.register_hook(lambda grad: print('ty', grad))
 
-        # print('xc_lesion_np', xc_lesion_np.dtype, xc_lesion_np.shape, xc_lesion_np.sum())
-        # print('xc_cunvexhull', xc_cunvexhull.dtype, xc_cunvexhull.shape, xc_cunvexhull.sum())
-        m = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        # print('m, mue', m.shape, mue.shape, m.dtype, mue.dtype, m.sum(), mue.sum())
-        mue_plus_h = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx + h, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        # print('mue_plus_h', mue_plus_h.dtype, mue_plus_h.shape, mue_plus_h.sum())
-        # print('xrec', xrec.shape, xrec.sum())
-        # print('qloss', qloss.shape, qloss.sum())
+        lesion_ROT = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
+        Lmask_xc_ROT = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
+        mue_plus_h_theta = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
+        mue_plus_h_tx = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx + h, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
+        mue_plus_h_ty = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
 
         
-        iou = self.dice_lossfn(mue, xs_fundusmask).detach()
-        iou_plus_h = self.dice_lossfn(mue_plus_h, xs_fundusmask).detach()
-        # print('$$$$$$$$$$$$$$$$$$$$$', (iou_plus_h - iou), h)
-        D_tx = (2*((iou_plus_h - iou) / h).flatten()).detach()
-        D_ty = D_tx.detach()
-        D_theta = (.5 * D_tx).detach()
+        iou = self.dice_static_metric(mue, xs_fundusmask).detach()
+        iou_plus_h_theta = self.dice_static_metric(mue_plus_h_theta, xs_fundusmask).detach()
+        iou_plus_h_tx = self.dice_static_metric(mue_plus_h_tx, xs_fundusmask).detach()
+        iou_plus_h_ty = self.dice_static_metric(mue_plus_h_ty, xs_fundusmask).detach()
+        D_theta = ((iou_plus_h_theta - iou) / h).flatten().detach()
+        D_tx = ((iou_plus_h_tx - iou) / h).flatten().detach()
+        D_ty = ((iou_plus_h_ty - iou) / h).flatten().detach()
         iou = dzq_dz_eq1(iou, D_theta * theta + D_tx * tx + D_ty * ty)
-        # print('D_tx', D_tx.shape, D_tx)
         
+
+        print(xc_cunvexhull.shape, mue.shape, mue_plus_h_theta.shape, mue_plus_h_tx.shape, mue_plus_h_ty.shape, lesion_ROT.shape)
+        signal_save(torch.cat([
+            xc_cunvexhull * 255,
+            mue * 255,
+            mue_plus_h_theta * 255,
+            mue_plus_h_tx * 255,
+            mue_plus_h_ty * 255,
+            (lesion_ROT+1) * 127.5
+
+        ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
+
+
+
+        M_xrec_xs = (1 - (Lmask_xs + Lmask_xc_ROT) - (Lmask_xs * Lmask_xc_ROT)) * xs_fundusmask
+        M_xrec_xcl = (mue) * xs_fundusmask
+        print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
+        xs_groundtrouth = (xs * M_xrec_xs).detach() # groundtrouth
+        lesion_ROT_groundtrouth = (lesion_ROT * M_xrec_xcl).detach() # groundtrouth
+        # xrec * M_xrec_xs
+        # xrec * M_xrec_xcl
         return iou
         assert False
 
