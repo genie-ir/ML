@@ -141,6 +141,7 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
+        self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
         self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1)
         self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
         self.cnn_xscl_bn256 = torch.nn.BatchNorm2d(256)
@@ -283,20 +284,23 @@ class VQModel(pl.LightningModule):
     
     
     
-    def forward(self, xs, xc_lesion):
-        _, _, _, h_ilevel4_xcl = self.encoder(xc_lesion)
+    def forward(self, xs, xc_lesion): # xc_lesion: attendend conditional color fundus
+        q_eye16 = self.q_eye16.detach()
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc_lesion)
+        hc = self.quant_conv(hc)
+        Qh, _ = self.quantize(h)
+
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
-        # print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
-        # print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
-        dec = self.decoder(Q + h, xc_lesion, h_ilevel1, h_endDownSampling) # Note: add skip connection
-        # print('################ h_ilevel4_xs', h_ilevel4_xs.shape, h_ilevel4_xs.sum())
-        # print('################ h_ilevel4_xcl', h_ilevel4_xcl.shape, h_ilevel4_xcl.sum())
-        theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs, h_ilevel4_xcl)
+        Q = Q * (1-q_eye16) + Qh * q_eye16
+
+
+        dec = self.decoder(Q + h, xc_lesion, h_ilevel1 + h_ilevel1_xcl, h_endDownSampling + h_endDownSampling_xcl) # Note: add skip connection
+        theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         
-        return dec, diff, theta, tx, ty
+        return xs + dec, diff, theta, tx, ty
 
     
     def get_V(self, Forg, Frec):
@@ -382,26 +386,26 @@ class VQModel(pl.LightningModule):
         #     self.log_images(batch, ignore=False)
         # x = self.get_input(batch, self.image_key)
 
-        # print(batch.keys())
-        # print(batch['y'])
-        # for i in ['xs', 'xs_lesion', 'xs_cunvexhull', 'xs_fundusmask', 'xc', 'xc_lesion', 'xc_cunvexhull', 'xc_fundusmask']:
-        #     if isinstance(batch[i], list):
-        #         for j in batch[i]:
-        #             print(i, '->', j.shape)
-        #     else:
-        #         print(i, batch[i].shape)
-
-
-        cidx = 1 # 0 1 2
+        cidx = 1 # 0:G(0,1) 1:G(2) 2:G(3,4)
         Lmask_xs = batch['Lmask_xs'] # binary of diesis features
-        Lmask_xc = batch['Lmask_xc'][cidx]
+        Lmask_xc = batch['Lmask_xc'][cidx] # binary of diesis features
         
         
-        xs = batch['xs']
+        xs = batch['xs'] # fundus source. bipolar
+        xc_lesion = batch['mask_xc'][cidx] # fundus condition. bipolar. shape:(Bxwxhxch)
+        xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy() # fundus condition. bipolar. shape:(Bxchxwxh)
         xs_fundusmask = batch['xs_fundusmask'] # binary
-        xc_lesion = batch['mask_xc'][cidx] # binary of diesis features
-        xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy()
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy() # binary
+        
+        
+        print('xs', xs.shape, xs.dtype)
+        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype)
+        print('xc_lesion', xc_lesion.shape, xc_lesion.dtype)
+        print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype)
+        print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype)
+        print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype)
+        print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype)
+        
         xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
         theta.register_hook(lambda grad: print('theta', grad))
         tx.register_hook(lambda grad: print('tx', grad))
@@ -424,9 +428,24 @@ class VQModel(pl.LightningModule):
         D_ty = ((iou_plus_h_ty - iou) / h).flatten().detach()
         iou = dzq_dz_eq1(iou, D_theta * theta + D_tx * tx + D_ty * ty)
         
-
+        print('IOU -------->', iou.shape, iou.dtype)
         print(xc_cunvexhull.shape, mue.shape, mue_plus_h_theta.shape, mue_plus_h_tx.shape, mue_plus_h_ty.shape, lesion_ROT.shape)
+
+        M_union_L_xs_xc = ((Lmask_xs + Lmask_xc_ROT) - (Lmask_xs * Lmask_xc_ROT)).detach()
+        M_L_xs_mines_xc = (Lmask_xs - (Lmask_xs * Lmask_xc_ROT)).detach() # Interpolation
+        M_xrec_xs = ((1 - M_union_L_xs_xc) * xs_fundusmask).detach() # reconstruct xs
+        M_xrec_xcl = ((Lmask_xc_ROT) * xs_fundusmask).detach() # reconstruct xc
+        print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
+        xs_groundtrouth = (xs * M_xrec_xs).detach() # groundtrouth
+        lesion_ROT_groundtrouth = (lesion_ROT * M_xrec_xcl).detach() # groundtrouth
+        # recloss(xrec * M_xrec_xs, xs_groundtrouth)
+        # recloss(xrec * M_xrec_xcl, lesion_ROT_groundtrouth)
+
         signal_save(torch.cat([
+            M_union_L_xs_xc * 255,
+            M_L_xs_mines_xc * 255,
+            M_xrec_xs * 255,
+            M_xrec_xcl * 255,
             xc_cunvexhull * 255,
             mue * 255,
             mue_plus_h_theta * 255,
@@ -437,19 +456,11 @@ class VQModel(pl.LightningModule):
         ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
 
 
-
-        M_xrec_xs = (1 - (Lmask_xs + Lmask_xc_ROT) - (Lmask_xs * Lmask_xc_ROT)) * xs_fundusmask
-        M_xrec_xcl = (mue) * xs_fundusmask
-        print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
-        xs_groundtrouth = (xs * M_xrec_xs).detach() # groundtrouth
-        lesion_ROT_groundtrouth = (lesion_ROT * M_xrec_xcl).detach() # groundtrouth
-        # xrec * M_xrec_xs
-        # xrec * M_xrec_xcl
         return iou
         assert False
 
-        Vorg, Vrec = self.get_V(x, xrec)
-        Vrec = dzq_dz_eq1(Vrec, xrec)
+        # Vorg, Vrec = self.get_V(x, xrec)
+        # Vrec = dzq_dz_eq1(Vrec, xrec)
         # print(optimizer_idx, x.shape, xrec.shape, Vorg.shape, Vrec.shape, Vorg.min(), Vorg.max(), Vrec.min(), Vrec.max())
 
         if optimizer_idx == 0:
@@ -457,16 +468,16 @@ class VQModel(pl.LightningModule):
             
             # DELETE
             # VLOSS = 0.5 * torch.mean(torch.abs(Vorg - Vrec) + 0.1 * self.loss.perceptual_loss(Vorg, Vrec)).log()
-            vintersection = (Vorg * Vrec)
-            VLOSS =  1 - (vintersection / (Vorg + Vrec - vintersection).clamp(1e-8, 1).detach()).mean()
+            # vintersection = (Vorg * Vrec)
+            # VLOSS =  1 - (vintersection / (Vorg + Vrec - vintersection).clamp(1e-8, 1).detach()).mean()
+            # log_dict_ae['train/VLOSS'] = VLOSS.detach()
 
 
-            log_dict_ae['train/VLOSS'] = VLOSS.detach()
             self.log("train/aeloss", aeloss, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=False)
             
-            
-            return VLOSS + aeloss
+            return aeloss
+            # return VLOSS + aeloss
         
         if optimizer_idx == 1:
             discloss, log_dict_disc = self.loss(None, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="train")

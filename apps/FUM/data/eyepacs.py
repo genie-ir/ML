@@ -51,11 +51,11 @@ LANDA = (256*256)
 dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
-dr_transformer_e = A.Compose([
+dr_transformer_e = A.Compose([ # doesnt affect order of channells
     # ToTensorV2()
 ])
 
-def imgNormalizer(img):
+def imgNormalizer(img): # bipolar normalizer
     return (img / 127.5) - 1 
 
 # dr_transformer = A.Compose([
