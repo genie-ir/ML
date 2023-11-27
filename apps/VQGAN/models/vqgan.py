@@ -69,9 +69,11 @@ class VQModel(pl.LightningModule):
         self.Rfn = Rfn
         self.image_key = image_key
         self.encoder = Encoder(**ddconfig, returnSkipPath=True)
+        self.encoder_L = Encoder(**ddconfig, returnSkipPath=True)
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
         self.quantize = VectorQuantizer(n_e=n_embed, e_dim=embed_dim, beta=0.25, remap=remap, sane_index_shape=sane_index_shape)
+        self.quant_conv_L = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
         
@@ -286,11 +288,16 @@ class VQModel(pl.LightningModule):
     
     
     
-    def forward(self, xs, xc, xcl): # xc_lesion: attendend conditional color fundus
+    def forward(self, xs, xc, xcl):
+        """
+            xs: source color fundus
+            xc: conditional color fundus
+            xcl: attendend conditional color fundus
+        """
         q_eye16 = self.q_eye16.detach()
         
-        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
-        hc = self.quant_conv(hc)
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder_L(xc)
+        hc = self.quant_conv_L(hc)
         quanth, diff_xc = self.quantize(hc)
         Qh = self.post_quant_conv(quanth)
         Qh = Qh * q_eye16
@@ -299,12 +306,12 @@ class VQModel(pl.LightningModule):
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
-        Q = Q * (1-q_eye16) + Qh
+        Q = Q * (1-q_eye16) + Qh # crossover/exchange
 
         dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
-            Qh + hc, 
-            xc_lesion, 
-            h_ilevel1_xcl, 
+            Qh + hc,
+            xc_lesion,
+            h_ilevel1_xcl,
             h_endDownSampling_xcl
         ) # Note: add skip connection
         dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(self.conv_dec_xc(dec_xc)))
@@ -312,7 +319,7 @@ class VQModel(pl.LightningModule):
         
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q + h, 
-            xcl, 
+            xcl, # SPADE
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
