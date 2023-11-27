@@ -142,6 +142,8 @@ class VQModel(pl.LightningModule):
         
     def start(self): # TODO
         self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
+        self.conv_dec_xc = torch.nn.Conv2d(3, 1, 1,1,0)
+
         self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1)
         self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
         self.cnn_xscl_bn256 = torch.nn.BatchNorm2d(256)
@@ -284,23 +286,40 @@ class VQModel(pl.LightningModule):
     
     
     
-    def forward(self, xs, xc_lesion): # xc_lesion: attendend conditional color fundus
+    def forward(self, xs, xc, xcl): # xc_lesion: attendend conditional color fundus
         q_eye16 = self.q_eye16.detach()
-        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc_lesion)
+        
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
         hc = self.quant_conv(hc)
-        Qh, _ = self.quantize(h)
+        quanth, diff_xc = self.quantize(hc)
+        Qh = self.post_quant_conv(quanth)
+        Qh = Qh * q_eye16
 
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         Q = self.post_quant_conv(quant)
-        Q = Q * (1-q_eye16) + Qh * q_eye16
+        Q = Q * (1-q_eye16) + Qh
 
-
-        dec = self.decoder(Q + h, xc_lesion, h_ilevel1 + h_ilevel1_xcl, h_endDownSampling + h_endDownSampling_xcl) # Note: add skip connection
+        dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
+            Qh + hc, 
+            xc_lesion, 
+            h_ilevel1_xcl, 
+            h_endDownSampling_xcl
+        ) # Note: add skip connection
+        dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(self.conv_dec_xc(dec_xc)))
+        # dec_xc = torch.sigmoid(self.conv_dec_xc(dec_xc)).clamp(.2) * xc
+        
+        dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
+            Q + h, 
+            xcl, 
+            h_ilevel1, 
+            h_endDownSampling
+        ) # Note: add skip connection
+        
         theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         
-        return xs + dec, diff, theta, tx, ty
+        return xs + dec, diff, theta, tx, ty, dec_xc, diff_xc
 
     
     def get_V(self, Forg, Frec):
@@ -392,13 +411,14 @@ class VQModel(pl.LightningModule):
         
         
         xs = batch['xs'] # fundus source. bipolar
-        xc_lesion = batch['mask_xc'][cidx] # fundus condition. bipolar. shape:(Bxwxhxch)
+        xc = batch['xc'][cidx] # fundus condition. bipolar. shape:(Bxwxhxch)
+        xc_lesion = batch['mask_xc'][cidx] # fundus condition attendend version. bipolar. shape:(Bxwxhxch)
         xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy() # fundus condition. bipolar. shape:(Bxchxwxh)
         xs_fundusmask = batch['xs_fundusmask'] # binary
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy() # binary
         
-        
         print('xs', xs.shape, xs.dtype)
+        print('xc', xc.shape, xc.dtype)
         print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype)
         print('xc_lesion', xc_lesion.shape, xc_lesion.dtype)
         print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype)
@@ -406,7 +426,7 @@ class VQModel(pl.LightningModule):
         print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype)
         print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype)
         
-        xrec, qloss, theta, tx, ty = self(xs, xc_lesion)
+        xrec, qloss, theta, tx, ty, xcrec, qcloss = self(xs, xc, xc_lesion)
         theta.register_hook(lambda grad: print('theta', grad))
         tx.register_hook(lambda grad: print('tx', grad))
         ty.register_hook(lambda grad: print('ty', grad))
@@ -417,7 +437,6 @@ class VQModel(pl.LightningModule):
         mue_plus_h_theta = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta + h, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
         mue_plus_h_tx = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx + h, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
         mue_plus_h_ty = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty + h))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-
         
         iou = self.dice_static_metric(mue, xs_fundusmask).detach()
         iou_plus_h_theta = self.dice_static_metric(mue_plus_h_theta, xs_fundusmask).detach()
