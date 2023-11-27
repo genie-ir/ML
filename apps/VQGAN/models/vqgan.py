@@ -69,11 +69,9 @@ class VQModel(pl.LightningModule):
         self.Rfn = Rfn
         self.image_key = image_key
         self.encoder = Encoder(**ddconfig, returnSkipPath=True)
-        self.encoder_L = Encoder(**ddconfig, returnSkipPath=True)
         self.decoder = Decoder(**ddconfig)
         self.loss = instantiate_from_config(lossconfig)
         self.quantize = VectorQuantizer(n_e=n_embed, e_dim=embed_dim, beta=0.25, remap=remap, sane_index_shape=sane_index_shape)
-        self.quant_conv_L = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
         
@@ -144,7 +142,6 @@ class VQModel(pl.LightningModule):
         
     def start(self): # TODO
         self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
-        self.conv_dec_xc = torch.nn.Conv2d(3, 1, 1,1,0)
 
         self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1)
         self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
@@ -296,8 +293,8 @@ class VQModel(pl.LightningModule):
         """
         q_eye16 = self.q_eye16.detach()
         
-        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder_L(xc)
-        hc = self.quant_conv_L(hc)
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
+        hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
         Qh = self.post_quant_conv(quanth)
         Qh = Qh * q_eye16
@@ -312,9 +309,10 @@ class VQModel(pl.LightningModule):
             Qh + hc,
             xc_lesion,
             h_ilevel1_xcl,
-            h_endDownSampling_xcl
+            h_endDownSampling_xcl,
+            flag=False
         ) # Note: add skip connection
-        dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(self.conv_dec_xc(dec_xc)))
+        dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(dec_xc))
         # dec_xc = torch.sigmoid(self.conv_dec_xc(dec_xc)).clamp(.2) * xc
         
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
