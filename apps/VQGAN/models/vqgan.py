@@ -482,7 +482,7 @@ class VQModel(pl.LightningModule):
         # ty.register_hook(lambda grad: print('ty', grad))
 
         signal_save(torch.cat([
-            (xc_np+1) * 127.5,
+            torch.tensor((xc_np+1) * 127.5),
 
         ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
 
