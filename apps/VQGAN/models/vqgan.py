@@ -427,6 +427,7 @@ class VQModel(pl.LightningModule):
         
         xs = batch['xs'] # fundus source. bipolar
         xc = batch['xc'][cidx] # fundus condition. bipolar. shape:(Bxchxhxw)
+        xc_np = batch['xc_np'][cidx] # fundus condition. bipolar. shape:(Bxchxhxw)
         xs_lesion = batch['xs_lesion']
         xc_lesion = batch['xc_lesion'][cidx] # fundus condition attendend version. bipolar. shape:(Bxchxhxw)
         xc_lesion_np = batch['xc_lesion_np'][cidx].cpu().numpy()[0] # remove batch dimention. # RGB fundus condition. bipolar. shape:(Bxchxhxw)
@@ -440,6 +441,7 @@ class VQModel(pl.LightningModule):
         # INFO: ok!
         # print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
         # print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        print('xc_np', xc_np.shape, xc_np.dtype, xc_np.min().item(), xc_np.max().item())
         # print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
         # print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
         # print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
@@ -455,7 +457,7 @@ class VQModel(pl.LightningModule):
         ty = torch.tensor(self.ty, dtype=torch.float32, device=self.device)
 
         Xc = dr_transformer0(image=ROT(xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
-        Xcl = dr_transformer0(image=ROT(xc_lesion, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        Xcl = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcm = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         # mue = dr_transformer0(image=ROT(xc_fundusmask, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
