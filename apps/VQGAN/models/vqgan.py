@@ -433,17 +433,17 @@ class VQModel(pl.LightningModule):
         Lmask_xs = batch['Lmask_xs'] # binary of diesis features
         Lmask_xc = batch['Lmask_xc'][cidx] # binary of diesis features
         
-        print('xs', xs.shape, xs.dtype)
-        print('xc', xc.shape, xc.dtype)
-        print('xs_lesion', xs_lesion.shape, xs_lesion.dtype)
-        print('xc_lesion', xc_lesion.shape, xc_lesion.dtype)
-        print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype)
-        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype)
-        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype)
-        print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype)
-        print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype)
-        print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype)
-        print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype)
+        print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
+        print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
+        print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
+        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
+        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
+        print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
+        print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
+        print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
+        print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
         
         assert False
         xrec, qloss, theta, tx, ty, xcrec, qcloss = self(xs, xc, xc_lesion)
