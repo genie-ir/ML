@@ -427,7 +427,7 @@ class VQModel(pl.LightningModule):
         
         xs = batch['xs'] # fundus source. bipolar
         xc = batch['xc'][cidx] # fundus condition. bipolar. shape:(Bxchxhxw)
-        xc_np = batch['xc_np'][cidx] # fundus condition. bipolar. shape:(Bxchxhxw)
+        xc_np = batch['xc_np'][cidx][0] # fundus condition. bipolar. shape:(Bxchxhxw)
         xs_lesion = batch['xs_lesion']
         xc_lesion = batch['xc_lesion'][cidx] # fundus condition attendend version. bipolar. shape:(Bxchxhxw)
         xc_lesion_np = batch['xc_lesion_np'][cidx].cpu().numpy()[0] # remove batch dimention. # RGB fundus condition. bipolar. shape:(Bxchxhxw)
@@ -456,7 +456,7 @@ class VQModel(pl.LightningModule):
         tx = torch.tensor(self.tx, dtype=torch.float32, device=self.device)
         ty = torch.tensor(self.ty, dtype=torch.float32, device=self.device)
 
-        Xc = dr_transformer0(image=ROT(xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        Xc = dr_transformer0(image=ROT(xc_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcl = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcm = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
