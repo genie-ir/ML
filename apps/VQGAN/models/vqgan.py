@@ -436,12 +436,12 @@ class VQModel(pl.LightningModule):
         xs_cunvexhull = batch['xs_cunvexhull'][0] # remove batch dimention # Bxhxwxch=1
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0] # Bxhxwxch=1
         Lmask_xs = batch['Lmask_xs'][0] # remove batch dimention # binary of diesis features
-        Lmask_xc = batch['Lmask_xc'][cidx][0] # remove batch dimention # binary of diesis features
+        Lmask_xc = batch['Lmask_xc'][cidx].cpu().numpy()[0] # remove batch dimention # binary of diesis features
         
         # INFO: ok!
         # print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
         # print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        print('xc_np', xc_np.shape, xc_np.dtype, xc_np.min().item(), xc_np.max().item())
+        # print('xc_np', xc_np.shape, xc_np.dtype, xc_np.min().item(), xc_np.max().item())
         # print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
         # print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
         # print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
