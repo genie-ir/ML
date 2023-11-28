@@ -299,7 +299,7 @@ class VQModel(pl.LightningModule):
         """
         q_eye16 = self.q_eye16.detach()
         
-        xc = torch.randn((16,3,64,64))
+        xc = torch.randn((16,3,64,64), device=self.device)
         print('----------->', xc.shape)
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
         print(hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
