@@ -141,9 +141,9 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
-        self.theta = 0
-        self.tx = 0
-        self.ty = 0
+        self.theta = 0.0
+        self.tx = 0.0
+        self.ty = 0.0
 
         self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
         self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
