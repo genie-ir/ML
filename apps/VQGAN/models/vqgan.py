@@ -302,6 +302,11 @@ class VQModel(pl.LightningModule):
         print('----------->', xc.shape)
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
+        
+        print(hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
+        
+        assert False
+        
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
         hc_new = self.post_quant_conv(quanth)
@@ -314,9 +319,7 @@ class VQModel(pl.LightningModule):
         h_new = self.post_quant_conv(quant)
         Qorg = self.conv_catskip_0(torch.cat([h_new, h], dim=1))
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
-        print('!!!!!!!Qcrossover', Qcrossover.shape)
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
-        print('!!!!!!!Q', Q.shape)
 
         dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
             Qh,
@@ -334,6 +337,9 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
+        
+        
+        assert False
         
         theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         
