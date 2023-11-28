@@ -457,9 +457,9 @@ class VQModel(pl.LightningModule):
         # print('Lmask_xc_np', Lmask_xc_np.shape, Lmask_xc_np.dtype, Lmask_xc_np.min().item(), Lmask_xc_np.max().item())
         
         # INFO: affine parammetters
-        theta = torch.tensor(self.theta, dtype=torch.float32, device=self.device) + 30
-        tx = torch.tensor(self.tx, dtype=torch.float32, device=self.device) - 25
-        ty = torch.tensor(self.ty, dtype=torch.float32, device=self.device) + 10
+        theta = torch.tensor(self.theta, dtype=torch.float32, device=self.device) + .3
+        tx = torch.tensor(self.tx, dtype=torch.float32, device=self.device) - .1
+        ty = torch.tensor(self.ty, dtype=torch.float32, device=self.device) + .4
 
         # INFO: ROT
         Xc = dr_transformer0(image=ROT(xc_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
