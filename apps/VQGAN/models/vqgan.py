@@ -434,7 +434,7 @@ class VQModel(pl.LightningModule):
         xs_fundusmask = batch['xs_fundusmask'][0] # remove batch dimention # binary
         xc_fundusmask = batch['xc_fundusmask'][cidx][0] # remove batch dimention # binary
         xs_cunvexhull = batch['xs_cunvexhull'][0] # remove batch dimention # Bxhxwxch=1
-        xc_cunvexhull = batch['xc_cunvexhull'][cidx].cpu().numpy()[0] # Bxhxwxch=1
+        xc_cunvexhull_np = batch['xc_cunvexhull'][cidx].cpu().numpy()[0] # Bxhxwxch=1
         Lmask_xs = batch['Lmask_xs'][0] # remove batch dimention # binary of diesis features
         Lmask_xc = batch['Lmask_xc'][cidx].cpu().numpy()[0] # remove batch dimention # binary of diesis features
         
@@ -448,7 +448,7 @@ class VQModel(pl.LightningModule):
         print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
         print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
         print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
-        print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
+        print('xc_cunvexhull_np', xc_cunvexhull_np.shape, xc_cunvexhull_np.dtype, xc_cunvexhull_np.min().item(), xc_cunvexhull_np.max().item())
         print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
         print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
         
@@ -458,8 +458,8 @@ class VQModel(pl.LightningModule):
 
         Xc = dr_transformer0(image=ROT(xc_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcl = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
-        Xcm = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
-        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        Xcm = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
+        mue = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
         # mue = dr_transformer0(image=ROT(xc_fundusmask, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
 
         print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item())
