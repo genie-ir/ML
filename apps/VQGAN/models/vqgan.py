@@ -299,13 +299,17 @@ class VQModel(pl.LightningModule):
         """
         q_eye16 = self.q_eye16.detach()
         
+        xc = torch.randn((16,3,64,64))
         print('----------->', xc.shape)
-
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
-        
         print(hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
-        
         assert False
+
+        # without patching:
+        # hc.shape -> torch.Size([1, 256, 16, 16]) 
+        # h_ilevel1_xcl.shape -> torch.Size([1, 128, 256, 256]) 
+        # h_endDownSampling_xcl.shape -> torch.Size([1, 512, 16, 16]) 
+        # h_ilevel4_xcl.shape -> torch.Size([1, 256, 32, 32])
         
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
@@ -479,13 +483,21 @@ class VQModel(pl.LightningModule):
         mue_plus_h_theta = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta + h, tx=tx, ty=ty))['image'].squeeze().to(self.device)
 
         # INFO: print ROT
-        print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
-        print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
-        print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
-        print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item()) # 256x256
-        print('mue_plus_h_tx', mue_plus_h_tx.shape, mue_plus_h_tx.dtype, mue_plus_h_tx.min().item(), mue_plus_h_tx.max().item()) # 256x256
-        print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
-        print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
+        # Xc torch.Size([1, 3, 256, 256]) torch.float32 -1.0 1.0
+        # Xcl torch.Size([1, 3, 256, 256]) torch.float32 -1.0 0.2851102352142334
+        # Xcm torch.Size([256, 256]) torch.float32 0.0 1.0
+        # mue torch.Size([256, 256]) torch.float32 0.0 1.0
+        # mue_plus_h_tx torch.Size([256, 256]) torch.float32 0.0 1.0
+        # mue_plus_h_ty torch.Size([256, 256]) torch.float32 0.0 1.0
+        # mue_plus_h_theta torch.Size([256, 256]) torch.float32 0.0 1.0
+        # ###############################################################################
+        # print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
+        # print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
+        # print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
+        # print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item()) # 256x256
+        # print('mue_plus_h_tx', mue_plus_h_tx.shape, mue_plus_h_tx.dtype, mue_plus_h_tx.min().item(), mue_plus_h_tx.max().item()) # 256x256
+        # print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
+        # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
 
         # TODO
