@@ -467,29 +467,33 @@ class VQModel(pl.LightningModule):
         mue_plus_h_theta = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta + h, tx=tx, ty=ty))['image'].squeeze().to(self.device)
 
 
-        print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
-        print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
-        print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
-        print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item()) # 256x256
-        print('mue_plus_h_tx', mue_plus_h_tx.shape, mue_plus_h_tx.dtype, mue_plus_h_tx.min().item(), mue_plus_h_tx.max().item()) # 256x256
-        print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
-        print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
+        # print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
+        # print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
+        # print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
+        # print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item()) # 256x256
+        # print('mue_plus_h_tx', mue_plus_h_tx.shape, mue_plus_h_tx.dtype, mue_plus_h_tx.min().item(), mue_plus_h_tx.max().item()) # 256x256
+        # print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
+        # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
     
-        xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl)
+        # xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl)
         # theta.register_hook(lambda grad: print('theta', grad))
         # tx.register_hook(lambda grad: print('tx', grad))
         # ty.register_hook(lambda grad: print('ty', grad))
-    
-    def test(self):
+
+        signal_save(torch.cat([
+            (xc_np+1) * 127.5,
+
+        ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
+
+        
         assert False
 
+    def test(self):
+
         
 
-        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        lesion_ROT = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
-        Lmask_xc_ROT = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
-        
+
         iou = self.dice_static_metric(mue, xs_fundusmask).detach()
         iou_plus_h_theta = self.dice_static_metric(mue_plus_h_theta, xs_fundusmask).detach()
         iou_plus_h_tx = self.dice_static_metric(mue_plus_h_tx, xs_fundusmask).detach()
@@ -502,29 +506,25 @@ class VQModel(pl.LightningModule):
         print('IOU -------->', iou.shape, iou.dtype)
         print(xc_cunvexhull.shape, mue.shape, mue_plus_h_theta.shape, mue_plus_h_tx.shape, mue_plus_h_ty.shape, lesion_ROT.shape)
 
+        
+        
+        
+        
+        
+        
         M_union_L_xs_xc = ((Lmask_xs + Lmask_xc_ROT) - (Lmask_xs * Lmask_xc_ROT)).detach()
         M_L_xs_mines_xc = (Lmask_xs - (Lmask_xs * Lmask_xc_ROT)).detach() # Interpolation
         M_xrec_xs = ((1 - M_union_L_xs_xc) * xs_fundusmask).detach() # reconstruct xs
         M_xrec_xcl = ((Lmask_xc_ROT) * xs_fundusmask).detach() # reconstruct xc
         print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
+        
+        
+        
         xs_groundtrouth = (xs * M_xrec_xs).detach() # groundtrouth
         lesion_ROT_groundtrouth = (lesion_ROT * M_xrec_xcl).detach() # groundtrouth
         # recloss(xrec * M_xrec_xs, xs_groundtrouth)
         # recloss(xrec * M_xrec_xcl, lesion_ROT_groundtrouth)
 
-        signal_save(torch.cat([
-            M_union_L_xs_xc * 255,
-            M_L_xs_mines_xc * 255,
-            M_xrec_xs * 255,
-            M_xrec_xcl * 255,
-            xc_cunvexhull * 255,
-            mue * 255,
-            mue_plus_h_theta * 255,
-            mue_plus_h_tx * 255,
-            mue_plus_h_ty * 255,
-            (lesion_ROT+1) * 127.5
-
-        ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
 
 
         assert False
