@@ -440,25 +440,27 @@ class VQModel(pl.LightningModule):
         Lmask_xc = batch['Lmask_xc'][cidx][0] # remove batch dimention # binary of diesis features
         Lmask_xc_np = batch['Lmask_xc'][cidx].cpu().numpy()[0] # remove batch dimention # binary of diesis features
         
-        # INFO: ok!
-        # print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
-        # print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        # print('xc_np', xc_np.shape, xc_np.dtype, xc_np.min().item(), xc_np.max().item())
-        # print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
-        # print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
-        # print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
-        # print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
-        # print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
-        # print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
-        # print('xc_cunvexhull_np', xc_cunvexhull_np.shape, xc_cunvexhull_np.dtype, xc_cunvexhull_np.min().item(), xc_cunvexhull_np.max().item())
-        # print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
-        # print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
-        # print('Lmask_xc_np', Lmask_xc_np.shape, Lmask_xc_np.dtype, Lmask_xc_np.min().item(), Lmask_xc_np.max().item())
+        # INFO: print variables!
+        print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        print('xc_np', xc_np.shape, xc_np.dtype, xc_np.min().item(), xc_np.max().item())
+        print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
+        print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
+        print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
+        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
+        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
+        print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
+        print('xc_cunvexhull_np', xc_cunvexhull_np.shape, xc_cunvexhull_np.dtype, xc_cunvexhull_np.min().item(), xc_cunvexhull_np.max().item())
+        print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
+        print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
+        print('Lmask_xc_np', Lmask_xc_np.shape, Lmask_xc_np.dtype, Lmask_xc_np.min().item(), Lmask_xc_np.max().item())
         
+        # INFO: affine parammetters
         theta = torch.tensor(self.theta, dtype=torch.float32, device=self.device)
         tx = torch.tensor(self.tx, dtype=torch.float32, device=self.device)
         ty = torch.tensor(self.ty, dtype=torch.float32, device=self.device)
 
+        # INFO: ROT
         Xc = dr_transformer0(image=ROT(xc_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcl = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcm = dr_transformer0(image=ROT(Lmask_xc_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
@@ -467,7 +469,7 @@ class VQModel(pl.LightningModule):
         mue_plus_h_ty = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta, tx=tx, ty=ty + h))['image'].squeeze().to(self.device)
         mue_plus_h_theta = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta + h, tx=tx, ty=ty))['image'].squeeze().to(self.device)
 
-
+        # INFO: print ROT
         print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
         print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
         print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
@@ -499,7 +501,6 @@ class VQModel(pl.LightningModule):
 
         
         assert False
-
     def test(self):
 
         
