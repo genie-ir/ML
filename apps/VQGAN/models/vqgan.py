@@ -430,8 +430,8 @@ class VQModel(pl.LightningModule):
         xc_fundusmask = batch['xc_fundusmask'][cidx] # binary
         xs_cunvexhull = batch['xs_cunvexhull'] # Bxhxwxch=1
         xc_cunvexhull = batch['xc_cunvexhull'][cidx] # Bxhxwxch=1
-        Lmask_xs = batch['Lmask_xs'] # binary of diesis features
-        Lmask_xc = batch['Lmask_xc'][cidx] # binary of diesis features
+        Lmask_xs = batch['Lmask_xs'][0] # remove batch dimention # binary of diesis features
+        Lmask_xc = batch['Lmask_xc'][cidx][0] # remove batch dimention # binary of diesis features
         
         print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
         print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
