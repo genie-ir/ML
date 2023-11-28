@@ -460,7 +460,7 @@ class VQModel(pl.LightningModule):
 
         Xc = dr_transformer0(image=ROT(xc_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcl = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
-        Xcm = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
+        Xcm = dr_transformer0(image=ROT(Lmask_xc_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
         mue = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
 
         print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item())
