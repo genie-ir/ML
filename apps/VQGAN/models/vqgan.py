@@ -434,6 +434,7 @@ class VQModel(pl.LightningModule):
         xs_fundusmask = batch['xs_fundusmask'][0] # remove batch dimention # binary
         xc_fundusmask = batch['xc_fundusmask'][cidx][0] # remove batch dimention # binary
         xs_cunvexhull = batch['xs_cunvexhull'][0] # remove batch dimention # Bxhxwxch=1
+        xc_cunvexhull = batch['xc_cunvexhull'][cidx][0] # Bxhxwxch=1
         xc_cunvexhull_np = batch['xc_cunvexhull'][cidx].cpu().numpy()[0] # Bxhxwxch=1
         Lmask_xs = batch['Lmask_xs'][0] # remove batch dimention # binary of diesis features
         Lmask_xc = batch['Lmask_xc'][cidx][0] # remove batch dimention # binary of diesis features
@@ -467,13 +468,13 @@ class VQModel(pl.LightningModule):
         mue_plus_h_theta = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta + h, tx=tx, ty=ty))['image'].squeeze().to(self.device)
 
 
-        # print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
-        # print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
-        # print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
-        # print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item()) # 256x256
-        # print('mue_plus_h_tx', mue_plus_h_tx.shape, mue_plus_h_tx.dtype, mue_plus_h_tx.min().item(), mue_plus_h_tx.max().item()) # 256x256
-        # print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
-        # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
+        print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item()) # 1x3x256x256
+        print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item()) # 1x3x256x256
+        print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item()) # 256x256
+        print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item()) # 256x256
+        print('mue_plus_h_tx', mue_plus_h_tx.shape, mue_plus_h_tx.dtype, mue_plus_h_tx.min().item(), mue_plus_h_tx.max().item()) # 256x256
+        print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
+        print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
     
         # xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl)
@@ -483,8 +484,18 @@ class VQModel(pl.LightningModule):
 
         signal_save(torch.cat([
             (xc+1) * 127.5, # same as xc_np
+            (Xc+1) * 127.5,
+            (xc_lesion+1) * 127.5,
+            (Xcl+1) * 127.5,
+            Lmask_xc * 255,
+            Xcm * 255,
+            xc_cunvexhull * 255,
+            mue * 255,
+            mue_plus_h_tx * 255,
+            mue_plus_h_ty * 255,
+            mue_plus_h_theta * 255,
 
-        ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
+        ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
         
         assert False
