@@ -94,7 +94,7 @@ class D_DR(D_Base):
             cpath = self.grade[cval][xc_idx]
             
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image']).float()
-            xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)))['image']).float()
+            xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)))['image']).astype(np.float32)
             xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
             xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
             xc_cunvexhull[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
