@@ -46,6 +46,9 @@ def ROT(img, **kwargs):
         params: theta, tx, ty
     """
     # print(kwargs['theta'], kwargs['tx'], kwargs['ty'])
+    # ROT_theta_3e-1_tx_1e-1_ty_4e-1
+    if img.ndim == 3:
+        img = (img+1) * 127.5
     kwargs['theta'] = int((180*kwargs['theta']).round().item())
     kwargs['tx'] = int((128*kwargs['tx']).round().item())
     kwargs['ty'] = int((128*kwargs['ty']).round().item())
@@ -53,7 +56,10 @@ def ROT(img, **kwargs):
     T = translation(img, **kwargs, return_M=True)
     T[:, :-1] = 0
     M = R + T
-    return affine(img, M)
+    img = affine(img, M)
+    if img.ndim == 3:
+        img = (img / 127.5) - 1
+    return img
 
 def flip(img, mode='both', **kwargs):
     """
