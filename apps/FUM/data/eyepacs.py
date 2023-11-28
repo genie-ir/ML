@@ -93,8 +93,8 @@ class D_DR(D_Base):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
             
-            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)))['image']).float()
-            xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)))['image']).astype(np.float32)
+            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
+            xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
             xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
             xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
             xc_cunvexhull[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
@@ -108,6 +108,7 @@ class D_DR(D_Base):
             'xs_fundusmask': xs_fundusmask / 255.0, # binary
             'Lmask_xs': Lmask_xs / 255.0, # binary
             'xc': xc,
+            'xc_np': xc_np,
             'xc_lesion': xc_lesion,
             'xc_lesion_np': xc_lesion_np,
             'xc_cunvexhull': xc_cunvexhull,
