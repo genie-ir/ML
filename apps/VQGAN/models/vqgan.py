@@ -427,7 +427,7 @@ class VQModel(pl.LightningModule):
         
         xs = batch['xs'] # fundus source. bipolar
         xc = batch['xc'][cidx] # fundus condition. bipolar. shape:(Bxchxhxw)
-        xc_np = batch['xc_np'][cidx][0] # fundus condition. bipolar. shape:(Bxchxhxw)
+        xc_np = batch['xc_np'][cidx].cpu().numpy()[0] # fundus condition. bipolar. shape:(Bxhxwxch)
         xs_lesion = batch['xs_lesion']
         xc_lesion = batch['xc_lesion'][cidx] # fundus condition attendend version. bipolar. shape:(Bxchxhxw)
         xc_lesion_np = batch['xc_lesion_np'][cidx].cpu().numpy()[0] # remove batch dimention. # RGB fundus condition. bipolar. shape:(Bxchxhxw)
