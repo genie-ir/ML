@@ -479,25 +479,27 @@ class VQModel(pl.LightningModule):
         # print('mue_plus_h_ty', mue_plus_h_ty.shape, mue_plus_h_ty.dtype, mue_plus_h_ty.min().item(), mue_plus_h_ty.max().item()) # 256x256
         # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
-    
-        # xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl)
-        # theta.register_hook(lambda grad: print('theta', grad))
-        # tx.register_hook(lambda grad: print('tx', grad))
-        # ty.register_hook(lambda grad: print('ty', grad))
 
-        signal_save(torch.cat([
-            (xc+1) * 127.5, # same as xc_np
-            (Xc+1) * 127.5,
-            (xc_lesion+1) * 127.5,
-            (Xcl+1) * 127.5,
-            self.ssf0(Lmask_xc * 255),
-            self.ssf0(Xcm * 255),
-            self.ssf0(xc_cunvexhull * 255),
-            self.ssf0(mue * 255),
-            self.ssf0(mue_plus_h_tx * 255),
-            self.ssf0(mue_plus_h_ty * 255),
-            self.ssf0(mue_plus_h_theta * 255),
-        ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        # TODO
+        xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl)
+        theta.register_hook(lambda grad: print('theta', grad))
+        tx.register_hook(lambda grad: print('tx', grad))
+        ty.register_hook(lambda grad: print('ty', grad))
+
+        # INFO: signal save ok!
+        # signal_save(torch.cat([
+        #     (xc+1) * 127.5, # same as xc_np
+        #     (Xc+1) * 127.5,
+        #     (xc_lesion+1) * 127.5,
+        #     (Xcl+1) * 127.5,
+        #     self.ssf0(Lmask_xc * 255),
+        #     self.ssf0(Xcm * 255),
+        #     self.ssf0(xc_cunvexhull * 255),
+        #     self.ssf0(mue * 255),
+        #     self.ssf0(mue_plus_h_tx * 255),
+        #     self.ssf0(mue_plus_h_ty * 255),
+        #     self.ssf0(mue_plus_h_theta * 255),
+        # ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
         
         assert False
