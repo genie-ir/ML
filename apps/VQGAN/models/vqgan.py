@@ -450,6 +450,7 @@ class VQModel(pl.LightningModule):
         print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
         print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
         print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
+        print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
         print('xc_cunvexhull_np', xc_cunvexhull_np.shape, xc_cunvexhull_np.dtype, xc_cunvexhull_np.min().item(), xc_cunvexhull_np.max().item())
         print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
         print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
@@ -489,8 +490,8 @@ class VQModel(pl.LightningModule):
             (Xc+1) * 127.5,
             (xc_lesion+1) * 127.5,
             (Xcl+1) * 127.5,
-            Lmask_xc * 255,
-            Xcm * 255,
+            (Lmask_xc * 255).unsqueeze(0).unsqueeze(0),
+            (Xcm * 255).unsqueeze(0).unsqueeze(0),
             xc_cunvexhull * 255,
             mue * 255,
             mue_plus_h_tx * 255,
