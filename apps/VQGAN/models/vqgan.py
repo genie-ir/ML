@@ -497,13 +497,12 @@ class VQModel(pl.LightningModule):
             self.ssf0(mue_plus_h_tx * 255),
             self.ssf0(mue_plus_h_ty * 255),
             self.ssf0(mue_plus_h_theta * 255),
-
         ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
         
         assert False
     
-    def ssf0(t):
+    def ssf0(self, t):
         t = t.unsqueeze(0).unsqueeze(0)
         return torch.cat([t,t,t], dim=1)
     
