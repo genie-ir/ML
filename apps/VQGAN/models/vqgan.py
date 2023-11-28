@@ -450,9 +450,9 @@ class VQModel(pl.LightningModule):
         # print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
         # print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
         
-        theta = self.theta
-        tx = self.tx
-        ty = self.ty
+        theta = torch.tensor(self.theta, dtype=torch.float32, device=self.device)
+        tx = torch.tensor(self.tx, dtype=torch.float32, device=self.device)
+        ty = torch.tensor(self.ty, dtype=torch.float32, device=self.device)
 
         Xc = dr_transformer0(image=ROT(xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcl = dr_transformer0(image=ROT(xc_lesion, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
