@@ -614,7 +614,10 @@ class Decoder(nn.Module):
         
         
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
-        h = self.spade_endDownSampling(xc_lesion, h + h_endDownSampling)
+        if flag:
+            h = self.spade_endDownSampling(xc_lesion, h + h_endDownSampling)
+        else:
+            h = h + h_endDownSampling
         
         # print('DecoderPart, middleEnd', h.shape) # DecoderPart, middleEnd torch.Size([2, 512, 16, 16])
         
@@ -636,7 +639,10 @@ class Decoder(nn.Module):
         
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
-        h = self.spade_ilevel1(xc_lesion, h + h_ilevel1)
+        if flag:
+            h = self.spade_ilevel1(xc_lesion, h + h_ilevel1)
+        else:
+            h = h + h_ilevel1
         # print('DecoderPart, upsampleEnd', h.shape) # DecoderPart, upsampleEnd torch.Size([2, 128, 256, 256]) #Note -> connect to ilevel1
         
 

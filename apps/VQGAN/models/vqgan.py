@@ -142,6 +142,8 @@ class VQModel(pl.LightningModule):
         
     def start(self): # TODO
         self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
+        self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
+        self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
 
         self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1)
         self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
@@ -296,27 +298,32 @@ class VQModel(pl.LightningModule):
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
-        Qh = self.post_quant_conv(quanth)
-        Qh = Qh * q_eye16
+        hc_new = self.post_quant_conv(quanth)
+        Qh = self.conv_catskip_0(torch.cat([hc_new, hc], dim=1))
+        Qh = q_eye16 * Qh
 
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
-        Q = self.post_quant_conv(quant)
-        Q = Q * (1-q_eye16) + Qh # crossover/exchange
+        h_new = self.post_quant_conv(quant)
+        Qorg = self.conv_catskip_0(torch.cat([h_new, h], dim=1))
+        Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
+        print('!!!!!!!Qcrossover', Qcrossover.shape)
+        Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
+        print('!!!!!!!Q', Q.shape)
 
         dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
-            Qh + hc,
-            xc_lesion,
+            Qh,
+            None,
             h_ilevel1_xcl,
             h_endDownSampling_xcl,
-            flag=False
+            flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
         dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(dec_xc))
         # dec_xc = torch.sigmoid(self.conv_dec_xc(dec_xc)).clamp(.2) * xc
         
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
-            Q + h, 
+            Q, 
             xcl, # SPADE
             h_ilevel1, 
             h_endDownSampling
@@ -411,26 +418,34 @@ class VQModel(pl.LightningModule):
         # x = self.get_input(batch, self.image_key)
 
         cidx = 1 # 0:G(0,1) 1:G(2) 2:G(3,4)
-        Lmask_xs = batch['Lmask_xs'] # binary of diesis features
-        Lmask_xc = batch['Lmask_xc'][cidx] # binary of diesis features
+        
         
         
         xs = batch['xs'] # fundus source. bipolar
         xc = batch['xc'][cidx] # fundus condition. bipolar. shape:(Bxwxhxch)
-        xc_lesion = batch['mask_xc'][cidx] # fundus condition attendend version. bipolar. shape:(Bxwxhxch)
+        xs_lesion = batch['xs_lesion']
+        xc_lesion = batch['xc_lesion'][cidx] # fundus condition attendend version. bipolar. shape:(Bxwxhxch)
         xc_lesion_np = batch['xc_lesion_np'][cidx][0].cpu().numpy() # fundus condition. bipolar. shape:(Bxchxwxh)
         xs_fundusmask = batch['xs_fundusmask'] # binary
-        xc_cunvexhull = batch['xc_cunvexhull'][cidx][0].cpu().numpy() # binary
+        xc_fundusmask = batch['xc_fundusmask'][cidx] # binary
+        xs_cunvexhull = batch['xs_cunvexhull']
+        xc_cunvexhull = batch['xc_cunvexhull'][cidx]
+        Lmask_xs = batch['Lmask_xs'] # binary of diesis features
+        Lmask_xc = batch['Lmask_xc'][cidx] # binary of diesis features
         
         print('xs', xs.shape, xs.dtype)
         print('xc', xc.shape, xc.dtype)
-        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype)
+        print('xs_lesion', xs_lesion.shape, xs_lesion.dtype)
         print('xc_lesion', xc_lesion.shape, xc_lesion.dtype)
         print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype)
+        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype)
+        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype)
+        print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype)
         print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype)
         print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype)
         print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype)
         
+        assert False
         xrec, qloss, theta, tx, ty, xcrec, qcloss = self(xs, xc, xc_lesion)
         theta.register_hook(lambda grad: print('theta', grad))
         tx.register_hook(lambda grad: print('tx', grad))
@@ -480,8 +495,8 @@ class VQModel(pl.LightningModule):
         ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
 
 
-        return iou
         assert False
+        return iou
 
         # Vorg, Vrec = self.get_V(x, xrec)
         # Vrec = dzq_dz_eq1(Vrec, xrec)
