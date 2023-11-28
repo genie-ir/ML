@@ -490,18 +490,23 @@ class VQModel(pl.LightningModule):
             (Xc+1) * 127.5,
             (xc_lesion+1) * 127.5,
             (Xcl+1) * 127.5,
-            (Lmask_xc * 255).unsqueeze(0).unsqueeze(0),
-            (Xcm * 255).unsqueeze(0).unsqueeze(0),
-            xc_cunvexhull * 255,
-            mue * 255,
-            mue_plus_h_tx * 255,
-            mue_plus_h_ty * 255,
-            mue_plus_h_theta * 255,
+            self.ssf0(Lmask_xc * 255),
+            self.ssf0(Xcm * 255),
+            self.ssf0(xc_cunvexhull * 255),
+            self.ssf0(mue * 255),
+            self.ssf0(mue_plus_h_tx * 255),
+            self.ssf0(mue_plus_h_ty * 255),
+            self.ssf0(mue_plus_h_theta * 255),
 
         ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
         
         assert False
+    
+    def ssf0(t):
+        t = t.unsqueeze(0).unsqueeze(0)
+        return torch.cat([t,t,t], dim=1)
+    
     def test(self):
 
         
