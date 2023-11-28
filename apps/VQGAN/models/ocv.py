@@ -45,8 +45,6 @@ def ROT(img, **kwargs):
     """
         params: theta, tx, ty
     """
-    if img.ndim == 2:
-        print('hooooooooooooooooooooooo!!')
     # print(kwargs['theta'], kwargs['tx'], kwargs['ty'])
     kwargs['theta'] = int((180*kwargs['theta']).round().item())
     kwargs['tx'] = int((128*kwargs['tx']).round().item())
