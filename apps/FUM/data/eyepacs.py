@@ -78,7 +78,7 @@ class D_DR(D_Base):
         
         xs = dr_transformer0(image=np.array(Image.open(signal_path)).astype(np.float32))['image']
         xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32))['image']
-        xs_cunvexhull = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image']
+        xs_cunvexhull = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'][:,:,0:1]
         xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'] # single channell binary
         Lmask_xs = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32))['image']
 
