@@ -141,6 +141,10 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
+        self.theta = 0
+        self.tx = 0
+        self.ty = 0
+
         self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
         self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
         self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
@@ -433,23 +437,40 @@ class VQModel(pl.LightningModule):
         Lmask_xs = batch['Lmask_xs'][0] # remove batch dimention # binary of diesis features
         Lmask_xc = batch['Lmask_xc'][cidx][0] # remove batch dimention # binary of diesis features
         
-        print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
-        print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
-        print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
-        print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
-        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
-        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
-        print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
-        print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
-        print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
-        print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
+        # INFO: ok!
+        # print('xs', xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        # print('xc', xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        # print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
+        # print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
+        # print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
+        # print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
+        # print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
+        # print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
+        # print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
+        # print('Lmask_xs', Lmask_xs.shape, Lmask_xs.dtype, Lmask_xs.min().item(), Lmask_xs.max().item())
+        # print('Lmask_xc', Lmask_xc.shape, Lmask_xc.dtype, Lmask_xc.min().item(), Lmask_xc.max().item())
         
+        theta = self.theta
+        tx = self.tx
+        ty = self.ty
+
+        Xc = dr_transformer0(image=ROT(xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        Xcl = dr_transformer0(image=ROT(xc_lesion, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        Xcm = dr_transformer0(image=ROT(Lmask_xc, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        # mue = dr_transformer0(image=ROT(xc_fundusmask, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+
+        print('Xc', Xc.shape, Xc.dtype, Xc.min().item(), Xc.max().item())
+        print('Xcl', Xcl.shape, Xcl.dtype, Xcl.min().item(), Xcl.max().item())
+        print('Xcm', Xcm.shape, Xcm.dtype, Xcm.min().item(), Xcm.max().item())
+        print('mue', mue.shape, mue.dtype, mue.min().item(), mue.max().item())
+
         assert False
-        xrec, qloss, theta, tx, ty, xcrec, qcloss = self(xs, xc, xc_lesion)
-        theta.register_hook(lambda grad: print('theta', grad))
-        tx.register_hook(lambda grad: print('tx', grad))
-        ty.register_hook(lambda grad: print('ty', grad))
+
+        # xrec, qloss, theta, tx, ty, xcrec, qcloss = self(xs, xc, xc_lesion)
+        # theta.register_hook(lambda grad: print('theta', grad))
+        # tx.register_hook(lambda grad: print('tx', grad))
+        # ty.register_hook(lambda grad: print('ty', grad))
 
         mue = dr_transformer0(image=ROT(xc_cunvexhull, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device) # this shoulde be define as intermediate node
         lesion_ROT = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0) # is a lead node, considere as a groundtrouth.
