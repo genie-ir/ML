@@ -604,20 +604,16 @@ class Decoder(nn.Module):
         temb = None
 
         # z to block_in
-        h = self.conv_in(z)
+        h = self.conv_in(z) # torch.Size([1, 512, 16, 16])
 
-        print('Decoder z to block_in ----->', h.shape)
 
         # middle
-        h = self.mid.block_1(h, temb)
-        print('Decoder middle 0 ----->', h.shape)
-        h = self.mid.attn_1(h)
-        print('Decoder middle 1 ----->', h.shape)
-        h = self.mid.block_2(h, temb)
-        print('Decoder middle 2 ----->', h.shape)
+        h = self.mid.block_1(h, temb) # torch.Size([1, 512, 16, 16])
+        h = self.mid.attn_1(h) # torch.Size([1, 512, 16, 16])
+        h = self.mid.block_2(h, temb) # torch.Size([1, 512, 16, 16])
+        
+        
 
-        
-        
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
         if flag:
             h = self.spade_endDownSampling(xc_lesion, h + h_endDownSampling)
@@ -627,14 +623,11 @@ class Decoder(nn.Module):
         # print('DecoderPart, middleEnd', h.shape) # DecoderPart, middleEnd torch.Size([2, 512, 16, 16])
         
         
-        
-        
-        
         # upsampling
         for i_level in reversed(range(self.num_resolutions)):
             for i_block in range(self.num_res_blocks+1):
                 h = self.up[i_level].block[i_block](h, temb)
-                print('Decoder upsampling ----->', h.shape)
+                print(f'i_level={i_level} | Decoder upsampling ----->', h.shape)
 
                 if len(self.up[i_level].attn) > 0:
                     h = self.up[i_level].attn[i_block](h)
