@@ -606,10 +606,15 @@ class Decoder(nn.Module):
         # z to block_in
         h = self.conv_in(z)
 
+        print('Decoder z to block_in ----->', h.shape)
+
         # middle
         h = self.mid.block_1(h, temb)
+        print('Decoder middle 0 ----->', h.shape)
         h = self.mid.attn_1(h)
+        print('Decoder middle 1 ----->', h.shape)
         h = self.mid.block_2(h, temb)
+        print('Decoder middle 2 ----->', h.shape)
 
         
         
@@ -629,6 +634,8 @@ class Decoder(nn.Module):
         for i_level in reversed(range(self.num_resolutions)):
             for i_block in range(self.num_res_blocks+1):
                 h = self.up[i_level].block[i_block](h, temb)
+                print('Decoder upsampling ----->', h.shape)
+
                 if len(self.up[i_level].attn) > 0:
                     h = self.up[i_level].attn[i_block](h)
             if i_level != 0:
