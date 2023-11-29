@@ -563,7 +563,7 @@ class VQModel(pl.LightningModule):
             (x+1) * 127.5, # same as xc_np
             (xrecombine+1) * 127.5,
         ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
-        signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
     
     def test(self):
