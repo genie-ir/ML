@@ -446,6 +446,7 @@ class Encoder(nn.Module):
                 hs.append(h)
             if i_level != self.num_resolutions-1:
                 hs.append(self.down[i_level].downsample(hs[-1]))
+            print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
 
 
         # Note: endDownSampling
@@ -457,9 +458,13 @@ class Encoder(nn.Module):
         
         # middle
         h = hs[-1]
+        print(f'Encoder middle 0 ----->', h.shape)
         h = self.mid.block_1(h, temb)
+        print(f'Encoder middle 1 ----->', h.shape)
         h = self.mid.attn_1(h)
+        print(f'Encoder middle 2 ----->', h.shape)
         h = self.mid.block_2(h, temb)
+        print(f'Encoder middle 3 ----->', h.shape)
         # print('E - endMiddlePart', h.shape) # E - endMiddlePart torch.Size([2, 512, 16, 16])
 
         # end
@@ -624,31 +629,14 @@ class Decoder(nn.Module):
         
         
         # upsampling
-        # i_level=4 | Decoder upsampling -----> torch.Size([1, 512, 16, 16])
-        # i_level=4 | Decoder upsampling -----> torch.Size([1, 512, 16, 16])
-        # i_level=4 | Decoder upsampling -----> torch.Size([1, 512, 16, 16])
-        # i_level=3 | Decoder upsampling -----> torch.Size([1, 256, 32, 32])
-        # i_level=3 | Decoder upsampling -----> torch.Size([1, 256, 32, 32])
-        # i_level=3 | Decoder upsampling -----> torch.Size([1, 256, 32, 32])
-        # i_level=2 | Decoder upsampling -----> torch.Size([1, 256, 64, 64])
-        # i_level=2 | Decoder upsampling -----> torch.Size([1, 256, 64, 64])
-        # i_level=2 | Decoder upsampling -----> torch.Size([1, 256, 64, 64])
-        # i_level=1 | Decoder upsampling -----> torch.Size([1, 128, 128, 128])
-        # i_level=1 | Decoder upsampling -----> torch.Size([1, 128, 128, 128])
-        # i_level=1 | Decoder upsampling -----> torch.Size([1, 128, 128, 128])
-        # i_level=0 | Decoder upsampling -----> torch.Size([1, 128, 256, 256])
-        # i_level=0 | Decoder upsampling -----> torch.Size([1, 128, 256, 256])
-        # i_level=0 | Decoder upsampling -----> torch.Size([1, 128, 256, 256])
         for i_level in reversed(range(self.num_resolutions)):
             for i_block in range(self.num_res_blocks+1):
                 h = self.up[i_level].block[i_block](h, temb)
-                # print(f'i_level={i_level} | Decoder upsampling ----->', h.shape)
-
                 if len(self.up[i_level].attn) > 0:
                     h = self.up[i_level].attn[i_block](h)
             if i_level != 0:
                 h = self.up[i_level].upsample(h)
-
+            print(f'i_level={i_level} | Decoder upsampling ----->', h.shape)
 
 
         

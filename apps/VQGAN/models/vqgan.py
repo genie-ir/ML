@@ -353,16 +353,15 @@ class VQModel(pl.LightningModule):
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
         dec_xc = xc0 - 0.8 * xc0 * (1 - torch.sigmoid(dec_xc))
+        print('dec_xc', dec_xc.shape)
         
 
-        print('before Q', Q.shape)
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
             xcl, # SPADE
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
-        print('before dec', dec.shape)
         
         
         assert False
