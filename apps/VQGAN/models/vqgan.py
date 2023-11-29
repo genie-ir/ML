@@ -319,7 +319,10 @@ class VQModel(pl.LightningModule):
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc) # hc here is: torch.Size([16, 256, 4, 4])
-        hc = self.fold(hc, Nk) # hc here is: torch.Size([1, 256, 16, 16]) | all other feature maps are in patches mode. and only hc re build for quantizaton part
+        hc = self.fold(hc, Nk) 
+        h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) 
+        h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) 
+        h_ilevel4_xcl = self.fold(h_ilevel4_xcl, Nk) 
 
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
@@ -340,7 +343,6 @@ class VQModel(pl.LightningModule):
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
 
-        print('before Qh', Qh.shape)
         dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
             None,
