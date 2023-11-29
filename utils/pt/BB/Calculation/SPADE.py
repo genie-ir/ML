@@ -21,6 +21,7 @@ class SPADE(BB):
         """
             x.shape is torch.Size([1, 3, 256, 256])
         """
+        print('SPADE', x.shape, featuremap.shape)
         alpha = self.alphaconv(x)
         beta = self.betaconv(alpha)
         gamma = self.gammaconv(alpha)
