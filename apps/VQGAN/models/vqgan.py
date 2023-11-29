@@ -288,7 +288,21 @@ class VQModel(pl.LightningModule):
     
     
     
-    
+    def unfold(self, x, Ps, Nk):
+        return x.unfold(2, Ps, Ps).unfold(3, Ps, Ps).contiguous().view(-1, int(Nk*Nk), Ps, Ps).permute(1,0,2,3).contiguous()
+
+    def fold(self, x, grid_size):
+        x = x.unsqueeze(0)
+        grid_size = (grid_size,grid_size)
+        # x shape is batch_size x num_patches x c x jigsaw_h x jigsaw_w
+        batch_size, num_patches, c, jigsaw_h, jigsaw_w = x.size()
+        assert num_patches == grid_size[0] * grid_size[1]
+        x_image = x.view(batch_size, grid_size[0], grid_size[1], c, jigsaw_h, jigsaw_w)
+        output_h = grid_size[0] * jigsaw_h
+        output_w = grid_size[1] * jigsaw_w
+        x_image = x_image.permute(0, 3, 1, 4, 2, 5).contiguous()
+        x_image = x_image.view(batch_size, c, output_h, output_w)
+        return x_image
     
     
     def forward(self, xs, xc, xcl):
@@ -298,11 +312,21 @@ class VQModel(pl.LightningModule):
             xcl: attendend conditional color fundus
         """
         q_eye16 = self.q_eye16.detach()
+        Nk = 4
+        Sk = 64
         
-        xc = torch.randn((16,3,64,64), device=self.device)
-        print('----------->', xc.shape)
+        xc0 = xc
+        xc = self.unfold(xc, Sk, Nk)
+        xcr = self.fold(xc, Nk)
+        self.ssf1(xc0, xcr, xc)
+        print('----------->', xc.shape, xcr.shape)
+
+
+
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
-        print(hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
+        print('before', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
+        hc = self.fold(hc, Nk)
+        print('after', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
         assert False
 
         # without patching:
@@ -310,6 +334,12 @@ class VQModel(pl.LightningModule):
         # h_ilevel1_xcl.shape -> torch.Size([1, 128, 256, 256]) 
         # h_endDownSampling_xcl.shape -> torch.Size([1, 512, 16, 16]) 
         # h_ilevel4_xcl.shape -> torch.Size([1, 256, 32, 32])
+        
+        # with patching:   
+        # hc.shape -> torch.Size([16, 256, 4, 4])
+        # h_ilevel1_xcl.shape -> torch.Size([16, 128, 64, 64]) 
+        # h_endDownSampling_xcl.shape -> torch.Size([16, 512, 4, 4])
+        # h_ilevel4_xcl.shape -> torch.Size([16, 256, 8, 8])
         
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
@@ -527,6 +557,14 @@ class VQModel(pl.LightningModule):
     def ssf0(self, t):
         t = t.unsqueeze(0).unsqueeze(0)
         return torch.cat([t,t,t], dim=1)
+
+    def ssf1(self, x, xrecombine, patches):
+        signal_save(torch.cat([
+            (x+1) * 127.5, # same as xc_np
+            (xrecombine+1) * 127.5,
+        ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        signal_save(patches, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+
     
     def test(self):
 
