@@ -606,9 +606,9 @@ class Decoder(nn.Module):
 
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
         if flag:
-            h = self.spade_endDownSampling(xc_lesion, h + h_endDownSampling)
+            h = self.spade_endDownSampling(xc_lesion, torch.cat([h, h_endDownSampling], dim=1))
         else:
-            h = h + h_endDownSampling
+            h = h + h_endDownSampling # TODO
         
         
         # upsampling
@@ -631,9 +631,9 @@ class Decoder(nn.Module):
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
         if flag:
-            h = self.spade_ilevel1(xc_lesion, h + h_ilevel1)
+            h = self.spade_ilevel1(xc_lesion, torch.cat([h, h_ilevel1], dim=1))
         else:
-            h = h + h_ilevel1
+            h = h + h_ilevel1 # TODO
 
         
         # end
@@ -642,6 +642,7 @@ class Decoder(nn.Module):
 
         h = self.norm_out(h)
         h = nonlinearity(h)
+        
         if flag:
             h = self.conv_out(h)
         else:

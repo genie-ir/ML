@@ -320,11 +320,10 @@ class VQModel(pl.LightningModule):
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc) 
-        print('@@@@@@@@@@@@', [i.shape for i in [hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl]])
-        hc = self.fold(hc, Nk) 
-        h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) 
-        h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) 
-        h_ilevel4_xcl = self.fold(h_ilevel4_xcl, Nk) 
+        hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
+        h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
+        h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) # before: torch.Size([16, 512, 4, 4])
+        h_ilevel4_xcl = self.fold(h_ilevel4_xcl, Nk) # before: torch.Size([16, 256, 8, 8])
 
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
