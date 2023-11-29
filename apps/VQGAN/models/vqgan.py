@@ -149,19 +149,19 @@ class VQModel(pl.LightningModule):
         self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
         self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
 
-        self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1)
+        self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1) # 1 M
         self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
         self.cnn_xscl_bn256 = torch.nn.BatchNorm2d(256)
         
-        self.cnn_xscl_512x16_512x8 = torch.nn.Conv2d(512, 512, 4,2,1)
-        self.cnn_xscl_512x8_512x8 = torch.nn.Conv2d(512, 512, 3,1,1)
+        self.cnn_xscl_512x16_512x8 = torch.nn.Conv2d(512, 512, 4,2,1) # 4.2 M
+        self.cnn_xscl_512x8_512x8 = torch.nn.Conv2d(512, 512, 3,1,1) # 2.4 M
         self.cnn_xscl_bn512 = torch.nn.BatchNorm2d(512)
         
-        self.cnn_xscl_512x8_1024x4 = torch.nn.Conv2d(512, 1024, 4,2,1)
-        self.cnn_xscl_1024x4_1024x4 = torch.nn.Conv2d(1024, 1024, 3,1,1)
+        self.cnn_xscl_512x8_1024x4 = torch.nn.Conv2d(512, 1024, 4,2,1) # 8.4 M
+        self.cnn_xscl_1024x4_1024x4 = torch.nn.Conv2d(1024, 1024, 3,1,1) # 9.4 M
         self.cnn_xscl_bn1024 = torch.nn.BatchNorm2d(1024)
         
-        self.cnn_xscl_1024x4_1024x1 = torch.nn.Conv2d(1024, 1024, 4,2,0)
+        self.cnn_xscl_1024x4_1024x1 = torch.nn.Conv2d(1024, 1024, 4,2,0) # 16.8 M
 
         self.fc_xscl = torch.nn.Sequential(
             torch.nn.Linear(1024, 256),
@@ -354,7 +354,6 @@ class VQModel(pl.LightningModule):
         ) # Note: add skip connection
         dec_xc = xc0 - 0.8 * xc0 * (1 - torch.sigmoid(dec_xc))
         # dec_xc shape is: torch.Size([1, 3, 256, 256])
-        
 
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
@@ -362,7 +361,6 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
-        
         
         assert False
         

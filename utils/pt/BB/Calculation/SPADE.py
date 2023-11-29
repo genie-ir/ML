@@ -50,8 +50,8 @@ class SPADE(BB):
 
     
     def forward(self, x, featuremap):
+        print('SPADE', x.shape, featuremap.shape)
         alpha = self.alphaconv(x)
         beta = self.betaconv(alpha)
         gamma = self.gammaconv(alpha)
         return self.fconv(self.bn(featuremap)) * gamma + beta
-    
