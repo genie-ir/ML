@@ -315,6 +315,7 @@ class VQModel(pl.LightningModule):
         Nk = 4  # num patches in each row and column
         q_eye16 = self.q_eye16.detach()
         
+        xc0 = xc
         xc = self.unfold(xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
 
@@ -350,8 +351,9 @@ class VQModel(pl.LightningModule):
             h_endDownSampling_xcl,
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
-        print('before dec_xc', dec_xc.shape, xc.shape)
-        dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(dec_xc))
+        print('before dec_xc', dec_xc.shape, xc.shape, xc0.shape)
+        dec_xc = xc0 - 0.8 * xc0 * (1 - torch.sigmoid(dec_xc))
+        print('after dec_xc', dec_xc.shape, xc.shape, xc0.shape)
         
 
         print('before Q', Q.shape)
