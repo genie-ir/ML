@@ -341,8 +341,6 @@ class VQModel(pl.LightningModule):
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
 
         print('before Qh', Qh.shape)
-        Qh = self.unfold(Qh, Sk, Nk)
-        print('after  Qh', Qh.shape)
         dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
             None,
@@ -351,14 +349,10 @@ class VQModel(pl.LightningModule):
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
         print('before dec_xc', dec_xc.shape)
-        dec_xc = self.fold(dec_xc, Nk)
-        print('after  dec_xc', dec_xc.shape)
         dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(dec_xc))
         
 
         print('before Q', Q.shape)
-        Q = self.unfold(Q, Sk, Nk)
-        print('after  Q', Q.shape)
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
             xcl, # SPADE
@@ -366,8 +360,6 @@ class VQModel(pl.LightningModule):
             h_endDownSampling
         ) # Note: add skip connection
         print('before dec', dec.shape)
-        dec = self.fold(dec, Nk)
-        print('after  dec', dec.shape)
         
         
         assert False
