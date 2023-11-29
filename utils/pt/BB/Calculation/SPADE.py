@@ -50,7 +50,8 @@ class SPADE(BB):
 
     
     def forward(self, x, featuremap):
-        print('SPADE', x.shape, featuremap.shape)
+        # SPADE torch.Size([1, 3, 256, 256]) torch.Size([1, 512, 16, 16])
+        # SPADE torch.Size([1, 3, 256, 256]) torch.Size([1, 128, 256, 256])
         alpha = self.alphaconv(x)
         beta = self.betaconv(alpha)
         gamma = self.gammaconv(alpha)
