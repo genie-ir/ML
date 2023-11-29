@@ -308,39 +308,19 @@ class VQModel(pl.LightningModule):
     def forward(self, xs, xc, xcl):
         """
             xs: source color fundus
-            xc: conditional color fundus
-            xcl: attendend conditional color fundus
+            xc: conditional color fundus | ROT version
+            xcl: attendend conditional color fundus | ROT version
         """
+        Sk = 64 # patch size
+        Nk = 4  # num patches in each row and column
         q_eye16 = self.q_eye16.detach()
-        Nk = 4
-        Sk = 64
         
-        xc0 = xc
-        xc = self.unfold(xc, Sk, Nk)
-        xcr = self.fold(xc, Nk)
-        self.ssf1(xc0, xcr, xc)
-        print('----------->', xc.shape, xcr.shape)
+        xc = self.unfold(xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
+        xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
 
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc) # hc here is: torch.Size([16, 256, 4, 4])
+        hc = self.fold(hc, Nk) # hc here is: torch.Size([1, 256, 16, 16]) | all other feature maps are in patches mode. and only hc re build for quantizaton part
 
-
-        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc)
-        print('before', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
-        hc = self.fold(hc, Nk)
-        print('after', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape, h_ilevel4_xcl.shape)
-        assert False
-
-        # without patching:
-        # hc.shape -> torch.Size([1, 256, 16, 16]) 
-        # h_ilevel1_xcl.shape -> torch.Size([1, 128, 256, 256]) 
-        # h_endDownSampling_xcl.shape -> torch.Size([1, 512, 16, 16]) 
-        # h_ilevel4_xcl.shape -> torch.Size([1, 256, 32, 32])
-        
-        # with patching:   
-        # hc.shape -> torch.Size([16, 256, 4, 4])
-        # h_ilevel1_xcl.shape -> torch.Size([16, 128, 64, 64]) 
-        # h_endDownSampling_xcl.shape -> torch.Size([16, 512, 4, 4])
-        # h_ilevel4_xcl.shape -> torch.Size([16, 256, 8, 8])
-        
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
         hc_new = self.post_quant_conv(quanth)
@@ -348,6 +328,11 @@ class VQModel(pl.LightningModule):
         Qh = q_eye16 * Qh
 
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
+        print('before h.shape', h.shape, h_ilevel1.shape, h_endDownSampling.shape, h_ilevel4_xs.shape)
+        h = self.fold(h, Nk)
+        print('after  h.shape', h.shape, h_ilevel1.shape, h_endDownSampling.shape, h_ilevel4_xs.shape)
+
+
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         h_new = self.post_quant_conv(quant)
@@ -355,22 +340,34 @@ class VQModel(pl.LightningModule):
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
 
+        print('before Qh', Qh.shape)
+        Qh = self.unfold(Qh, Sk, Nk)
+        print('after  Qh', Qh.shape)
         dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
-            Qh,
+            Qh, # PATCH version
             None,
             h_ilevel1_xcl,
             h_endDownSampling_xcl,
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
+        print('before dec_xc', dec_xc.shape)
+        dec_xc = self.fold(dec_xc, Nk)
+        print('after  dec_xc', dec_xc.shape)
         dec_xc = xc - 0.8 * xc * (1 - torch.sigmoid(dec_xc))
-        # dec_xc = torch.sigmoid(self.conv_dec_xc(dec_xc)).clamp(.2) * xc
         
+
+        print('before Q', Q.shape)
+        Q = self.unfold(Q, Sk, Nk)
+        print('after  Q', Q.shape)
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
-            Q, 
+            Q, # PATCH version 
             xcl, # SPADE
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
+        print('before dec', dec.shape)
+        dec = self.fold(dec, Nk)
+        print('after  dec', dec.shape)
         
         
         assert False
