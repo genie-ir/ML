@@ -332,9 +332,10 @@ class VQModel(pl.LightningModule):
         Qh = q_eye16 * Qh
 
         h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
-        print('before h.shape', h.shape, h_ilevel1.shape, h_endDownSampling.shape, h_ilevel4_xs.shape)
         h = self.fold(h, Nk)
-        print('after  h.shape', h.shape, h_ilevel1.shape, h_endDownSampling.shape, h_ilevel4_xs.shape)
+        h_ilevel1 = self.fold(h_ilevel1, Nk)
+        h_endDownSampling = self.fold(h_endDownSampling, Nk)
+        h_ilevel4_xs = self.fold(h_ilevel4_xs, Nk)
 
 
         h = self.quant_conv(h)
@@ -351,9 +352,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling_xcl,
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
-        print('before dec_xc', dec_xc.shape, xc.shape, xc0.shape)
         dec_xc = xc0 - 0.8 * xc0 * (1 - torch.sigmoid(dec_xc))
-        print('after dec_xc', dec_xc.shape, xc.shape, xc0.shape)
         
 
         print('before Q', Q.shape)
