@@ -39,7 +39,17 @@ class SPADE(BB):
     #     return self.fconv(self.bn(featuremap)) * gamma + beta
     
     def forward_ilevel1(self, x, featuremap):
-        """1x3x256x256  1x256x256x256"""
+        featuremap = fold3d(featuremap)
+        print('forward_ilevel1', featuremap.shape)
+
+
+
+        alpha = self.alphaconv(x)
+        beta = self.betaconv(alpha)
+        gamma = self.gammaconv(alpha)
+        return self.fconv(self.bn(featuremap)) * gamma + beta
+    
+    def forward_endDownSampling(self, x, featuremap):
         featuremap = fold3d(featuremap)
         print('forward_ilevel1', featuremap.shape)
 
