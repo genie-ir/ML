@@ -103,7 +103,7 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
     
     
-    def get_theta_tx_ty(self, xs_256ch, xcl_256ch):
+    def get_theta_tx_ty(self, xs_256ch, xcl_256ch): # DELETE 40 M parameter!!!!!
         # print('before xs_256ch', xs_256ch.shape)
         # print('before xcl_256ch', xcl_256ch.shape)
 
