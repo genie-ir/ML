@@ -149,40 +149,40 @@ class VQModel(pl.LightningModule):
         self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
         self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
 
-        self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1) # 1 M
-        self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
-        self.cnn_xscl_bn256 = torch.nn.BatchNorm2d(256)
+        # self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1) # 1 M
+        # self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
+        # self.cnn_xscl_bn256 = torch.nn.BatchNorm2d(256)
         
-        self.cnn_xscl_512x16_512x8 = torch.nn.Conv2d(512, 512, 4,2,1) # 4.2 M
-        self.cnn_xscl_512x8_512x8 = torch.nn.Conv2d(512, 512, 3,1,1) # 2.4 M
-        self.cnn_xscl_bn512 = torch.nn.BatchNorm2d(512)
+        # self.cnn_xscl_512x16_512x8 = torch.nn.Conv2d(512, 512, 4,2,1) # 4.2 M
+        # self.cnn_xscl_512x8_512x8 = torch.nn.Conv2d(512, 512, 3,1,1) # 2.4 M
+        # self.cnn_xscl_bn512 = torch.nn.BatchNorm2d(512)
         
-        self.cnn_xscl_512x8_1024x4 = torch.nn.Conv2d(512, 1024, 4,2,1) # 8.4 M
-        self.cnn_xscl_1024x4_1024x4 = torch.nn.Conv2d(1024, 1024, 3,1,1) # 9.4 M
-        self.cnn_xscl_bn1024 = torch.nn.BatchNorm2d(1024)
+        # self.cnn_xscl_512x8_1024x4 = torch.nn.Conv2d(512, 1024, 4,2,1) # 8.4 M
+        # self.cnn_xscl_1024x4_1024x4 = torch.nn.Conv2d(1024, 1024, 3,1,1) # 9.4 M
+        # self.cnn_xscl_bn1024 = torch.nn.BatchNorm2d(1024)
         
-        self.cnn_xscl_1024x4_1024x1 = torch.nn.Conv2d(1024, 1024, 4,2,0) # 16.8 M
+        # self.cnn_xscl_1024x4_1024x1 = torch.nn.Conv2d(1024, 1024, 4,2,0) # 16.8 M
 
-        self.fc_xscl = torch.nn.Sequential(
-            torch.nn.Linear(1024, 256),
-            torch.nn.ReLU(),
-            torch.nn.Dropout(0.2),
-            torch.nn.Linear(256, 32),
-            torch.nn.ReLU(),
-            torch.nn.Dropout(0.2),
-        )
-        self.fc_xscl_theta = torch.nn.Sequential(
-            torch.nn.Linear(32, 1),
-            torch.nn.Tanh()
-        )
-        self.fc_xscl_tx = torch.nn.Sequential(
-            torch.nn.Linear(32, 1),
-            torch.nn.Tanh()
-        )
-        self.fc_xscl_ty = torch.nn.Sequential(
-            torch.nn.Linear(32, 1),
-            torch.nn.Tanh()
-        )
+        # self.fc_xscl = torch.nn.Sequential(
+        #     torch.nn.Linear(1024, 256),
+        #     torch.nn.ReLU(),
+        #     torch.nn.Dropout(0.2),
+        #     torch.nn.Linear(256, 32),
+        #     torch.nn.ReLU(),
+        #     torch.nn.Dropout(0.2),
+        # )
+        # self.fc_xscl_theta = torch.nn.Sequential(
+        #     torch.nn.Linear(32, 1),
+        #     torch.nn.Tanh()
+        # )
+        # self.fc_xscl_tx = torch.nn.Sequential(
+        #     torch.nn.Linear(32, 1),
+        #     torch.nn.Tanh()
+        # )
+        # self.fc_xscl_ty = torch.nn.Sequential(
+        #     torch.nn.Linear(32, 1),
+        #     torch.nn.Tanh()
+        # )
 
         # delete
         # self.false_all_params(self.encoder)
