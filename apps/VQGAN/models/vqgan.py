@@ -356,14 +356,15 @@ class VQModel(pl.LightningModule):
         # dec_xc shape is: torch.Size([1, 3, 256, 256])
 
         print('!!!!!!!!!!!!!!!!!!', Q.shape, xcl_pure.shape, h_ilevel1.shape, h_endDownSampling.shape)
-        dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
+        decout = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
             xcl_pure, # SPADE # none rot version
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
         
-        print('!!!!!!!!!!!!!!!!!!', xs.shape, dec.shape)
+        print('!!!!!!!!!!!!!!!!!!', xs.shape, decout.shape)
+        assert False
         return xs + dec, diff, dec_xc, diff_xc
 
     
