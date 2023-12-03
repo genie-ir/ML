@@ -33,6 +33,19 @@ from .ocv import ROT
 dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
+
+
+def fold3d(x, gp=None):
+    """
+        x is x3d
+        gp is grid patch size
+    """
+    B, ch, h, w = x.shape
+    gp = gp if gp else int(ch ** .5)
+    return x.view(B, gp, gp, 1, h, w).permute(0, 3, 1, 4, 2, 5).contiguous().view(B, 1, gp*h, gp*w) 
+
+
+
 class VQModel(pl.LightningModule):
     def __init__(self,
         ddconfig,
@@ -303,7 +316,6 @@ class VQModel(pl.LightningModule):
         x_image = x_image.permute(0, 3, 1, 4, 2, 5).contiguous()
         x_image = x_image.view(batch_size, c, output_h, output_w)
         return x_image
-    
     
     def forward(self, xs, xc, xcl_pure):
         """
