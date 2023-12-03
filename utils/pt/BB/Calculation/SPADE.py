@@ -24,7 +24,7 @@ class SPADE(BB):
                 torch.nn.BatchNorm2d(32),
                 nn.ReLU(),
                 torch.nn.Conv2d(32, 64, 3, 2, 1),
-                torch.nn.BatchNorm2d(512),
+                torch.nn.BatchNorm2d(64),
                 nn.ReLU(),
                 torch.nn.Conv2d(64, 128, 3, 2, 1),
             )
