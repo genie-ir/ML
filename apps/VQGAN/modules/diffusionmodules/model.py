@@ -619,9 +619,7 @@ class Decoder(nn.Module):
         
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
-        print('$$$$$$$$$$$$', h.shape)
         h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
-        print('$$$$$$$$$$$$', h.shape)
 
         
         # end
@@ -635,7 +633,7 @@ class Decoder(nn.Module):
             h = self.conv_out(h)
         else:
             h = self.conv_out_1ch(h)
-
+        
         return h
 
 
