@@ -374,6 +374,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling
         ) # Note: add skip connection
         
+        print('!!!!!!!!!!!!!!!!!!', xc0.shape, dec_xc.shape)
         print('!!!!!!!!!!!!!!!!!!', xs.shape, decout.shape)
         assert False
         return xs + dec, diff, dec_xc, diff_xc
