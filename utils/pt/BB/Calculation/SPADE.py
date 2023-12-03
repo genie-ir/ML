@@ -84,9 +84,11 @@ class SPADE(BB):
             return featuremap
 
         alpha = fold3d(self.alphaconv(xclpure))
+        print('4 alpha->', self.fwd, alpha.shape)
         beta = self.betaconv(alpha)
         gamma = self.gammaconv(alpha)
-        print('4 ->', self.fwd, alpha.shape, beta.shape, gamma.shape)
+        print('4 beta->', self.fwd, beta.shape)
+        print('4 gamma->', self.fwd, gamma.shape)
         r =  featuremap * gamma + beta
         print('5 ->', self.fwd, r.shape)
 
