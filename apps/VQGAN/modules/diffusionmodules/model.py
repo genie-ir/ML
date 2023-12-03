@@ -583,10 +583,8 @@ class Decoder(nn.Module):
         self.start()
     
     def start(self):
-        # self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
-        # self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
-        self.spade_ilevel1 = lambda *args, **kwargs: 0
-        self.spade_endDownSampling = lambda *args, **kwargs: 0
+        self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
+        self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
     def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True):
         #assert z.shape[1:] == self.z_shape[1:]
