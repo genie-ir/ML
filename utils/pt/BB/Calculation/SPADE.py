@@ -18,46 +18,76 @@ class SPADE(BB):
     def start(self):
         self.fwd = str(self.kwargs.get('fwd', ''))
         setattr(self, 'forward', getattr(self, f'forward_{self.fwd}'))
+        
         if self.fwd == 'ilevel1': # torch.Size([1, 128/256, 256, 256])
-            # self.fconv = # TODO
-            pass
+            self.fconvbn = nn.Sequential(
+                torch.nn.Conv2d(1, 32, 5, 4, 1),
+                torch.nn.BatchNorm2d(32),
+                nn.ReLU(),
+                torch.nn.Conv2d(32, 64, 3, 2, 1),
+                torch.nn.BatchNorm2d(512),
+                nn.ReLU(),
+                torch.nn.Conv2d(64, 128, 3, 2, 1),
+            )
+            self.alphaconv = nn.Sequential(
+                torch.nn.Conv2d(3, 16, 3, 1, 1), # 1x1x1024x1024
+            )
+            self.betaconv = nn.Sequential(
+                torch.nn.Conv2d(1, 64, 3, 2, 1),
+                torch.nn.BatchNorm2d(64),
+                nn.ReLU(),
+                torch.nn.Conv2d(64, 128, 3, 2, 1),
+            )
+            self.gammaconv = nn.Sequential(
+                torch.nn.Conv2d(1, 64, 3, 2, 1),
+                torch.nn.BatchNorm2d(64),
+                nn.ReLU(),
+                torch.nn.Conv2d(64, 128, 3, 2, 1),
+            )
+        
         if self.fwd == 'endDownSampling': # torch.Size([1, 512/1024, 16, 16])
-            pass
-        # self.alphaconv = nn.Sequential(
-        #     torch.nn.Conv2d(self.xch, self.alphach, int(self.alphaconv_ksp[0]), stride=int(self.alphaconv_ksp[1]), padding=int(self.alphaconv_ksp[2])),
-        #     torch.nn.Conv2d(self.alphach, 2*self.alphach, int(self.alphaconv_ksp[0]), stride=int(self.alphaconv_ksp[1]), padding=int(self.alphaconv_ksp[2])),
-        #     torch.nn.BatchNorm2d(2*self.alphach)
-        # )
+            self.fconvbn = nn.Sequential(
+                torch.nn.Conv2d(1, 128, 5, 4, 1),
+                torch.nn.BatchNorm2d(128),
+                nn.ReLU(),
+                torch.nn.Conv2d(128, 256, 5, 4, 1),
+                torch.nn.BatchNorm2d(256),
+                nn.ReLU(),
+                torch.nn.Conv2d(256, 512, 3, 2, 1),
+            )
+            self.alphaconv = nn.Sequential(
+                torch.nn.Conv2d(3, 4, 3, 2, 1), #128**2
+            )
+            self.betaconv = nn.Sequential(
+                torch.nn.Conv2d(4, 256, 5, 4, 1),
+                torch.nn.BatchNorm2d(256),
+                nn.ReLU(),
+                torch.nn.Conv2d(256, 512, 5, 4, 1),
+            )
+            self.gammaconv = nn.Sequential(
+                torch.nn.Conv2d(4, 256, 5, 4, 1),
+                torch.nn.BatchNorm2d(256),
+                nn.ReLU(),
+                torch.nn.Conv2d(256, 512, 5, 4, 1),
+            )
     
-    # def forward0(self, x, featuremap):
-    #     """
-    #         x.shape is torch.Size([1, 3, 256, 256])
-    #     """
-    #     alpha = self.alphaconv(x)
-    #     beta = self.betaconv(alpha)
-    #     gamma = self.gammaconv(alpha)
-    #     return self.fconv(self.bn(featuremap)) * gamma + beta
-    
-    def forward_ilevel1(self, x, featuremap):
-        print('forward_ilevel1', featuremap.shape)
-        featuremap = fold3d(featuremap)
-        print('forward_ilevel1', featuremap.shape)
 
 
 
-        alpha = self.alphaconv(x)
+
+    def forward(self, xclpure, fmap, flag):
+        print('1 ->', self.fwd, fmap.shape)
+        femap = fold3d(fmap)
+        print('2 ->', self.fwd, femap.shape)
+        featuremap = self.fconvbn(femap)
+        print('3 ->', self.fwd, featuremap.shape)
+        if not flag:
+            return featuremap
+
+        alpha = fold3d(self.alphaconv(xclpure))
         beta = self.betaconv(alpha)
         gamma = self.gammaconv(alpha)
-        return self.fconv(self.bn(featuremap)) * gamma + beta
-    
-    def forward_endDownSampling(self, x, featuremap):
-        print('forward_endDownSampling', featuremap.shape)
-        featuremap = fold3d(featuremap)
-        print('forward_endDownSampling', featuremap.shape)
+        r =  featuremap * gamma + beta
+        print('4 ->', self.fwd, r.shape)
 
-
-
-        alpha = self.alphaconv(x)
-        beta = self.betaconv(alpha)
-        gamma = self.gammaconv(alpha)
-        return self.fconv(self.bn(featuremap)) * gamma + beta
+        return r

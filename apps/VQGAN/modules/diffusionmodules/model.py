@@ -586,7 +586,7 @@ class Decoder(nn.Module):
         self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
         self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
-    def forward(self, z, xc_lesion, h_ilevel1, h_endDownSampling, flag=True):
+    def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True):
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape
 
@@ -605,10 +605,7 @@ class Decoder(nn.Module):
         
 
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
-        if flag:
-            h = self.spade_endDownSampling(xc_lesion, torch.cat([h, h_endDownSampling], dim=1))
-        else:
-            h = h + h_endDownSampling # TODO
+        h = self.spade_endDownSampling(xcl_pure, torch.cat([h, h_endDownSampling], dim=1), flag=flag)
         
         
         # upsampling
@@ -630,10 +627,7 @@ class Decoder(nn.Module):
         
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
-        if flag:
-            h = self.spade_ilevel1(xc_lesion, torch.cat([h, h_ilevel1], dim=1))
-        else:
-            h = h + h_ilevel1 # TODO
+        h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
 
         
         # end

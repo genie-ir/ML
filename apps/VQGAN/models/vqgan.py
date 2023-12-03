@@ -305,11 +305,12 @@ class VQModel(pl.LightningModule):
         return x_image
     
     
-    def forward(self, xs, xc, xcl):
+    def forward(self, xs, xc, xcl, xcl_pure):
         """
             xs: source color fundus
             xc: conditional color fundus | ROT version
             xcl: attendend conditional color fundus | ROT version
+            xcl_pure: none ROT version of xcl
         """
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -357,7 +358,7 @@ class VQModel(pl.LightningModule):
 
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
-            xcl, # SPADE
+            xcl_pure, # SPADE # none rot version
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
