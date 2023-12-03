@@ -58,13 +58,13 @@ class SPADE(BB):
                 torch.nn.Conv2d(3, 4, 3, 2, 1), #128**2
             )
             self.betaconv = nn.Sequential(
-                torch.nn.Conv2d(4, 256, 5, 4, 1),
+                torch.nn.Conv2d(1, 256, 5, 4, 1),
                 torch.nn.BatchNorm2d(256),
                 nn.ReLU(),
                 torch.nn.Conv2d(256, 512, 5, 4, 1),
             )
             self.gammaconv = nn.Sequential(
-                torch.nn.Conv2d(4, 256, 5, 4, 1),
+                torch.nn.Conv2d(1, 256, 5, 4, 1),
                 torch.nn.BatchNorm2d(256),
                 nn.ReLU(),
                 torch.nn.Conv2d(256, 512, 5, 4, 1),
