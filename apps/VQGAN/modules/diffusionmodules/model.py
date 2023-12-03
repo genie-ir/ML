@@ -441,7 +441,7 @@ class Encoder(nn.Module):
                 hs.append(h)
             if i_level != self.num_resolutions-1:
                 hs.append(self.down[i_level].downsample(hs[-1]))
-            # print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
+            print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
 
         assert False
         # Note: endDownSampling
