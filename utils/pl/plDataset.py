@@ -23,6 +23,8 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
 
         self.kwargs = kwargs
         self.datasets = dict()
+        self.sh_val = int(kwargs.get('sh_val', False))
+        self.sh_train = int(kwargs.get('sh_train', False))
         self.batch_size = int(kwargs.get('batch_size', 1))
         self.num_workers = int(kwargs.get('num_workers', os.cpu_count()))
         
@@ -76,7 +78,7 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         return dck
     
     def _dataloader(self, **kwargs):
-        return DataLoader(self.datasets[kwargs['memory']['DCK']], batch_size=self.batch_size, num_workers=self.num_workers, shuffle=True, collate_fn=self.custom_collate)
+        return DataLoader(self.datasets[kwargs['memory']['DCK']], batch_size=self.batch_size, num_workers=self.num_workers, shuffle=False, collate_fn=self.custom_collate)
     
     # def _train_dataloader(self):
     #     # logger.warning('_train_dataloader is called!!!!!!!!!')

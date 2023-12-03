@@ -421,10 +421,10 @@ class Encoder(nn.Module):
 
         # downsampling
         # i_level=0 | Encoder downsampling -----> torch.Size([16, 128, 64, 64])
-        # i_level=1 | Encoder downsampling -----> torch.Size([16, 128, 32, 32])
+        # *i_level=1 | Encoder downsampling -----> torch.Size([16, 128, 32, 32])
         # i_level=2 | Encoder downsampling -----> torch.Size([16, 256, 16, 16])
         # i_level=3 | Encoder downsampling -----> torch.Size([16, 256, 8, 8])
-        # i_level=4 | Encoder downsampling -----> torch.Size([16, 512, 4, 4])
+        # *i_level=4 | Encoder downsampling -----> torch.Size([16, 512, 4, 4])
         hs = [self.conv_in(x)]
         # print('111111111111111111', hs[0].shape, hs[0].sum(), hs[0].dtype)
         for i_level in range(self.num_resolutions):
@@ -441,9 +441,9 @@ class Encoder(nn.Module):
                 hs.append(h)
             if i_level != self.num_resolutions-1:
                 hs.append(self.down[i_level].downsample(hs[-1]))
-            # print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
+            print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
 
-
+        assert False
         # Note: endDownSampling
         h_endDownSampling = h
         
