@@ -432,7 +432,7 @@ class Encoder(nn.Module):
                 h_ilevel1 = h
             if i_level == 4: # Bx256x32x32
                 h_ilevel4 = h
-            
+            print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
             
             for i_block in range(self.num_res_blocks):
                 h = self.down[i_level].block[i_block](hs[-1], temb)
@@ -441,7 +441,7 @@ class Encoder(nn.Module):
                 hs.append(h)
             if i_level != self.num_resolutions-1:
                 hs.append(self.down[i_level].downsample(hs[-1]))
-            print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
+            # print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
 
         assert False
         # Note: endDownSampling
