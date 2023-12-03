@@ -409,32 +409,24 @@ class Encoder(nn.Module):
 
 
     def forward_yes_skip(self, x):
-        # print('!!!!!!!!!!!!', x.shape, x.sum(), x.dtype) # !!!!!!!!!!!! torch.Size([B, 3, 256, 256])
-        # taildict = dict()
-        # h_ilevel1 = None
-        # h_ilevel4 = None
-        # h_endDownSampling = None
         #assert x.shape[2] == x.shape[3] == self.resolution, "{}, {}, {}".format(x.shape[2], x.shape[3], self.resolution)
 
         # timestep embedding
         temb = None
 
         # downsampling
-        # i_level=0 | Encoder downsampling -----> torch.Size([16, 128, 64, 64])
-        # *i_level=1 | Encoder downsampling -----> torch.Size([16, 128, 32, 32])
-        # i_level=2 | Encoder downsampling -----> torch.Size([16, 256, 16, 16])
-        # i_level=3 | Encoder downsampling -----> torch.Size([16, 256, 8, 8])
-        # *i_level=4 | Encoder downsampling -----> torch.Size([16, 512, 4, 4])
+        # *i_level=1 | Encoder downsampling -----> torch.Size([16, 128, 64, 64])
+        # i_level=2 | Encoder downsampling -----> torch.Size([16, 128, 32, 32])
+        # i_level=3 | Encoder downsampling -----> torch.Size([16, 256, 16, 16])
+        # i_level=4 | Encoder downsampling -----> torch.Size([16, 256, 8, 8])
         hs = [self.conv_in(x)]
         # print('111111111111111111', hs[0].shape, hs[0].sum(), hs[0].dtype)
         for i_level in range(self.num_resolutions):
             if i_level == 1: # Bx128x256x256
                 h_ilevel1 = h
-            if i_level == 4: # Bx256x32x32
-                h_ilevel4 = h
             
-            if i_level >= 1:
-                print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
+            # if i_level >= 1:
+            #     print(f'i_level={i_level} | Encoder downsampling ----->', h.shape)
             
             for i_block in range(self.num_res_blocks):
                 h = self.down[i_level].block[i_block](hs[-1], temb)
@@ -444,7 +436,6 @@ class Encoder(nn.Module):
             if i_level != self.num_resolutions-1:
                 hs.append(self.down[i_level].downsample(hs[-1]))
 
-        assert False
         # Note: endDownSampling
         h_endDownSampling = h
         
@@ -459,7 +450,7 @@ class Encoder(nn.Module):
         h = nonlinearity(h)
         h = self.conv_out(h)
         
-        return h, h_ilevel1, h_endDownSampling, h_ilevel4
+        return h, h_ilevel1, h_endDownSampling
     
     
     def forward_no_skip(self, x):

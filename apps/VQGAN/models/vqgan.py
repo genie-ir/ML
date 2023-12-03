@@ -305,12 +305,12 @@ class VQModel(pl.LightningModule):
         return x_image
     
     
-    def forward(self, xs, xc, xcl, xcl_pure):
+    def forward(self, xs, xc, xcl_pure):
         """
             xs: source color fundus
             xc: conditional color fundus | ROT version
             xcl: attendend conditional color fundus | ROT version
-            xcl_pure: none ROT version of xcl
+            xcl_pure: none ROT version of xcl (attendend)
         """
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -320,11 +320,10 @@ class VQModel(pl.LightningModule):
         xc = self.unfold(xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
 
-        hc, h_ilevel1_xcl, h_endDownSampling_xcl, h_ilevel4_xcl = self.encoder(xc) 
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(xc) 
         hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
         h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
         h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) # before: torch.Size([16, 512, 4, 4])
-        h_ilevel4_xcl = self.fold(h_ilevel4_xcl, Nk) # before: torch.Size([16, 256, 8, 8])
 
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
@@ -332,11 +331,10 @@ class VQModel(pl.LightningModule):
         Qh = self.conv_catskip_0(torch.cat([hc_new, hc], dim=1))
         Qh = q_eye16 * Qh
 
-        h, h_ilevel1, h_endDownSampling, h_ilevel4_xs = self.encoder(xs)
+        h, h_ilevel1, h_endDownSampling = self.encoder(xs)
         h = self.fold(h, Nk)
         h_ilevel1 = self.fold(h_ilevel1, Nk)
         h_endDownSampling = self.fold(h_endDownSampling, Nk)
-        h_ilevel4_xs = self.fold(h_ilevel4_xs, Nk)
 
 
         h = self.quant_conv(h)
@@ -354,6 +352,7 @@ class VQModel(pl.LightningModule):
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
         dec_xc = xc0 - 0.8 * xc0 * (1 - torch.sigmoid(dec_xc))
+        # dec_xc is estimation of xcl
         # dec_xc shape is: torch.Size([1, 3, 256, 256])
 
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
@@ -363,11 +362,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling
         ) # Note: add skip connection
         
-        assert False
-        
-        theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
-        
-        return xs + dec, diff, theta, tx, ty, dec_xc, diff_xc
+        return xs + dec, diff, dec_xc, diff_xc
 
     
     def get_V(self, Forg, Frec):
@@ -520,13 +515,15 @@ class VQModel(pl.LightningModule):
         # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
 
-        # TODO
-        xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl, xc_lesion) # xc_lesion is none rot version of xcl
-        theta.register_hook(lambda grad: print('theta', grad))
-        tx.register_hook(lambda grad: print('tx', grad))
-        ty.register_hook(lambda grad: print('ty', grad))
+        xrec, qloss, xcrec, qcloss = self(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
+        
+        # theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
+        # theta.register_hook(lambda grad: print('theta', grad))
+        # tx.register_hook(lambda grad: print('tx', grad))
+        # ty.register_hook(lambda grad: print('ty', grad))
 
         # INFO: signal save ok!
+        name = random_string(6)
         # signal_save(torch.cat([
         #     (xc+1) * 127.5, # same as xc_np
         #     (Xc+1) * 127.5,
@@ -539,7 +536,10 @@ class VQModel(pl.LightningModule):
         #     self.ssf0(mue_plus_h_tx * 255),
         #     self.ssf0(mue_plus_h_ty * 255),
         #     self.ssf0(mue_plus_h_theta * 255),
-        # ], dim=0), f'/content/export/{random_string()}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        # ], dim=0), f'/content/export/{name}_1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        signal_save(torch.cat([
+            (xs+1)* 127.5, (Xc+1)* 127.5, (xc_lesion+1)* 127.5, (xc_lesion+1)* 127.5
+        ], dim=0), f'/content/export/{name}_2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
 
         
         assert False
