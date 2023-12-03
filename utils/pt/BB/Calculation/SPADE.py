@@ -17,7 +17,6 @@ def fold3d(x, gp=None):
 class SPADE(BB): 
     def start(self):
         self.fwd = str(self.kwargs.get('fwd', ''))
-        setattr(self, 'forward', getattr(self, f'forward_{self.fwd}'))
         
         if self.fwd == 'ilevel1': # torch.Size([1, 128/256, 256, 256])
             self.fconvbn = nn.Sequential(
