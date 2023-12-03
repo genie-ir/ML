@@ -362,6 +362,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling
         ) # Note: add skip connection
         
+        print('!!!!!!!!!!!!!!!!!!', xs.shape, dec.shape)
         return xs + dec, diff, dec_xc, diff_xc
 
     
