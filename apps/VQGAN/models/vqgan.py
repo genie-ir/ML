@@ -355,6 +355,7 @@ class VQModel(pl.LightningModule):
         # dec_xc is estimation of xcl
         # dec_xc shape is: torch.Size([1, 3, 256, 256])
 
+        print('!!!!!!!!!!!!!!!!!!', Q.shape, xcl_pure.shape, h_ilevel1.shape, h_endDownSampling.shape)
         dec = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
             xcl_pure, # SPADE # none rot version
