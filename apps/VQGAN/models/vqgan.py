@@ -524,19 +524,19 @@ class VQModel(pl.LightningModule):
 
         # INFO: signal save ok!
         name = random_string(6)
-        # signal_save(torch.cat([
-        #     (xc+1) * 127.5, # same as xc_np
-        #     (Xc+1) * 127.5,
-        #     (xc_lesion+1) * 127.5,
-        #     (Xcl+1) * 127.5,
-        #     self.ssf0(Lmask_xc * 255),
-        #     self.ssf0(Xcm * 255),
-        #     self.ssf0(xc_cunvexhull * 255),
-        #     self.ssf0(mue * 255),
-        #     self.ssf0(mue_plus_h_tx * 255),
-        #     self.ssf0(mue_plus_h_ty * 255),
-        #     self.ssf0(mue_plus_h_theta * 255),
-        # ], dim=0), f'/content/export/{name}_1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        signal_save(torch.cat([
+            (xc+1) * 127.5, # same as xc_np
+            (Xc+1) * 127.5,
+            (xc_lesion+1) * 127.5,
+            (Xcl+1) * 127.5,
+            self.ssf0(Lmask_xc * 255),
+            self.ssf0(Xcm * 255),
+            self.ssf0(xc_cunvexhull * 255),
+            self.ssf0(mue * 255),
+            self.ssf0(mue_plus_h_tx * 255),
+            self.ssf0(mue_plus_h_ty * 255),
+            self.ssf0(mue_plus_h_theta * 255),
+        ], dim=0), f'/content/export/{name}_1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         signal_save(torch.cat([
             (xs+1)* 127.5, (Xc+1)* 127.5, (xc_lesion+1)* 127.5, (xc_lesion+1)* 127.5
         ], dim=0), f'/content/export/{name}_2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 1})
