@@ -521,7 +521,7 @@ class VQModel(pl.LightningModule):
 
 
         # TODO
-        xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl)
+        xrec, qloss, theta00, tx00, ty00, xcrec, qcloss = self(xs, Xc, Xcl, xc_lesion) # xc_lesion is none rot version of xcl
         theta.register_hook(lambda grad: print('theta', grad))
         tx.register_hook(lambda grad: print('tx', grad))
         ty.register_hook(lambda grad: print('ty', grad))
