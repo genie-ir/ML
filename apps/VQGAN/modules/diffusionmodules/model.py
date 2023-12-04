@@ -634,7 +634,6 @@ class Decoder(nn.Module):
         else:
             h = self.conv_out_1ch(h)
 
-        print('000000000000000000000', h.shape)
         return h
 
 

@@ -328,26 +328,26 @@ class VQModel(pl.LightningModule):
         Nk = 4  # num patches in each row and column
         q_eye16 = self.q_eye16.detach()
         
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (xc+1)* 127.5, 
-            (xcl_pure+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_input_params.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (xc+1)* 127.5, 
+        #     (xcl_pure+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_input_params.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         xc0 = xc
         xs0 = xs
         xc = self.unfold(xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
 
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (xc+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (xc+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
-        signal_save(torch.cat([
-            (xs0+1)* 127.5, 
-            (xc0+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_none_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs0+1)* 127.5, 
+        #     (xc0+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_none_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
 
@@ -555,20 +555,20 @@ class VQModel(pl.LightningModule):
         # ty.register_hook(lambda grad: print('ty', grad))
 
         # INFO: signal save
-        signal_save(torch.cat([
-            (xs+1) * 127.5,
-            (xc+1) * 127.5, # same as xc_np
-            (Xc+1) * 127.5, # ROT version of xc
-            (xc_lesion+1) * 127.5,
-            (Xcl+1) * 127.5,
-            self.ssf0(Lmask_xc * 255),
-            self.ssf0(Xcm * 255),
-            self.ssf0(xc_cunvexhull * 255),
-            self.ssf0(mue * 255),
-            self.ssf0(mue_plus_h_tx * 255),
-            self.ssf0(mue_plus_h_ty * 255),
-            self.ssf0(mue_plus_h_theta * 255),
-        ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1) * 127.5,
+        #     (xc+1) * 127.5, # same as xc_np
+        #     (Xc+1) * 127.5, # ROT version of xc
+        #     (xc_lesion+1) * 127.5,
+        #     (Xcl+1) * 127.5,
+        #     self.ssf0(Lmask_xc * 255),
+        #     self.ssf0(Xcm * 255),
+        #     self.ssf0(xc_cunvexhull * 255),
+        #     self.ssf0(mue * 255),
+        #     self.ssf0(mue_plus_h_tx * 255),
+        #     self.ssf0(mue_plus_h_ty * 255),
+        #     self.ssf0(mue_plus_h_theta * 255),
+        # ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         
         assert False
