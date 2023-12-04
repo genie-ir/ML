@@ -329,8 +329,8 @@ class VQModel(pl.LightningModule):
         
         # signal_save(torch.cat([
         #     (xs+1)* 127.5, 
-        #     (Xc+1)* 127.5, 
-        #     (xcl_pure+1)* 127.5, 
+        #     (Xc+1)* 127.5, #ROT
+        #     (xcl_pure+1)* 127.5, # none ROT 
         # ], dim=0), f'/content/export/forward_input_params.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         xs0 = xs
