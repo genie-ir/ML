@@ -380,7 +380,7 @@ class VQModel(pl.LightningModule):
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
 
-        dec_Xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
+        dec_Xc = self.decoder( # Xc -> Xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
             None,
             h_ilevel1_xcl,
@@ -388,7 +388,7 @@ class VQModel(pl.LightningModule):
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
         dec_Xc = Xc0 - 0.8 * Xc0 * (1 - torch.sigmoid(dec_Xc))
-        # dec_Xc is estimation of xcl
+        # dec_Xc is ROT
         # dec_Xc shape is: torch.Size([1, 3, 256, 256])
 
         dec_xscl = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
