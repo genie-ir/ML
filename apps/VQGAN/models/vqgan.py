@@ -496,6 +496,7 @@ class VQModel(pl.LightningModule):
         xc_lesion_np = batch['xc_lesion_np'][cidx].cpu().numpy()[0] # remove batch dimention. # RGB fundus condition. bipolar. shape:(Bxchxhxw)
         xs_fundusmask = batch['xs_fundusmask'][0] # remove batch dimention # binary
         xc_fundusmask = batch['xc_fundusmask'][cidx][0] # remove batch dimention # binary
+        xc_fundusmask_np = batch['xc_fundusmask'][cidx][0].cpu().numpy() # remove batch dimention # binary
         xs_cunvexhull = batch['xs_cunvexhull'][0] # remove batch dimention # Bxhxwxch=1
         xc_cunvexhull = batch['xc_cunvexhull'][cidx][0] # Bxhxwxch=1
         xc_cunvexhull_np = batch['xc_cunvexhull'][cidx].cpu().numpy()[0] # Bxhxwxch=1
@@ -510,8 +511,8 @@ class VQModel(pl.LightningModule):
         # print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
         # print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
         # print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
-        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
-        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
+        # print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
+        # print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
         # print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
         # print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
         # print('xc_cunvexhull_np', xc_cunvexhull_np.shape, xc_cunvexhull_np.dtype, xc_cunvexhull_np.min().item(), xc_cunvexhull_np.max().item())
@@ -527,6 +528,7 @@ class VQModel(pl.LightningModule):
         # INFO: ROT
         Xc = dr_transformer0(image=ROT(xc_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
         Xcl = dr_transformer0(image=ROT(xc_lesion_np, theta=theta, tx=tx, ty=ty))['image'].unsqueeze(0).to(self.device)
+        Xcf = dr_transformer0(image=ROT(xc_fundusmask_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
         Xcm = dr_transformer0(image=ROT(Lmask_xc_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
         mue = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta, tx=tx, ty=ty))['image'].squeeze().to(self.device)
         mue_plus_h_tx = dr_transformer0(image=ROT(xc_cunvexhull_np, theta=theta, tx=tx + h, ty=ty))['image'].squeeze().to(self.device)
@@ -567,6 +569,7 @@ class VQModel(pl.LightningModule):
             (Xcl+1) * 127.5, # ROT version of xc_lesion
             self.ssf0(xs_fundusmask * 255),
             self.ssf0(xc_fundusmask * 255),
+            self.ssf0(Xcf * 255),
             self.ssf0(Lmask_xs * 255),
             self.ssf0(Lmask_xc * 255), # pure
             self.ssf0(Xcm * 255), # rot version of Lmask_xc
