@@ -484,7 +484,7 @@ class VQModel(pl.LightningModule):
         #     self.log_images(batch, ignore=False)
         # x = self.get_input(batch, self.image_key)
 
-        cidx = 1 # 0:G(0,1) 1:G(2) 2:G(3,4)
+        cidx = 2 # 0:G(0,1) 1:G(2) 2:G(3,4)
         
         
         
@@ -553,7 +553,7 @@ class VQModel(pl.LightningModule):
         # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
 
-        xscl_rec, qloss, xcl_rec, qcloss = self(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
+        rec_xscl, qloss, rec_Xcl, qcloss = self(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
 
         # theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         # theta.register_hook(lambda grad: print('theta', grad))
@@ -561,68 +561,82 @@ class VQModel(pl.LightningModule):
         # ty.register_hook(lambda grad: print('ty', grad))
 
         # INFO: signal save
-        signal_save(torch.cat([
-            (xs+1) * 127.5,
-            (xc+1) * 127.5, # same as xc_np
-            (Xc+1) * 127.5, # ROT version of xc
-            (xc_lesion+1) * 127.5, # is pure
-            self.ssf0(xs_fundusmask * 255),
-            self.ssf0(xc_fundusmask * 255),
-            self.ssf0(Xcf * 255),
-            (Xcl+1) * 127.5, # ROT version of xc_lesion
-            self.ssf0(Lmask_xs * 255),
-            self.ssf0(Lmask_xc * 255), # pure
-            self.ssf0(Xcm * 255), # rot version of Lmask_xc
-            self.ssf0(xc_cunvexhull * 255), # pure
-            self.ssf0(mue * 255), # rot version of xc_cunvexhull
-            self.ssf0(mue_plus_h_tx * 255),
-            self.ssf0(mue_plus_h_ty * 255),
-            self.ssf0(mue_plus_h_theta * 255),
-        ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1) * 127.5,
+        #     (xc+1) * 127.5, # same as xc_np
+        #     (Xc+1) * 127.5, # ROT version of xc
+        #     (xc_lesion+1) * 127.5, # is pure
+        #     self.ssf0(xs_fundusmask * 255),
+        #     self.ssf0(xc_fundusmask * 255),
+        #     self.ssf0(Xcf * 255),
+        #     (Xcl+1) * 127.5, # ROT version of xc_lesion
+        #     self.ssf0(Lmask_xs * 255),
+        #     self.ssf0(Lmask_xc * 255), # pure
+        #     self.ssf0(Xcm * 255), # rot version of Lmask_xc
+        #     self.ssf0(xc_cunvexhull * 255), # pure
+        #     self.ssf0(mue * 255), # rot version of xc_cunvexhull
+        #     self.ssf0(mue_plus_h_tx * 255),
+        #     self.ssf0(mue_plus_h_ty * 255),
+        #     self.ssf0(mue_plus_h_theta * 255),
+        # ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         
-        assert False
-    
-    def ssf0(self, t):
-        t = t.unsqueeze(0).unsqueeze(0)
-        return torch.cat([t,t,t], dim=1)
 
-    def ssf1(self, x, xrecombine, patches):
-        signal_save(torch.cat([
-            (x+1) * 127.5, # same as xc_np
-            (xrecombine+1) * 127.5,
-        ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
-        signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
+        # INFO: loss function
+        iou = self.dice_static_metric(mue, xs_fundusmask).detach()
+        iou_plus_h_tx = self.dice_static_metric(mue_plus_h_tx, xs_fundusmask).detach()
+        iou_plus_h_ty = self.dice_static_metric(mue_plus_h_ty, xs_fundusmask).detach()
+        iou_plus_h_theta = self.dice_static_metric(mue_plus_h_theta, xs_fundusmask).detach()
+
+        print('11111111', iou, iou_plus_h_tx, iou_plus_h_ty, iou_plus_h_theta)
+
+        D_tx = ((iou_plus_h_tx - iou) / h).flatten().detach()
+        D_ty = ((iou_plus_h_ty - iou) / h).flatten().detach()
+        D_theta = ((iou_plus_h_theta - iou) / h).flatten().detach()
+        print('22222222', D_tx, D_ty, D_theta)
+
+        # iou = dzq_dz_eq1(iou, D_theta * theta + D_tx * tx + D_ty * ty)
+
+        print('333333333333', iou, iou.shape, iou.dtype)
+
+
+        if optimizer_idx == 0: # reconstruction
+            M_union_L_xs_xc = ((Lmask_xs + Xcm) - (Lmask_xs * Xcm)).detach()
+            M_L_xs_mines_xc = (Lmask_xs - (Lmask_xs * Xcm)).detach() # Interpolation
+            M_xrec_xs = ((1 - M_union_L_xs_xc) * xs_fundusmask).detach() # reconstruct xs
+            M_xrec_xcl = (Xcm * xs_fundusmask).detach() # reconstruct xc
+            
+            
+            print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
+
+            rec__xs = M_xrec_xs * rec_xscl # outside of both diesis features -> reconstruction xs
+            rec__xs_graoundtrouth = (M_xrec_xs * xs).detach()
+            xs_aeloss, xs_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth, rec__xs, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag=True), split="train")
+            
+            rec__Xc = M_xrec_xcl * rec_xscl # on Xc diesis features -> reconstruction  Xc #TODO ???
+            rec__Xc_graoundtrouth = (M_xrec_xcl * Xc).detach()
+            Xc_aeloss, Xc_log_dict_ae = self.loss(qloss, rec__Xc_graoundtrouth, rec__Xc, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag=True), split="train")
+            
+            rec_Xcl = rec_Xcl * Xcf # learning diagonal of quantizer such that save disease features -> reconstruction Xcl
+            Xcl__groundtrouth = Xcl * Xcf
+            Xcl_aeloss, Xcl_log_dict_ae = self.loss(qcloss, Xcl__groundtrouth, rec_Xcl, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag=False), split="train")
+
+            
+            # on xc diesease features -> interpolation!! -> adversialloss
+            
+            assert False
+
+        if optimizer_idx == 1: # discriminator
+            pass
+
+        return iou
     
     def test(self):
 
-        
-
-
-        iou = self.dice_static_metric(mue, xs_fundusmask).detach()
-        iou_plus_h_theta = self.dice_static_metric(mue_plus_h_theta, xs_fundusmask).detach()
-        iou_plus_h_tx = self.dice_static_metric(mue_plus_h_tx, xs_fundusmask).detach()
-        iou_plus_h_ty = self.dice_static_metric(mue_plus_h_ty, xs_fundusmask).detach()
-        D_theta = ((iou_plus_h_theta - iou) / h).flatten().detach()
-        D_tx = ((iou_plus_h_tx - iou) / h).flatten().detach()
-        D_ty = ((iou_plus_h_ty - iou) / h).flatten().detach()
-        iou = dzq_dz_eq1(iou, D_theta * theta + D_tx * tx + D_ty * ty)
-        
-        print('IOU -------->', iou.shape, iou.dtype)
-        print(xc_cunvexhull.shape, mue.shape, mue_plus_h_theta.shape, mue_plus_h_tx.shape, mue_plus_h_ty.shape, lesion_ROT.shape)
-
-        
-        
-        
-        
-        
-        
-        M_union_L_xs_xc = ((Lmask_xs + Lmask_xc_ROT) - (Lmask_xs * Lmask_xc_ROT)).detach()
-        M_L_xs_mines_xc = (Lmask_xs - (Lmask_xs * Lmask_xc_ROT)).detach() # Interpolation
-        M_xrec_xs = ((1 - M_union_L_xs_xc) * xs_fundusmask).detach() # reconstruct xs
-        M_xrec_xcl = ((Lmask_xc_ROT) * xs_fundusmask).detach() # reconstruct xc
-        print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
         
         
         
@@ -665,6 +679,16 @@ class VQModel(pl.LightningModule):
             return discloss + discloss_v
     
 
+    def ssf0(self, t):
+        t = t.unsqueeze(0).unsqueeze(0)
+        return torch.cat([t,t,t], dim=1)
+
+    # def ssf1(self, x, xrecombine, patches):
+    #     signal_save(torch.cat([
+    #         (x+1) * 127.5, # same as xc_np
+    #         (xrecombine+1) * 127.5,
+    #     ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+    #     signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
 
@@ -897,8 +921,11 @@ class VQModel(pl.LightningModule):
         return [opt_ae, opt_disc], []
         return [opt_ae], []
 
-    def get_last_layer(self):
-        return self.decoder.conv_out.weight
+    def get_last_layer(self, flag=True):
+        if flag:
+            return self.decoder.conv_out.weight
+        else:
+            return self.decoder.conv_out_1ch.weight
 
     def log_images(self, batch, **kwargs):
         # if kwargs.get('ignore', True):
