@@ -321,38 +321,37 @@ class VQModel(pl.LightningModule):
         """
             xs: source color fundus
             Xc: conditional color fundus | ROT version
-            xcl: attendend conditional color fundus | ROT version
-            xcl_pure: none ROT version of xcl (attendend)
+            xcl_pure: none ROT version of Xc (attendend)
         """
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
         q_eye16 = self.q_eye16.detach()
         
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (Xc+1)* 127.5, 
-            (xcl_pure+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_input_params.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (Xc+1)* 127.5, 
+        #     (xcl_pure+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_input_params.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         xs0 = xs
         Xc0 = Xc
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
         Xc = self.unfold(Xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
 
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (Xc+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (Xc+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
-        signal_save(torch.cat([
-            (xs0+1)* 127.5, 
-            (Xc0+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_none_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs0+1)* 127.5, 
+        #     (Xc0+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_none_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
-        signal_save(torch.cat([
-            (self.fold(xs, Nk)+1)* 127.5, 
-            (self.fold(Xc, Nk)+1)* 127.5, 
-        ], dim=0), f'/content/export/forward_none_patches2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (self.fold(xs, Nk)+1)* 127.5, 
+        #     (self.fold(Xc, Nk)+1)* 127.5, 
+        # ], dim=0), f'/content/export/forward_none_patches2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
 
@@ -381,16 +380,16 @@ class VQModel(pl.LightningModule):
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
 
-        dec_xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
+        dec_Xc = self.decoder( # xc -> xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
             None,
             h_ilevel1_xcl,
             h_endDownSampling_xcl,
             flag=False # output is a single channell regression mask for diesis detection.
         ) # Note: add skip connection
-        dec_xc = Xc0 - 0.8 * Xc0 * (1 - torch.sigmoid(dec_xc))
-        # dec_xc is estimation of xcl
-        # dec_xc shape is: torch.Size([1, 3, 256, 256])
+        dec_Xc = Xc0 - 0.8 * Xc0 * (1 - torch.sigmoid(dec_Xc))
+        # dec_Xc is estimation of xcl
+        # dec_Xc shape is: torch.Size([1, 3, 256, 256])
 
         dec_xscl = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, # PATCH version 
@@ -399,7 +398,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling
         ) # Note: add skip connection
         
-        return xs0 + dec_xscl, diff, dec_xc, diff_xc
+        return xs0 + dec_xscl, diff, dec_Xc, diff_xc
 
     
     def get_V(self, Forg, Frec):
@@ -553,7 +552,11 @@ class VQModel(pl.LightningModule):
 
 
         xscl_rec, qloss, xcl_rec, qcloss = self(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
-        
+        # Xcm * xscl_rec
+
+        print(Lmask_xs.shape, Lmask_xc.shape, Xcm.shape)
+
+
         # theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         # theta.register_hook(lambda grad: print('theta', grad))
         # tx.register_hook(lambda grad: print('tx', grad))
@@ -564,12 +567,13 @@ class VQModel(pl.LightningModule):
             (xs+1) * 127.5,
             (xc+1) * 127.5, # same as xc_np
             (Xc+1) * 127.5, # ROT version of xc
-            (xc_lesion+1) * 127.5,
-            (Xcl+1) * 127.5,
-            self.ssf0(Lmask_xc * 255),
-            self.ssf0(Xcm * 255),
-            self.ssf0(xc_cunvexhull * 255),
-            self.ssf0(mue * 255),
+            (xc_lesion+1) * 127.5, # is pure
+            (Xcl+1) * 127.5, # ROT version of xc_lesion
+            self.ssf0(Lmask_xs * 255),
+            self.ssf0(Lmask_xc * 255), # pure
+            self.ssf0(Xcm * 255), # rot version of Lmask_xc
+            self.ssf0(xc_cunvexhull * 255), # pure
+            self.ssf0(mue * 255), # rot version of xc_cunvexhull
             self.ssf0(mue_plus_h_tx * 255),
             self.ssf0(mue_plus_h_ty * 255),
             self.ssf0(mue_plus_h_theta * 255),
