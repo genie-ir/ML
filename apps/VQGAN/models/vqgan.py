@@ -552,10 +552,6 @@ class VQModel(pl.LightningModule):
 
 
         xscl_rec, qloss, xcl_rec, qcloss = self(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
-        # Xcm * xscl_rec
-
-        print(Lmask_xs.shape, Lmask_xc.shape, Xcm.shape)
-
 
         # theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         # theta.register_hook(lambda grad: print('theta', grad))
@@ -563,21 +559,21 @@ class VQModel(pl.LightningModule):
         # ty.register_hook(lambda grad: print('ty', grad))
 
         # INFO: signal save
-        signal_save(torch.cat([
-            (xs+1) * 127.5,
-            (xc+1) * 127.5, # same as xc_np
-            (Xc+1) * 127.5, # ROT version of xc
-            (xc_lesion+1) * 127.5, # is pure
-            (Xcl+1) * 127.5, # ROT version of xc_lesion
-            self.ssf0(Lmask_xs * 255),
-            self.ssf0(Lmask_xc * 255), # pure
-            self.ssf0(Xcm * 255), # rot version of Lmask_xc
-            self.ssf0(xc_cunvexhull * 255), # pure
-            self.ssf0(mue * 255), # rot version of xc_cunvexhull
-            self.ssf0(mue_plus_h_tx * 255),
-            self.ssf0(mue_plus_h_ty * 255),
-            self.ssf0(mue_plus_h_theta * 255),
-        ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1) * 127.5,
+        #     (xc+1) * 127.5, # same as xc_np
+        #     (Xc+1) * 127.5, # ROT version of xc
+        #     (xc_lesion+1) * 127.5, # is pure
+        #     (Xcl+1) * 127.5, # ROT version of xc_lesion
+        #     self.ssf0(Lmask_xs * 255),
+        #     self.ssf0(Lmask_xc * 255), # pure
+        #     self.ssf0(Xcm * 255), # rot version of Lmask_xc
+        #     self.ssf0(xc_cunvexhull * 255), # pure
+        #     self.ssf0(mue * 255), # rot version of xc_cunvexhull
+        #     self.ssf0(mue_plus_h_tx * 255),
+        #     self.ssf0(mue_plus_h_ty * 255),
+        #     self.ssf0(mue_plus_h_theta * 255),
+        # ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         
         assert False
