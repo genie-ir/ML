@@ -348,6 +348,11 @@ class VQModel(pl.LightningModule):
             (xs0+1)* 127.5, 
             (Xc0+1)* 127.5, 
         ], dim=0), f'/content/export/forward_none_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        
+        signal_save(torch.cat([
+            (self.fold(xs, Nk)+1)* 127.5, 
+            (self.fold(Xc, Nk)+1)* 127.5, 
+        ], dim=0), f'/content/export/forward_none_patches2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
 
