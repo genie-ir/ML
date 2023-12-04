@@ -510,8 +510,8 @@ class VQModel(pl.LightningModule):
         # print('xs_lesion', xs_lesion.shape, xs_lesion.dtype, xs_lesion.min().item(), xs_lesion.max().item())
         # print('xc_lesion', xc_lesion.shape, xc_lesion.dtype, xc_lesion.min().item(), xc_lesion.max().item())
         # print('xc_lesion_np', xc_lesion_np.shape, xc_lesion_np.dtype, xc_lesion_np.min().item(), xc_lesion_np.max().item())
-        # print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
-        # print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
+        print('xs_fundusmask', xs_fundusmask.shape, xs_fundusmask.dtype, xs_fundusmask.min().item(), xs_fundusmask.max().item())
+        print('xc_fundusmask', xc_fundusmask.shape, xc_fundusmask.dtype, xc_fundusmask.min().item(), xc_fundusmask.max().item())
         # print('xs_cunvexhull', xs_cunvexhull.shape, xs_cunvexhull.dtype, xs_cunvexhull.min().item(), xs_cunvexhull.max().item())
         # print('xc_cunvexhull', xc_cunvexhull.shape, xc_cunvexhull.dtype, xc_cunvexhull.min().item(), xc_cunvexhull.max().item())
         # print('xc_cunvexhull_np', xc_cunvexhull_np.shape, xc_cunvexhull_np.dtype, xc_cunvexhull_np.min().item(), xc_cunvexhull_np.max().item())
@@ -559,21 +559,23 @@ class VQModel(pl.LightningModule):
         # ty.register_hook(lambda grad: print('ty', grad))
 
         # INFO: signal save
-        # signal_save(torch.cat([
-        #     (xs+1) * 127.5,
-        #     (xc+1) * 127.5, # same as xc_np
-        #     (Xc+1) * 127.5, # ROT version of xc
-        #     (xc_lesion+1) * 127.5, # is pure
-        #     (Xcl+1) * 127.5, # ROT version of xc_lesion
-        #     self.ssf0(Lmask_xs * 255),
-        #     self.ssf0(Lmask_xc * 255), # pure
-        #     self.ssf0(Xcm * 255), # rot version of Lmask_xc
-        #     self.ssf0(xc_cunvexhull * 255), # pure
-        #     self.ssf0(mue * 255), # rot version of xc_cunvexhull
-        #     self.ssf0(mue_plus_h_tx * 255),
-        #     self.ssf0(mue_plus_h_ty * 255),
-        #     self.ssf0(mue_plus_h_theta * 255),
-        # ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (xs+1) * 127.5,
+            (xc+1) * 127.5, # same as xc_np
+            (Xc+1) * 127.5, # ROT version of xc
+            (xc_lesion+1) * 127.5, # is pure
+            (Xcl+1) * 127.5, # ROT version of xc_lesion
+            self.ssf0(xs_fundusmask * 255),
+            self.ssf0(xc_fundusmask * 255),
+            self.ssf0(Lmask_xs * 255),
+            self.ssf0(Lmask_xc * 255), # pure
+            self.ssf0(Xcm * 255), # rot version of Lmask_xc
+            self.ssf0(xc_cunvexhull * 255), # pure
+            self.ssf0(mue * 255), # rot version of xc_cunvexhull
+            self.ssf0(mue_plus_h_tx * 255),
+            self.ssf0(mue_plus_h_ty * 255),
+            self.ssf0(mue_plus_h_theta * 255),
+        ], dim=0), f'/content/export/1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         
         assert False
