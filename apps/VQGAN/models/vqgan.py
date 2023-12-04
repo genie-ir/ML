@@ -566,10 +566,10 @@ class VQModel(pl.LightningModule):
             (xc+1) * 127.5, # same as xc_np
             (Xc+1) * 127.5, # ROT version of xc
             (xc_lesion+1) * 127.5, # is pure
-            (Xcl+1) * 127.5, # ROT version of xc_lesion
             self.ssf0(xs_fundusmask * 255),
             self.ssf0(xc_fundusmask * 255),
             self.ssf0(Xcf * 255),
+            (Xcl+1) * 127.5, # ROT version of xc_lesion
             self.ssf0(Lmask_xs * 255),
             self.ssf0(Lmask_xc * 255), # pure
             self.ssf0(Xcm * 255), # rot version of Lmask_xc
