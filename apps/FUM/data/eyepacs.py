@@ -92,6 +92,9 @@ class D_DR(D_Base):
         for cidx, cval in enumerate(['[01]', '2', '[34]']):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
+
+            print(signal_path, cpath)
+
             
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
             xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)).astype(np.float32))['image'])

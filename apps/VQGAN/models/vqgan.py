@@ -154,6 +154,7 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
+        return
         self.theta = 0.0
         self.tx = 0.0
         self.ty = 0.0
@@ -479,6 +480,7 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
+        return
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
         #     self.log_images(batch, ignore=False)
@@ -690,7 +692,9 @@ class VQModel(pl.LightningModule):
     #     ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
     #     signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-
+    def on_validation_epoch_end(self):
+        print('!!!!!!!!!!!!!!')
+        assert False
 
 
 
