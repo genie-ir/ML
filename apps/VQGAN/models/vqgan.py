@@ -154,6 +154,7 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
+        self.endval = False
         return
         self.theta = 0.0
         self.tx = 0.0
@@ -692,9 +693,8 @@ class VQModel(pl.LightningModule):
     #     ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
     #     signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-    def on_train_epoch_end(self):
-        assert False
-
+    def on_validation_epoch_end(self):
+        self.endval = True
 
 
     # NOTE: real VQGAN training process
@@ -796,6 +796,8 @@ class VQModel(pl.LightningModule):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
+        if self.endval:
+            assert False
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
         return
