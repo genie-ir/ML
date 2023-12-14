@@ -692,35 +692,8 @@ class VQModel(pl.LightningModule):
     #     ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
     #     signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-    def on_validation_epoch_end(self):
-        print('!!!!!!!!!!!!!!')
+    def on_train_epoch_end(self):
         assert False
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
