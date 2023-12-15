@@ -97,13 +97,7 @@ class D_DR(D_Base):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
 
-            print('!!!!!!!!!!!!!', cval)
-            cpath_split = cpath.split('/')
-            # self.paths_data.append(dict(
-            #     dst=cpath_split[-1],
-            #     dst_cls=cpath_split[-2]
-            # ))
-
+            dfrow[cval] = cpath.split('/')[-1]
 
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
             xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
@@ -112,6 +106,7 @@ class D_DR(D_Base):
             xc_cunvexhull[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
             xc_fundusmask[cidx] = (dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'])[0] / 255.0 # single channell binary
             Lmask_xc[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
+        self.paths_data.append(dfrow)
 
         return {
             'df': self.paths_data,
