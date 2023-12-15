@@ -109,7 +109,8 @@ class D_DR(D_Base):
         self.paths_data.append(dfrow)
 
         return {
-            'df': self.paths_data,
+            'dfrow': dfrow,
+            # 'df': self.paths_data,
             'xs': imgNormalizer(xs),
             'xs_lesion': imgNormalizer(xs_lesion),
             'xs_cunvexhull': xs_cunvexhull / 255.0, # binary
