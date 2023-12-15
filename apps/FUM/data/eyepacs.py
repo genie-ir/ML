@@ -15,6 +15,8 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 from libs.basicIO import signal_save
 import glob
+import signal as sig
+from signal import signal
 # from apps.FUM.data.extract_ma import findMA
 try:
     from dependency.Local_Convergence_Index_Features.B_GadientWeighting import main as ma_ditector_fn
@@ -25,8 +27,13 @@ except Exception as e:
 
 DATASET_PATH = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata'
 
+def SIGCONT(self, signum, stack):
+    print(D.paths_data)
+
+signal(sig.SIGCONT, SIGCONT)
 
 class D(D_Base):
+    paths_data = []
     def fetch(self, signal_path, **kwargs):
         y = kwargs['y']
         # print('--------------------------------->', y)
@@ -93,7 +100,18 @@ class D_DR(D_Base):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
 
-            print(signal_path, cpath)
+            cpath_split = cpath.split('/')
+            signal_path_split = signal_path.split('/')
+            D.paths_data.append(dict(
+                src=signal_path_split[-1],
+                src_cls=signal_path_split[-2],
+                dst=cpath_split[-1],
+                dst_cls=cpath_split[-2]
+            ))
+
+
+
+
 
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
             xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
@@ -166,7 +184,7 @@ class DTrain(ImageNetTrain):
         # kwargs['real_fdir'] = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan'
         # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         src = self.config.get('SRC')
-        print(src)
+        # print(src)
         # if not exists(src):
         #     src = join('/content', self.config.get('SRC'))
         system('cp -R {} {}/fumdata.zip'.format(
@@ -182,7 +200,7 @@ class DVal(ImageNetValidation):
         # kwargs['real_fdir'] = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan'
         # src = join(getenv('GENIE_ML_STORAGE0'), '..', '..', self.config.get('SRC'))
         src = self.config.get('SRC')
-        print(src)
+        # print(src)
         # if not exists(src):
         #     src = join('/content', self.config.get('SRC'))
         system('cp -R {} {}/fumdata.zip'.format(

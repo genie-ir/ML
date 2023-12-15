@@ -29,7 +29,8 @@ from utils.pt.tricks.gradfns import dzq_dz_eq1
 
 from .ocv import ROT
 
-
+import signal as sig
+from signal import signal
 dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
@@ -797,6 +798,7 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         if self.endval:
+            os.kill(os.getpid(), sig.SIGCONT)
             assert False
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
