@@ -27,12 +27,6 @@ except Exception as e:
 
 DATASET_PATH = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata'
 
-paths_data = []
-def SIGCONT(signum, stack):
-    print(paths_data)
-
-signal(sig.SIGCONT, SIGCONT)
-
 class D(D_Base):
     def fetch(self, signal_path, **kwargs):
         y = kwargs['y']
@@ -102,7 +96,7 @@ class D_DR(D_Base):
 
             cpath_split = cpath.split('/')
             signal_path_split = signal_path.split('/')
-            paths_data.append(dict(
+            self.paths_data.append(dict(
                 src=signal_path_split[-1],
                 src_cls=signal_path_split[-2],
                 dst=cpath_split[-1],
@@ -122,6 +116,7 @@ class D_DR(D_Base):
             Lmask_xc[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
 
         return {
+            'df': self.paths_data,
             'xs': imgNormalizer(xs),
             'xs_lesion': imgNormalizer(xs_lesion),
             'xs_cunvexhull': xs_cunvexhull / 255.0, # binary

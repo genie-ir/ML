@@ -22,6 +22,7 @@ class D_Base(Dataset):
         self.start()
     
     def start(self):
+        self.paths_data = []
         self.set_length()
     
     def set_length(self, length: int =None):

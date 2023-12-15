@@ -798,7 +798,7 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         if self.endval:
-            os.kill(os.getpid(), sig.SIGCONT)
+            print(batch['df'])
             assert False
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
