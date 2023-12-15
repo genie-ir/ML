@@ -807,14 +807,13 @@ class VQModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         self.dataaa.append(batch['dfrow'])
         if self.endval:
-            print(self.dataaa)
-            # df = []
-            # for row in batch['df'][0]:
-                # Row = dict()
-                # for ck, cv in row.items():
-                #     Row[ck] = cv
-                # df.append(Row)
-            # dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
+            df = []
+            for row in self.dataaa:
+                Row = dict()
+                for ck, cv in row.items():
+                    Row[ck] = cv[0]
+                df.append(Row)
+            dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
             assert False
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
