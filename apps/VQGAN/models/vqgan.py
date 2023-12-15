@@ -489,6 +489,7 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
+        self.dataaa.append(batch['dfrow'])
         return
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
@@ -804,16 +805,16 @@ class VQModel(pl.LightningModule):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
-        print(batch['dfrow'])
-        assert False
+        self.dataaa.append(batch['dfrow'])
         if self.endval:
-            df = []
-            for row in batch['df'][0]:
-                Row = dict()
-                for ck, cv in row.items():
-                    Row[ck] = cv
-                df.append(Row)
-            dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
+            print(self.dataaa)
+            # df = []
+            # for row in batch['df'][0]:
+                # Row = dict()
+                # for ck, cv in row.items():
+                #     Row[ck] = cv
+                # df.append(Row)
+            # dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
             assert False
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
