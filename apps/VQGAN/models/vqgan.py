@@ -45,8 +45,14 @@ def fold3d(x, gp=None):
     gp = gp if gp else int(ch ** .5)
     return x.view(B, gp, gp, 1, h, w).permute(0, 3, 1, 4, 2, 5).contiguous().view(B, 1, gp*h, gp*w) 
 
+import pandas as pd
+def dfsave(fpath: str, df, **kwargs):
+    ext = os.path.split(fpath)[1].split('.')[-1]
 
-
+    if ext == 'csv':
+        return df.to_csv(fpath, **kwargs.get('csv', dict(sep=',', encoding='utf-8', index=False))) # OPTIONAL
+    else:
+        assert False
 class VQModel(pl.LightningModule):
     def __init__(self,
         ddconfig,
@@ -797,8 +803,11 @@ class VQModel(pl.LightningModule):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
+        df = []
         if self.endval:
-            print(batch['df'])
+            for row in batch['df']: 
+                df.append(src=row['src'][0], src_cls=row['src_cls'][0], dst=row['dst'][0], dst_cls=row['dst_cls'][0])
+            dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
             assert False
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
