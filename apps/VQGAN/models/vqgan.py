@@ -806,7 +806,10 @@ class VQModel(pl.LightningModule):
         df = []
         if self.endval:
             for row in batch['df']: 
-                df.append(dict(src=row['src'][0], src_cls=row['src_cls'][0], dst=row['dst'][0], dst_cls=row['dst_cls'][0]))
+                Row = dict()
+                for ck, cv in row.item():
+                    Row[ck] = cv
+                df.append(Row)
             dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
             assert False
         # print('validation_step')
