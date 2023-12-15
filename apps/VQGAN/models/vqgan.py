@@ -161,6 +161,7 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
+        self.dataaa = []
         self.endval = False
         return
         self.theta = 0.0
@@ -804,6 +805,10 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         if self.endval:
+            print(batch['df'])
+            print(len(batch['df']))
+            print(batch['df'][0])
+            assert False
             df = []
             for row in batch['df'][0]:
                 Row = dict()
