@@ -804,9 +804,9 @@ class VQModel(pl.LightningModule):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
+        print(batch['dfrow'])
+        assert False
         if self.endval:
-            print(batch['dfrow'])
-            assert False
             df = []
             for row in batch['df'][0]:
                 Row = dict()
