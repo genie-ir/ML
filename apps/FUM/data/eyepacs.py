@@ -27,13 +27,13 @@ except Exception as e:
 
 DATASET_PATH = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata'
 
+paths_data = []
 def SIGCONT(signum, stack):
-    print(D.paths_data)
+    print(paths_data)
 
 signal(sig.SIGCONT, SIGCONT)
 
 class D(D_Base):
-    paths_data = []
     def fetch(self, signal_path, **kwargs):
         y = kwargs['y']
         # print('--------------------------------->', y)
@@ -102,7 +102,7 @@ class D_DR(D_Base):
 
             cpath_split = cpath.split('/')
             signal_path_split = signal_path.split('/')
-            D.paths_data.append(dict(
+            paths_data.append(dict(
                 src=signal_path_split[-1],
                 src_cls=signal_path_split[-2],
                 dst=cpath_split[-1],
