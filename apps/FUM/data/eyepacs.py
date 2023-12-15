@@ -27,7 +27,7 @@ except Exception as e:
 
 DATASET_PATH = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata'
 
-def SIGCONT(self, signum, stack):
+def SIGCONT(signum, stack):
     print(D.paths_data)
 
 signal(sig.SIGCONT, SIGCONT)
