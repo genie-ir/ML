@@ -807,7 +807,7 @@ class VQModel(pl.LightningModule):
         if self.endval:
             for row in batch['df']: 
                 Row = dict()
-                for ck, cv in row.item():
+                for ck, cv in row.items():
                     Row[ck] = cv
                 df.append(Row)
             dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
