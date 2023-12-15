@@ -90,21 +90,19 @@ class D_DR(D_Base):
         xc_cunvexhull = [None for n in range(3)] # binary
         xc_fundusmask = [None for n in range(3)] # binary
         Lmask_xc = [None for n in range(3)] # binary
+        
+        signal_path_split = signal_path.split('/')
+        dfrow = dict(src=signal_path_split[-1], src_cls=signal_path_split[-2],)
         for cidx, cval in enumerate(['[01]', '2', '[34]']):
             xc_idx = kwargs['i'] % self.grade_len[cval]
             cpath = self.grade[cval][xc_idx]
 
+            print('!!!!!!!!!!!!!', cval)
             cpath_split = cpath.split('/')
-            signal_path_split = signal_path.split('/')
-            self.paths_data.append(dict(
-                src=signal_path_split[-1],
-                src_cls=signal_path_split[-2],
-                dst=cpath_split[-1],
-                dst_cls=cpath_split[-2]
-            ))
-
-
-
+            # self.paths_data.append(dict(
+            #     dst=cpath_split[-1],
+            #     dst_cls=cpath_split[-2]
+            # ))
 
 
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
