@@ -69,60 +69,71 @@ class D_DR(D_Base):
         
         if y == 0 or y == 1:
             y_edit = 0
+            yl = '[01]'
+            ynl = ['2', '[34]']
         elif y == 2:
             y_edit = 1
+            yl = '2'
+            ynl = ['[01]', '[34]']
         elif y == 3 or y == 4:
             y_edit = 2
+            yl = '[34]'
+            ynl = ['[01]', '2']
         else:
             assert False
 
-        
+        fname = signal_path.split('/')[-1].replace('.jpg', '')
+
         xs = dr_transformer0(image=np.array(Image.open(signal_path)).astype(np.float32))['image']
-        xs_lesion = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32))['image']
-        xs_cunvexhull = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'][:,:,0]
-        xs_fundusmask = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'][0] # single channell binary
-        Lmask_xs = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'][:,:,0]
+        xsl = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32))['image']
+        xsc = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'][:,:,0]
+        xsf = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'][0] # single channell binary
+        xslmask = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'][:,:,0]
 
-        xc = [None for n in range(3)]
-        xc_np = [None for n in range(3)]
-        xc_lesion = [None for n in range(3)]
-        xc_lesion_np = [None for n in range(3)]
-        xc_cunvexhull = [None for n in range(3)] # binary
-        xc_fundusmask = [None for n in range(3)] # binary
-        Lmask_xc = [None for n in range(3)] # binary
+        xc = [None for n in range(2)]
+        xcl = [None for n in range(2)]
+        xcc = [None for n in range(2)]
+        xcf = [None for n in range(2)]
+        xclmask = [None for n in range(2)]
         
-        signal_path_split = signal_path.split('/')
-        dfrow = dict(src=signal_path_split[-1], src_cls=signal_path_split[-2],)
-        for cidx, cval in enumerate(['[01]', '2', '[34]']):
-            xc_idx = kwargs['i'] % self.grade_len[cval]
-            cpath = self.grade[cval][xc_idx]
-
-            dfrow[cval] = cpath.split('/')[-1]
+        # for cidx, cval in enumerate(['[01]', '2', '[34]']):
+        for cidx, cval in enumerate(ynl):
+            # xc_idx = kwargs['i'] % self.grade_len[cval]
+            # cpath = self.grade[cval][xc_idx]
+            cpath = os.path.joEin('/content/RetinaLessions', fname, cval)
 
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
-            xc_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
-            xc_lesion[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
-            xc_lesion_np[cidx] = imgNormalizer(dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
-            xc_cunvexhull[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
-            xc_fundusmask[cidx] = (dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'])[0] / 255.0 # single channell binary
-            Lmask_xc[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
-        self.paths_data.append(dfrow)
+            xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
+            xcc[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
+            xcf[cidx] = (dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'])[0] / 255.0 # single channell binary
+            xclmask[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
+            print(xc[cidx].shape)
+            print(xcl[cidx].shape)
+            print(xcc[cidx].shape)
+            print(xcf[cidx].shape)
+            print(xclmask[cidx].shape)
+            print('-'*30)
 
+        
+        
+        print(xs.shape)
+        print(xcl.shape)
+        print(xcc.shape)
+        print(xcf.shape)
+        print(xclmask.shape)
+        
+        assert False
         return {
-            'dfrow': dfrow,
-            # 'df': self.paths_data,
             'xs': imgNormalizer(xs),
-            'xs_lesion': imgNormalizer(xs_lesion),
-            'xs_cunvexhull': xs_cunvexhull / 255.0, # binary
-            'xs_fundusmask': xs_fundusmask / 255.0, # binary
-            'Lmask_xs': Lmask_xs / 255.0, # binary
+            'xs_lesion': imgNormalizer(xsl),
+            'xs_cunvexhull': xsc / 255.0, # binary
+            'xs_fundusmask': xsf / 255.0, # binary
+            'Lmask_xs': xslmask / 255.0, # binary
             'xc': xc,
-            'xc_np': xc_np,
-            'xc_lesion': xc_lesion,
-            'xc_lesion_np': xc_lesion_np,
-            'xc_cunvexhull': xc_cunvexhull,
-            'xc_fundusmask': xc_fundusmask,
-            'Lmask_xc': Lmask_xc,
+            'xc_lesion': xcl,
+            'xc_cunvexhull': xcc,
+            'xc_fundusmask': xcf,
+            'Lmask_xc': xclmask,
             'y_edit': y_edit
         }
 

@@ -45,14 +45,6 @@ def fold3d(x, gp=None):
     gp = gp if gp else int(ch ** .5)
     return x.view(B, gp, gp, 1, h, w).permute(0, 3, 1, 4, 2, 5).contiguous().view(B, 1, gp*h, gp*w) 
 
-import pandas as pd
-def dfsave(fpath: str, df, **kwargs):
-    ext = os.path.split(fpath)[1].split('.')[-1]
-
-    if ext == 'csv':
-        return df.to_csv(fpath, **kwargs.get('csv', dict(sep=',', encoding='utf-8', index=False))) # OPTIONAL
-    else:
-        assert False
 class VQModel(pl.LightningModule):
     def __init__(self,
         ddconfig,
@@ -161,8 +153,6 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
-        self.dataaa = []
-        self.endval = False
         return
         self.theta = 0.0
         self.tx = 0.0
@@ -489,8 +479,6 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
-        self.dataaa.append(batch['dfrow'])
-        return
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
         #     self.log_images(batch, ignore=False)
@@ -702,9 +690,6 @@ class VQModel(pl.LightningModule):
     #     ], dim=0), f'/content/export/patches/r256.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
     #     signal_save((patches+1) * 127.5, f'/content/export/patches/r64.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-    def on_validation_epoch_end(self):
-        self.endval = True
-
 
     # NOTE: real VQGAN training process
     # def training_step(self, batch, batch_idx, optimizer_idx):
@@ -806,18 +791,9 @@ class VQModel(pl.LightningModule):
         return
     def validation_step(self, batch, batch_idx):
         self.dataaa.append(batch['dfrow'])
-        if self.endval:
-            df = []
-            for row in self.dataaa:
-                Row = dict()
-                for ck, cv in row.items():
-                    Row[ck] = cv[0]
-                df.append(Row)
-            dfsave('/content/df_fum_candidateimgs.csv', pd.DataFrame(df))
-            assert False
+        return
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
-        return
         # return
         # T = A.Compose([
         #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
