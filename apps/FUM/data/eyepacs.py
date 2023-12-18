@@ -144,6 +144,7 @@ class D_DR(D_Base):
             'xcf': xcf,
             'xclmask': xclmask,
             'ynl': ynl,
+            'yl': yl,
             'y_edit': y_edit
         }
 

@@ -473,7 +473,7 @@ class VQModel(pl.LightningModule):
         return self.training_step_slave(batch, batch_idx, optimizer_idx)
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx):
-        print('@@@@@@@@@@@', batch['y_edit'])
+        print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
         xs = batch['xs']
         xsl = batch['xsl']
         xsc = batch['xsc']
