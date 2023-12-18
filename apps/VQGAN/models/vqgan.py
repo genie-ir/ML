@@ -452,15 +452,6 @@ class VQModel(pl.LightningModule):
         # assert False
         return V_org, V_rec
     
-    def training_step_syn(self, batch, batch_idx, optimizer_idx):
-        print(batch['x'], batch['x'].shape, batch['x'].dtype)
-        print(batch['y'], batch['y'].shape, batch['y'].dtype)
-
-        assert False
-        return
-    
-    
-    
     
     def dice_static_metric(self, inputs, target):
         num = target.shape[0]
@@ -479,6 +470,23 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
+        return self.training_step_slave(batch, batch_idx, optimizer_idx)
+    
+    def training_step_slave(self, batch, batch_idx, optimizer_idx):
+        print('@@@@@@@@@@@', batch['y_edit'])
+        print(batch['xs'].shape)
+        print(batch['xsl'].shape)
+        print(batch['xsc'].shape)
+        print(batch['xsf'].shape)
+        print(batch['xslmask'].shape)
+        for idx, ynl in enumerate(batch['ynl']):
+            print('!!!!!!!!!!!', ynl)
+            print(batch['xc'][idx].shape)
+            print(batch['xcl'][idx].shape)
+            print(batch['xcc'][idx].shape)
+            print(batch['xcf'][idx].shape)
+            print(batch['xclmask'][idx].shape)
+        assert False
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
         #     self.log_images(batch, ignore=False)

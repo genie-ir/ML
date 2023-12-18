@@ -122,7 +122,6 @@ class D_DR(D_Base):
         print(xslmask.shape)
         print('+'*30)
         
-        assert False
         return {
             'xs': imgNormalizer(xs),
             'xsl': imgNormalizer(xsl),
@@ -134,6 +133,7 @@ class D_DR(D_Base):
             'xcc': xcc,
             'xcf': xcf,
             'xclmask': xclmask,
+            'ynl': ynl,
             'y_edit': y_edit
         }
 
