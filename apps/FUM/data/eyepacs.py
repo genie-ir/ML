@@ -100,7 +100,7 @@ class D_DR(D_Base):
         for cidx, cval in enumerate(ynl):
             # xc_idx = kwargs['i'] % self.grade_len[cval]
             # cpath = self.grade[cval][xc_idx]
-            cpath = os.path.joEin('/content/RetinaLessions', fname, cval)
+            cpath = os.path.join('/content/RetinaLessions', fname, cval)
 
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
             xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
