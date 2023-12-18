@@ -120,6 +120,7 @@ class D_DR(D_Base):
         print(xsf.shape)
         print(xsc.shape)
         print(xslmask.shape)
+        print('+'*30)
         
         assert False
         return {
