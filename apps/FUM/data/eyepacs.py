@@ -105,7 +105,7 @@ class D_DR(D_Base):
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fundus.jpg'))).astype(np.float32))['image'])
             xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'lesion.jpg'))).astype(np.float32))['image'])
             xcc[cidx] = (dr_transformer_e(image=np.array(Image.open(ospjoin(cpath, 'cvh.jpg'))).astype(np.float32))['image']) / 255.0 # binary
-            xcf[cidx] = (dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32))['image']) / 255.0 # single channell binary
+            xcf[cidx] = (dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32))['image'])[0] / 255.0 # single channell binary
             xclmask[cidx] = (dr_transformer_e(image=np.array(Image.open(ospjoin(cpath, 'lmask.jpg'))).astype(np.float32))['image']) / 255.0 # binary
             print(xc[cidx].shape)
             print(xcl[cidx].shape)
