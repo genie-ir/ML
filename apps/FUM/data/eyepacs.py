@@ -81,7 +81,7 @@ class D_DR(D_Base):
         else:
             assert False
 
-        fname = signal_path.split('/')[-1].replace('.jpg', '')
+        fname = signal_path.split('/')[-1].replace('.jpg', '').replace('_clahe', '')
 
         xs = np.array(Image.open(signal_path)).astype(np.float32)
         xsl = np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32)
