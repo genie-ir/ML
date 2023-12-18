@@ -50,7 +50,7 @@ class D(D_Base):
 LANDA = (256*256)
 
 dr_transformer0 = A.Compose([
-    # ToTensorV2()
+    ToTensorV2() # hxwxch -> chxhxw
 ])
 dr_transformer_e = A.Compose([ # doesnt affect order of channells
 ])
@@ -83,8 +83,8 @@ class D_DR(D_Base):
 
         fname = signal_path.split('/')[-1].replace('.jpg', '').replace('_clahe', '')
 
-        xs = np.array(Image.open(signal_path)).astype(np.float32)
-        xsl = np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32)
+        xs = dr_transformer0(image=np.array(Image.open(signal_path)).astype(np.float32))['image']
+        xsl = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32))['image']
         xsc = np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32)[:,:,0]
         xsf = np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32)
         xslmask = np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32)[:,:,0]
@@ -101,8 +101,8 @@ class D_DR(D_Base):
             # cpath = self.grade[cval][xc_idx]
             cpath = ospjoin('/content/RetinaLessions', fname, cval)
 
-            xc[cidx] = imgNormalizer(np.array(Image.open(ospjoin(cpath, 'fundus.jpg'))).astype(np.float32))
-            xcl[cidx] = imgNormalizer(np.array(Image.open(ospjoin(cpath, 'lesion.jpg'))).astype(np.float32))
+            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fundus.jpg'))).astype(np.float32))['image'])
+            xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'lesion.jpg'))).astype(np.float32))['image'])
             xcc[cidx] = np.array(Image.open(ospjoin(cpath, 'cvh.jpg'))).astype(np.float32) / 255.0 # binary
             xcf[cidx] = np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32) / 255.0 # single channell binary
             xclmask[cidx] = np.array(Image.open(ospjoin(cpath, 'lmask.jpg'))).astype(np.float32)[:,:,0] / 255.0 # binary
