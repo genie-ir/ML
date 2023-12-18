@@ -83,11 +83,11 @@ class D_DR(D_Base):
 
         fname = signal_path.split('/')[-1].replace('.jpg', '')
 
-        xs = dr_transformer0(image=np.array(Image.open(signal_path)).astype(np.float32))['image']
-        xsl = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32))['image']
-        xsc = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'][:,:,0]
-        xsf = dr_transformer0(image=np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'][0] # single channell binary
-        xslmask = dr_transformer_e(image=np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'][:,:,0]
+        xs = np.array(Image.open(signal_path)).astype(np.float32)
+        xsl = np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32)
+        xsc = np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32)
+        xsf = np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32)
+        xslmask = np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32)
 
         xc = [None for n in range(2)]
         xcl = [None for n in range(2)]
@@ -116,10 +116,10 @@ class D_DR(D_Base):
         
         
         print(xs.shape)
-        print(xcl.shape)
-        print(xcc.shape)
-        print(xcf.shape)
-        print(xclmask.shape)
+        print(xsl.shape)
+        print(xsf.shape)
+        print(xsc.shape)
+        print(xslmask.shape)
         
         assert False
         return {
