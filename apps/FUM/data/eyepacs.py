@@ -89,6 +89,11 @@ class D_DR(D_Base):
         xsf = np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32)
         xslmask = np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32)[:,:,0]
 
+        xsc = dr_transformer0(image=xsc)['image']
+        xsf = dr_transformer0(image=xsf)['image']
+        xslmask = dr_transformer0(image=xslmask)['image']
+
+
         xc = [None for n in range(2)]
         xcl = [None for n in range(2)]
         xcc = [None for n in range(2)]
@@ -107,6 +112,9 @@ class D_DR(D_Base):
             xcf[cidx] = np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32) / 255.0 # single channell binary
             xclmask[cidx] = np.array(Image.open(ospjoin(cpath, 'lmask.jpg'))).astype(np.float32)[:,:,0] / 255.0 # binary
             
+            xcc[cidx] = dr_transformer0(image=xcc[cidx])['image']
+            xcf[cidx] = dr_transformer0(image=xcf[cidx])['image']
+            xclmask[cidx] = dr_transformer0(image=xclmask[cidx])['image']
             
             # print(xc[cidx].shape)
             # print(xcl[cidx].shape)
