@@ -78,6 +78,8 @@ class DataModuleFromConfigBase(pl.LightningDataModule):
         return dck
     
     def _dataloader(self, **kwargs):
+        print('!!!!!!!!!!!!!!!!!!', self.num_workers)
+        assert False
         return DataLoader(self.datasets[kwargs['memory']['DCK']], batch_size=self.batch_size, num_workers=self.num_workers, shuffle=False, collate_fn=self.custom_collate)
     
     # def _train_dataloader(self):
