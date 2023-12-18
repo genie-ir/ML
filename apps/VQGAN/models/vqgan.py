@@ -798,7 +798,6 @@ class VQModel(pl.LightningModule):
         print('validation_step_syn')
         return
     def validation_step(self, batch, batch_idx):
-        self.dataaa.append(batch['dfrow'])
         return
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())
