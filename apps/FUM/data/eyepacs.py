@@ -86,8 +86,8 @@ class D_DR(D_Base):
         xs = np.array(Image.open(signal_path)).astype(np.float32)
         xsl = np.array(Image.open(signal_path.replace('/fundus/', '/lesion/'))).astype(np.float32)
         xsc = np.array(Image.open(signal_path.replace('/fundus/', '/cunvexhull/'))).astype(np.float32)
-        xsf = np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32)
-        xslmask = np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32)
+        xsf = np.array(Image.open(signal_path.replace('/fundus/', '/fundus-mask/'))).astype(np.float32)[:,:,0]
+        xslmask = np.array(Image.open(signal_path.replace('/fundus/', '/lmask/'))).astype(np.float32)[:,:,0]
 
         xc = [None for n in range(2)]
         xcl = [None for n in range(2)]
