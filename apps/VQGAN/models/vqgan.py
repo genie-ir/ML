@@ -474,18 +474,32 @@ class VQModel(pl.LightningModule):
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx):
         print('@@@@@@@@@@@', batch['y_edit'])
-        print(batch['xs'].shape)
-        print(batch['xsl'].shape)
-        print(batch['xsc'].shape)
-        print(batch['xsf'].shape)
-        print(batch['xslmask'].shape)
+        xs = batch['xs']
+        xsl = batch['xsl']
+        xsc = batch['xsc']
+        xsf = batch['xsf']
+        xslmask = batch['xslmask']
+
+        xc = batch['xc']
+        xcl = batch['xcl']
+        xcc = batch['xcc']
+        xcf = batch['xcf']
+        xclmask = batch['xclmask']
+        
+        print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
+        print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
+        print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
+        print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
+        
         for idx, ynl in enumerate(batch['ynl']):
             print('!!!!!!!!!!!', ynl)
-            print(batch['xc'][idx].shape)
-            print(batch['xcl'][idx].shape)
-            print(batch['xcc'][idx].shape)
-            print(batch['xcf'][idx].shape)
-            print(batch['xclmask'][idx].shape)
+            print(xc[idx].shape, xc[idx].dtype, xc[idx].min().item(), xc[idx].max().item())
+            print(xcl[idx].shape, xcl[idx].dtype, xcl[idx].min().item(), xcl[idx].max().item())
+            print(xcc[idx].shape, xcc[idx].dtype, xcc[idx].min().item(), xcc[idx].max().item())
+            print(xcf[idx].shape, xcf[idx].dtype, xcf[idx].min().item(), xcf[idx].max().item())
+            print(xclmask[idx].shape, xclmask[idx].dtype, xclmask[idx].min().item(), xclmask[idx].max().item())
+        
         assert False
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:

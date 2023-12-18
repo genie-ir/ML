@@ -106,21 +106,23 @@ class D_DR(D_Base):
             xcc[cidx] = np.array(Image.open(ospjoin(cpath, 'cvh.jpg'))).astype(np.float32) / 255.0 # binary
             xcf[cidx] = np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32) / 255.0 # single channell binary
             xclmask[cidx] = np.array(Image.open(ospjoin(cpath, 'lmask.jpg'))).astype(np.float32)[:,:,0] / 255.0 # binary
-            print(xc[cidx].shape)
-            print(xcl[cidx].shape)
-            print(xcc[cidx].shape)
-            print(xcf[cidx].shape)
-            print(xclmask[cidx].shape)
-            print('-'*30)
+            
+            
+            # print(xc[cidx].shape)
+            # print(xcl[cidx].shape)
+            # print(xcc[cidx].shape)
+            # print(xcf[cidx].shape)
+            # print(xclmask[cidx].shape)
+            # print('-'*30)
 
         
         
-        print(xs.shape)
-        print(xsl.shape)
-        print(xsf.shape)
-        print(xsc.shape)
-        print(xslmask.shape)
-        print('+'*30)
+        # print(xs.shape)
+        # print(xsl.shape)
+        # print(xsf.shape)
+        # print(xsc.shape)
+        # print(xslmask.shape)
+        # print('+'*30)
         
         return {
             'xs': imgNormalizer(xs),
