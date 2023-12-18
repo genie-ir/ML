@@ -153,12 +153,10 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
-        return
-        self.theta = 0.0
-        self.tx = 0.0
-        self.ty = 0.0
+        # self.theta = 0.0
+        # self.tx = 0.0
+        # self.ty = 0.0
 
-        self.q_eye16 = torch.eye(16, dtype=torch.float32).to('cuda')
         self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
         self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
 
@@ -289,17 +287,10 @@ class VQModel(pl.LightningModule):
     #     signal_save(_dec, os.path.join(os.getenv('GENIE_ML_CACHEDIR'), 'syn', str(y[0].item()), f'{random_string()}.png'), stype='img', sparams={'fn': afn})
     #     return None, None
     
-    
-    
     def forward00(self, input):
         quant, diff = self.encode(input)
         dec = self.decode(quant)
         return dec, diff
-    
-    
-    
-    
-    
     
     def unfold(self, x, Ps, Nk):
         return x.unfold(2, Ps, Ps).unfold(3, Ps, Ps).contiguous().view(-1, int(Nk*Nk), Ps, Ps).permute(1,0,2,3).contiguous()
@@ -321,40 +312,40 @@ class VQModel(pl.LightningModule):
         """
             xs: source color fundus
             Xc: conditional color fundus | ROT version
-            xcl_pure: none ROT version of Xc (attendend)
+            xcl_pure: none ROT version of Xcl (attendend)
         """
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
-        q_eye16 = self.q_eye16.detach()
+        q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
         
-        # signal_save(torch.cat([
-        #     (xs+1)* 127.5, 
-        #     (Xc+1)* 127.5, #ROT
-        #     (xcl_pure+1)* 127.5, # none ROT 
-        # ], dim=0), f'/content/export/forward_input_params.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (xs+1)* 127.5, 
+            (Xc+1)* 127.5, #ROT
+            (xcl_pure+1)* 127.5, # none ROT 
+        ], dim=0), f'/content/export/fip.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         xs0 = xs
         Xc0 = Xc
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
         Xc = self.unfold(Xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
 
-        # signal_save(torch.cat([
-        #     (xs+1)* 127.5, 
-        #     (Xc+1)* 127.5, 
-        # ], dim=0), f'/content/export/forward_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (xs+1)* 127.5, 
+            (Xc+1)* 127.5, 
+        ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
-        # signal_save(torch.cat([
-        #     (xs0+1)* 127.5, 
-        #     (Xc0+1)* 127.5, 
-        # ], dim=0), f'/content/export/forward_none_patches.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (xs0+1)* 127.5, 
+            (Xc0+1)* 127.5, 
+        ], dim=0), f'/content/export/fnp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
-        # signal_save(torch.cat([
-        #     (self.fold(xs, Nk)+1)* 127.5, 
-        #     (self.fold(Xc, Nk)+1)* 127.5, 
-        # ], dim=0), f'/content/export/forward_none_patches2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (self.fold(xs, Nk)+1)* 127.5, 
+            (self.fold(Xc, Nk)+1)* 127.5, 
+        ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
-
+        assert False
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) 
         hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
@@ -473,33 +464,37 @@ class VQModel(pl.LightningModule):
         return self.training_step_slave(batch, batch_idx, optimizer_idx)
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx):
-        print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
         xs = batch['xs']
         xsl = batch['xsl']
         xsc = batch['xsc']
         xsf = batch['xsf']
         xslmask = batch['xslmask']
 
-        xc = batch['xc']
-        xcl = batch['xcl']
-        xcc = batch['xcc']
-        xcf = batch['xcf']
-        xclmask = batch['xclmask']
+        xc = batch['xc'] # ROT
+        xcl = batch['xcl'] # ROT
+        xcc = batch['xcc'] # ROT
+        xcf = batch['xcf'] # ROT
+        xclmask = batch['xclmask'] # ROT
         
-        print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
-        print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
-        print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
-        print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
-        print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
+        # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
+        # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        # print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
+        # print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
+        # print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
+        # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
         
-        for idx, ynl in enumerate(batch['ynl']):
-            print('!!!!!!!!!!!', ynl)
-            print(xc[idx].shape, xc[idx].dtype, xc[idx].min().item(), xc[idx].max().item())
-            print(xcl[idx].shape, xcl[idx].dtype, xcl[idx].min().item(), xcl[idx].max().item())
-            print(xcc[idx].shape, xcc[idx].dtype, xcc[idx].min().item(), xcc[idx].max().item())
-            print(xcf[idx].shape, xcf[idx].dtype, xcf[idx].min().item(), xcf[idx].max().item())
-            print(xclmask[idx].shape, xclmask[idx].dtype, xclmask[idx].min().item(), xclmask[idx].max().item())
+        # for idx, ynl in enumerate(batch['ynl']):
+        #     print('!!!!!!!!!!!', ynl)
+        #     print(xc[idx].shape, xc[idx].dtype, xc[idx].min().item(), xc[idx].max().item())
+        #     print(xcl[idx].shape, xcl[idx].dtype, xcl[idx].min().item(), xcl[idx].max().item())
+        #     print(xcc[idx].shape, xcc[idx].dtype, xcc[idx].min().item(), xcc[idx].max().item())
+        #     print(xcf[idx].shape, xcf[idx].dtype, xcf[idx].min().item(), xcf[idx].max().item())
+        #     print(xclmask[idx].shape, xclmask[idx].dtype, xclmask[idx].min().item(), xclmask[idx].max().item())
         
+        rec_xscl, qloss, rec_Xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
+
+
+
         assert False
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
