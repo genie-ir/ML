@@ -23,7 +23,7 @@ try:
 except Exception as e:
     print(e)
     assert False
-
+from os.path import join as ospjoin
 
 DATASET_PATH = '/content/root/ML_Framework/VQGAN/cache/autoencoders/data/eyepacs_all_for_cgan/data/fumdata'
 
@@ -100,13 +100,13 @@ class D_DR(D_Base):
         for cidx, cval in enumerate(ynl):
             # xc_idx = kwargs['i'] % self.grade_len[cval]
             # cpath = self.grade[cval][xc_idx]
-            cpath = os.path.join('/content/RetinaLessions', fname, cval)
+            cpath = ospjoin('/content/RetinaLessions', fname, cval)
 
-            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath)).astype(np.float32))['image'])
-            xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/lesion/'))).astype(np.float32))['image'])
-            xcc[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/cunvexhull/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
-            xcf[cidx] = (dr_transformer0(image=np.array(Image.open(cpath.replace('/fundus/', '/fundus-mask/'))).astype(np.float32))['image'])[0] / 255.0 # single channell binary
-            xclmask[cidx] = (dr_transformer_e(image=np.array(Image.open(cpath.replace('/fundus/', '/lmask/'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
+            xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fundus.jpg'))).astype(np.float32))['image'])
+            xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'lesion.jpg'))).astype(np.float32))['image'])
+            xcc[cidx] = (dr_transformer_e(image=np.array(Image.open(ospjoin(cpath, 'cvh.jpg'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
+            xcf[cidx] = (dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32))['image'])[0] / 255.0 # single channell binary
+            xclmask[cidx] = (dr_transformer_e(image=np.array(Image.open(ospjoin(cpath, 'lmask.jpg'))).astype(np.float32))['image'])[:,:,0] / 255.0 # binary
             print(xc[cidx].shape)
             print(xcl[cidx].shape)
             print(xcc[cidx].shape)
@@ -125,15 +125,15 @@ class D_DR(D_Base):
         assert False
         return {
             'xs': imgNormalizer(xs),
-            'xs_lesion': imgNormalizer(xsl),
-            'xs_cunvexhull': xsc / 255.0, # binary
-            'xs_fundusmask': xsf / 255.0, # binary
-            'Lmask_xs': xslmask / 255.0, # binary
+            'xsl': imgNormalizer(xsl),
+            'xsc': xsc / 255.0, # binary
+            'xsf': xsf / 255.0, # binary
+            'xslmask': xslmask / 255.0, # binary
             'xc': xc,
-            'xc_lesion': xcl,
-            'xc_cunvexhull': xcc,
-            'xc_fundusmask': xcf,
-            'Lmask_xc': xclmask,
+            'xcl': xcl,
+            'xcc': xcc,
+            'xcf': xcf,
+            'xclmask': xclmask,
             'y_edit': y_edit
         }
 
