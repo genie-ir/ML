@@ -345,7 +345,7 @@ class VQModel(pl.LightningModule):
             (self.fold(Xc, Nk)+1)* 127.5, 
         ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-
+        assert False
         ###############################################################assert False
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) 
