@@ -300,7 +300,7 @@ class VQModel(pl.LightningModule):
         x = x.permute(1, 0, 2, 3).contiguous()
         c = x.shape[0] // batchsize
         batch_size = batchsize
-        _0, num_patches, jigsaw_h, jigsaw_w = x.shape[1]
+        _0, num_patches, jigsaw_h, jigsaw_w = x.shape
         print(num_patches, jigsaw_h, jigsaw_w)
         print(batch_size, c)
 
