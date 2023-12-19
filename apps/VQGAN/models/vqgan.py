@@ -295,18 +295,19 @@ class VQModel(pl.LightningModule):
     def unfold(self, x, Ps, Nk):
         return x.unfold(2, Ps, Ps).unfold(3, Ps, Ps).contiguous().view(-1, int(Nk*Nk), Ps, Ps).permute(1,0,2,3).contiguous()
 
-    def fold(self, x, grid_size):
+    def fold(self, x, grid_size, batchsize=4):
         x = x.unsqueeze(0)
         grid_size = (grid_size,grid_size)
         # x shape is batch_size x num_patches x c x jigsaw_h x jigsaw_w
         batch_size, num_patches, c, jigsaw_h, jigsaw_w = x.size()
+        print('****************', batch_size, num_patches, c, jigsaw_h, jigsaw_w)
         assert num_patches == grid_size[0] * grid_size[1]
         x_image = x.view(batch_size, grid_size[0], grid_size[1], c, jigsaw_h, jigsaw_w)
         output_h = grid_size[0] * jigsaw_h
         output_w = grid_size[1] * jigsaw_w
         x_image = x_image.permute(0, 3, 1, 4, 2, 5).contiguous()
         x_image = x_image.view(batch_size, c, output_h, output_w)
-        return x_image
+        return x_image.view(batchsize, -1, output_h, output_w)
     
     def forward(self, xs, Xc, xcl_pure):
         """
@@ -323,7 +324,6 @@ class VQModel(pl.LightningModule):
             (Xc+1)* 127.5, #ROT
             (xcl_pure+1)* 127.5, # none ROT 
         ], dim=0), f'/content/export/fip.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        
         xs0 = xs
         Xc0 = Xc
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
