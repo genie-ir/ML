@@ -300,7 +300,7 @@ class VQModel(pl.LightningModule):
         grid_size = (grid_size,grid_size)
         # x shape is batch_size x num_patches x c x jigsaw_h x jigsaw_w
         batch_size, num_patches, c, jigsaw_h, jigsaw_w = x.size()
-        print('****************', batch_size, num_patches, c, jigsaw_h, jigsaw_w)
+        # print('****************', batch_size, num_patches, c, jigsaw_h, jigsaw_w)
         assert num_patches == grid_size[0] * grid_size[1]
         x_image = x.view(batch_size, grid_size[0], grid_size[1], c, jigsaw_h, jigsaw_w)
         output_h = grid_size[0] * jigsaw_h
@@ -342,8 +342,6 @@ class VQModel(pl.LightningModule):
         
 
         r = self.fold(xs, Nk)
-        print('@@@@@@@@@@@@@', r.shape)
-        assert False
         signal_save(torch.cat([
             (self.fold(xs, Nk)+1)* 127.5, 
             (self.fold(Xc, Nk)+1)* 127.5, 
