@@ -296,6 +296,8 @@ class VQModel(pl.LightningModule):
         return x.unfold(2, Ps, Ps).unfold(3, Ps, Ps).contiguous().view(-1, int(Nk*Nk), Ps, Ps).permute(1,0,2,3).contiguous()
 
     def fold(self, x, grid_size, batchsize=4):
+        print('@@@@@@@@@@@@', x.shape)
+        assert False
         x = x.unsqueeze(0)
         grid_size = (grid_size,grid_size)
         # x shape is batch_size x num_patches x c x jigsaw_h x jigsaw_w
