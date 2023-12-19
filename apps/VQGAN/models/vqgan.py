@@ -298,10 +298,10 @@ class VQModel(pl.LightningModule):
     def fold(self, x, grid_size, batchsize=4):
         print('@@@@@@@@@@@@', x.shape)
         x = x.permute(1, 0, 2, 3).contiguous()
-        c = x.shape[0] // batchsize
+        B_CH, num_patches, jigsaw_h, jigsaw_w = x.shape
+        c = B_CH // batchsize
         batch_size = batchsize
-        _notused, num_patches, jigsaw_h, jigsaw_w = x.shape
-        print(num_patches, jigsaw_h, jigsaw_w)
+        print(B_CH, num_patches, jigsaw_h, jigsaw_w)
         print(batch_size, c)
 
         assert False
