@@ -345,7 +345,7 @@ class VQModel(pl.LightningModule):
         ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
-        assert False
+        ###############################################################assert False
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) 
         hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
@@ -355,8 +355,9 @@ class VQModel(pl.LightningModule):
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
         hc_new = self.post_quant_conv(quanth)
-        Qh = self.conv_catskip_0(torch.cat([hc_new, hc], dim=1))
-        Qh = q_eye16 * Qh
+        _Qh = self.conv_catskip_0(torch.cat([hc_new, hc], dim=1))
+        Qh = q_eye16 * _Qh
+        Qj = (1-q_eye16) * _Qh
 
         h, h_ilevel1, h_endDownSampling = self.encoder(xs)
         h = self.fold(h, Nk)
@@ -370,26 +371,39 @@ class VQModel(pl.LightningModule):
         Qorg = self.conv_catskip_0(torch.cat([h_new, h], dim=1))
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
+        Q0 = self.conv_crosover_adjustion_in_ch(torch.cat([Qorg, Qorg], dim=1))
 
         dec_Xc = self.decoder( # Xc -> Xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
             None,
             h_ilevel1_xcl,
             h_endDownSampling_xcl,
-            flag=False # output is a single channell regression mask for diesis detection.
+            flag=False, # spade off
+            flag2=False
         ) # Note: add skip connection
+        print(dec_Xc.shape)
         dec_Xc = Xc0 - 0.8 * Xc0 * (1 - torch.sigmoid(dec_Xc))
         # dec_Xc is ROT
         # dec_Xc shape is: torch.Size([1, 3, 256, 256])
 
         dec_xscl = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
-            Q, # PATCH version 
+            Q, #Q, # PATCH version 
             xcl_pure, # SPADE # none rot version
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
+        dec_Xs = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
+            Q0, 
+            None,
+            h_ilevel1, 
+            h_endDownSampling,
+            flag=False # spade off
+        ) # Note: add skip connection
         
-        return xs0 + dec_xscl, diff, dec_Xc, diff_xc
+        print(dec_Xc.shape, dec_xscl.shape, dec_Xs.shape)
+
+        assert False
+        return xs0 + dec_Xs, xs0 + dec_xscl, diff, dec_Xc, diff_xc
 
     
     def get_V(self, Forg, Frec):
@@ -461,21 +475,23 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
-        return self.training_step_slave(batch, batch_idx, optimizer_idx)
+        cidx = 0
+        return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx)
     
-    def training_step_slave(self, batch, batch_idx, optimizer_idx):
+    def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx):
         xs = batch['xs']
         xsl = batch['xsl']
         xsc = batch['xsc']
         xsf = batch['xsf']
         xslmask = batch['xslmask']
 
-        xc = batch['xc'] # ROT
-        xcl = batch['xcl'] # ROT
-        xcc = batch['xcc'] # ROT
-        xcf = batch['xcf'] # ROT
-        xclmask = batch['xclmask'] # ROT
-        
+        xc = batch['xc'][cidx] # ROT
+        xcl = batch['xcl'][cidx] # ROT
+        xcc = batch['xcc'][cidx] # ROT
+        xcf = batch['xcf'][cidx] # ROT
+        xclmask = batch['xclmask'][cidx] # ROT
+        ynl = batch['ynl'][cidx]
+
         # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
         # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
         # print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
@@ -483,19 +499,73 @@ class VQModel(pl.LightningModule):
         # print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
         # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
         
-        # for idx, ynl in enumerate(batch['ynl']):
-        #     print('!!!!!!!!!!!', ynl)
-        #     print(xc[idx].shape, xc[idx].dtype, xc[idx].min().item(), xc[idx].max().item())
-        #     print(xcl[idx].shape, xcl[idx].dtype, xcl[idx].min().item(), xcl[idx].max().item())
-        #     print(xcc[idx].shape, xcc[idx].dtype, xcc[idx].min().item(), xcc[idx].max().item())
-        #     print(xcf[idx].shape, xcf[idx].dtype, xcf[idx].min().item(), xcf[idx].max().item())
-        #     print(xclmask[idx].shape, xclmask[idx].dtype, xclmask[idx].min().item(), xclmask[idx].max().item())
+        print('!!!!!!!!!!!', ynl)
+        print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
+        print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
+        print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
+        print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
+        print('-'*30)
         
-        rec_xscl, qloss, rec_Xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
+        xc_lesion = None #TODO
+        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc[cidx], xc_lesion) # xc_lesion is none rot version of Xcl.
 
+
+        if optimizer_idx == 0: # reconstruction/generator process
+            M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
+            M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
+            M_xrec_xs = ((1 - M_union_L_xs_xc) * xsf).detach() # reconstruct xs
+            M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
+            
+            
+            print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
+
+            # INFO: Ladversial
+            
+            
+            # INFO: reconstruction xs and xs~
+            rec__xs0 = xsf * rec_xs # outside of both diesis features -> reconstruction xs
+            rec__xs_graoundtrouth0 = (xsf * xs).detach()
+            xss_aeloss, xss_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth0, rec__xs0, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag2=True), split="train")
+            
+            # INFO: correct!
+            rec__xs = M_xrec_xs * rec_xscl # outside of both diesis features -> reconstruction xs
+            rec__xs_graoundtrouth = (M_xrec_xs * xs).detach()
+            xs_aeloss, xs_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth, rec__xs, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag2=True), split="train")
+            
+            # INFO: correct!
+            rec__Xc = M_xrec_xcl * rec_xscl # on xc diesis features -> reconstruction  xc
+            rec__Xc_graoundtrouth = (M_xrec_xcl * xc).detach()
+            Xc_aeloss, Xc_log_dict_ae = self.loss(qloss, rec__Xc_graoundtrouth, rec__Xc, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag2=True), split="train")
+            
+            # INFO correct!
+            rec_xcl = rec_xcl * xcf # learning diagonal of quantizer such that save disease features -> reconstruction Xcl
+            Xcl__groundtrouth = xcl * xcf
+            Xcl_aeloss, Xcl_log_dict_ae = self.loss(qcloss, Xcl__groundtrouth, rec_xcl, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag2=False), split="train")
+
+            
+            # on xc diesease features -> interpolation!! -> adversialloss
+            
+            assert False
+
+        if optimizer_idx == 1: # discriminator
+            pass
 
 
         assert False
+
+
+
+
+
+
+
+
+
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
         #     self.log_images(batch, ignore=False)
@@ -909,9 +979,9 @@ class VQModel(pl.LightningModule):
         return [opt_ae, opt_disc], []
         return [opt_ae], []
 
-    def get_last_layer(self, flag=True):
-        if flag:
-            return self.decoder.conv_out.weight
+    def get_last_layer(self, flag2=True):
+        if flag2:
+            return self.decoder.conv_out_1ch_main.weight
         else:
             return self.decoder.conv_out_1ch.weight
 

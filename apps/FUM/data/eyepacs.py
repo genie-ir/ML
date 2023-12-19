@@ -96,6 +96,7 @@ class D_DR(D_Base):
 
         xc = [None for n in range(2)]
         xcl = [None for n in range(2)]
+        # xclNrot = [None for n in range(2)]
         xcc = [None for n in range(2)]
         xcf = [None for n in range(2)]
         xclmask = [None for n in range(2)]
@@ -108,6 +109,8 @@ class D_DR(D_Base):
 
             xc[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'fundus.jpg'))).astype(np.float32))['image'])
             xcl[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, 'lesion.jpg'))).astype(np.float32))['image'])
+            # xclNrot[cidx] = imgNormalizer(dr_transformer0(image=np.array(Image.open(ospjoin(cpath, '??lesion.jpg'))).astype(np.float32))['image'])
+            
             xcc[cidx] = np.array(Image.open(ospjoin(cpath, 'cvh.jpg'))).astype(np.float32) / 255.0 # binary
             xcf[cidx] = np.array(Image.open(ospjoin(cpath, 'fmask.jpg'))).astype(np.float32) / 255.0 # single channell binary
             xclmask[cidx] = np.array(Image.open(ospjoin(cpath, 'lmask.jpg'))).astype(np.float32)[:,:,0] / 255.0 # binary
@@ -140,6 +143,7 @@ class D_DR(D_Base):
             'xslmask': xslmask / 255.0, # binary
             'xc': xc,
             'xcl': xcl,
+            # 'xclNrot': xclNrot,
             'xcc': xcc,
             'xcf': xcf,
             'xclmask': xclmask,

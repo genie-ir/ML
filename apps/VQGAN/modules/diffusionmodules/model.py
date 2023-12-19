@@ -561,12 +561,17 @@ class Decoder(nn.Module):
 
         # end
         self.norm_out = Normalize(block_in)
-        self.conv_out = torch.nn.Conv2d(block_in,
-                                        out_ch,
+        # self.conv_out = torch.nn.Conv2d(block_in,
+        #                                 out_ch,
+        #                                 kernel_size=3,
+        #                                 stride=1,
+        #                                 padding=1)
+        self.conv_out_1ch = torch.nn.Conv2d(block_in,
+                                        1,
                                         kernel_size=3,
                                         stride=1,
                                         padding=1)
-        self.conv_out_1ch = torch.nn.Conv2d(block_in,
+        self.conv_out_1ch_main = torch.nn.Conv2d(block_in,
                                         1,
                                         kernel_size=3,
                                         stride=1,
@@ -578,7 +583,7 @@ class Decoder(nn.Module):
         self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
         self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
-    def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True):
+    def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True, flag2=True):
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape
 
@@ -629,8 +634,8 @@ class Decoder(nn.Module):
         h = self.norm_out(h)
         h = nonlinearity(h)
         
-        if flag:
-            h = self.conv_out(h)
+        if flag2:
+            h = self.conv_out_1ch_main(h)
         else:
             h = self.conv_out_1ch(h)
 
