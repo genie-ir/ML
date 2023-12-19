@@ -507,8 +507,8 @@ class VQModel(pl.LightningModule):
         print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
         print('-'*30)
         
-        xc_lesion = None #TODO
-        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc[cidx], xc_lesion) # xc_lesion is none rot version of Xcl.
+        xc_lesion = xc #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
 
 
         if optimizer_idx == 0: # reconstruction/generator process
