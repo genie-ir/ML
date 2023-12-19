@@ -340,6 +340,10 @@ class VQModel(pl.LightningModule):
             (Xc0+1)* 127.5, 
         ], dim=0), f'/content/export/fnp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
+
+        r = self.fold(xs, Nk)
+        print('@@@@@@@@@@@@@', r.shape)
+        assert False
         signal_save(torch.cat([
             (self.fold(xs, Nk)+1)* 127.5, 
             (self.fold(Xc, Nk)+1)* 127.5, 
