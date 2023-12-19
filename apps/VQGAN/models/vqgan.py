@@ -330,10 +330,10 @@ class VQModel(pl.LightningModule):
         Xc = self.unfold(Xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
 
         print('############', xs.shape, Xc.shape)
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (Xc+1)* 127.5, 
-        ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (Xc+1)* 127.5, 
+        # ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         signal_save(torch.cat([
             (xs0+1)* 127.5, 
