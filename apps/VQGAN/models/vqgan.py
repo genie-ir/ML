@@ -341,19 +341,19 @@ class VQModel(pl.LightningModule):
         ], dim=0), f'/content/export/fnp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
 
-        r = self.fold(xs, Nk)
         signal_save(torch.cat([
             (self.fold(xs, Nk)+1)* 127.5, 
             (self.fold(Xc, Nk)+1)* 127.5, 
         ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-        assert False
         ###############################################################assert False
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) 
+        print('before', Xc.shape, hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
         hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
         h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
         h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) # before: torch.Size([16, 512, 4, 4])
+        print('after', Xc.shape, hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
 
         hc = self.quant_conv(hc)
         quanth, diff_xc = self.quantize(hc)
