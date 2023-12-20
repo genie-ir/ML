@@ -430,7 +430,7 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
-        print('dec_xscl', dec_xscl.shape)
+        # print('dec_xscl', dec_xscl.shape) # dec_xscl torch.Size([1, 1, 256, 256])
 
         dec_Xs = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q0, 
@@ -439,7 +439,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False # spade off
         ) # Note: add skip connection
-        print('dec_Xs', dec_Xs.shape)
+        # print('dec_Xs', dec_Xs.shape) # dec_Xs torch.Size([1, 1, 256, 256])
         
         return xs0 + dec_Xs, xs0 + dec_xscl, diff, dec_Xc, diff_xc
 
@@ -547,8 +547,7 @@ class VQModel(pl.LightningModule):
         
         xc_lesion = xc #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
-        print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape)
-        assert False
+        # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
         if optimizer_idx == 0: # reconstruction/generator process
             M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
