@@ -117,11 +117,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
             # print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) # !!!!!!!logits_fake_large torch.Size([1, 1, 15, 15]) torch.float32 -9.900166511535645 -1.3470740668708459e-05 -1.919838786125183
             g_loss = -torch.mean(logits_fake)
             g_loss_large = -torch.mean(logits_fake_large)
-            gloss_total = g_loss + g_loss_large
-            print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7139, grad_fn=<NegBackward0>) tensor(1.9198, grad_fn=<NegBackward0>)
+            gloss_total = self.discriminator_weight * (g_loss + g_loss_large)
+            # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7139, grad_fn=<NegBackward0>) tensor(1.9198, grad_fn=<NegBackward0>)
             # NOTE: multiscale disc loss -> done!
 
-
+            print('##########', self.discriminator_weight)
             print('@@@@@@@@@@@@', nll_loss, gloss_total)
             assert False
 

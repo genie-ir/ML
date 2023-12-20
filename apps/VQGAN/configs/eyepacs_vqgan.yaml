@@ -25,7 +25,7 @@ model:
         disc_in_channels: 3 # 4 #3 #6 #3
         # disc_start: 250001
         disc_start: True
-        disc_weight: 0.8 #2.0 #0.8
+        disc_weight: 0.1 #2.0 #0.8
         perceptual_weight: 0.1
         codebook_weight: 1.0
 
