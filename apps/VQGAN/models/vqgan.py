@@ -337,65 +337,79 @@ class VQModel(pl.LightningModule):
         Nk = 4  # num patches in each row and column
         q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
         
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (Xc+1)* 127.5, #ROT
-            (xcl_pure+1)* 127.5, # none ROT 
-        ], dim=0), f'/content/export/fip.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (Xc+1)* 127.5, #ROT
+        #     (xcl_pure+1)* 127.5, # none ROT 
+        # ], dim=0), f'/content/export/fip.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         xs0 = xs
         Xc0 = Xc
         xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
         Xc = self.unfold(Xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
 
-        print('############ 1', xs0.shape, Xc0.shape)
-        print('############ 2', xs.shape, Xc.shape)
-        signal_save(torch.cat([
-            (xs+1)* 127.5, 
-            (Xc+1)* 127.5, 
-        ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # print('############ 1', xs0.shape, Xc0.shape)
+        # print('############ 2', xs.shape, Xc.shape)
+        # signal_save(torch.cat([
+        #     (xs+1)* 127.5, 
+        #     (Xc+1)* 127.5, 
+        # ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
-        signal_save(torch.cat([
-            (xs0+1)* 127.5, 
-            (Xc0+1)* 127.5, 
-        ], dim=0), f'/content/export/fnp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (xs0+1)* 127.5, 
+        #     (Xc0+1)* 127.5, 
+        # ], dim=0), f'/content/export/fnp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
 
-        signal_save(torch.cat([
-            (self.fold(xs, Nk)+1)* 127.5, 
-            (self.fold(Xc, Nk)+1)* 127.5, 
-        ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (self.fold(xs, Nk)+1)* 127.5, # unpatch
+        #     (self.fold(Xc, Nk)+1)* 127.5, # unpatch
+        # ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-        assert False
         ###############################################################assert False
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) # INFO patch version
         print('before', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
-        # hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
-        # h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
-        # h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) # before: torch.Size([16, 512, 4, 4])
-        # print('after', Xc.shape, hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
+        hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
+        h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
+        h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) # before: torch.Size([16, 512, 4, 4])
+        print('after', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
 
         hc = self.quant_conv(hc)
+        print('!!! hc', hc.shape)
         quanth, diff_xc = self.quantize(hc)
+        print('!!! quanth', quanth.shape)
         hc_new = self.post_quant_conv(quanth)
+        print('!!! hc_new', hc_new.shape)
         _Qh = self.conv_catskip_0(torch.cat([hc_new, hc], dim=1))
+        print('!!! _Qh', _Qh.shape)
         Qh = q_eye16 * _Qh
+        print('!!! Qh', Qh.shape)
         Qj = (1-q_eye16) * _Qh
+        print('!!! Qj', Qj.shape)
 
         h, h_ilevel1, h_endDownSampling = self.encoder(xs) # INFO patch version
-        # h = self.fold(h, Nk)
-        # h_ilevel1 = self.fold(h_ilevel1, Nk)
-        # h_endDownSampling = self.fold(h_endDownSampling, Nk)
+        print('@@ before', h.shape, h_ilevel1.shape, h_endDownSampling.shape)
+        h = self.fold(h, Nk)
+        h_ilevel1 = self.fold(h_ilevel1, Nk)
+        h_endDownSampling = self.fold(h_endDownSampling, Nk)
+        print('@@ after', h.shape, h_ilevel1.shape, h_endDownSampling.shape)
 
 
         h = self.quant_conv(h)
+        print('$$$ h', h.shape)
         quant, diff = self.quantize(h)
+        print('$$$ quant', quant.shape)
         h_new = self.post_quant_conv(quant)
+        print('$$$ h_new', h_new.shape)
         Qorg = self.conv_catskip_0(torch.cat([h_new, h], dim=1))
+        print('$$$ Qorg', Qorg.shape)
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
+        print('$$$ Qcrossover', Qcrossover.shape)
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
+        print('$$$ Q', Q.shape)
         Q0 = self.conv_crosover_adjustion_in_ch(torch.cat([Qorg, Qorg], dim=1))
+        print('$$$ Q0', Q0.shape)
 
         dec_Xc = self.decoder( # Xc -> Xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
@@ -405,8 +419,9 @@ class VQModel(pl.LightningModule):
             flag=False, # spade off
             flag2=False
         ) # Note: add skip connection
-        print(dec_Xc.shape)
+        print('dec_Xc ))) before', dec_Xc.shape)
         dec_Xc = Xc0 - 0.8 * Xc0 * (1 - torch.sigmoid(dec_Xc))
+        print('dec_Xc ))) after', dec_Xc.shape)
         # dec_Xc is ROT
         # dec_Xc shape is: torch.Size([1, 3, 256, 256])
 
