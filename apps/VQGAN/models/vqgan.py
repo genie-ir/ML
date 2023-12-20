@@ -552,11 +552,16 @@ class VQModel(pl.LightningModule):
         if optimizer_idx == 0: # reconstruction/generator process
             M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
             M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
-            M_xrec_xs = ((1 - M_union_L_xs_xc) * xsf).detach() # reconstruct xs
+            M_xrec_xs = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
             M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
             
-            
-            print('!!!!!!!!!', M_xrec_xs.min().item(), M_xrec_xs.max().item(), M_xrec_xs.sum().item(), M_xrec_xs.shape)
+            signal_save(torch.cat([
+                (M_union_L_xs_xc) * 255, 
+                (M_L_xs_mines_xc) * 255, 
+                (M_xrec_xs) * 255, 
+                (M_xrec_xcl) * 255, 
+            ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+
 
             # INFO: Ladversial
             
