@@ -563,11 +563,10 @@ class VQModel(pl.LightningModule):
             #     (M_xrec_xs) * 255, 
             #     (M_xrec_xcl) * 255, 
             # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-
-
-            # INFO: Ladversial
             
-            
+
+            # NOTE: on xs diesease features -> interpolation!! -> embed at adversialloss
+
             # INFO: reconstruction xs and xs~
             rec__xs0 = xsf * rec_xs # outside of both diesis features -> reconstruction xs
             rec__xs_graoundtrouth0 = (xsf * xs).detach()
@@ -594,15 +593,7 @@ class VQModel(pl.LightningModule):
 
             total_loss = xss_aeloss + xs_aeloss + Xc_aeloss + Xcl_aeloss
 
-            print(
-                '###############',
-                total_loss.item(),
-                xss_aeloss.item(),
-                xs_aeloss.item(),
-                Xc_aeloss.item(),
-                Xcl_aeloss.item()
-            )
-            # on xc diesease features -> interpolation!! -> adversialloss
+            # print('###############', total_loss.item(), xss_aeloss.item(), xs_aeloss.item(), Xc_aeloss.item(), Xcl_aeloss.item()) # ############### 1.8206264972686768 0.3734074831008911 0.4133034348487854 0.3042736053466797 0.7296419143676758
             
             return total_loss
 
@@ -610,15 +601,11 @@ class VQModel(pl.LightningModule):
             assert False
 
 
-        assert False
 
 
 
 
-
-
-
-
+    def test00000(self):
 
         h = torch.tensor(0.01).to(self.device)
         # if batch_idx % 500 == 0:
