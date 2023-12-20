@@ -99,27 +99,40 @@ class VQLPIPSWithDiscriminator(nn.Module):
         #nll_loss = torch.sum(nll_loss) / nll_loss.shape[0]
         nll_loss = torch.mean(nll_loss) # TODO total reconstruction loss contains norm1 and vgg perseptual loss.
         # print('nll_loss', nll_loss, nll_loss.shape, nll_loss.dtype) # nll_loss tensor(0.1391, grad_fn=<MeanBackward0>) torch.Size([]) torch.float32
-
+        # NOTE: reconstructionloss(norm1 and vgg_perseptual) -> done!
 
         # now the GAN part
         if optimizer_idx == 0: # reconstruction/generator
             # generator update
             if cond is None:
                 # print('HEREEEEEEEEEEEEEEEEEEEEE')
-                logits_fake = self.discriminator(reconstructions.contiguous())
-                logits_fake_large = self.discriminator_large(reconstructions.contiguous())
+                logits_fake = torch.log(self.discriminator(reconstructions.contiguous()))
+                logits_fake_large = torch.log(self.discriminator_large(reconstructions.contiguous()))
             else:
                 assert self.disc_conditional
                 assert False
                 # logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
             
-            print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item()) 
-            print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) 
+            print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item()) # !!!!!!!logits_fake torch.Size([1, 1, 30, 30]) torch.float32 -1.0164039134979248 -0.4585367441177368 -0.7120922803878784
+            print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) # !!!!!!!logits_fake_large torch.Size([1, 1, 15, 15]) torch.float32 -7.0217604637146 -1.2755474926962052e-05 -1.5252695083618164
             g_loss = -torch.mean(logits_fake)
             g_loss_large = -torch.mean(logits_fake_large)
-            
-            print('$$$$$$', g_loss, g_loss_large)
-            assert False
+            # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7121, grad_fn=<NegBackward0>) tensor(1.5253, grad_fn=<NegBackward0>)
+            # NOTE: multiscale disc loss -> done!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             # try:
             #     d_weight = self.calculate_adaptive_weight(nll_loss, g_loss, last_layer=last_layer)
@@ -133,15 +146,16 @@ class VQLPIPSWithDiscriminator(nn.Module):
             # loss = nll_loss + d_weight * disc_factor * g_loss + self.codebook_weight * codebook_loss.mean()
             loss = nll_loss + g_loss
 
-            log = {"{}/total_loss".format(split): loss.clone().detach().mean(),
-                #    "{}/quant_loss".format(split): codebook_loss.detach().mean(),
-                   "{}/nll_loss".format(split): nll_loss.detach().mean(),
-                #    "{}/rec_loss".format(split): rec_loss.detach().mean(),
-                #    "{}/p_loss".format(split): p_loss.detach().mean(),
-                #    "{}/d_weight".format(split): d_weight.detach(),
-                #    "{}/disc_factor".format(split): torch.tensor(disc_factor),
-                   "{}/g_loss".format(split): g_loss.detach().mean(),
-                   }
+            log = {
+                "{}/total_loss".format(split): loss.clone().detach().mean(),
+            #    "{}/quant_loss".format(split): codebook_loss.detach().mean(),
+                "{}/nll_loss".format(split): nll_loss.detach().mean(),
+            #    "{}/rec_loss".format(split): rec_loss.detach().mean(),
+            #    "{}/p_loss".format(split): p_loss.detach().mean(),
+            #    "{}/d_weight".format(split): d_weight.detach(),
+            #    "{}/disc_factor".format(split): torch.tensor(disc_factor),
+                "{}/g_loss".format(split): g_loss.detach().mean(),
+            }
             return loss, log
 
         if optimizer_idx == 1:
@@ -157,8 +171,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
             # d_loss = disc_factor * self.disc_loss(logits_real, logits_fake)
             d_loss = self.disc_loss(logits_real, logits_fake)
 
-            log = {"{}/disc_loss".format(split): d_loss.clone().detach().mean(),
-                   "{}/logits_real".format(split): logits_real.detach().mean(),
-                   "{}/logits_fake".format(split): logits_fake.detach().mean()
-                   }
+            log = {
+                "{}/disc_loss".format(split): d_loss.clone().detach().mean(),
+                "{}/logits_real".format(split): logits_real.detach().mean(),
+                "{}/logits_fake".format(split): logits_fake.detach().mean()
+            }
             return d_loss, log

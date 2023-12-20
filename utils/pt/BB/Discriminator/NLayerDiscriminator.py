@@ -60,7 +60,12 @@ class NLayerDiscriminator(BB):
         self.main = nn.Sequential(*sequence)
 
     def forward(self, input):
-        """Standard forward."""
+        """
+            Standard forward.
+            dloss = -Expectation(D)
+            (D=0 / fake classified) -> dloss=inf
+            (D=1 / real classified) -> dloss=0
+        """
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)
-        return torch.log(self.sig(self.main(input))) # I think 3x256x256 -> 1x30x30
+        return self.sig(self.main(input)) # I think 3x256x256 -> 1x30x30
