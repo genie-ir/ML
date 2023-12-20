@@ -528,7 +528,7 @@ class VQModel(pl.LightningModule):
         xcc = batch['xcc'][cidx] # ROT
         xcf = batch['xcf'][cidx] # ROT
         xclmask = batch['xclmask'][cidx] # ROT
-        ynl = batch['ynl'][cidx]
+        ynl = batch['ynl']#[cidx]
 
         # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
         # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
@@ -538,12 +538,13 @@ class VQModel(pl.LightningModule):
         # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
         
         print('!!!!!!!!!!!', ynl)
-        print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
-        print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
-        print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
-        print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
-        print('-'*30)
+        assert False
+        # print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        # print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
+        # print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
+        # print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
+        # print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
+        # print('-'*30)
         
         xc_lesion = xc #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
