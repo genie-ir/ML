@@ -528,7 +528,7 @@ class VQModel(pl.LightningModule):
         xcc = batch['xcc'][cidx] # ROT
         xcf = batch['xcf'][cidx] # ROT
         xclmask = batch['xclmask'][cidx] # ROT
-        ynl = batch['ynl'][cidx][0]
+        ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
 
         # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
         # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
