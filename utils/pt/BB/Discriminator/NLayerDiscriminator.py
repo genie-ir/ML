@@ -16,6 +16,7 @@ class NLayerDiscriminator(BB):
             n_layers (int)  -- the number of conv layers in the discriminator
             norm_layer      -- normalization layer
         """
+        kw = int(self.kwargs.get('kw', 4))
         input_nc=self.kwargs.get('input_nc', 3)
         ndf=self.kwargs.get('ndf', 64)
         n_layers=self.kwargs.get('n_layers', 3)
@@ -30,7 +31,7 @@ class NLayerDiscriminator(BB):
         else:
             use_bias = norm_layer != nn.BatchNorm2d
 
-        kw = 4
+        
         padw = 1
         sequence = [nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]
         nf_mult = 1
