@@ -313,31 +313,33 @@ class VQModel(pl.LightningModule):
         x_image = x_image.view(batch_size, c, output_h, output_w)
         return x_image.view(batchsize, -1, output_h, output_w)
     
-    def forward(self, xs0, Xc0, xcl_pure):
+    def forward(self, xs, Xc, xcl_pure):
         """
             xs: source color fundus
             Xc: conditional color fundus | ROT version
             xcl_pure: none ROT version of Xcl (attendend)
         """
-        # Sk = 64 # patch size
-        # Nk = 4  # num patches in each row and column
+        Sk = 64 # patch size
+        Nk = 4  # num patches in each row and column
         q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
         
         signal_save(torch.cat([
-            (xs0+1)* 127.5, 
-            (Xc0+1)* 127.5, #ROT
+            (xs+1)* 127.5, 
+            (Xc+1)* 127.5, #ROT
             (xcl_pure+1)* 127.5, # none ROT 
         ], dim=0), f'/content/export/fip.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        # xs0 = xs
-        # Xc0 = Xc
-        # xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
-        # Xc = self.unfold(Xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
+        
+        xs0 = xs
+        Xc0 = Xc
+        xs = self.unfold(xs, Sk, Nk) # PATCH version | self.ssf1(xs0, self.fold(xs, Nk), xs)
+        Xc = self.unfold(Xc, Sk, Nk) # PATCH version | self.ssf1(xc0, self.fold(xc, Nk), xc)
 
-        print('############', xs0.shape, Xc0.shape)
-        # signal_save(torch.cat([
-        #     (xs+1)* 127.5, 
-        #     (Xc+1)* 127.5, 
-        # ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        print('############ 1', xs0.shape, Xc0.shape)
+        print('############ 2', xs.shape, Xc.shape)
+        signal_save(torch.cat([
+            (xs+1)* 127.5, 
+            (Xc+1)* 127.5, 
+        ], dim=0), f'/content/export/fp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
         signal_save(torch.cat([
             (xs0+1)* 127.5, 
@@ -345,14 +347,15 @@ class VQModel(pl.LightningModule):
         ], dim=0), f'/content/export/fnp.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         
 
-        # signal_save(torch.cat([
-        #     (self.fold(xs, Nk)+1)* 127.5, 
-        #     (self.fold(Xc, Nk)+1)* 127.5, 
-        # ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (self.fold(xs, Nk)+1)* 127.5, 
+            (self.fold(Xc, Nk)+1)* 127.5, 
+        ], dim=0), f'/content/export/fnp2.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
+        assert False
         ###############################################################assert False
 
-        hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc0) 
+        hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) # INFO patch version
         print('before', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
         # hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
         # h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
@@ -366,7 +369,7 @@ class VQModel(pl.LightningModule):
         Qh = q_eye16 * _Qh
         Qj = (1-q_eye16) * _Qh
 
-        h, h_ilevel1, h_endDownSampling = self.encoder(xs0)
+        h, h_ilevel1, h_endDownSampling = self.encoder(xs) # INFO patch version
         # h = self.fold(h, Nk)
         # h_ilevel1 = self.fold(h_ilevel1, Nk)
         # h_endDownSampling = self.fold(h_endDownSampling, Nk)
