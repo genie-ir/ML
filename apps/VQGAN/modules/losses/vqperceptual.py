@@ -112,8 +112,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 assert self.disc_conditional
                 logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
             
-            print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item())
-            print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item())
+            print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item())
+            print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item())
             g_loss = -torch.mean(logits_fake)
             g_loss_large = -torch.mean(logits_fake_large)
             
