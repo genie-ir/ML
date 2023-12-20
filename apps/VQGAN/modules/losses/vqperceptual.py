@@ -120,7 +120,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
             # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7121, grad_fn=<NegBackward0>) tensor(1.5253, grad_fn=<NegBackward0>)
             # NOTE: multiscale disc loss -> done!
 
-
+            assert False
 
 
 
