@@ -22,6 +22,8 @@ class NLayerDiscriminator(BB):
         n_layers=self.kwargs.get('n_layers', 3)
         use_actnorm=self.kwargs.get('use_actnorm', False)
 
+        self.sig = nn.Sigmoid()
+
         if not use_actnorm:
             norm_layer = nn.BatchNorm2d
         else:
@@ -61,4 +63,4 @@ class NLayerDiscriminator(BB):
         """Standard forward."""
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)
-        return self.main(input) # I think 3x256x256 -> 1x30x30
+        return self.sig(self.main(input)) # I think 3x256x256 -> 1x30x30

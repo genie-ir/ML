@@ -105,7 +105,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         if optimizer_idx == 0: # reconstruction/generator
             # generator update
             if cond is None:
-                print('HEREEEEEEEEEEEEEEEEEEEEE')
+                # print('HEREEEEEEEEEEEEEEEEEEEEE')
                 logits_fake = self.discriminator(reconstructions.contiguous())
                 logits_fake_large = self.discriminator_large(reconstructions.contiguous())
             else:
