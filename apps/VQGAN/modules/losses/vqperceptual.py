@@ -113,11 +113,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 assert False
                 # logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
             
-            print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item()) # !!!!!!!logits_fake torch.Size([1, 1, 30, 30]) torch.float32 -1.0164039134979248 -0.4585367441177368 -0.7120922803878784
-            print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) # !!!!!!!logits_fake_large torch.Size([1, 1, 15, 15]) torch.float32 -7.0217604637146 -1.2755474926962052e-05 -1.5252695083618164
+            print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item()) 
+            print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) 
             g_loss = -torch.mean(logits_fake)
             g_loss_large = -torch.mean(logits_fake_large)
-            # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7121, grad_fn=<NegBackward0>) tensor(1.5253, grad_fn=<NegBackward0>)
+            print('$$$$$$', g_loss, g_loss_large) 
             # NOTE: multiscale disc loss -> done!
 
             assert False

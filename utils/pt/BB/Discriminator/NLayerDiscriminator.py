@@ -62,7 +62,7 @@ class NLayerDiscriminator(BB):
     def forward(self, input):
         """
             Standard forward.
-            dloss = -Expectation(D)
+            dloss = -Expectation(ln D)
             (D=0 / fake classified) -> dloss=inf
             (D=1 / real classified) -> dloss=0
         """
