@@ -156,6 +156,10 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 # logits_real = self.discriminator(torch.cat((inputs.contiguous().detach(), cond), dim=1))
                 # logits_fake = self.discriminator(torch.cat((reconstructions.contiguous().detach(), cond), dim=1))
 
+            print('@@ real', logits_real.shape, logits_real.dtype, logits_real.min().item(), logits_real.max().item(), logits_real.mean().item())
+            print('@@ fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item())
+            assert False
+
             # disc_factor = adopt_weight(self.disc_factor, global_step, threshold=self.discriminator_iter_start)
             # d_loss = disc_factor * self.disc_loss(logits_real, logits_fake)
             d_loss = self.disc_loss(logits_real, logits_fake)
