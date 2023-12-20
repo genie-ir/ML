@@ -549,6 +549,8 @@ class VQModel(pl.LightningModule):
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
         # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
+        split = 'train_'
+
         if optimizer_idx == 0: # reconstruction/generator process
             M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
             M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
@@ -570,33 +572,42 @@ class VQModel(pl.LightningModule):
             rec__xs0 = xsf * rec_xs # outside of both diesis features -> reconstruction xs
             rec__xs_graoundtrouth0 = (xsf * xs).detach()
             xss_aeloss, xss_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth0, rec__xs0, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=True), split="train")
+                                            last_layer=self.get_last_layer(flag2=True), split=split + 'xss')
             
-            # INFO: correct!
+            # INFO: reconstruction xs surface
             rec__xs = M_xrec_xs * rec_xscl # outside of both diesis features -> reconstruction xs
             rec__xs_graoundtrouth = (M_xrec_xs * xs).detach()
             xs_aeloss, xs_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth, rec__xs, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=True), split="train")
+                                            last_layer=self.get_last_layer(flag2=True), split=split + 'xs')
             
-            # INFO: correct!
+            # INFO: reconstruction xc diesis
             rec__Xc = M_xrec_xcl * rec_xscl # on xc diesis features -> reconstruction  xc
             rec__Xc_graoundtrouth = (M_xrec_xcl * xc).detach()
             Xc_aeloss, Xc_log_dict_ae = self.loss(qloss, rec__Xc_graoundtrouth, rec__Xc, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=True), split="train")
+                                            last_layer=self.get_last_layer(flag2=True), split=split + 'xc')
             
-            # INFO correct!
+            # INFO reconstruction xcl diesis
             rec_xcl = rec_xcl * xcf # learning diagonal of quantizer such that save disease features -> reconstruction Xcl
             Xcl__groundtrouth = xcl * xcf
             Xcl_aeloss, Xcl_log_dict_ae = self.loss(qcloss, Xcl__groundtrouth, rec_xcl, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=False), split="train")
+                                            last_layer=self.get_last_layer(flag2=False), split=split + 'xcl')
 
-            
+            total_loss = xss_aeloss + xs_aeloss + Xc_aeloss + Xcl_aeloss
+
+            print(
+                '###############',
+                total_loss.item(),
+                xss_aeloss.item(),
+                xs_aeloss.item(),
+                Xc_aeloss.item(),
+                Xcl_aeloss.item()
+            )
             # on xc diesease features -> interpolation!! -> adversialloss
             
-            assert False
+            return total_loss
 
         if optimizer_idx == 1: # discriminator
-            pass
+            assert False
 
 
         assert False
