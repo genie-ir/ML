@@ -121,10 +121,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
             # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7139, grad_fn=<NegBackward0>) tensor(1.9198, grad_fn=<NegBackward0>)
             # NOTE: multiscale disc loss -> done!
 
-            print('##########', self.discriminator_weight)
-            print('@@@@@@@@@@@@', nll_loss, gloss_total)
-            assert False
-
             # try:
             #     d_weight = self.calculate_adaptive_weight(nll_loss, g_loss, last_layer=last_layer)
             # except RuntimeError as e_RuntimeError:
