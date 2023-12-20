@@ -369,47 +369,47 @@ class VQModel(pl.LightningModule):
         ###############################################################assert False
 
         hc, h_ilevel1_xcl, h_endDownSampling_xcl = self.encoder(Xc) # INFO patch version
-        print('before', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
+        # print('before', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
         hc = self.fold(hc, Nk) # before: torch.Size([16, 256, 4, 4])
         h_ilevel1_xcl = self.fold(h_ilevel1_xcl, Nk) # before: torch.Size([16, 128, 64, 64])
         h_endDownSampling_xcl = self.fold(h_endDownSampling_xcl, Nk) # before: torch.Size([16, 512, 4, 4])
-        print('after', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
+        # print('after', hc.shape, h_ilevel1_xcl.shape, h_endDownSampling_xcl.shape)
 
         hc = self.quant_conv(hc)
-        print('!!! hc', hc.shape)
+        # print('!!! hc', hc.shape)
         quanth, diff_xc = self.quantize(hc)
-        print('!!! quanth', quanth.shape)
+        # print('!!! quanth', quanth.shape)
         hc_new = self.post_quant_conv(quanth)
-        print('!!! hc_new', hc_new.shape)
+        # print('!!! hc_new', hc_new.shape)
         _Qh = self.conv_catskip_0(torch.cat([hc_new, hc], dim=1))
-        print('!!! _Qh', _Qh.shape)
+        # print('!!! _Qh', _Qh.shape)
         Qh = q_eye16 * _Qh
-        print('!!! Qh', Qh.shape)
+        # print('!!! Qh', Qh.shape)
         Qj = (1-q_eye16) * _Qh
-        print('!!! Qj', Qj.shape)
+        # print('!!! Qj', Qj.shape)
 
         h, h_ilevel1, h_endDownSampling = self.encoder(xs) # INFO patch version
-        print('@@ before', h.shape, h_ilevel1.shape, h_endDownSampling.shape)
+        # print('@@ before', h.shape, h_ilevel1.shape, h_endDownSampling.shape)
         h = self.fold(h, Nk)
         h_ilevel1 = self.fold(h_ilevel1, Nk)
         h_endDownSampling = self.fold(h_endDownSampling, Nk)
-        print('@@ after', h.shape, h_ilevel1.shape, h_endDownSampling.shape)
+        # print('@@ after', h.shape, h_ilevel1.shape, h_endDownSampling.shape)
 
 
         h = self.quant_conv(h)
-        print('$$$ h', h.shape)
+        # print('$$$ h', h.shape)
         quant, diff = self.quantize(h)
-        print('$$$ quant', quant.shape)
+        # print('$$$ quant', quant.shape)
         h_new = self.post_quant_conv(quant)
-        print('$$$ h_new', h_new.shape)
+        # print('$$$ h_new', h_new.shape)
         Qorg = self.conv_catskip_0(torch.cat([h_new, h], dim=1))
-        print('$$$ Qorg', Qorg.shape)
+        # print('$$$ Qorg', Qorg.shape)
         Qcrossover = (1-q_eye16) * Qorg + Qh # crossover/exchange of latent codes.
-        print('$$$ Qcrossover', Qcrossover.shape)
+        # print('$$$ Qcrossover', Qcrossover.shape)
         Q = self.conv_crosover_adjustion_in_ch(torch.cat([Qcrossover, Qorg], dim=1))
-        print('$$$ Q', Q.shape)
+        # print('$$$ Q', Q.shape)
         Q0 = self.conv_crosover_adjustion_in_ch(torch.cat([Qorg, Qorg], dim=1))
-        print('$$$ Q0', Q0.shape)
+        # print('$$$ Q0', Q0.shape)
 
         dec_Xc = self.decoder( # Xc -> Xcl (attendend version) ; givven only digonal of Qh.
             Qh, # PATCH version
@@ -419,11 +419,10 @@ class VQModel(pl.LightningModule):
             flag=False, # spade off
             flag2=False
         ) # Note: add skip connection
-        print('dec_Xc ))) before', dec_Xc.shape)
+        # print('dec_Xc ))) before', dec_Xc.shape) # dec_Xc ))) before torch.Size([1, 1, 256, 256])
         dec_Xc = Xc0 - 0.8 * Xc0 * (1 - torch.sigmoid(dec_Xc))
-        print('dec_Xc ))) after', dec_Xc.shape)
+        # print('dec_Xc ))) after', dec_Xc.shape) # dec_Xc ))) after torch.Size([1, 3, 256, 256])
         # dec_Xc is ROT
-        # dec_Xc shape is: torch.Size([1, 3, 256, 256])
 
         dec_xscl = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, #Q, # PATCH version 
@@ -431,6 +430,8 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
+        print('dec_xscl', dec_xscl.shape)
+
         dec_Xs = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q0, 
             None,
@@ -438,10 +439,8 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False # spade off
         ) # Note: add skip connection
+        print('dec_Xs', dec_Xs.shape)
         
-        print(dec_Xc.shape, dec_xscl.shape, dec_Xs.shape)
-
-        assert False
         return xs0 + dec_Xs, xs0 + dec_xscl, diff, dec_Xc, diff_xc
 
     
@@ -548,7 +547,8 @@ class VQModel(pl.LightningModule):
         
         xc_lesion = xc #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
-
+        print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape)
+        assert False
 
         if optimizer_idx == 0: # reconstruction/generator process
             M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
