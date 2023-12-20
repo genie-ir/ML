@@ -537,8 +537,7 @@ class VQModel(pl.LightningModule):
         # print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
         # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
         
-        print('!!!!!!!!!!!', ynl)
-        assert False
+        # print('!!!!!!!!!!!', ynl) # !!!!!!!!!!! [01] # NOTE: in this case in another case it can be '2' or '[34]'
         # print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
         # print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
         # print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
