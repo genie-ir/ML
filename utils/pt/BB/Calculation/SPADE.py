@@ -74,13 +74,14 @@ class SPADE(BB):
 
 
 
-    def forward(self, xclpure, fmap, flag):
+    def forward(self, xcl, fmap, flag):
+        """xcl is ROT version"""
         femap = fold3d(fmap)
         featuremap = self.fconvbn(femap)
         if not flag:
             return featuremap
 
-        alpha = fold3d(self.alphaconv(xclpure))
+        alpha = fold3d(self.alphaconv(xcl))
         beta = self.betaconv(alpha)
         gamma = self.gammaconv(alpha)
         return featuremap * gamma + beta

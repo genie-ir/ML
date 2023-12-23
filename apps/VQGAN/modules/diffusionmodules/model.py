@@ -408,6 +408,9 @@ class Encoder(nn.Module):
                                         padding=1)
 
 
+    def fwd_syn_step(self, x):
+        return x
+
     def forward_yes_skip(self, x):
         #assert x.shape[2] == x.shape[3] == self.resolution, "{}, {}, {}".format(x.shape[2], x.shape[3], self.resolution)
 
@@ -584,6 +587,7 @@ class Decoder(nn.Module):
         self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
     def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True, flag2=True):
+        """xcl_pure is ROT version"""
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape
 

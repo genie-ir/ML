@@ -331,7 +331,8 @@ class VQModel(pl.LightningModule):
         """
             xs: source color fundus
             Xc: conditional color fundus | ROT version
-            xcl_pure: none ROT version of Xcl (attendend)
+            # xcl_pure: none ROT version of Xcl (attendend)
+            # UPDATE: xcl_pure: is xcl === ROT (attendend)
         """
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -426,7 +427,7 @@ class VQModel(pl.LightningModule):
 
         dec_xscl = self.decoder( # xs, xcl -> xscl ; givven digonal of Qh and others of Q.
             Q, #Q, # PATCH version 
-            xcl_pure, # SPADE # none rot version
+            xcl_pure, # SPADE # `xcl ROT version`
             h_ilevel1, 
             h_endDownSampling
         ) # Note: add skip connection
@@ -514,9 +515,9 @@ class VQModel(pl.LightningModule):
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
         cidx = 0
-        return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx)
+        return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
     
-    def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx):
+    def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split):
         xs = batch['xs']
         xsl = batch['xsl']
         xsc = batch['xsc']
@@ -544,52 +545,57 @@ class VQModel(pl.LightningModule):
         # print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
         # print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
         # print('-'*30)
+
+
+
+        # NOTE: Mask design
+        M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
+        M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
+        M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
+        M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
+        # signal_save(torch.cat([
+        #     (M_union_L_xs_xc) * 255, 
+        #     (M_L_xs_mines_xc) * 255, 
+        #     (M_xrec_xs) * 255, 
+        #     (M_xrec_xcl) * 255, 
+        # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+
+
         
-        xc_lesion = xc #TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xc_lesion) # xc_lesion is none rot version of Xcl.
+        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xcl) # xcl is ROT.
+        xscl_final = self.synf(rec_xscl, M_C_Union, xclmask, xcl)
         # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
-        split = 'train_'
 
         if optimizer_idx == 0: # reconstruction/generator process
-            M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
-            M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
-            M_xrec_xs = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
-            M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
-            
-            # signal_save(torch.cat([
-            #     (M_union_L_xs_xc) * 255, 
-            #     (M_L_xs_mines_xc) * 255, 
-            #     (M_xrec_xs) * 255, 
-            #     (M_xrec_xcl) * 255, 
-            # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-            
-
-            # NOTE: on xs diesease features -> interpolation!! -> embed at adversialloss
-
-            # INFO: reconstruction xs and xs~
-            rec__xs0 = xsf * rec_xs # outside of both diesis features -> reconstruction xs
-            rec__xs_graoundtrouth0 = (xsf * xs).detach()
-            xss_aeloss, xss_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth0, rec__xs0, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=True), split=split + 'xss')
-            
-            # INFO: reconstruction xs surface
-            rec__xs = M_xrec_xs * rec_xscl # outside of both diesis features -> reconstruction xs
-            rec__xs_graoundtrouth = (M_xrec_xs * xs).detach()
-            xs_aeloss, xs_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth, rec__xs, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=True), split=split + 'xs')
-            
-            # INFO: reconstruction xc diesis
-            rec__Xc = M_xrec_xcl * rec_xscl # on xc diesis features -> reconstruction  xc
-            rec__Xc_graoundtrouth = (M_xrec_xcl * xc).detach()
-            Xc_aeloss, Xc_log_dict_ae = self.loss(qloss, rec__Xc_graoundtrouth, rec__Xc, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=True), split=split + 'xc')
-            
-            # INFO reconstruction xcl diesis
+            # INFO *** reconstruction xcl diesis === diagonal learning *** => only Geometry loss calcualated!
             rec_xcl = rec_xcl * xcf # learning diagonal of quantizer such that save disease features -> reconstruction Xcl
             Xcl__groundtrouth = xcl * xcf
             Xcl_aeloss, Xcl_log_dict_ae = self.loss(qcloss, Xcl__groundtrouth, rec_xcl, 0, self.global_step, 
-                                            last_layer=self.get_last_layer(flag2=False), split=split + 'xcl')
+                                            last_layer=self.get_last_layer(flag2=False), dw=0, split=split + 'xcl')
+
+            # INFO: reconstruction xs and xs~ => only Geometry loss calcualated!
+            rec__xs0 = xsf * rec_xs
+            rec__xs_graoundtrouth0 = (xsf * xs).detach()
+            xss_aeloss, xss_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth0, rec__xs0, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag2=True), dw=0, split=split + 'xss')
+            
+            # INFO: reconstruction xs surface === complement of union => only Geometry loss calculated!
+            rec__xs = M_C_Union * rec_xscl # outside of both diesis features -> reconstruction xs
+            rec__xs_graoundtrouth = (M_C_Union * xs).detach()
+            xs_aeloss, xs_log_dict_ae = self.loss(qloss, rec__xs_graoundtrouth, rec__xs, 0, self.global_step, 
+                                            last_layer=self.get_last_layer(flag2=True), dw=0, split=split + 'xs')
+            
+            # INFO: reconstruction xc diesis === xclmask a part of union === step1: import leasions from xc => only Geometry loss calculated!
+            # rec__Xc = M_xrec_xcl * rec_xscl # on xc diesis features -> reconstruction  xc
+            # rec__Xc_graoundtrouth = (M_xrec_xcl * xc).detach()
+            # Xc_aeloss, Xc_log_dict_ae = self.loss(qloss, rec__Xc_graoundtrouth, rec__Xc, 0, self.global_step, 
+            #                                 last_layer=self.get_last_layer(flag2=True), dw=0, split=split + 'xc')
+            
+            # INFO: synthesis process on uinon area === xscl_final === step2: 
+            
+
+
 
             total_loss = xss_aeloss + xs_aeloss + Xc_aeloss + Xcl_aeloss
 
@@ -600,7 +606,12 @@ class VQModel(pl.LightningModule):
         if optimizer_idx == 1: # discriminator
             assert False
 
+    def synf(self, xscl0, m_c_union, xclmask, xcl):
+        """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
+        syn_xscl = m_c_union * xscl0 + xclmask * xcl
 
+        self.encoder.fwd_syn_step()
+        return xscl0
 
 
 

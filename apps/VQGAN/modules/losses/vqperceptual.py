@@ -87,7 +87,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         d_weight = d_weight * self.discriminator_weight
         return d_weight
 
-    def forward(self, codebook_loss, inputs, reconstructions, optimizer_idx, global_step, last_layer=None, cond=None, split="train"):
+    def forward(self, codebook_loss, inputs, reconstructions, optimizer_idx, global_step, last_layer=None, cond=None, dw=0.1, split="train"):
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:
             p_loss = self.perceptual_loss(inputs.contiguous(), reconstructions.contiguous())
@@ -104,22 +104,27 @@ class VQLPIPSWithDiscriminator(nn.Module):
         # now the GAN part
         if optimizer_idx == 0: # reconstruction/generator
             # generator update
-            if cond is None:
-                # print('HEREEEEEEEEEEEEEEEEEEEEE')
-                logits_fake = torch.log(self.discriminator(reconstructions.contiguous()))
-                logits_fake_large = torch.log(self.discriminator_large(reconstructions.contiguous()))
+            if dw > 0:
+                if cond is None:
+                    # print('HEREEEEEEEEEEEEEEEEEEEEE')
+                    logits_fake = torch.log(self.discriminator(reconstructions.contiguous()))
+                    logits_fake_large = torch.log(self.discriminator_large(reconstructions.contiguous()))
+                else:
+                    assert self.disc_conditional
+                    assert False
+                    # logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
+                
+                # print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item()) # !!!!!!!logits_fake torch.Size([1, 1, 30, 30]) torch.float32 -0.9964276552200317 -0.4953823685646057 -0.7139382362365723
+                # print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) # !!!!!!!logits_fake_large torch.Size([1, 1, 15, 15]) torch.float32 -9.900166511535645 -1.3470740668708459e-05 -1.919838786125183
+                g_loss = -torch.mean(logits_fake)
+                g_loss_large = -torch.mean(logits_fake_large)
+                gloss_total = dw * (g_loss + g_loss_large)
+                # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7139, grad_fn=<NegBackward0>) tensor(1.9198, grad_fn=<NegBackward0>)
+                print('@@@@@@@@ gloss_total', gloss_total, gloss_total.dtype, gloss_total.shape)
+                # NOTE: multiscale disc loss -> done!
             else:
-                assert self.disc_conditional
-                assert False
-                # logits_fake = self.discriminator(torch.cat((reconstructions.contiguous(), cond), dim=1))
-            
-            # print('!!!!!!!logits_fake', logits_fake.shape, logits_fake.dtype, logits_fake.min().item(), logits_fake.max().item(), logits_fake.mean().item()) # !!!!!!!logits_fake torch.Size([1, 1, 30, 30]) torch.float32 -0.9964276552200317 -0.4953823685646057 -0.7139382362365723
-            # print('!!!!!!!logits_fake_large', logits_fake_large.shape, logits_fake_large.dtype, logits_fake_large.min().item(), logits_fake_large.max().item(), logits_fake_large.mean().item()) # !!!!!!!logits_fake_large torch.Size([1, 1, 15, 15]) torch.float32 -9.900166511535645 -1.3470740668708459e-05 -1.919838786125183
-            g_loss = -torch.mean(logits_fake)
-            g_loss_large = -torch.mean(logits_fake_large)
-            gloss_total = self.discriminator_weight * (g_loss + g_loss_large)
-            # print('$$$$$$', g_loss, g_loss_large) # $$$$$$ tensor(0.7139, grad_fn=<NegBackward0>) tensor(1.9198, grad_fn=<NegBackward0>)
-            # NOTE: multiscale disc loss -> done!
+                print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+                gloss_total = 0
 
             # try:
             #     d_weight = self.calculate_adaptive_weight(nll_loss, g_loss, last_layer=last_layer)
