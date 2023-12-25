@@ -563,6 +563,14 @@ class VQModel(pl.LightningModule):
 
         
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xcl) # xcl is ROT.
+
+        signal_save(torch.cat([
+            (rec_xs+1) * 127.5, 
+            (rec_xscl+1) * 127.5, 
+            (rec_xcl+1) * 127.5, 
+        ], dim=0), f'/content/export/rec.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+
+
         xscl_final = self.synf(rec_xscl, M_C_Union, xclmask, xcl)
         # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
@@ -609,16 +617,15 @@ class VQModel(pl.LightningModule):
     def synf(self, xscl0, m_c_union, xclmask, xcl):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
         syn_xscl_input = m_c_union * xscl0 + xclmask * xcl
-        signal_save(torch.cat([
-            (syn_xscl_input+1) * 127.5, 
-            (xscl0+1) * 127.5, 
-            (xcl+1) * 127.5, 
-        ], dim=0), f'/content/export/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-        signal_save(torch.cat([
-            (m_c_union) * 255, 
-            (xclmask) * 255, 
-        ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-        
+        # signal_save(torch.cat([
+        #     (syn_xscl_input+1) * 127.5, 
+        #     (xscl0+1) * 127.5, 
+        #     (xcl+1) * 127.5, 
+        # ], dim=0), f'/content/export/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        # signal_save(torch.cat([
+        #     (m_c_union) * 255, 
+        #     (xclmask) * 255, 
+        # ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         assert False
         self.encoder.fwd_syn_step()
         return xscl0
