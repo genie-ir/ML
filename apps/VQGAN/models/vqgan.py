@@ -637,7 +637,7 @@ class VQModel(pl.LightningModule):
         m_rgb2 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         m_rgb3 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)
         
-        
+        print(m_rgb3)
         signal_save(torch.cat([
             m_rgb, 
             m_rgb2, 
