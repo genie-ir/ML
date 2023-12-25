@@ -596,7 +596,7 @@ class VQModel(pl.LightningModule):
             
 
 
-
+            Xc_aeloss = 0 # DELETE
             total_loss = xss_aeloss + xs_aeloss + Xc_aeloss + Xcl_aeloss
 
             # print('###############', total_loss.item(), xss_aeloss.item(), xs_aeloss.item(), Xc_aeloss.item(), Xcl_aeloss.item()) # ############### 1.8206264972686768 0.3734074831008911 0.4133034348487854 0.3042736053466797 0.7296419143676758
@@ -608,8 +608,16 @@ class VQModel(pl.LightningModule):
 
     def synf(self, xscl0, m_c_union, xclmask, xcl):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
-        syn_xscl = m_c_union * xscl0 + xclmask * xcl
-
+        syn_xscl_input = m_c_union * xscl0 + xclmask * xcl
+        signal_save(torch.cat([
+            (syn_xscl_input+1) * 127.5, 
+            (xscl0+1) * 127.5, 
+            (xcl+1) * 127.5, 
+            (m_c_union) * 255, 
+            (xclmask) * 255, 
+        ], dim=0), f'/content/export/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        
+        assert False
         self.encoder.fwd_syn_step()
         return xscl0
 
