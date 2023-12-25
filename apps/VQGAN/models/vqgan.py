@@ -531,8 +531,9 @@ class VQModel(pl.LightningModule):
         xclmask = batch['xclmask'][cidx] # ROT
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
 
-        mRGB = xs.detach().mean(dim=[2,3]).clone().detach()
-        m_rgb = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)).clone().detach()
+        # DELETE
+        # mRGB = xs.detach().mean(dim=[2,3]).clone().detach()
+        # m_rgb = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)).clone().detach()
 
 
         # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
@@ -575,7 +576,7 @@ class VQModel(pl.LightningModule):
         # ], dim=0), f'/content/export/rec.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
 
-        xscl_final = self.synf(rec_xscl, M_C_Union, xclmask, xcl, M_L_xs_mines_xc, m_rgb)
+        xscl_final = self.synf(rec_xscl, M_C_Union, xclmask, xcl, M_L_xs_mines_xc)
         # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
 
@@ -618,7 +619,7 @@ class VQModel(pl.LightningModule):
         if optimizer_idx == 1: # discriminator
             assert False
 
-    def synf(self, xscl0, m_c_union, xclmask, xcl, m_faghat_s, m_rgb):
+    def synf(self, xscl0, m_c_union, xclmask, xcl, m_faghat_s):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
         syn_xscl_input = m_c_union * xscl0 
         
@@ -627,7 +628,7 @@ class VQModel(pl.LightningModule):
         ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
 
-        syn_xscl_input = syn_xscl_input + xclmask * xcl + m_faghat_s * m_rgb
+        syn_xscl_input = syn_xscl_input + xclmask * xcl
 
         signal_save(torch.cat([
             (syn_xscl_input+1) * 127.5, 
