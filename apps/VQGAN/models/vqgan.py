@@ -531,6 +531,10 @@ class VQModel(pl.LightningModule):
         xclmask = batch['xclmask'][cidx] # ROT
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
 
+        mRGB = xs.detach().mean(dim=[2,3]).detach()
+        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype).clone().detach() + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1).clone().detach()
+
+
         # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
         # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
         # print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
@@ -571,7 +575,7 @@ class VQModel(pl.LightningModule):
         # ], dim=0), f'/content/export/rec.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
 
-        xscl_final = self.synf(rec_xscl, M_C_Union, xclmask, xcl, M_L_xs_mines_xc)
+        xscl_final = self.synf(rec_xscl, M_C_Union, xclmask, xcl, M_L_xs_mines_xc, m_rgb)
         # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
 
@@ -614,21 +618,13 @@ class VQModel(pl.LightningModule):
         if optimizer_idx == 1: # discriminator
             assert False
 
-    def synf(self, xscl0, m_c_union, xclmask, xcl, m_faghat_s):
+    def synf(self, xscl0, m_c_union, xclmask, xcl, m_faghat_s, m_rgb):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
         syn_xscl_input = m_c_union * xscl0 
-
-        mRGB = syn_xscl_input.detach().mean(dim=[2,3]).detach()
         
-        # m_rgb0 = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)) / 127.5 - 1
-        # m_rgb1 = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)) / 127.5 - 1
-        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1).clone().detach()
-        
-        # signal_save(torch.cat([
-        #     (m_rgb0+1)*127.5, 
-        #     (m_rgb1+1)*127.5, 
-        #     (m_rgb +1) * 127.5, 
-        # ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        signal_save(torch.cat([
+            (m_rgb +1) * 127.5, 
+        ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
 
         syn_xscl_input = syn_xscl_input + xclmask * xcl + m_faghat_s * m_rgb
