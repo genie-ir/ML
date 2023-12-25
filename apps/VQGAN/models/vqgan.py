@@ -613,9 +613,11 @@ class VQModel(pl.LightningModule):
             (syn_xscl_input+1) * 127.5, 
             (xscl0+1) * 127.5, 
             (xcl+1) * 127.5, 
+        ], dim=0), f'/content/export/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        signal_save(torch.cat([
             (m_c_union) * 255, 
             (xclmask) * 255, 
-        ], dim=0), f'/content/export/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
         assert False
         self.encoder.fwd_syn_step()
