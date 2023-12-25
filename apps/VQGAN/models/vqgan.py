@@ -633,9 +633,9 @@ class VQModel(pl.LightningModule):
         #     (xclmask) * 255, 
         # ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
-        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + [255, 0, 0]
-        m_rgb2 = torch.zeros((1,3,256,256), dtype=self.dtype) + [255, 255, 0]
-        m_rgb3 = torch.zeros((1,3,256,256), dtype=self.dtype) + [mR, mG, mB]
+        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device)
+        m_rgb2 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device)
+        m_rgb3 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([mR, mG, mB], device=self.device)
         signal_save(torch.cat([
             m_rgb, 
             m_rgb2, 
