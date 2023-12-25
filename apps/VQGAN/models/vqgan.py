@@ -618,8 +618,8 @@ class VQModel(pl.LightningModule):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
         syn_xscl_input = m_c_union * xscl0 
 
-        mR, mG, mB = syn_xscl_input.detach().mean(dim=[2,3]).detach()[0]
-        print('!!!!!!!!!!!!!!!', mR, mG, mB)
+        mRGB = syn_xscl_input.detach().mean(dim=[2,3]).detach()
+        print('!!!!!!!!!!!!!!!', mRGB)
         
         syn_xscl_input = syn_xscl_input + xclmask * xcl
         
@@ -633,9 +633,9 @@ class VQModel(pl.LightningModule):
         #     (xclmask) * 255, 
         # ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
-        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device)
-        m_rgb2 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device)
-        m_rgb3 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([mR, mG, mB], device=self.device)
+        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        m_rgb2 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        m_rgb3 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         signal_save(torch.cat([
             m_rgb, 
             m_rgb2, 
