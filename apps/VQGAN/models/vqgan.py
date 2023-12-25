@@ -620,13 +620,13 @@ class VQModel(pl.LightningModule):
 
         mRGB = syn_xscl_input.detach().mean(dim=[2,3]).detach()
         
-        m_rgb0 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        # m_rgb1 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)
+        m_rgb0 = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)) / 127.5 - 1
+        # m_rgb1 = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)) / 127.5 - 1
+        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1).clone().detach()
         
         # signal_save(torch.cat([
-        #     m_rgb0, 
-        #     m_rgb1, 
+        #     (m_rgb0+1)*127.5, 
+        #     (m_rgb1+1)*127.5, 
         #     (m_rgb +1) * 127.5, 
         # ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
