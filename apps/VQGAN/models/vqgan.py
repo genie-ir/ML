@@ -618,8 +618,8 @@ class VQModel(pl.LightningModule):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
         syn_xscl_input = m_c_union * xscl0 
 
-        mean_rgb = syn_xscl_input.detach().mean(dim=[2,3]).detach()
-        print('!!!!!!!!!!!!!!!', mean_rgb)
+        mR, mG, mB = syn_xscl_input.detach().mean(dim=[2,3]).detach()[0]
+        print('!!!!!!!!!!!!!!!', mR, mG, mB)
         
         syn_xscl_input = syn_xscl_input + xclmask * xcl
         
@@ -632,6 +632,15 @@ class VQModel(pl.LightningModule):
         #     (m_c_union) * 255, 
         #     (xclmask) * 255, 
         # ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        
+        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + [255, 0, 0]
+        m_rgb2 = torch.zeros((1,3,256,256), dtype=self.dtype) + [255, 255, 0]
+        m_rgb3 = torch.zeros((1,3,256,256), dtype=self.dtype) + [mR, mG, mB]
+        signal_save(torch.cat([
+            m_rgb, 
+            m_rgb2, 
+            (m_rgb3 +1) * 127.5, 
+        ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
         assert False
         self.encoder.fwd_syn_step()
