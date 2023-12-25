@@ -531,8 +531,8 @@ class VQModel(pl.LightningModule):
         xclmask = batch['xclmask'][cidx] # ROT
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
 
-        mRGB = xs.detach().mean(dim=[2,3]).detach()
-        m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype).clone().detach() + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1).clone().detach()
+        mRGB = xs.detach().mean(dim=[2,3]).clone().detach()
+        m_rgb = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)).clone().detach()
 
 
         # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
