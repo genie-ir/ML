@@ -620,7 +620,7 @@ class VQModel(pl.LightningModule):
 
         mRGB = syn_xscl_input.detach().mean(dim=[2,3]).detach()
         
-        # m_rgb0 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+        m_rgb0 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 0, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         # m_rgb1 = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor([255, 255, 0], device=self.device).unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
         m_rgb = torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)
         
