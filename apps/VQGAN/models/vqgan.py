@@ -566,7 +566,7 @@ class VQModel(pl.LightningModule):
         # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         xh = (M_C_Union * xs + xclmask * xcl).mean(dim=1, keepdim=True)
-        print('@@@@@@@@@@@@@@', xh.dim)
+        print('@@@@@@@@@@@@@@', xh.shape)
         
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xcl) # xcl is ROT.
 
@@ -627,8 +627,6 @@ class VQModel(pl.LightningModule):
         #     (m_rgb +1) * 127.5, 
         # ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
-
-        xh = xh + xclmask * xcl
 
         signal_save(torch.cat([
             (torch.cat([xh], dim=1)+1) * 127.5, 
