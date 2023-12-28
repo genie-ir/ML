@@ -629,7 +629,7 @@ class VQModel(pl.LightningModule):
         
 
         signal_save(torch.cat([
-            (torch.cat([xh], dim=1)+1) * 127.5, 
+            (torch.cat([xh, xh, xh], dim=1)+1) * 127.5, 
             (xs+1) * 127.5, 
             (xcl+1) * 127.5, 
             (xscl+1) * 127.5, 
