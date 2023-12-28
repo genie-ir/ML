@@ -514,7 +514,7 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
-        cidx = 0
+        cidx = 1
         return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split):
