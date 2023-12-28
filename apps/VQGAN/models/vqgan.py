@@ -627,17 +627,15 @@ class VQModel(pl.LightningModule):
         #     (m_rgb +1) * 127.5, 
         # ], dim=0), f'/content/export/m_rgb.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
-
+        print('22 @@@@@@@@@@@@@@@@@@@@@@@@@',xclmask.shape)
         signal_save(torch.cat([
             (torch.cat([xh, xh, xh], dim=1)+1) * 127.5, 
             (xs+1) * 127.5, 
             (xcl+1) * 127.5, 
             (xscl+1) * 127.5, 
+            torch.cat([m_c_union, m_c_union, m_c_union], dim=1) * 255,
+            torch.cat([xclmask, xclmask, xclmask], dim=1) * 255,
         ], dim=0), f'/content/export/syn.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-        signal_save(torch.cat([
-            (m_c_union) * 255, 
-            (xclmask) * 255, 
-        ], dim=0), f'/content/export/syn_m.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
 
         assert False
