@@ -1098,7 +1098,8 @@ class VQModel(pl.LightningModule):
         # return self.log_dict
 
     def configure_optimizers(self):
-        lr = self.learning_rate
+        # lr = self.learning_rate
+        lr = 0.02
         opt_ae = torch.optim.Adam(
                                   list(self.encoder.parameters())+
                                   list(self.decoder.parameters())+
