@@ -531,7 +531,7 @@ class VQModel(pl.LightningModule):
         xclmask = batch['xclmask'][cidx] # ROT
         
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
-        y_edit = batch['y_edit']
+        y_edit = batch['y_edit'].item()
         print('@@@@@@@@@@@@', y_edit)
         assert False
 
