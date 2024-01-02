@@ -590,6 +590,12 @@ class VQModel(pl.LightningModule):
 
         # xh = (M_C_Union * xs + xclmask * xcl).mean(dim=1, keepdim=True)
         xcm_gray = (xclmask * xcl).mean(dim=1, keepdim=True)
+        signal_save(torch.cat([
+            (xc+1) * 127.5,
+            (xcl+1) * 127.5,
+            (torch.cat([xcm_gray, xcm_gray, xcm_gray])+1) * 127.5, 
+        ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+
         print('@@@@@@@@@@@@@@', xcm_gray.shape)
 
         assert False
