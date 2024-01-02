@@ -543,8 +543,18 @@ class VQModel(pl.LightningModule):
         # return dice
     
     # NOTE: Syn Idea
-    def training_step(self, batch, batch_idx, optimizer_idx):
-        print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx}')
+    def training_step(self, batch, batch_idx):
+        opt_ae, opt_disc = self.optimizers()
+        for cidx in range(2):
+            for optimizer_idx in range(2):
+                opt_ae.zero_grad()
+                opt_disc.zero_grad()
+                print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
+                # self.manual_backward(errloss)
+                # if optimizer_idx == 0:
+                #     opt_ae.step()
+                # else:
+                #     opt_disc.step()
         return
         cidx = 1
         return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
