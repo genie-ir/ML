@@ -1101,17 +1101,21 @@ class VQModel(pl.LightningModule):
         # lr = self.learning_rate
         lr = 0.02
         opt_ae = torch.optim.Adam(
-                                  list(self.encoder.parameters())+
-                                  list(self.decoder.parameters())+
-                                  list(self.quantize.parameters())+
-                                  list(self.quant_conv.parameters())+
-                                  list(self.post_quant_conv.parameters()),
-                                lr=lr, betas=(0.5, 0.9))
+                                list(self.encoder.parameters())+
+                                list(self.decoder.parameters())+
+                                list(self.quantize.parameters())+
+                                list(self.quant_conv.parameters())+
+                                list(self.post_quant_conv.parameters()),
+                                lr=lr, 
+                                # betas=(0.5, 0.9)
+                            )
         opt_disc = torch.optim.Adam(
-                                    self.loss.discriminator.parameters(),
-                                    self.loss.discriminator_large.parameters(),
-                                    self.loss.vgg16.parameters(),
-                                lr=lr, betas=(0.5, 0.9))
+                                list(self.loss.discriminator.parameters())+
+                                list(self.loss.discriminator_large.parameters())+
+                                list(self.loss.vgg16.parameters()),
+                                lr=lr, 
+                                # betas=(0.5, 0.9)
+                            )
         return [opt_ae, opt_disc], []
         return [opt_ae], []
 
