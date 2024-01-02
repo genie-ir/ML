@@ -529,7 +529,12 @@ class VQModel(pl.LightningModule):
         xcc = batch['xcc'][cidx] # ROT
         xcf = batch['xcf'][cidx] # ROT
         xclmask = batch['xclmask'][cidx] # ROT
+        
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
+        y_edit = batch['y_edit']
+        print('@@@@@@@@@@@@', y_edit)
+        assert False
+
 
         # DELETE
         # mRGB = xs.detach().mean(dim=[2,3]).clone().detach()
