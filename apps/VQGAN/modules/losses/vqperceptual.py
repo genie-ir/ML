@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from loguru import logger
+import torchvision
 import torch.nn.functional as F
 from apps.VQGAN.modules.losses.lpips import LPIPS
 from apps.VQGAN.modules.discriminator.model import NLayerDiscriminator
@@ -51,8 +52,28 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.perceptual_loss = LPIPS().eval() # VGG16
         self.perceptual_weight = perceptual_weight
 
+
+
         self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf)
         self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=9)
+        self.vgg16 = torchvision.models.vgg16(pretrained=True)
+        for param in self.vgg16.parameters():
+            param.requires_grad = False
+        for param_fidx in [26, 28]:
+            for param in self.vgg16.features[param_fidx].parameters():
+                param.requires_grad = True
+        n_inputs = self.vgg16.classifier[6].in_features
+        self.vgg16.classifier[6] = nn.Sequential(
+            nn.Linear(n_inputs, 256), nn.ReLU(), nn.Dropout(0.4),
+            nn.Linear(256, 2), nn.Sigmoid()
+        )
+
+
+
+
+
+        
+        
         self.discriminator_iter_start = disc_start
         if disc_loss == "hinge":
             self.disc_loss = hinge_d_loss

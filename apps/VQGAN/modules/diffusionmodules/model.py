@@ -408,17 +408,10 @@ class Encoder(nn.Module):
                                         stride=1,
                                         padding=1)
 
-        self.vgg16 = torchvision.models.vgg16(pretrained=True)
-        for param in self.vgg16.parameters():
-            param.requires_grad = False
-        for param_fidx in [26, 28]:
-            for param in self.vgg16.features[param_fidx].parameters():
-                param.requires_grad = True
-        n_inputs = self.vgg16.classifier[6].in_features
-        self.vgg16.classifier[6] = nn.Sequential(
-            nn.Linear(n_inputs, 256), nn.ReLU(), nn.Dropout(0.4),
-            nn.Linear(256, 2), nn.Sigmoid()
-        )
+        
+        
+        
+        
     def fwd_syn_step(self, x):
         return x
 

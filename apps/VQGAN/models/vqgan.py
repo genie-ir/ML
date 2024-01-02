@@ -62,6 +62,8 @@ class VQModel(pl.LightningModule):
         **kwargs
         ):
         super().__init__()
+        self.automatic_optimization = False
+
 
         # from dependency.BCDU_Net.Retina_Blood_Vessel_Segmentation.pretrain import pretrain as makevaslsegmentation
         # self.vseg = makevaslsegmentation('/content/drive/MyDrive/storage/dr_classifire/unet-segmentation/weight_retina.hdf5')
@@ -328,7 +330,7 @@ class VQModel(pl.LightningModule):
 
 
     def forward(self, xs, Xc, xcl_pure, 
-                y_edit, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray
+                y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray
     ):
         """
             xs: source color fundus
@@ -349,10 +351,18 @@ class VQModel(pl.LightningModule):
             𝝍s_tm_final = 𝝍s_tm
 
         # using 𝝍s_tm_final (xs with absolutly no diesis) and punching it only in `xcmask` and considder gray information of `xc lessions` as xcm_gray.
-        # Interpolationg 𝝍s_tm_final_s and getting 𝝍s_tp
-        𝝍s_tm_final_s = 𝝍s_tm_final * C_xcmask
-        # 𝝍s_tp = 
-
+        # Interpolationg 𝝍s_tm_final_s and getting 𝝍s_tp. (reggression bimari!!)
+        if y_edit_xc == '[01]': # 𝝍s_tp, xs ===> # Note: geometry loss
+            xsss = xs * C_xsmask
+            xsm_gray = (xs * xsmask).mean(dim=1, keepdim=True).detach()
+            𝝍s_tp = xsss + xsmask * self.encoder.netB(xsss, xsmask, xsm_gray)
+            𝝍s_tp_final = 𝝍s_tm_final
+        else: # 𝝍s_tp ===> # Note: adversial loss
+            𝝍s_tm_final_s = 𝝍s_tm_final * C_xcmask
+            𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.encoder.netB(𝝍s_tm_final_s, xcmask, xcm_gray)
+            𝝍s_tp_final = 𝝍s_tp
+        
+        assert False
 
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -534,6 +544,8 @@ class VQModel(pl.LightningModule):
     
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx, optimizer_idx):
+        print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx}')
+        return
         cidx = 1
         return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
     
@@ -552,6 +564,9 @@ class VQModel(pl.LightningModule):
         
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
         y_edit = batch['y_edit'].item()
+        y_edit_xc = ynl[cidx]
+
+        print(f'$$$$$$-->{y_edit}<--$$$$$$$$$', ynl, cidx, y_edit_xc)
 
 
         # DELETE
@@ -588,20 +603,16 @@ class VQModel(pl.LightningModule):
         #     (M_xrec_xcl) * 255, 
         # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach()
-        signal_save(torch.cat([
-            (xs+1) * 127.5,
-            (xc+1) * 127.5,
-            (xcl+1) * 127.5,
-            (torch.cat([xslmask, xslmask, xslmask], dim=1)) * 255, 
-            (torch.cat([xclmask, xclmask, xclmask], dim=1)) * 255, 
-            (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1)+1) * 127.5, 
-        ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
+        # signal_save(torch.cat([
+        #     (xs+1) * 127.5,
+        #     (xc+1) * 127.5,
+        #     (xcl+1) * 127.5,
+        #     (torch.cat([xslmask, xslmask, xslmask], dim=1)) * 255, 
+        #     (torch.cat([xclmask, xclmask, xclmask], dim=1)) * 255, 
+        #     (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1)+1) * 127.5, 
+        # ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
-        print('@@@@@@@@@@@@@@', xcm_gray.shape)
-
-        assert False
-        
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xcl) # xcl is ROT.
 
         # signal_save(torch.cat([
@@ -1094,9 +1105,12 @@ class VQModel(pl.LightningModule):
                                   list(self.quantize.parameters())+
                                   list(self.quant_conv.parameters())+
                                   list(self.post_quant_conv.parameters()),
-                                  lr=lr, betas=(0.5, 0.9))
-        opt_disc = torch.optim.Adam(self.loss.discriminator.parameters(),
-                                    lr=lr, betas=(0.5, 0.9))
+                                lr=lr, betas=(0.5, 0.9))
+        opt_disc = torch.optim.Adam(
+                                    self.loss.discriminator.parameters(),
+                                    self.loss.discriminator_large.parameters(),
+                                    self.loss.vgg16.parameters(),
+                                lr=lr, betas=(0.5, 0.9))
         return [opt_ae, opt_disc], []
         return [opt_ae], []
 
