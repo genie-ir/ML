@@ -541,7 +541,7 @@ class VQModel(pl.LightningModule):
         else:
             print('FUCKKKKKKKKKKKKKKKKKK')
         print('@@@@@@@@@@@@', y_edit)
-        assert False
+        return
 
 
         # DELETE
