@@ -588,7 +588,7 @@ class VQModel(pl.LightningModule):
         #     (M_xrec_xcl) * 255, 
         # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True)
+        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach()
         signal_save(torch.cat([
             (xs+1) * 127.5,
             (xc+1) * 127.5,
