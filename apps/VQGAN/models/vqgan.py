@@ -1112,8 +1112,7 @@ class VQModel(pl.LightningModule):
         opt_disc = torch.optim.Adam(
                                 list(self.loss.discriminator.parameters())+
                                 list(self.loss.discriminator_large.parameters())+
-                                # list(self.loss.vgg16.parameters()),
-                                list(),
+                                list(self.loss.vgg16.parameters()),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )

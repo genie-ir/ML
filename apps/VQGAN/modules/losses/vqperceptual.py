@@ -56,17 +56,17 @@ class VQLPIPSWithDiscriminator(nn.Module):
 
         self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf)
         self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=9)
-        # self.vgg16 = torchvision.models.vgg16(pretrained=True)
-        # for param in self.vgg16.parameters():
-        #     param.requires_grad = False
-        # for param_fidx in [26, 28]:
-        #     for param in self.vgg16.features[param_fidx].parameters():
-        #         param.requires_grad = True
-        # n_inputs = self.vgg16.classifier[6].in_features
-        # self.vgg16.classifier[6] = nn.Sequential(
-        #     nn.Linear(n_inputs, 256), nn.ReLU(), nn.Dropout(0.4),
-        #     nn.Linear(256, 2), nn.Sigmoid()
-        # )
+        self.vgg16 = torchvision.models.vgg16(pretrained=True)
+        for param in self.vgg16.parameters():
+            param.requires_grad = False
+        for param_fidx in [26, 28]:
+            for param in self.vgg16.features[param_fidx].parameters():
+                param.requires_grad = True
+        n_inputs = self.vgg16.classifier[6].in_features
+        self.vgg16.classifier[6] = nn.Sequential(
+            nn.Linear(n_inputs, 256), nn.ReLU(), nn.Dropout(0.4),
+            nn.Linear(256, 2), nn.Sigmoid()
+        )
 
 
 
