@@ -588,12 +588,14 @@ class VQModel(pl.LightningModule):
         #     (M_xrec_xcl) * 255, 
         # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-        # xh = (M_C_Union * xs + xclmask * xcl).mean(dim=1, keepdim=True)
-        xcm_gray = (xclmask * xcl).mean(dim=1, keepdim=True)
+        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True)
         signal_save(torch.cat([
+            (xs+1) * 127.5,
             (xc+1) * 127.5,
             (xcl+1) * 127.5,
-            (torch.cat([xcm_gray, xcm_gray, xcm_gray])+1) * 127.5, 
+            (torch.cat([xslmask, xslmask, xslmask], dim=1)) * 255, 
+            (torch.cat([xclmask, xclmask, xclmask], dim=1)) * 255, 
+            (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1)+1) * 127.5, 
         ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
         print('@@@@@@@@@@@@@@', xcm_gray.shape)
@@ -658,7 +660,7 @@ class VQModel(pl.LightningModule):
         if optimizer_idx == 1: # discriminator
             assert False
 
-    def synf(self, xh, xs, xcl, xscl, m_c_union, xclmask):
+    def synf(self, xs, xcl, xscl, m_c_union, xclmask):
         """xscl0 has information on `1 - m_union` and we want here, add information in `m_union area` to xscl0"""
         
         # signal_save(torch.cat([
@@ -667,7 +669,7 @@ class VQModel(pl.LightningModule):
         
         print('22 @@@@@@@@@@@@@@@@@@@@@@@@@',xclmask.shape)
         signal_save(torch.cat([
-            (torch.cat([xh, xh, xh], dim=1)+1) * 127.5, 
+            # (torch.cat([xh, xh, xh], dim=1)+1) * 127.5, 
             (xs+1) * 127.5, 
             (xcl+1) * 127.5, 
             (xscl+1) * 127.5, 
