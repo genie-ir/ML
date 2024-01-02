@@ -327,13 +327,33 @@ class VQModel(pl.LightningModule):
         return x_image
 
 
-    def forward(self, xs, Xc, xcl_pure):
+    def forward(self, xs, Xc, xcl_pure, 
+                y_edit, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray
+    ):
         """
             xs: source color fundus
             Xc: conditional color fundus | ROT version
             # xcl_pure: none ROT version of Xcl (attendend)
             # UPDATE: xcl_pure: is xcl === ROT (attendend)
         """
+        # punching xs only in xsmask Not in Union of lesions and getting it as xss.
+        # Interpolating xss and getting 𝝍s_tm. (reggression baft!!)
+        if y_edit == 0: # 𝝍s_tm, xs ===> # NOTE: geometry loss
+            # here xcmask was used as random mask.
+            xss = xs * C_xcmask
+            𝝍s_tm = xss + xcmask * self.encoder.netA(xss, xcmask)
+            𝝍s_tm_final = xs
+        else: # 𝝍s_tm ===> #NOTE: adversial loss
+            xss = xs * C_xsmask
+            𝝍s_tm = xss + xsmask * self.encoder.netA(xss, xsmask)
+            𝝍s_tm_final = 𝝍s_tm
+
+        # using 𝝍s_tm_final (xs with absolutly no diesis) and punching it only in `xcmask` and considder gray information of `xc lessions` as xcm_gray.
+        # Interpolationg 𝝍s_tm_final_s and getting 𝝍s_tp
+        𝝍s_tm_final_s = 𝝍s_tm_final * C_xcmask
+        # 𝝍s_tp = 
+
+
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
         q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
@@ -532,16 +552,6 @@ class VQModel(pl.LightningModule):
         
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
         y_edit = batch['y_edit'].item()
-        if y_edit == 0:
-            print('0 ast')
-        elif y_edit == 1:
-            print('1 ast')
-        elif y_edit == 2:
-            print('2 ast')
-        else:
-            print('FUCKKKKKKKKKKKKKKKKKK')
-        print('@@@@@@@@@@@@', y_edit)
-        return
 
 
         # DELETE
@@ -578,8 +588,11 @@ class VQModel(pl.LightningModule):
         #     (M_xrec_xcl) * 255, 
         # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
-        xh = (M_C_Union * xs + xclmask * xcl).mean(dim=1, keepdim=True)
-        print('@@@@@@@@@@@@@@', xh.shape)
+        # xh = (M_C_Union * xs + xclmask * xcl).mean(dim=1, keepdim=True)
+        xcm_gray = (xclmask * xcl).mean(dim=1, keepdim=True)
+        print('@@@@@@@@@@@@@@', xcm_gray.shape)
+
+        assert False
         
         rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xcl) # xcl is ROT.
 
@@ -618,6 +631,12 @@ class VQModel(pl.LightningModule):
             # rec__Xc_graoundtrouth = (M_xrec_xcl * xc).detach()
             # Xc_aeloss, Xc_log_dict_ae = self.loss(qloss, rec__Xc_graoundtrouth, rec__Xc, 0, self.global_step, 
             #                                 last_layer=self.get_last_layer(flag2=True), dw=0, split=split + 'xc')
+            
+
+            # INFO:
+            # netA_geometryloss, netA_geometryloss_logdict = self.loss(None, xs, 𝝍s_tm, 0, self.global_step, last_layer=None, dw=0, split=split + 'netA_geometryloss')
+            # print('netA_geometryloss', netA_geometryloss)
+            # print('netA_geometryloss_logdict', netA_geometryloss_logdict)
             
             # INFO: synthesis process on uinon area === xscl_final === step2: 
             
