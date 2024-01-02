@@ -532,6 +532,14 @@ class VQModel(pl.LightningModule):
         
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
         y_edit = batch['y_edit'].item()
+        if y_edit == 0:
+            print('0 ast')
+        elif y_edit == 1:
+            print('1 ast')
+        elif y_edit == 2:
+            print('2 ast')
+        else:
+            print('FUCKKKKKKKKKKKKKKKKKK')
         print('@@@@@@@@@@@@', y_edit)
         assert False
 
