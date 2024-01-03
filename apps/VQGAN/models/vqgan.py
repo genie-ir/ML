@@ -440,7 +440,7 @@ class VQModel(pl.LightningModule):
     
     def netA(self, simg, smask):
         pass
-    def netB(self, simg, smask, sinformation):
+    def netB(self, simg, smask, sinfgray):
         pass
     def pipline(self, xs, Xc, 
                 split,
