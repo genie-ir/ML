@@ -159,6 +159,10 @@ class VQModel(pl.LightningModule):
         # self.tx = 0.0
         # self.ty = 0.0
 
+        print('encoder', self.encoder)
+        print('decoder', self.decoder)
+        print('disc', self.loss.discriminator)
+
         self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
         self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
 
@@ -329,7 +333,7 @@ class VQModel(pl.LightningModule):
         return x_image
 
 
-    def pipline(self, xs, Xc, xcl_pure, 
+    def pipline(self, xs, Xc, 
                 split,
                 optidx,
                 y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray
@@ -354,10 +358,10 @@ class VQModel(pl.LightningModule):
             else:
                 A_loss0 = -1 * (1 - self.loss.omega_of_phi(xs)).log()
                 A_loss5 = -1 * (self.loss.omega_of_phi(Xc)).log()
-                A_loss1 = self.loss.D12(xs, l1=1, l2=1)
-                A_loss2 = self.loss.D12(Xc, l1=1, l2=1)
-                A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True)
-                A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True)
+                A_loss1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'A_if1_Rxs')
+                A_loss2 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'A_if1_Rxc')
+                A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_if1_Fpsistm')
+                A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_if1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4 + A_loss5
                 print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
         else: # 𝝍s_tm ===> #NOTE: adversial loss
@@ -366,15 +370,15 @@ class VQModel(pl.LightningModule):
             𝝍s_tm_final = 𝝍s_tm
             if optidx == 0:
                 A_loss0 = -1 * (1 - self.loss.omega_of_phi(𝝍s_tm)).log()
-                A_loss1 = self.loss.D12(𝝍s_tm, l1=1, l2=1)
+                A_loss1 = self.loss.D12(𝝍s_tm, l1=1, l2=1, split=split + 'A_el0_Rpsistm')
                 A_loss = A_loss0 + A_loss1
                 print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
             else:
                 A_loss0 = -1 * (self.loss.omega_of_phi(xs)).log()
-                A_loss1 = self.loss.D12(xs, l1=1, l2=1)
-                A_loss2 = self.loss.D12(Xc, l1=1, l2=1)
-                A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True)
-                A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True)
+                A_loss1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'A_el1_Rxs')
+                A_loss2 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'A_el1_Rxc')
+                A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_el1_Fpsistm')
+                A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_el1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4
                 print('A) ELSE) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss, A_loss.shape)
 
@@ -387,15 +391,15 @@ class VQModel(pl.LightningModule):
             𝝍s_tp = xsss + xsmask * self.encoder.netB(xsss, xsmask, xsm_gray)
             𝝍s_tp_final = 𝝍s_tm_final
             if optidx == 0:
-                B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_GeometryLoss')
+                B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
                 print('B) IF) OPTIDX0)', B_loss, B_loss.shape)
             else:
                 B_loss0 = -1 * (1 - self.loss.omega_of_phi(Xc)).log()
                 B_loss1 = -1 * (self.loss.omega_of_phi(xs)).log()
-                B_loss2 = self.loss.D12(xs, l1=1, l2=1)
-                B_loss3 = self.loss.D12(Xc, l1=1, l2=1)
-                B_loss4 = self.loss.D12(xsss, l1=1, l2=1, flag=True)
-                B_loss5 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True)
+                B_loss2 = self.loss.D12(xs, l1=1, l2=1, split=split + 'B_if1_Rxs')
+                B_loss3 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'B_if1_Rxc')
+                B_loss4 = self.loss.D12(xsss, l1=1, l2=1, flag=True, split=split + 'B_if1_Fxsss')
+                B_loss5 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_if1_Fpsistp')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4 + B_loss5
                 print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
         else: # 𝝍s_tp ===> # Note: adversial loss
@@ -405,18 +409,19 @@ class VQModel(pl.LightningModule):
             if optidx == 0:
                 R_𝝍s_tp = self.loss.Ro(𝝍s_tp)
                 B_loss0 = -1 * (self.loss.omega_of_phi_givvenRo(R_𝝍s_tp)).log()
-                B_loss1 = self.loss.D12(𝝍s_tp, l1=1, l2=1)
+                B_loss1 = self.loss.D12(𝝍s_tp, l1=1, l2=1, split=split + 'B_el0_Rpsistp')
                 B_loss2, B_loss2_logdict = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, split=split + 'B_Geo_Ro')
                 B_loss = B_loss0 + B_loss1 + B_loss2
                 print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
             else:
                 B_loss0 = -1 * (self.loss.omega_of_phi(Xc)).log()
-                B_loss1 = self.loss.D12(xs, l1=1, l2=1)
-                B_loss2 = self.loss.D12(Xc, l1=1, l2=1)
-                B_loss3 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True)
-                B_loss4 = self.loss.D12(𝝍s_tm_final_s, l1=1, l2=1, flag=True)
+                B_loss1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'B_el1_Rxs')
+                B_loss2 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'B_el1_Rxc')
+                B_loss3 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistp')
+                B_loss4 = self.loss.D12(𝝍s_tm_final_s, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistmfs')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
                 print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
+        
         loss = A_loss + B_loss
         print('Aloss, Bloss, loss', A_loss, B_loss, loss)
         assert False
@@ -616,7 +621,7 @@ class VQModel(pl.LightningModule):
                     opt_disc.step()
         assert False
     
-    def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split):
+    def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
         xsl = batch['xsl']
         xsc = batch['xsc']
@@ -628,6 +633,16 @@ class VQModel(pl.LightningModule):
         xcc = batch['xcc'][cidx] # ROT
         xcf = batch['xcf'][cidx] # ROT
         xclmask = batch['xclmask'][cidx] # ROT
+
+        # NOTE: Mask design
+        M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
+        # M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
+        M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
+        # M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
+        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
+        
+        C_xsmask = (1-xslmask).detach()
+        C_xcmask = (1-xclmask).detach()
         
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
         y_edit = batch['y_edit'].item()
@@ -635,42 +650,52 @@ class VQModel(pl.LightningModule):
 
         print(f'$$$$$$-->{y_edit}<--$$$$$$$$$', ynl, cidx, y_edit_xc)
 
-
-        # DELETE
-        # mRGB = xs.detach().mean(dim=[2,3]).clone().detach()
-        # m_rgb = (torch.zeros((1,3,256,256), dtype=self.dtype) + torch.tensor(mRGB, device=self.device).unsqueeze(-1).unsqueeze(-1)).clone().detach()
-
-
-        # print('@@@@@@@@@@@', batch['yl'], batch['y_edit'])
-        # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
-        # print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
-        # print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
-        # print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
-        # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
+        print('xs, ...')
+        print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
+        print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
+        print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
+        print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
         
-        # print('!!!!!!!!!!!', ynl) # !!!!!!!!!!! [01] # NOTE: in this case in another case it can be '2' or '[34]'
-        # print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        # print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
-        # print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
-        # print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
-        # print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
-        # print('-'*30)
+        print('xc, ...')
+        print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
+        print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
+        print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
+        print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
+        print('-'*30)
 
+        print('mask...')
+        print(xcm_gray.shape, xcm_gray.dtype, xcm_gray.min().item(), xcm_gray.max().item())
+        print(C_xsmask.shape, C_xsmask.dtype, C_xsmask.min().item(), C_xsmask.max().item())
+        print(C_xcmask.shape, C_xcmask.dtype, C_xcmask.min().item(), C_xcmask.max().item())
+        print(M_union_L_xs_xc.shape, M_union_L_xs_xc.dtype, M_union_L_xs_xc.min().item(), M_union_L_xs_xc.max().item())
+        print(M_C_Union.shape, M_C_Union.dtype, M_C_Union.min().item(), M_C_Union.max().item())
+        print('-'*30)
 
+        signal_save(torch.cat([
+            (xs+1) * 127.5,
+            (xsl+1) * 127.5,
+            torch.cat([xsc, xsc, xsc], dim=1) * 255,
+            torch.cat([xsf, xsf, xsf], dim=1) * 255,
+            torch.cat([xslmask, xslmask, xslmask], dim=1) * 255,
+            
+            (xc+1) * 127.5,
+            (xcl+1) * 127.5,
+            torch.cat([xcc, xcc, xcc], dim=1) * 255,
+            torch.cat([xcf, xcf, xcf], dim=1) * 255,
+            torch.cat([xclmask, xclmask, xclmask], dim=1) * 255,
+            
+            (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1) +1) * 127.5,
+            torch.cat([C_xsmask, C_xsmask, C_xsmask], dim=1) * 255,
+            torch.cat([C_xcmask, C_xcmask, C_xcmask], dim=1) * 255,
+            torch.cat([M_C_Union, M_C_Union, M_C_Union], dim=1) * 255,
+            torch.cat([M_union_L_xs_xc, M_union_L_xs_xc, M_union_L_xs_xc], dim=1) * 255,
 
-        # NOTE: Mask design
-        M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
-        M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
-        M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
-        M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
-        # signal_save(torch.cat([
-        #     (M_union_L_xs_xc) * 255, 
-        #     (M_L_xs_mines_xc) * 255, 
-        #     (M_xrec_xs) * 255, 
-        #     (M_xrec_xcl) * 255, 
-        # ], dim=0), f'/content/export/masks.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        ], dim=0), f'/content/export/data.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
 
-        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
+        assert False
+
         # signal_save(torch.cat([
         #     (xs+1) * 127.5,
         #     (xc+1) * 127.5,
@@ -680,7 +705,18 @@ class VQModel(pl.LightningModule):
         #     (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1)+1) * 127.5, 
         # ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
-        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self.pipline(xs, xc, xcl) # xcl is ROT.
+
+        
+        loss, losslogdict = self.pipline(xs, xc, 
+            split=split,
+            optidx=optimizer_idx,
+            y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
+        )
+        return loss, losslogdict
+
+
+    def really_recent_trainstep(self):
+        # rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self.pipline(xs, xc, xcl) # xcl is ROT.
 
         # signal_save(torch.cat([
         #     (rec_xs+1) * 127.5, 
@@ -759,9 +795,6 @@ class VQModel(pl.LightningModule):
         assert False
         self.encoder.fwd_syn_step()
         return xscl0
-
-
-
 
     def test00000(self):
 
@@ -964,7 +997,6 @@ class VQModel(pl.LightningModule):
             # print('11', discloss_v, discloss)
             return discloss + discloss_v
     
-
     def ssf0(self, t):
         t = t.unsqueeze(0).unsqueeze(0)
         return torch.cat([t,t,t], dim=1)
@@ -1172,7 +1204,9 @@ class VQModel(pl.LightningModule):
                                 list(self.decoder.parameters())+
                                 list(self.quantize.parameters())+
                                 list(self.quant_conv.parameters())+
-                                list(self.post_quant_conv.parameters()),
+                                list(self.post_quant_conv.parameters())+
+                                list(self.conv_catskip_0)+
+                                list(self.conv_crosover_adjustion_in_ch),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )

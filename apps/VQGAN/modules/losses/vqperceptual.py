@@ -112,6 +112,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
         d1 = self.D1(x) # 0<= d1 <=1
         d2 = self.D2(x) # 0<= d2 <=1
+        print('*****************************D12', d1, d1.shape, d2, d2.shape)
+        assert False
         if flag:
             d1 = 1 - d1
             d2 = 1 - d2
@@ -125,7 +127,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/d2".format(split): d2.clone().detach().mean(),
         }
         print(log)
-        return loss, log
+        return loss
 
     def geometry(self, grandtrouth, prediction, split):
         rec_loss = torch.abs(grandtrouth.contiguous() - prediction.contiguous())
