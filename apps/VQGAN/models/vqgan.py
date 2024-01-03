@@ -440,9 +440,19 @@ class VQModel(pl.LightningModule):
     
     def netA(self, simg, smask):
         print('netA', simg.shape, smask.shape)
+        signal_save(torch.cat([
+            (simg+1) * 127.5,
+            torch.cat([smask, smask, smask], dim=1) * 255,
+        ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         assert False
+    
     def netB(self, simg, smask, sinfgray):
         print('netB', simg.shape, smask.shape, sinfgray.shape)
+        signal_save(torch.cat([
+            (simg+1) * 127.5,
+            torch.cat([smask, smask, smask], dim=1) * 255,
+            torch.cat([sinfgray, sinfgray, sinfgray], dim=1) * 255,
+        ], dim=0), f'/content/export/netB.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         assert False
     
     def pipline(self, xs, Xc, 
