@@ -184,7 +184,7 @@ class VQModel(pl.LightningModule):
         print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
 
 
-        # print('before self.decoder.up[4].attn.k.weight.requires_grad', self.decoder.up[4].attn.k.weight.requires_grad)
+        print('before self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
         for param in self.decoder.up[4].parameters():
             param.requires_grad = True
         for param in self.decoder.norm_out.parameters():
@@ -197,15 +197,15 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.decoder.spade_endDownSampling.parameters():
             param.requires_grad = True
-        print('before self.decoder.up[4].attn.k.weight.requires_grad', self.decoder.up[4].attn.k.weight.requires_grad)
+        print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
 
-
+        print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
         for pidx in [6, 8, 9, 11]:
             for param in self.loss.discriminator.main[pidx].parameters():
                 param.requires_grad = True
+        print('after self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
         
-        
-
+        assert False
         
 
         # self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1) # 1 M
