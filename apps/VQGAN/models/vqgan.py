@@ -155,9 +155,9 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
-        print('encoder', self.encoder)
-        print('decoder', self.decoder)
-        print('disc', self.loss.discriminator)
+        # print('encoder', self.encoder)
+        # print('decoder', self.decoder)
+        # print('disc', self.loss.discriminator)
 
         for param in self.encoder.parameters():
             param.requires_grad = False
@@ -168,7 +168,7 @@ class VQModel(pl.LightningModule):
 
         
         
-        print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
+        # print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
         for param in self.encoder.conv_catskip_0.parameters():
             param.requires_grad = True
         for param in self.encoder.conv_crosover_adjustion_in_ch.parameters():
@@ -181,10 +181,10 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.encoder.conv_out.parameters():
             param.requires_grad = True
-        print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
+        # print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
 
 
-        print('before self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
+        # print('before self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
         for param in self.decoder.up[4].parameters():
             param.requires_grad = True
         for param in self.decoder.norm_out.parameters():
@@ -197,15 +197,13 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.decoder.spade_endDownSampling.parameters():
             param.requires_grad = True
-        print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
+        # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
 
-        print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
+        # print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
         for pidx in [6, 8, 9, 11]:
             for param in self.loss.discriminator.main[pidx].parameters():
                 param.requires_grad = True
-        print('after self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
-        
-        assert False
+        # print('after self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
         
 
         # self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1) # 1 M
