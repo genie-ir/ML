@@ -155,9 +155,9 @@ class VQModel(pl.LightningModule):
         return theta, tx, ty
         
     def start(self): # TODO
-        # self.theta = 0.0
-        # self.tx = 0.0
-        # self.ty = 0.0
+        print('encoder', self.encoder)
+        print('decoder', self.decoder)
+        print('disc', self.loss.discriminator)
 
         for param in self.encoder.parameters():
             param.requires_grad = False
@@ -204,9 +204,7 @@ class VQModel(pl.LightningModule):
             for param in self.loss.discriminator.main[pidx].parameters():
                 param.requires_grad = True
         
-        print('encoder', self.encoder)
-        print('decoder', self.decoder)
-        print('disc', self.loss.discriminator)
+        
 
         
 
