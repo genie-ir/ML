@@ -329,7 +329,9 @@ class VQModel(pl.LightningModule):
         return x_image
 
 
-    def forward(self, xs, Xc, xcl_pure, 
+    def pipline(self, xs, Xc, xcl_pure, 
+                split,
+                optidx,
                 y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray
     ):
         """
@@ -338,18 +340,45 @@ class VQModel(pl.LightningModule):
             # xcl_pure: none ROT version of Xcl (attendend)
             # UPDATE: xcl_pure: is xcl === ROT (attendend)
         """
+        # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
         # Interpolating xss and getting 𝝍s_tm. (reggression baft!!)
         if y_edit == 0: # 𝝍s_tm, xs ===> # NOTE: geometry loss
             # here xcmask was used as random mask.
             xss = xs * C_xcmask
-            𝝍s_tm = xss + xcmask * self.encoder.netA(xss, xcmask)
+            𝝍s_tm = xss + xcmask * self.netA(xss, xcmask)
             𝝍s_tm_final = xs
+            if optidx == 0:
+                A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo')
+                print('A) IF) OPTIDX0)', A_loss, A_loss.shape)
+            else:
+                A_loss0 = -1 * (1 - self.loss.omega_of_phi(xs)).log()
+                A_loss5 = -1 * (self.loss.omega_of_phi(Xc)).log()
+                A_loss1 = self.loss.D12(xs, l1=1, l2=1)
+                A_loss2 = self.loss.D12(Xc, l1=1, l2=1)
+                A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True)
+                A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True)
+                A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4 + A_loss5
+                print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
         else: # 𝝍s_tm ===> #NOTE: adversial loss
             xss = xs * C_xsmask
-            𝝍s_tm = xss + xsmask * self.encoder.netA(xss, xsmask)
+            𝝍s_tm = xss + xsmask * self.netA(xss, xsmask)
             𝝍s_tm_final = 𝝍s_tm
+            if optidx == 0:
+                A_loss0 = -1 * (1 - self.loss.omega_of_phi(𝝍s_tm)).log()
+                A_loss1 = self.loss.D12(𝝍s_tm, l1=1, l2=1)
+                A_loss = A_loss0 + A_loss1
+                print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
+            else:
+                A_loss0 = -1 * (self.loss.omega_of_phi(xs)).log()
+                A_loss1 = self.loss.D12(xs, l1=1, l2=1)
+                A_loss2 = self.loss.D12(Xc, l1=1, l2=1)
+                A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True)
+                A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True)
+                A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4
+                print('A) ELSE) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss, A_loss.shape)
 
+        # B)
         # using 𝝍s_tm_final (xs with absolutly no diesis) and punching it only in `xcmask` and considder gray information of `xc lessions` as xcm_gray.
         # Interpolationg 𝝍s_tm_final_s and getting 𝝍s_tp. (reggression bimari!!)
         if y_edit_xc == '[01]': # 𝝍s_tp, xs ===> # Note: geometry loss
@@ -357,12 +386,41 @@ class VQModel(pl.LightningModule):
             xsm_gray = (xs * xsmask).mean(dim=1, keepdim=True).detach()
             𝝍s_tp = xsss + xsmask * self.encoder.netB(xsss, xsmask, xsm_gray)
             𝝍s_tp_final = 𝝍s_tm_final
+            if optidx == 0:
+                B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_GeometryLoss')
+                print('B) IF) OPTIDX0)', B_loss, B_loss.shape)
+            else:
+                B_loss0 = -1 * (1 - self.loss.omega_of_phi(Xc)).log()
+                B_loss1 = -1 * (self.loss.omega_of_phi(xs)).log()
+                B_loss2 = self.loss.D12(xs, l1=1, l2=1)
+                B_loss3 = self.loss.D12(Xc, l1=1, l2=1)
+                B_loss4 = self.loss.D12(xsss, l1=1, l2=1, flag=True)
+                B_loss5 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True)
+                B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4 + B_loss5
+                print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
         else: # 𝝍s_tp ===> # Note: adversial loss
-            𝝍s_tm_final_s = 𝝍s_tm_final * C_xcmask
-            𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.encoder.netB(𝝍s_tm_final_s, xcmask, xcm_gray)
+            𝝍s_tm_final_s = (𝝍s_tm_final * C_xcmask).detach()
+            𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.netB(𝝍s_tm_final_s, xcmask, xcm_gray)
             𝝍s_tp_final = 𝝍s_tp
-        
+            if optidx == 0:
+                R_𝝍s_tp = self.loss.Ro(𝝍s_tp)
+                B_loss0 = -1 * (self.loss.omega_of_phi_givvenRo(R_𝝍s_tp)).log()
+                B_loss1 = self.loss.D12(𝝍s_tp, l1=1, l2=1)
+                B_loss2, B_loss2_logdict = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, split=split + 'B_Geo_Ro')
+                B_loss = B_loss0 + B_loss1 + B_loss2
+                print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
+            else:
+                B_loss0 = -1 * (self.loss.omega_of_phi(Xc)).log()
+                B_loss1 = self.loss.D12(xs, l1=1, l2=1)
+                B_loss2 = self.loss.D12(Xc, l1=1, l2=1)
+                B_loss3 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True)
+                B_loss4 = self.loss.D12(𝝍s_tm_final_s, l1=1, l2=1, flag=True)
+                B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
+                print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
+        loss = A_loss + B_loss
+        print('Aloss, Bloss, loss', A_loss, B_loss, loss)
         assert False
+        return loss
 
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -549,15 +607,14 @@ class VQModel(pl.LightningModule):
             for optimizer_idx in range(2):
                 opt_ae.zero_grad()
                 opt_disc.zero_grad()
-                print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
-                # self.manual_backward(errloss)
-                # if optimizer_idx == 0:
-                #     opt_ae.step()
-                # else:
-                #     opt_disc.step()
-        return
-        cidx = 1
-        return self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
+                # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
+                loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
+                self.manual_backward(loss)
+                if optimizer_idx == 0:
+                    opt_ae.step()
+                else:
+                    opt_disc.step()
+        assert False
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split):
         xs = batch['xs']
@@ -623,7 +680,7 @@ class VQModel(pl.LightningModule):
         #     (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1)+1) * 127.5, 
         # ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
-        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self(xs, xc, xcl) # xcl is ROT.
+        rec_xs, rec_xscl, qloss, rec_xcl, qcloss = self.pipline(xs, xc, xcl) # xcl is ROT.
 
         # signal_save(torch.cat([
         #     (rec_xs+1) * 127.5, 
@@ -632,7 +689,7 @@ class VQModel(pl.LightningModule):
         # ], dim=0), f'/content/export/rec.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
 
 
-        xscl_final = self.synf(xh, xs, xcl, rec_xscl, M_C_Union, xclmask)
+        # xscl_final = self.synf(xh, xs, xcl, rec_xscl, M_C_Union, xclmask)
         # print(rec_xs.shape, rec_xscl.shape, qloss.shape, rec_xcl.shape, qcloss.shape) # torch.Size([1, 3, 256, 256]) torch.Size([1, 3, 256, 256]) torch.Size([]) torch.Size([1, 3, 256, 256]) torch.Size([])
 
 
@@ -782,7 +839,7 @@ class VQModel(pl.LightningModule):
         # print('mue_plus_h_theta', mue_plus_h_theta.shape, mue_plus_h_theta.dtype, mue_plus_h_theta.min().item(), mue_plus_h_theta.max().item()) # 256x256
 
 
-        rec_xscl, qloss, rec_Xcl, qcloss = self(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
+        rec_xscl, qloss, rec_Xcl, qcloss = self.pipline(xs, Xc, xc_lesion) # xc_lesion is none rot version of Xcl.
 
         # theta, tx, ty = self.get_theta_tx_ty(h_ilevel4_xs.detach(), h_ilevel4_xcl)
         # theta.register_hook(lambda grad: print('theta', grad))
@@ -1122,7 +1179,8 @@ class VQModel(pl.LightningModule):
         opt_disc = torch.optim.Adam(
                                 list(self.loss.discriminator.parameters())+
                                 list(self.loss.discriminator_large.parameters())+
-                                list(self.loss.vgg16.parameters()),
+                                list(self.loss.vgg16.parameters())+
+                                list(self.loss.vgg16_head.parameters()),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )

@@ -64,8 +64,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 param.requires_grad = True
         n_inputs = self.vgg16.classifier[6].in_features
         self.vgg16.classifier[6] = nn.Sequential(
-            nn.Linear(n_inputs, 256), nn.ReLU(), nn.Dropout(0.4),
-            nn.Linear(256, 2), nn.Sigmoid()
+            nn.Linear(n_inputs, 256)
+        )
+        self.vgg16_head = nn.Sequential(
+            nn.ReLU(), nn.Dropout(0.4),
+            nn.Linear(256, 128), nn.Sigmoid()
         )
 
 
@@ -92,6 +95,51 @@ class VQLPIPSWithDiscriminator(nn.Module):
         # print(self.discriminator)
         # assert False
         pass
+    
+    def omega_of_phi(self, x):
+        return self.vgg16_head(self.vgg16(x)).mean()
+    
+    def Ro(self, x):
+        return self.vgg16(x)
+    def omega_of_phi_givvenRo(self, ro):
+        return self.vgg16_head(ro).mean()
+    
+    def D1(self, x): # discriminator
+        return (self.discriminator(x.contiguous())).mean()
+    def D2(self, x): # discriminator_large
+        return (self.discriminator_large(x.contiguous())).mean()
+    
+    def D12(self, x, l1=1, l2=1, flag=False, split=''):
+        d1 = self.D1(x) # 0<= d1 <=1
+        d2 = self.D2(x) # 0<= d2 <=1
+        if flag:
+            d1 = 1 - d1
+            d2 = 1 - d2
+        d1 = l1 * (-1 * (d1.log()))
+        d2 = l2 * (-1 * (d2.log()))
+        loss = d1 + d2
+
+        log = {
+            "{}/loss".format(split): loss.clone().detach().mean(),
+            "{}/d1".format(split): d1.clone().detach().mean(),
+            "{}/d2".format(split): d2.clone().detach().mean(),
+        }
+        print(log)
+        return loss, log
+
+    def geometry(self, grandtrouth, prediction, split):
+        rec_loss = torch.abs(grandtrouth.contiguous() - prediction.contiguous())
+        p_loss = self.perceptual_loss(grandtrouth.contiguous(), prediction.contiguous())
+
+        loss = (rec_loss + self.perceptual_weight * p_loss).mean()
+        log = {
+            "{}/loss".format(split): loss.clone().detach().mean(),
+            "{}/rec_loss".format(split): rec_loss.clone().detach().mean(),
+            "{}/p_loss".format(split): p_loss.clone().detach().mean(),
+        }
+        print(log)
+        return loss, log
+    
 
     def calculate_adaptive_weight(self, nll_loss, g_loss, last_layer=None):
         # retain_graph = True
