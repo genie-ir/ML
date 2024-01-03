@@ -159,12 +159,18 @@ class VQModel(pl.LightningModule):
         # self.tx = 0.0
         # self.ty = 0.0
 
+        for param in self.encoder.parameters():
+            param.requires_grad = False
+        for param in self.decoder.parameters():
+            param.requires_grad = False
+        for param in self.loss.discriminator.parameters():
+            param.requires_grad = False
+
         print('encoder', self.encoder)
         print('decoder', self.decoder)
         print('disc', self.loss.discriminator)
 
-        self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
-        self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
+        
 
         # self.cnn_xscl_256x32_256x16 = torch.nn.Conv2d(256, 256, 4,2,1) # 1 M
         # self.cnn_xscl_256x16_256x16 = torch.nn.Conv2d(256, 256, 3,1,1)
@@ -1204,9 +1210,7 @@ class VQModel(pl.LightningModule):
                                 list(self.decoder.parameters())+
                                 list(self.quantize.parameters())+
                                 list(self.quant_conv.parameters())+
-                                list(self.post_quant_conv.parameters())+
-                                list(self.conv_catskip_0)+
-                                list(self.conv_crosover_adjustion_in_ch),
+                                list(self.post_quant_conv.parameters()),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )

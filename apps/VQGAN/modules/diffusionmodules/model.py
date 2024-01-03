@@ -345,6 +345,14 @@ class Encoder(nn.Module):
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
                  resolution, z_channels, double_z=True, returnSkipPath=False, **ignore_kwargs):
         super().__init__()
+
+        ################################################################################# for VQGAN
+        self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
+        self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
+        #################################################################################
+
+
+
         self.returnSkipPath = returnSkipPath
         if self.returnSkipPath:
             setattr(self, 'forward', self.forward_yes_skip)
