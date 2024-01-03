@@ -654,51 +654,72 @@ class VQModel(pl.LightningModule):
         y_edit = batch['y_edit'].item()
         y_edit_xc = ynl[cidx]
 
-        print(f'$$$$$$-->{y_edit}<--$$$$$$$$$', ynl, cidx, y_edit_xc)
+        print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
+        assert False
 
-        print('xs, ...')
-        print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
-        print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
-        print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
-        print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
-        print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
+        # print('xs, ...')
+        # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
+        # print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
+        # print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
+        # print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
+        # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
         
-        print('xc, ...')
-        print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
-        print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
-        print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
-        print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
-        print('-'*30)
+        # print('xc, ...')
+        # print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
+        # print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
+        # print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
+        # print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
+        # print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
+        # print('-'*30)
 
-        print('mask...')
-        print(xcm_gray.shape, xcm_gray.dtype, xcm_gray.min().item(), xcm_gray.max().item())
-        print(C_xsmask.shape, C_xsmask.dtype, C_xsmask.min().item(), C_xsmask.max().item())
-        print(C_xcmask.shape, C_xcmask.dtype, C_xcmask.min().item(), C_xcmask.max().item())
-        print(M_union_L_xs_xc.shape, M_union_L_xs_xc.dtype, M_union_L_xs_xc.min().item(), M_union_L_xs_xc.max().item())
-        print(M_C_Union.shape, M_C_Union.dtype, M_C_Union.min().item(), M_C_Union.max().item())
-        print('-'*30)
+        # print('mask...')
+        # print(xcm_gray.shape, xcm_gray.dtype, xcm_gray.min().item(), xcm_gray.max().item())
+        # print(C_xsmask.shape, C_xsmask.dtype, C_xsmask.min().item(), C_xsmask.max().item())
+        # print(C_xcmask.shape, C_xcmask.dtype, C_xcmask.min().item(), C_xcmask.max().item())
+        # print(M_union_L_xs_xc.shape, M_union_L_xs_xc.dtype, M_union_L_xs_xc.min().item(), M_union_L_xs_xc.max().item())
+        # print(M_C_Union.shape, M_C_Union.dtype, M_C_Union.min().item(), M_C_Union.max().item())
+        # print('-'*30)
 
-        signal_save(torch.cat([
-            (xs+1) * 127.5,
-            (xsl+1) * 127.5,
-            torch.cat([xsc, xsc, xsc], dim=1) * 255,
-            torch.cat([xsf, xsf, xsf], dim=1) * 255,
-            torch.cat([xslmask, xslmask, xslmask], dim=1) * 255,
+        # xs, ...
+        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 1.0
+        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 0.6392157077789307
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # xc, ...
+        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 1.0
+        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 0.20784318447113037
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # ------------------------------
+        # mask...
+        # torch.Size([1, 1, 256, 256]) torch.float32 -0.6287581324577332 0.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
+
+        # signal_save(torch.cat([
+        #     (xs+1) * 127.5,
+        #     (xsl+1) * 127.5,
+        #     torch.cat([xsc, xsc, xsc], dim=1) * 255,
+        #     torch.cat([xsf, xsf, xsf], dim=1) * 255,
+        #     torch.cat([xslmask, xslmask, xslmask], dim=1) * 255,
             
-            (xc+1) * 127.5,
-            (xcl+1) * 127.5,
-            torch.cat([xcc, xcc, xcc], dim=1) * 255,
-            torch.cat([xcf, xcf, xcf], dim=1) * 255,
-            torch.cat([xclmask, xclmask, xclmask], dim=1) * 255,
+        #     (xc+1) * 127.5,
+        #     (xcl+1) * 127.5,
+        #     torch.cat([xcc, xcc, xcc], dim=1) * 255,
+        #     torch.cat([xcf, xcf, xcf], dim=1) * 255,
+        #     torch.cat([xclmask, xclmask, xclmask], dim=1) * 255,
             
-            (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1) +1) * 127.5,
-            torch.cat([C_xsmask, C_xsmask, C_xsmask], dim=1) * 255,
-            torch.cat([C_xcmask, C_xcmask, C_xcmask], dim=1) * 255,
-            torch.cat([M_C_Union, M_C_Union, M_C_Union], dim=1) * 255,
-            torch.cat([M_union_L_xs_xc, M_union_L_xs_xc, M_union_L_xs_xc], dim=1) * 255,
+        #     (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1) +1) * 127.5,
+        #     torch.cat([C_xsmask, C_xsmask, C_xsmask], dim=1) * 255,
+        #     torch.cat([C_xcmask, C_xcmask, C_xcmask], dim=1) * 255,
+        #     torch.cat([M_C_Union, M_C_Union, M_C_Union], dim=1) * 255,
+        #     torch.cat([M_union_L_xs_xc, M_union_L_xs_xc, M_union_L_xs_xc], dim=1) * 255,
 
-        ], dim=0), f'/content/export/data.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
+        # ], dim=0), f'/content/export/data.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
 
         assert False
 
