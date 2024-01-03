@@ -438,7 +438,7 @@ class VQModel(pl.LightningModule):
     
     
     
-    def netA(self, simg, smask):
+    def netA(self, simg, smask): # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         print('netA', simg.shape, smask.shape)
         signal_save(torch.cat([
             (simg+1) * 127.5,
