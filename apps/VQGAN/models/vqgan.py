@@ -166,6 +166,44 @@ class VQModel(pl.LightningModule):
         for param in self.loss.discriminator.parameters():
             param.requires_grad = False
 
+        
+        
+        print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
+        for param in self.encoder.conv_catskip_0.parameters():
+            param.requires_grad = True
+        for param in self.encoder.conv_crosover_adjustion_in_ch.parameters():
+            param.requires_grad = True
+        for param in self.encoder.down[4].parameters():
+            param.requires_grad = True
+        for param in self.encoder.mid.parameters():
+            param.requires_grad = True
+        for param in self.encoder.norm_out.parameters():
+            param.requires_grad = True
+        for param in self.encoder.conv_out.parameters():
+            param.requires_grad = True
+        print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
+
+
+        print('before self.decoder.up[4].attn.k.weight.requires_grad', self.decoder.up[4].attn.k.weight.requires_grad)
+        for param in self.decoder.up[4].parameters():
+            param.requires_grad = True
+        for param in self.decoder.norm_out.parameters():
+            param.requires_grad = True
+        for param in self.decoder.conv_out_1ch.parameters():
+            param.requires_grad = True
+        for param in self.decoder.conv_out_1ch_main.parameters():
+            param.requires_grad = True
+        for param in self.decoder.spade_ilevel1.parameters():
+            param.requires_grad = True
+        for param in self.decoder.spade_endDownSampling.parameters():
+            param.requires_grad = True
+        print('before self.decoder.up[4].attn.k.weight.requires_grad', self.decoder.up[4].attn.k.weight.requires_grad)
+
+        
+        for pidx in [6, 8, 9, 11]:
+            for param in self.loss.discriminator.main[pidx].parameters():
+                param.requires_grad = True
+        
         print('encoder', self.encoder)
         print('decoder', self.decoder)
         print('disc', self.loss.discriminator)
@@ -654,8 +692,8 @@ class VQModel(pl.LightningModule):
         y_edit = batch['y_edit'].item()
         y_edit_xc = ynl[cidx]
 
-        print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
-        assert False
+        # print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
+        # 0 <class 'int'> 2 <class 'str'>
 
         # print('xs, ...')
         # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
