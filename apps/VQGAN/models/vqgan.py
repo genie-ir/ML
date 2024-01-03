@@ -439,9 +439,12 @@ class VQModel(pl.LightningModule):
     
     
     def netA(self, simg, smask):
-        pass
+        print('netA', simg.shape, smask.shape)
+        assert False
     def netB(self, simg, smask, sinfgray):
-        pass
+        print('netB', simg.shape, smask.shape, sinfgray.shape)
+        assert False
+    
     def pipline(self, xs, Xc, 
                 split,
                 optidx,
