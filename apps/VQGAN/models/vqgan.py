@@ -370,9 +370,78 @@ class VQModel(pl.LightningModule):
         output_w = grid_size[1] * jigsaw_w
         x_image = x_image.permute(0, 3, 1, 4, 2, 5).contiguous()
         x_image = x_image.view(batch_size, c, output_h, output_w)
-        return x_image
+        return x_image 
+    def get_V(self, Forg, Frec):
+        F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
+        V_rec = self.vseg(F_rec.cpu()).detach()
+        F_org = ((Forg +1)*127.5).detach()
+        V_org = self.vseg(F_org.cpu()).detach()
+        V_org = torch.cat([V_org,V_org,V_org], dim=1).detach()
+        
+
+        V_org = ((V_org / 255)).detach()
+        V_rec = ((V_rec / 255)).detach()
+        # V_org = ((V_org / 127.5) - 1).detach()
+        # V_rec = ((V_rec / 127.5) - 1).detach()
+        
 
 
+
+        # V_org = torch.cat([V_org,V_org,V_org], dim=1)
+        # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
+        
+        
+        # print('-----------F_rec---------------->', F_rec.shape)
+        # print('-----------F_org---------------->', F_org.shape)
+        # print('-----------V_rec---------------->', V_rec.shape)
+        # print('-----------V_org---------------->', V_org.shape)
+        # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
+        # assert False
+        return V_org, V_rec
+    def get_V2(self, Forg, Frec):
+        # F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
+        V_rec = self.vseg(Frec.cpu().detach()).detach()
+        V_org = self.vseg((((Forg.cpu() +1)*127.5).detach())).detach()
+        
+        
+        # V_org = torch.cat([V_org,V_org,V_org], dim=1)
+        # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
+         
+        
+        # print('-----------F_rec---------------->', F_rec.shape)
+        # print('-----------F_org---------------->', F_org.shape)
+        # print('-----------V_rec---------------->', V_rec.shape)
+        # print('-----------V_org---------------->', V_org.shape)
+        # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
+        # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
+        # assert False
+        return V_org, V_rec   
+    def dice_static_metric(self, inputs, target):
+        num = target.shape[0]
+        inputs = inputs.reshape(num, -1)
+        target = target.reshape(num, -1).detach()
+
+        intersection = (inputs * target).sum(1)
+        union = (inputs.sum(1) + target.sum(1)).detach()
+        dice = (2. * intersection) / (union + 1e-8)
+        # print()
+        # print('intersection, union', intersection.shape, union.shape, intersection.sum(), union.sum())
+        # print('dice', dice.shape, dice.dtype, dice.sum(), -dice.log())
+        return -dice.log()
+        # dice = dice.sum()/num
+        # return dice
+    
+    
+    
+    def netA(self, simg, smask):
+        pass
+    def netB(self, simg, smask, sinformation):
+        pass
     def pipline(self, xs, Xc, 
                 split,
                 optidx,
@@ -428,7 +497,7 @@ class VQModel(pl.LightningModule):
         if y_edit_xc == '[01]': # 𝝍s_tp, xs ===> # Note: geometry loss
             xsss = xs * C_xsmask
             xsm_gray = (xs * xsmask).mean(dim=1, keepdim=True).detach()
-            𝝍s_tp = xsss + xsmask * self.encoder.netB(xsss, xsmask, xsm_gray)
+            𝝍s_tp = xsss + xsmask * self.netB(xsss, xsmask, xsm_gray)
             𝝍s_tp_final = 𝝍s_tm_final
             if optidx == 0:
                 B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
@@ -577,74 +646,7 @@ class VQModel(pl.LightningModule):
         
         return xs0 + dec_Xs, xs0 + dec_xscl, diff, dec_Xc, diff_xc
 
-    
-    def get_V(self, Forg, Frec):
-        F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
-        V_rec = self.vseg(F_rec.cpu()).detach()
-        F_org = ((Forg +1)*127.5).detach()
-        V_org = self.vseg(F_org.cpu()).detach()
-        V_org = torch.cat([V_org,V_org,V_org], dim=1).detach()
-        
 
-        V_org = ((V_org / 255)).detach()
-        V_rec = ((V_rec / 255)).detach()
-        # V_org = ((V_org / 127.5) - 1).detach()
-        # V_rec = ((V_rec / 127.5) - 1).detach()
-        
-
-
-
-        # V_org = torch.cat([V_org,V_org,V_org], dim=1)
-        # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
-        
-        
-        # print('-----------F_rec---------------->', F_rec.shape)
-        # print('-----------F_org---------------->', F_org.shape)
-        # print('-----------V_rec---------------->', V_rec.shape)
-        # print('-----------V_org---------------->', V_org.shape)
-        # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
-        # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
-        # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
-        # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
-        # assert False
-        return V_org, V_rec
-    def get_V2(self, Forg, Frec):
-        # F_rec = self.vqgan_fn_phi_denormalize(Frec).detach()
-        V_rec = self.vseg(Frec.cpu().detach()).detach()
-        V_org = self.vseg((((Forg.cpu() +1)*127.5).detach())).detach()
-        
-        
-        # V_org = torch.cat([V_org,V_org,V_org], dim=1)
-        # V_rec = torch.cat([V_rec,V_rec,V_rec], dim=1)
-         
-        
-        # print('-----------F_rec---------------->', F_rec.shape)
-        # print('-----------F_org---------------->', F_org.shape)
-        # print('-----------V_rec---------------->', V_rec.shape)
-        # print('-----------V_org---------------->', V_org.shape)
-        # signal_save(F_org, f'/content/F_org.png', stype='img', sparams={'chw2hwc': True})
-        # signal_save(V_org, f'/content/V_org.png', stype='img', sparams={'chw2hwc': True})
-        # signal_save(F_rec, f'/content/F_rec.png', stype='img', sparams={'chw2hwc': True})
-        # signal_save(V_rec, f'/content/V_rec.png', stype='img', sparams={'chw2hwc': True})
-        # assert False
-        return V_org, V_rec
-    
-    
-    def dice_static_metric(self, inputs, target):
-        num = target.shape[0]
-        inputs = inputs.reshape(num, -1)
-        target = target.reshape(num, -1).detach()
-
-        intersection = (inputs * target).sum(1)
-        union = (inputs.sum(1) + target.sum(1)).detach()
-        dice = (2. * intersection) / (union + 1e-8)
-        # print()
-        # print('intersection, union', intersection.shape, union.shape, intersection.sum(), union.sum())
-        # print('dice', dice.shape, dice.dtype, dice.sum(), -dice.log())
-        return -dice.log()
-        # dice = dice.sum()/num
-        # return dice
-    
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
         opt_ae, opt_disc = self.optimizers()
@@ -755,24 +757,12 @@ class VQModel(pl.LightningModule):
 
         # ], dim=0), f'/content/export/data.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
 
-        assert False
-
-        # signal_save(torch.cat([
-        #     (xs+1) * 127.5,
-        #     (xc+1) * 127.5,
-        #     (xcl+1) * 127.5,
-        #     (torch.cat([xslmask, xslmask, xslmask], dim=1)) * 255, 
-        #     (torch.cat([xclmask, xclmask, xclmask], dim=1)) * 255, 
-        #     (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1)+1) * 127.5, 
-        # ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-
-
-        
         loss, losslogdict = self.pipline(xs, xc, 
             split=split,
             optidx=optimizer_idx,
             y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
         )
+        print('############# at the end:', loss, loss.shape, losslogdict)
         return loss, losslogdict
 
 
