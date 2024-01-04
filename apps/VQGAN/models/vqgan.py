@@ -455,7 +455,8 @@ class VQModel(pl.LightningModule):
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
         h_new = self.post_quant_conv(quant)
-        Qorg = self.encoder.catconv_hnew_h(torch.cat([h_new, h], dim=1))
+        # Qorg = self.encoder.catconv_hnew_h(torch.cat([h_new, h], dim=1))
+        Qorg = h_new
         
         Qsurface = (1-q_eye16) * Qorg
         Qdiagonal = self.encoder.Qsurface2Qdiagonal(Qsurface.detach())
@@ -479,7 +480,7 @@ class VQModel(pl.LightningModule):
             (simg+1) * 127.5,
             (y+1) * 127.5,
             torch.cat([smask, smask, smask], dim=1) * 255,
-        ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         assert False
         
         return y
