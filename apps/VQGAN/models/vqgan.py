@@ -445,17 +445,17 @@ class VQModel(pl.LightningModule):
         # return dice
     
     
-    def net(self, x0):
+    def net(self, x):
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
         q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
         # patching!!
-        x = self.unfold(x0, Sk, Nk)
+        # x = self.unfold(x0, Sk, Nk)
         h, h_ilevel1, h_endDownSampling = self.encoder(x) 
         # unpatching!!
-        h = self.fold(h, Nk) 
-        h_ilevel1 = self.fold(h_ilevel1, Nk) 
-        h_endDownSampling = self.fold(h_endDownSampling, Nk)
+        # h = self.fold(h, Nk) 
+        # h_ilevel1 = self.fold(h_ilevel1, Nk) 
+        # h_endDownSampling = self.fold(h_endDownSampling, Nk)
 
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
