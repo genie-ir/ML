@@ -498,31 +498,30 @@ class VQModel(pl.LightningModule):
         # print('#######################', sinfgray.shape)
         # signal_save((sinf+1)*127.5, f'/content/export/sinf_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         # signal_save((sinf)*255, f'/content/export/sinf_binary.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        signal_save(torch.cat([
-            (simg+1)*127.5,
-            (torch.cat([sinfgray,sinfgray,sinfgray], dim=1)+1)*127.5
-        ], dim=0), f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        assert False
 
-        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
-        Qbias = self.encoder.Qbias(sinf)
-        Qsurface = Qsurface.detach()
-        Qdiagonal = Qdiagonal.detach()
         
-        Qdb = self.encoder.Qdb(torch.cat([Qdiagonal, Qbias], dim=1))
-        Qcrossover = Qsurface + q_eye16 * Qdb
-        y = self.decoder(
-            Qcrossover,
-            None,
-            h_ilevel1, 
-            h_endDownSampling,
-            flag=False
-        ) # Note: add skip connection
-
+        
+        
+        # h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+        # Qbias = self.encoder.Qbias(sinf)
+        # Qsurface = Qsurface.detach()
+        # Qdiagonal = Qdiagonal.detach()
+        
+        # Qdb = self.encoder.Qdb(torch.cat([Qdiagonal, Qbias], dim=1))
+        # Qcrossover = Qsurface + q_eye16 * Qdb
+        # y = self.decoder(
+        #     Qcrossover,
+        #     None,
+        #     h_ilevel1, 
+        #     h_endDownSampling,
+        #     flag=False
+        # ) # Note: add skip connection
+        
+        print('hist!!!!!!!!!!!!!!!', torch.histc(sinfgray))
         print('netB', simg.shape, smask.shape, sinfgray.shape)
         signal_save(torch.cat([
             (simg+1) * 127.5,
-            (y+1) * 127.5,
+            # (y+1) * 127.5,
             torch.cat([smask, smask, smask], dim=1) * 255,
             torch.cat([sinfgray, sinfgray, sinfgray], dim=1) * 255,
         ], dim=0), f'/content/export/netB.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
