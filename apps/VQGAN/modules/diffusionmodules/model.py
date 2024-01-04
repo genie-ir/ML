@@ -634,6 +634,7 @@ class Decoder(nn.Module):
         
 
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
+        print('endDownSampling', h.shape, h_endDownSampling.shape)
         h = self.spade_endDownSampling(xcl_pure, torch.cat([h, h_endDownSampling], dim=1), flag=flag)
         
         
@@ -656,8 +657,9 @@ class Decoder(nn.Module):
         
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
+        print('ilevel1', h.shape, h_ilevel1.shape)
         h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
-
+        assert False
         
         # end
         if self.give_pre_end:
