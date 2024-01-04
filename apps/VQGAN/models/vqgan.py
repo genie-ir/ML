@@ -489,12 +489,16 @@ class VQModel(pl.LightningModule):
         return y
     
     def netB(self, simg, smask, sinfgray):
-        Sk = 64 # patch size
-        Nk = 4  # num patches in each row and column
-        sinf = self.unfold(torch.cat([sinfgray, smask], dim=1), Sk, Nk).view(-1, 1, 64, 64).detach() # 1x2x256x256 -> 16x2x64x64
-        print('#######################', sinf.shape)
-        signal_save((sinf+1)*127.5, f'/content/export/sinf_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        signal_save((sinf)*255, f'/content/export/sinf_binary.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # Sk = 64 # patch size
+        # Nk = 4  # num patches in each row and column
+        # sinf = self.unfold(
+        #     sinfgray,
+        #     # torch.cat([sinfgray, smask], dim=1), 
+        #     Sk, Nk).view(-1, 1, 64, 64).detach() # 1x2x256x256 -> 16x2x64x64
+        print('#######################', sinfgray.shape)
+        # signal_save((sinf+1)*127.5, f'/content/export/sinf_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save((sinf)*255, f'/content/export/sinf_binary.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save((sinfgray+1)*127.5, f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         assert False
 
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
