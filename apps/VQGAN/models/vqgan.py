@@ -91,6 +91,7 @@ class VQModel(pl.LightningModule):
         
         self.vqgan_fn_phi_denormalize = lambda G: ((((G.clamp(-1., 1.))+1)/2)*255)
 
+        print('BEFORE CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
         if bool(ckpt):
             self.init_from_ckpt(ckpt, ignore_keys=ignore_keys)
         self.image_key = image_key
@@ -100,8 +101,9 @@ class VQModel(pl.LightningModule):
         if monitor is not None:
             self.monitor = monitor
         
-
-        print('BEFORE CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
+        print('AFTER CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
+        assert False
+        
         # Notic: [empty string -> Nothing happend] becuse it casted as `False`
         if bool(self.Rfn):
             rfn_list = [elementName for elementName in dir(self) if elementName.endswith(self.Rfn)]
@@ -109,8 +111,8 @@ class VQModel(pl.LightningModule):
             for fnName in rfn_list:
                 setattr(self, fnName[:RfnLen], getattr(self, fnName))
         
-        print('AFTER CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
-        assert False
+        
+        
         self.start()
 
     # def false_all_params(self, m):
