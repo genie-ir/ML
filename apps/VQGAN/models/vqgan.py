@@ -516,8 +516,8 @@ class VQModel(pl.LightningModule):
         #     h_endDownSampling,
         #     flag=False
         # ) # Note: add skip connection
-        
-        print('hist!!!!!!!!!!!!!!!', torch.histc(sinfgray))
+        sinfgray = sinfgray.flatten()
+        print('hist!!!!!!!!!!!!!!!', sinfgray, sinfgray.min(), sinfgray.max())
         print('netB', simg.shape, smask.shape, sinfgray.shape)
         signal_save(torch.cat([
             (simg+1) * 127.5,
