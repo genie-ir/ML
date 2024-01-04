@@ -500,7 +500,7 @@ class VQModel(pl.LightningModule):
         # signal_save((sinf)*255, f'/content/export/sinf_binary.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         signal_save(torch.cat([
             (simg+1)*127.5,
-            (sinfgray+1)*127.5
+            (torch.cat([sinfgray,sinfgray,sinfgray], dim=1)+1)*127.5
         ], dim=0), f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         assert False
 
