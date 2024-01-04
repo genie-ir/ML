@@ -28,21 +28,21 @@ class SPADE(BB):
                 nn.ReLU(),
                 torch.nn.Conv2d(64, 128, 3, 2, 1),
             )
-            self.alphaconv = nn.Sequential(
-                torch.nn.Conv2d(3, 16, 3, 1, 1), # 1x1x1024x1024
-            )
-            self.betaconv = nn.Sequential(
-                torch.nn.Conv2d(1, 64, 3, 2, 1),
-                torch.nn.BatchNorm2d(64),
-                nn.ReLU(),
-                torch.nn.Conv2d(64, 128, 3, 2, 1),
-            )
-            self.gammaconv = nn.Sequential(
-                torch.nn.Conv2d(1, 64, 3, 2, 1),
-                torch.nn.BatchNorm2d(64),
-                nn.ReLU(),
-                torch.nn.Conv2d(64, 128, 3, 2, 1),
-            )
+            # self.alphaconv = nn.Sequential(
+            #     torch.nn.Conv2d(3, 16, 3, 1, 1), # 1x1x1024x1024
+            # )
+            # self.betaconv = nn.Sequential(
+            #     torch.nn.Conv2d(1, 64, 3, 2, 1),
+            #     torch.nn.BatchNorm2d(64),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(64, 128, 3, 2, 1),
+            # )
+            # self.gammaconv = nn.Sequential(
+            #     torch.nn.Conv2d(1, 64, 3, 2, 1),
+            #     torch.nn.BatchNorm2d(64),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(64, 128, 3, 2, 1),
+            # )
         
         if self.fwd == 'endDownSampling': # torch.Size([1, 512/1024, 16, 16])
             self.fconvbn = nn.Sequential(
@@ -54,21 +54,21 @@ class SPADE(BB):
                 nn.ReLU(),
                 torch.nn.Conv2d(256, 512, 3, 2, 1),
             )
-            self.alphaconv = nn.Sequential(
-                torch.nn.Conv2d(3, 4, 3, 2, 1), #128**2
-            )
-            self.betaconv = nn.Sequential(
-                torch.nn.Conv2d(1, 256, 5, 4, 1),
-                torch.nn.BatchNorm2d(256),
-                nn.ReLU(),
-                torch.nn.Conv2d(256, 512, 5, 4, 1),
-            )
-            self.gammaconv = nn.Sequential(
-                torch.nn.Conv2d(1, 256, 5, 4, 1),
-                torch.nn.BatchNorm2d(256),
-                nn.ReLU(),
-                torch.nn.Conv2d(256, 512, 5, 4, 1),
-            )
+            # self.alphaconv = nn.Sequential(
+            #     torch.nn.Conv2d(3, 4, 3, 2, 1), #128**2
+            # )
+            # self.betaconv = nn.Sequential(
+            #     torch.nn.Conv2d(1, 256, 5, 4, 1),
+            #     torch.nn.BatchNorm2d(256),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(256, 512, 5, 4, 1),
+            # )
+            # self.gammaconv = nn.Sequential(
+            #     torch.nn.Conv2d(1, 256, 5, 4, 1),
+            #     torch.nn.BatchNorm2d(256),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(256, 512, 5, 4, 1),
+            # )
     
 
 

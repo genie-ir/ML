@@ -437,23 +437,80 @@ class VQModel(pl.LightningModule):
         # return dice
     
     
-    
-    def netA(self, simg, smask): # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    def net(self, x0):
+        Sk = 64 # patch size
+        Nk = 4  # num patches in each row and column
+        q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
+        # patching!!
+        x = self.unfold(x0, Sk, Nk)
+        h, h_ilevel1, h_endDownSampling = self.encoder(x) 
+        # unpatching!!
+        h = self.fold(h, Nk) 
+        h_ilevel1 = self.fold(h_ilevel1, Nk) 
+        h_endDownSampling = self.fold(h_endDownSampling, Nk)
+
+        h = self.quant_conv(h)
+        quant, diff = self.quantize(h)
+        h_new = self.post_quant_conv(quant)
+        Qorg = self.encoder.catconv_hnew_h(torch.cat([h_new, h], dim=1))
+        
+        Qsurface = (1-q_eye16) * Qorg
+        Qdiagonal = self.encoder.Qsurface2Qdiagonal(Qsurface.detach())
+        
+        return h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal
+        
+    def netA(self, simg, smask):
+        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+        Qcrossover = Qsurface + q_eye16 * Qdiagonal
+        y = self.decoder(
+            Qcrossover,
+            None, 
+            h_ilevel1, 
+            h_endDownSampling,
+            flag=False
+        ) # Note: add skip connection
+
         print('netA', simg.shape, smask.shape)
         signal_save(torch.cat([
             (simg+1) * 127.5,
+            (y+1) * 127.5,
             torch.cat([smask, smask, smask], dim=1) * 255,
         ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         assert False
+        return y
     
     def netB(self, simg, smask, sinfgray):
+        Sk = 64 # patch size
+        Nk = 4  # num patches in each row and column
+        sinf = self.unfold(torch.cat([sinfgray, smask], dim=1), Sk, Nk).detach() # 1x2x256x256 -> 16x2x64x64
+        print('#######################', sinf.shape)
+        assert False
+
+        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+        Qbias = self.encoder.Qbias(sinf)
+        Qsurface = Qsurface.detach()
+        Qdiagonal = Qdiagonal.detach()
+        
+        Qdb = self.encoder.Qdb(torch.cat([Qdiagonal, Qbias], dim=1))
+        Qcrossover = Qsurface + q_eye16 * Qdb
+        y = self.decoder(
+            Qcrossover,
+            None,
+            h_ilevel1, 
+            h_endDownSampling,
+            flag=False
+        ) # Note: add skip connection
+
         print('netB', simg.shape, smask.shape, sinfgray.shape)
         signal_save(torch.cat([
             (simg+1) * 127.5,
+            (y+1) * 127.5,
             torch.cat([smask, smask, smask], dim=1) * 255,
             torch.cat([sinfgray, sinfgray, sinfgray], dim=1) * 255,
         ], dim=0), f'/content/export/netB.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         assert False
+        return y
+
     
     def pipline(self, xs, Xc, 
                 split,

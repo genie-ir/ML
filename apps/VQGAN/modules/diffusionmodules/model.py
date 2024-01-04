@@ -347,8 +347,22 @@ class Encoder(nn.Module):
         super().__init__()
 
         ################################################################################# for VQGAN
-        self.conv_catskip_0 = torch.nn.Conv2d(512, 256, kernel_size=1)
-        self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
+        # self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
+        self.Qdb = torch.nn.Conv2d(512, 256, kernel_size=1)
+        self.catconv_hnew_h = torch.nn.Conv2d(512, 256, kernel_size=1)
+        self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
+        self.Qbias = nn.Sequential(
+            torch.nn.Conv2d(2, 64, 3, 2, 1),
+            torch.nn.BatchNorm2d(64),
+            torch.nn.ReLU(),
+            torch.nn.Conv2d(64, 64, 3, 2, 1),
+            torch.nn.BatchNorm2d(64),
+            torch.nn.ReLU(),
+            torch.nn.Conv2d(64, 128, 3, 2, 1),
+            torch.nn.BatchNorm2d(128),
+            torch.nn.ReLU(),
+            torch.nn.Conv2d(128, 256, 3, 2, 1)
+        )
         #################################################################################
 
 
@@ -576,21 +590,22 @@ class Decoder(nn.Module):
 
         # end
         self.norm_out = Normalize(block_in)
-        # self.conv_out = torch.nn.Conv2d(block_in,
-        #                                 out_ch,
+        self.conv_out = torch.nn.Conv2d(block_in,
+                                        out_ch,
+                                        kernel_size=3,
+                                        stride=1,
+                                        padding=1)
+        
+        # self.conv_out_1ch = torch.nn.Conv2d(block_in,
+        #                                 1,
         #                                 kernel_size=3,
         #                                 stride=1,
         #                                 padding=1)
-        self.conv_out_1ch = torch.nn.Conv2d(block_in,
-                                        1,
-                                        kernel_size=3,
-                                        stride=1,
-                                        padding=1)
-        self.conv_out_1ch_main = torch.nn.Conv2d(block_in,
-                                        1,
-                                        kernel_size=3,
-                                        stride=1,
-                                        padding=1)
+        # self.conv_out_1ch_main = torch.nn.Conv2d(block_in,
+        #                                 1,
+        #                                 kernel_size=3,
+        #                                 stride=1,
+        #                                 padding=1)
 
         self.start()
     
@@ -650,11 +665,14 @@ class Decoder(nn.Module):
         h = self.norm_out(h)
         h = nonlinearity(h)
         
-        if flag2:
-            h = self.conv_out_1ch_main(h)
-        else:
-            h = self.conv_out_1ch(h)
+        # if flag2:
+        #     h = self.conv_out_1ch_main(h)
+        # else:
+        #     h = self.conv_out_1ch(h)
 
+        print('before ######################### h.shape', h.shape)
+        h = self.conv_out(h)
+        print('after ######################### h.shape', h.shape)
         return h
 
 
