@@ -4,6 +4,7 @@ import math
 import torch
 import torch.nn as nn
 import numpy as np
+from utils.pt.tricks.gradfns import dzq_dz_eq1
 
 
 def get_timestep_embedding(timesteps, embedding_dim):
@@ -672,6 +673,12 @@ class Decoder(nn.Module):
 
         # print('before ######################### h.shape', h.shape) # h.shape torch.Size([1, 128, 256, 256])
         h = self.conv_out(h)
+
+        # TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        h_decode = h.detach()
+        h_decode = (((((h_decode.clamp(-1, 1) +1) /2) *255) /127.5) -1).detach()
+        h_decode = dzq_dz_eq1(h_decode, h)
+        return h_decode
         # print('after ######################### h.shape', h.shape) # h.shape torch.Size([1, 3, 256, 256])
 
         return h
