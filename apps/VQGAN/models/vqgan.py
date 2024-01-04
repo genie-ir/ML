@@ -107,52 +107,53 @@ class VQModel(pl.LightningModule):
             for fnName in rfn_list:
                 setattr(self, fnName[:RfnLen], getattr(self, fnName))
         
+        assert False
         self.start()
 
-    def false_all_params(self, m):
-        for param in m.parameters():
-            param.requires_grad = False
-    def true_all_params(self, m):
-        for param in m.parameters():
-            param.requires_grad = True
+    # def false_all_params(self, m):
+    #     for param in m.parameters():
+    #         param.requires_grad = False
+    # def true_all_params(self, m):
+    #     for param in m.parameters():
+    #         param.requires_grad = True
     
     
-    def get_theta_tx_ty(self, xs_256ch, xcl_256ch): # DELETE 40 M parameter!!!!!
-        # print('before xs_256ch', xs_256ch.shape)
-        # print('before xcl_256ch', xcl_256ch.shape)
+    # def get_theta_tx_ty(self, xs_256ch, xcl_256ch): # DELETE 40 M parameter!!!!!
+    #     # print('before xs_256ch', xs_256ch.shape)
+    #     # print('before xcl_256ch', xcl_256ch.shape)
 
-        xs_256ch = self.cnn_xscl_256x32_256x16(xs_256ch)
-        xs_256ch = xs_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xs_256ch))
-        xs_256ch = self.cnn_xscl_bn256(xs_256ch)
+    #     xs_256ch = self.cnn_xscl_256x32_256x16(xs_256ch)
+    #     xs_256ch = xs_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xs_256ch))
+    #     xs_256ch = self.cnn_xscl_bn256(xs_256ch)
         
-        xcl_256ch = self.cnn_xscl_256x32_256x16(xcl_256ch)
-        xcl_256ch = xcl_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xcl_256ch))
-        xcl_256ch = self.cnn_xscl_bn256(xcl_256ch)
+    #     xcl_256ch = self.cnn_xscl_256x32_256x16(xcl_256ch)
+    #     xcl_256ch = xcl_256ch + torch.relu(self.cnn_xscl_256x16_256x16(xcl_256ch))
+    #     xcl_256ch = self.cnn_xscl_bn256(xcl_256ch)
 
-        # print('after xs_256ch', xs_256ch.shape)
-        # print('after xcl_256ch', xcl_256ch.shape)
+    #     # print('after xs_256ch', xs_256ch.shape)
+    #     # print('after xcl_256ch', xcl_256ch.shape)
 
-        x = torch.cat([xs_256ch, xcl_256ch], dim=1) # Bx512x16x16
-        # print('cat', x.shape)
+    #     x = torch.cat([xs_256ch, xcl_256ch], dim=1) # Bx512x16x16
+    #     # print('cat', x.shape)
 
-        x = self.cnn_xscl_512x16_512x8(x)
-        x = x + torch.relu(self.cnn_xscl_512x8_512x8(x))
-        x = self.cnn_xscl_bn512(x)
+    #     x = self.cnn_xscl_512x16_512x8(x)
+    #     x = x + torch.relu(self.cnn_xscl_512x8_512x8(x))
+    #     x = self.cnn_xscl_bn512(x)
 
-        x = self.cnn_xscl_512x8_1024x4(x)
-        x = x + torch.relu(self.cnn_xscl_1024x4_1024x4(x))
-        x = self.cnn_xscl_bn1024(x)
+    #     x = self.cnn_xscl_512x8_1024x4(x)
+    #     x = x + torch.relu(self.cnn_xscl_1024x4_1024x4(x))
+    #     x = self.cnn_xscl_bn1024(x)
 
-        x = self.cnn_xscl_1024x4_1024x1(x).flatten(1) # Bx1024
-        # print('end_cnn x', x.shape)
+    #     x = self.cnn_xscl_1024x4_1024x1(x).flatten(1) # Bx1024
+    #     # print('end_cnn x', x.shape)
 
-        x = self.fc_xscl(x)
-        # print('end_cnn x', x.shape, x.sum())
-        theta = self.fc_xscl_theta(x)
-        tx = self.fc_xscl_tx(x)
-        ty = self.fc_xscl_ty(x)
-        # print('theta, tx, ty', theta, tx, ty)
-        return theta, tx, ty
+    #     x = self.fc_xscl(x)
+    #     # print('end_cnn x', x.shape, x.sum())
+    #     theta = self.fc_xscl_theta(x)
+    #     tx = self.fc_xscl_tx(x)
+    #     ty = self.fc_xscl_ty(x)
+    #     # print('theta, tx, ty', theta, tx, ty)
+    #     return theta, tx, ty
         
     def start(self): # TODO
         # print('encoder', self.encoder)
