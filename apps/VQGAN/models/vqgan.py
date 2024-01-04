@@ -201,10 +201,10 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.decoder.conv_out.parameters():
             param.requires_grad = True
-        # for param in self.decoder.spade_ilevel1.parameters():
-        #     param.requires_grad = True
-        # for param in self.decoder.spade_endDownSampling.parameters():
-        #     param.requires_grad = True
+        for param in self.decoder.spade_ilevel1.parameters():
+            param.requires_grad = True
+        for param in self.decoder.spade_endDownSampling.parameters():
+            param.requires_grad = True
         # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
 
         # print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)

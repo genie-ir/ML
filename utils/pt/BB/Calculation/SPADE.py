@@ -19,15 +19,16 @@ class SPADE(BB):
         self.fwd = str(self.kwargs.get('fwd', ''))
         
         if self.fwd == 'ilevel1': # torch.Size([1, 128/256, 256, 256])
-            self.fconvbn = nn.Sequential(
-                torch.nn.Conv2d(1, 32, 5, 4, 1),
-                torch.nn.BatchNorm2d(32),
-                nn.ReLU(),
-                torch.nn.Conv2d(32, 64, 3, 2, 1),
-                torch.nn.BatchNorm2d(64),
-                nn.ReLU(),
-                torch.nn.Conv2d(64, 128, 3, 2, 1),
-            )
+            self.fconvbn = nn.Conv2d(256, 128, 1)
+            # self.fconvbn = nn.Sequential(
+            #     torch.nn.Conv2d(1, 32, 5, 4, 1),
+            #     torch.nn.BatchNorm2d(32),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(32, 64, 3, 2, 1),
+            #     torch.nn.BatchNorm2d(64),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(64, 128, 3, 2, 1),
+            # )
             # self.alphaconv = nn.Sequential(
             #     torch.nn.Conv2d(3, 16, 3, 1, 1), # 1x1x1024x1024
             # )
@@ -45,15 +46,16 @@ class SPADE(BB):
             # )
         
         if self.fwd == 'endDownSampling': # torch.Size([1, 512/1024, 16, 16])
-            self.fconvbn = nn.Sequential(
-                torch.nn.Conv2d(1, 128, 5, 4, 1),
-                torch.nn.BatchNorm2d(128),
-                nn.ReLU(),
-                torch.nn.Conv2d(128, 256, 5, 4, 1),
-                torch.nn.BatchNorm2d(256),
-                nn.ReLU(),
-                torch.nn.Conv2d(256, 512, 3, 2, 1),
-            )
+            self.fconvbn = nn.Conv2d(1024, 512, 1)
+            # self.fconvbn = nn.Sequential(
+            #     torch.nn.Conv2d(1, 128, 5, 4, 1),
+            #     torch.nn.BatchNorm2d(128),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(128, 256, 5, 4, 1),
+            #     torch.nn.BatchNorm2d(256),
+            #     nn.ReLU(),
+            #     torch.nn.Conv2d(256, 512, 3, 2, 1),
+            # )
             # self.alphaconv = nn.Sequential(
             #     torch.nn.Conv2d(3, 4, 3, 2, 1), #128**2
             # )
@@ -76,6 +78,8 @@ class SPADE(BB):
 
     def forward(self, xcl, fmap, flag):
         """xcl is ROT version"""
+        return self.fconvbn(fmap)
+
         femap = fold3d(fmap)
         featuremap = self.fconvbn(femap)
         if not flag:
