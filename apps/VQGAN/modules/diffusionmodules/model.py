@@ -670,9 +670,10 @@ class Decoder(nn.Module):
         # else:
         #     h = self.conv_out_1ch(h)
 
-        print('before ######################### h.shape', h.shape)
+        # print('before ######################### h.shape', h.shape) # h.shape torch.Size([1, 128, 256, 256])
         h = self.conv_out(h)
-        print('after ######################### h.shape', h.shape)
+        # print('after ######################### h.shape', h.shape) # h.shape torch.Size([1, 3, 256, 256])
+
         return h
 
 

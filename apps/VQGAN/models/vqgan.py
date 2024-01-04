@@ -156,7 +156,7 @@ class VQModel(pl.LightningModule):
         
     def start(self): # TODO
         # print('encoder', self.encoder)
-        print('decoder', self.decoder)
+        # print('decoder', self.decoder)
         # print('disc', self.loss.discriminator)
 
         for param in self.encoder.parameters():
@@ -464,7 +464,8 @@ class VQModel(pl.LightningModule):
         
     def netA(self, simg, smask):
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
-        Qcrossover = Qsurface + q_eye16 * Qdiagonal
+        # Qcrossover = Qsurface + q_eye16 * Qdiagonal
+        Qcrossover = Qorg
         y = self.decoder(
             Qcrossover,
             None, 
@@ -473,13 +474,14 @@ class VQModel(pl.LightningModule):
             flag=False
         ) # Note: add skip connection
 
-        print('netA', simg.shape, smask.shape)
+        # print('netA', simg.shape, smask.shape) # netA torch.Size([1, 3, 256, 256]) torch.Size([1, 1, 256, 256])
         signal_save(torch.cat([
             (simg+1) * 127.5,
             (y+1) * 127.5,
             torch.cat([smask, smask, smask], dim=1) * 255,
         ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
         assert False
+        
         return y
     
     def netB(self, simg, smask, sinfgray):
