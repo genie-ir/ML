@@ -495,10 +495,13 @@ class VQModel(pl.LightningModule):
         #     sinfgray,
         #     # torch.cat([sinfgray, smask], dim=1), 
         #     Sk, Nk).view(-1, 1, 64, 64).detach() # 1x2x256x256 -> 16x2x64x64
-        print('#######################', sinfgray.shape)
+        # print('#######################', sinfgray.shape)
         # signal_save((sinf+1)*127.5, f'/content/export/sinf_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         # signal_save((sinf)*255, f'/content/export/sinf_binary.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        signal_save((sinfgray+1)*127.5, f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (simg+1)*127.5,
+            (sinfgray+1)*127.5
+        ], dim=1), f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         assert False
 
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
