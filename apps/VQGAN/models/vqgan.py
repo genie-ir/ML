@@ -156,7 +156,7 @@ class VQModel(pl.LightningModule):
         
     def start(self): # TODO
         # print('encoder', self.encoder)
-        # print('decoder', self.decoder)
+        print('decoder', self.decoder)
         # print('disc', self.loss.discriminator)
 
         for param in self.encoder.parameters():
@@ -194,9 +194,7 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.decoder.norm_out.parameters():
             param.requires_grad = True
-        for param in self.decoder.conv_out_1ch.parameters():
-            param.requires_grad = True
-        for param in self.decoder.conv_out_1ch_main.parameters():
+        for param in self.decoder.conv_out.parameters():
             param.requires_grad = True
         for param in self.decoder.spade_ilevel1.parameters():
             param.requires_grad = True
