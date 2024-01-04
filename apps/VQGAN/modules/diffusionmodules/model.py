@@ -634,7 +634,7 @@ class Decoder(nn.Module):
         
 
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
-        h = self.spade_endDownSampling(xcl_pure, torch.cat([h, h_endDownSampling], dim=1), flag=flag)
+        # h = self.spade_endDownSampling(xcl_pure, torch.cat([h, h_endDownSampling], dim=1), flag=flag)
         
         
         # upsampling
@@ -656,7 +656,7 @@ class Decoder(nn.Module):
         
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
-        h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
+        # h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
 
         
         # end
