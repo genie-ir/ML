@@ -169,10 +169,15 @@ class VQModel(pl.LightningModule):
         
         
         # print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
-        for param in self.encoder.conv_catskip_0.parameters():
+        for param in self.encoder.Qdb.parameters():
             param.requires_grad = True
-        for param in self.encoder.conv_crosover_adjustion_in_ch.parameters():
+        for param in self.encoder.catconv_hnew_h.parameters():
             param.requires_grad = True
+        for param in self.encoder.Qsurface2Qdiagonal.parameters():
+            param.requires_grad = True
+        for param in self.encoder.Qbias.parameters():
+            param.requires_grad = True
+        
         for param in self.encoder.down[4].parameters():
             param.requires_grad = True
         for param in self.encoder.mid.parameters():
