@@ -100,6 +100,9 @@ class VQModel(pl.LightningModule):
         if monitor is not None:
             self.monitor = monitor
         
+
+        print('BEFORE CKPT', self.decoder.up[4])
+        assert False
         # Notic: [empty string -> Nothing happend] becuse it casted as `False`
         if bool(self.Rfn):
             rfn_list = [elementName for elementName in dir(self) if elementName.endswith(self.Rfn)]
