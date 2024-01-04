@@ -501,7 +501,7 @@ class VQModel(pl.LightningModule):
         signal_save(torch.cat([
             (simg+1)*127.5,
             (sinfgray+1)*127.5
-        ], dim=1), f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        ], dim=0), f'/content/export/sinfgray_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
         assert False
 
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
