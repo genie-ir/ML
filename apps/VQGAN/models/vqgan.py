@@ -480,6 +480,8 @@ class VQModel(pl.LightningModule):
             flag=False
         ) # Note: add skip connection
 
+        print('YYYYYYYYYYYYYYYYYYYYYYY', y.shape, y.min().item(), y.max().item())
+
         # print('netA', simg.shape, smask.shape) # netA torch.Size([1, 3, 256, 256]) torch.Size([1, 1, 256, 256])
         signal_save(torch.cat([
             (simg+1) * 127.5,
