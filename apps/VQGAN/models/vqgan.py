@@ -101,7 +101,7 @@ class VQModel(pl.LightningModule):
             self.monitor = monitor
         
 
-        print('BEFORE CKPT', self.decoder.up[4].attn[1].k.weight[0])
+        print('BEFORE CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
         # Notic: [empty string -> Nothing happend] becuse it casted as `False`
         if bool(self.Rfn):
             rfn_list = [elementName for elementName in dir(self) if elementName.endswith(self.Rfn)]
@@ -109,7 +109,7 @@ class VQModel(pl.LightningModule):
             for fnName in rfn_list:
                 setattr(self, fnName[:RfnLen], getattr(self, fnName))
         
-        print('AFTER CKPT', self.decoder.up[4].attn[1].k.weight[0])
+        print('AFTER CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
         assert False
         self.start()
 
