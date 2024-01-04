@@ -636,9 +636,8 @@ class Decoder(nn.Module):
 
         # note: connect to E:endDownSampling ([B, 512, 16, 16])
         # print('endDownSampling', h.shape, h_endDownSampling.shape) # endDownSampling torch.Size([1, 512, 16, 16]) torch.Size([1, 512, 16, 16])
-        h = self.spade_endDownSampling(xcl_pure, torch.cat([h, h_endDownSampling], dim=1), flag=flag)
-        # print('endDownSampling', h.shape) # endDownSampling torch.Size([1, 512, 16, 16])
-        # h = h + h_endDownSampling
+        # h = self.spade_endDownSampling(xcl_pure, torch.cat([h, h_endDownSampling], dim=1), flag=flag)
+        h = h + h_endDownSampling
         
         
         # upsampling
@@ -661,9 +660,8 @@ class Decoder(nn.Module):
         
         # Note connect to E:ilevel1([B, 128, 256, 256])
         # print('ilevel1', h.shape, h_ilevel1.shape) # ilevel1 torch.Size([1, 128, 256, 256]) torch.Size([1, 128, 256, 256])
-        h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
-        # print('ilevel1', h.shape) # ilevel1 torch.Size([1, 128, 256, 256])
-        # h = h + h_ilevel1
+        # h = self.spade_ilevel1(xcl_pure, torch.cat([h, h_ilevel1], dim=1), flag=flag)
+        h = h + h_ilevel1
         
         # end
         if self.give_pre_end:
