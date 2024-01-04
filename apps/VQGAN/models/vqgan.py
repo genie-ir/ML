@@ -201,10 +201,10 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.decoder.conv_out.parameters():
             param.requires_grad = True
-        for param in self.decoder.spade_ilevel1.parameters():
-            param.requires_grad = True
-        for param in self.decoder.spade_endDownSampling.parameters():
-            param.requires_grad = True
+        # for param in self.decoder.spade_ilevel1.parameters():
+        #     param.requires_grad = True
+        # for param in self.decoder.spade_endDownSampling.parameters():
+        #     param.requires_grad = True
         # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
 
         # print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
@@ -480,15 +480,11 @@ class VQModel(pl.LightningModule):
             flag=False
         ) # Note: add skip connection
 
-        print('YYYYYYYYYYYYYYYYYYYYYYY', y.shape, y.min().item(), y.max().item())
-
-        # print('netA', simg.shape, smask.shape) # netA torch.Size([1, 3, 256, 256]) torch.Size([1, 1, 256, 256])
-        signal_save(torch.cat([
-            (simg+1) * 127.5,
-            (y+1) * 127.5,
-            torch.cat([smask, smask, smask], dim=1) * 255,
-        ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-        assert False
+        # signal_save(torch.cat([
+        #     (simg+1) * 127.5,
+        #     (y+1) * 127.5,
+        #     torch.cat([smask, smask, smask], dim=1) * 255,
+        # ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
         
         return y
     

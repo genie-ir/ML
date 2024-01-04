@@ -612,8 +612,8 @@ class Decoder(nn.Module):
     
     def start(self):
         pass
-        self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
-        self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
+        # self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
+        # self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
     def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True, flag2=True):
         """xcl_pure is ROT version"""
