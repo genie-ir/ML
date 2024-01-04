@@ -102,7 +102,6 @@ class VQModel(pl.LightningModule):
             self.monitor = monitor
         
         print('AFTER CKPT', self.decoder.up[4].attn[1].k.weight[0][0,0])
-        assert False
         
         # Notic: [empty string -> Nothing happend] becuse it casted as `False`
         if bool(self.Rfn):
@@ -1332,22 +1331,20 @@ class VQModel(pl.LightningModule):
     def configure_optimizers(self):
         # lr = self.learning_rate
         lr = 0.02
-        opt_ae = torch.optim.Adam([
-                                    {'params': self.encoder.parameters()},
-                                    {'params': self.decoder.parameters()},
-                                    {'params': self.quantize.parameters()},
-                                    {'params': self.quant_conv.parameters()},
-                                    {'params': self.post_quant_conv.parameters()}
-                                ],
+        opt_ae = torch.optim.Adam(
+                                    list(self.encoder.parameters())+
+                                    list(self.decoder.parameters())+
+                                    list(self.quantize.parameters())+
+                                    list(self.quant_conv.parameters())+
+                                    list(self.post_quant_conv.parameters()),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )
-        opt_disc = torch.optim.Adam([
-                                    {'params': self.loss.discriminator.parameters()},
-                                    {'params': self.loss.discriminator_large.parameters()},
-                                    {'params': self.loss.vgg16.parameters()},
-                                    {'params': self.loss.vgg16_head.parameters()}
-                                ],
+        opt_disc = torch.optim.Adam(
+                                    list(self.loss.discriminator.parameters())+
+                                    list(self.loss.discriminator_large.parameters())+
+                                    list(self.loss.vgg16.parameters())+
+                                    list(self.loss.vgg16_head.parameters()),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )
