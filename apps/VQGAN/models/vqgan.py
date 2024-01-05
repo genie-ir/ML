@@ -639,7 +639,7 @@ class VQModel(pl.LightningModule):
         loss = Cond_loss + A_loss + B_loss
         print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
         print('-'*30)
-        return loss
+        return loss, None
 
     def recent_pipline(self):
         Sk = 64 # patch size
