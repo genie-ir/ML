@@ -133,7 +133,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         if pw > 0:
             p_loss = pw * self.perceptual_loss(grandtrouth.contiguous(), prediction.contiguous())
         else:
-            p_loss = torch.tensor(0)
+            p_loss = torch.tensor(0.0)
 
         loss = (rec_loss + p_loss).mean()
         log = {
