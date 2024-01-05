@@ -524,7 +524,7 @@ class VQModel(pl.LightningModule):
                     opt_disc.step()
                 print(logdict)
                 self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
-        assert False
+        # assert False
     def validation_step(self, batch, batch_idx):
         if self.ignore_go:
             return
