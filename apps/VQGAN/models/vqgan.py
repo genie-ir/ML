@@ -440,7 +440,24 @@ class VQModel(pl.LightningModule):
         # dice = dice.sum()/num
         # return dice
     
-    
+    def netConditins(self, simg):
+        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+        y = self.decoder(
+            Qsurface,
+            None, 
+            h_ilevel1, 
+            h_endDownSampling,
+            flag=False
+        ) # Note: add skip connection
+        signal_save(torch.cat([
+            (simg+1) * 127.5,
+            (y+1) * 127.5,
+        ], dim=0), f'/content/export/netConditins.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        assert False
+
+        return y
+
+
     def net(self, x):
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -509,14 +526,14 @@ class VQModel(pl.LightningModule):
             flag=False
         ) # Note: add skip connection
         
-        print('netB', simg.shape, smask.shape, sinfgray.shape)
-        signal_save(torch.cat([
-            (simg+1) * 127.5,
-            (y+1) * 127.5,
-            torch.cat([smask, smask, smask], dim=1) * 255,
-            (torch.cat([sinfgray, sinfgray, sinfgray], dim=1)+1) * 127.5,
-        ], dim=0), f'/content/export/netB.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
-        assert False
+        # signal_save(torch.cat([
+        #     (simg+1) * 127.5,
+        #     (y+1) * 127.5,
+        #     torch.cat([smask, smask, smask], dim=1) * 255,
+        #     (torch.cat([sinfgray, sinfgray, sinfgray], dim=1)+1) * 127.5,
+        # ], dim=0), f'/content/export/netB.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        # assert False
+        
         return y
 
     
@@ -531,6 +548,13 @@ class VQModel(pl.LightningModule):
             # xcl_pure: none ROT version of Xcl (attendend)
             # UPDATE: xcl_pure: is xcl === ROT (attendend)
         """
+        # Conditins)
+        # Qsurface should be contain all information for reconstructiong none gray area part of xs. # NOTE: Geometry loss
+        if optidx == 0:
+            xs_noneAreaPart_reconstruction = self.netConditins(xs * xsmask)
+            Cond_loss, Cond_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'Cond_Geo')
+            print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
+
         # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
         # Interpolating xss and getting 𝝍s_tm. (reggression baft!!)
@@ -609,8 +633,8 @@ class VQModel(pl.LightningModule):
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
                 print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
         
-        loss = A_loss + B_loss
-        print('Aloss, Bloss, loss', A_loss, B_loss, loss)
+        loss = Cond_loss + A_loss + B_loss
+        print('Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
         assert False
         return loss
 
