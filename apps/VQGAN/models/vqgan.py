@@ -551,8 +551,9 @@ class VQModel(pl.LightningModule):
         # Conditins)
         # Qsurface should be contain all information for reconstructiong none gray area part of xs. # NOTE: Geometry loss
         if optidx == 0:
-            xs_noneAreaPart_reconstruction = self.netConditins(xs * xsmask)
-            Cond_loss, Cond_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'Cond_Geo')
+            xs_noneGrayAreaPart_gtru  = xs * C_xsmask
+            xs_noneGrayAreaPart_pred = self.netConditins(xs_noneGrayAreaPart_gtru)
+            Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
 
         # A)
