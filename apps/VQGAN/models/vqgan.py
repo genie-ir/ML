@@ -36,6 +36,9 @@ dr_transformer0 = A.Compose([
 ])
 
 
+
+from utils.pl.plLogger import GenieLoggerBase
+
 def fold3d(x, gp=None):
     """
         x is x3d
@@ -113,7 +116,7 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
-        self.ignore_go = True
+        self.gl = GenieLoggerBase()
 
         # print('encoder', self.encoder)
         # print('decoder', self.decoder)
@@ -521,7 +524,8 @@ class VQModel(pl.LightningModule):
                 else:
                     opt_disc.step()
                 print(logdict)
-                self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
+                self.gl.log_metrics(logdict)
+                # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
     def validation_step(self, batch, batch_idx):
         # opt_ae, opt_disc = self.optimizers()
@@ -536,7 +540,8 @@ class VQModel(pl.LightningModule):
                 #     opt_ae.step()
                 # else:
                 #     opt_disc.step()
-                self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
+                # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
+                self.gl.log_metrics(logdict)
         assert False
 
     def on_train_epoch_end(self):
