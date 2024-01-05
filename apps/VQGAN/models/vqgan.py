@@ -533,7 +533,6 @@ class VQModel(pl.LightningModule):
                 #     opt_ae.step()
                 # else:
                 #     opt_disc.step()
-                print(logdict)
                 self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
