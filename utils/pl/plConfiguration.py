@@ -176,7 +176,8 @@ class ConfigBase:
                 'target': 'apps.' + app_name_master + '.modules.genie_logger.GenieLogger',
                 'params': {**{
                     'name': nowname,
-                    'save_dir': logdir,
+                    # 'save_dir': logdir,
+                    'save_dir': '/content/',
                     'hash_ignore': opt.hash_ignore
                 }, **app_ctrl_cfg(app_cfg_master['callback'].get('genie', dict()))}
             },
