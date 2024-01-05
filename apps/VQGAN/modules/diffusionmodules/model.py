@@ -348,22 +348,7 @@ class Encoder(nn.Module):
         super().__init__()
 
         ################################################################################# for VQGAN
-        # self.conv_crosover_adjustion_in_ch = torch.nn.Conv2d(512, 256, kernel_size=1)
-        self.Qdb = torch.nn.Conv2d(512, 256, kernel_size=1)
-        self.catconv_hnew_h = torch.nn.Conv2d(512, 256, kernel_size=1)
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
-        self.Qbias = nn.Sequential(
-            torch.nn.Conv2d(2, 64, 3, 2, 1),
-            torch.nn.BatchNorm2d(64),
-            torch.nn.ReLU(),
-            torch.nn.Conv2d(64, 64, 3, 2, 1),
-            torch.nn.BatchNorm2d(64),
-            torch.nn.ReLU(),
-            torch.nn.Conv2d(64, 128, 3, 2, 1),
-            torch.nn.BatchNorm2d(128),
-            torch.nn.ReLU(),
-            torch.nn.Conv2d(128, 256, 3, 2, 1)
-        )
         self.netb_diagonal = nn.Sequential(
             nn.Linear(256, 1024),
             nn.Tanh(),

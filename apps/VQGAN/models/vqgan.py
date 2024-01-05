@@ -174,13 +174,7 @@ class VQModel(pl.LightningModule):
         
         
         # print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
-        for param in self.encoder.Qdb.parameters():
-            param.requires_grad = True
-        for param in self.encoder.catconv_hnew_h.parameters():
-            param.requires_grad = True
         for param in self.encoder.Qsurface2Qdiagonal.parameters():
-            param.requires_grad = True
-        for param in self.encoder.Qbias.parameters():
             param.requires_grad = True
         for param in self.encoder.netb_diagonal.parameters():
             param.requires_grad = True
@@ -481,57 +475,44 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False
         ) # Note: add skip connection
-
-        # signal_save(torch.cat([
-        #     (simg+1) * 127.5,
-        #     (y+1) * 127.5,
-        #     torch.cat([smask, smask, smask], dim=1) * 255,
-        # ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        signal_save(torch.cat([
+            (simg+1) * 127.5,
+            (y+1) * 127.5,
+            torch.cat([smask, smask, smask], dim=1) * 255,
+        ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        assert False
         
         return y
     
     def netB(self, simg, smask, sinfgray):
-        # Sk = 64 # patch size
-        # Nk = 4  # num patches in each row and column
-        # sinf = self.unfold(
-        #     sinfgray,
-        #     # torch.cat([sinfgray, smask], dim=1), 
-        #     Sk, Nk).view(-1, 1, 64, 64).detach() # 1x2x256x256 -> 16x2x64x64
-        # print('#######################', sinfgray.shape)
-        # signal_save((sinf+1)*127.5, f'/content/export/sinf_bypolar.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        # signal_save((sinf)*255, f'/content/export/sinf_binary.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-
-        
-        
-        
-        # h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
-        # Qbias = self.encoder.Qbias(sinf)
-        # Qsurface = Qsurface.detach()
-        # Qdiagonal = Qdiagonal.detach()
-        
-        # Qdb = self.encoder.Qdb(torch.cat([Qdiagonal, Qbias], dim=1))
-        # Qcrossover = Qsurface + q_eye16 * Qdb
-        # y = self.decoder(
-        #     Qcrossover,
-        #     None,
-        #     h_ilevel1, 
-        #     h_endDownSampling,
-        #     flag=False
-        # ) # Note: add skip connection
         n = 16
         ch = 256
         sinfgray_diesis = self.loss.vgg16(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
         v = self.encoder.netb_diagonal(sinfgray_diesis).view(ch, n, 1, 1)
-        z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device)
+        z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device).detach()
         V = (v + z.unsqueeze(-1)).view((1, ch, n, n))
-        print('sinfgray_diesis', sinfgray_diesis.shape, sinfgray_diesis.min(), sinfgray_diesis.max())
-        print('v', v.shape, v.min(), v.max())
-        print('V', V.shape, V.min(), V.max())
-        assert False
+        # `sinfgray_diesis` -> torch.Size([1, 256]) tensor(-0.5701) tensor(0.5360)
+        # `v` -> torch.Size([256, 16, 1, 1]) tensor(-0.2625, grad_fn=<MinBackward1>) tensor(0.2622, grad_fn=<MaxBackward1>)
+        # `V` -> torch.Size([1, 256, 16, 16]) tensor(-0.2625, grad_fn=<MinBackward1>) tensor(0.2622, grad_fn=<MaxBackward1>)
+
+
+        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+        Qsurface = Qsurface.detach()
+        Qdiagonal = Qdiagonal.detach()
+        Qdb = Qdiagonal + V
+        Qcrossover = Qsurface + q_eye16 * Qdb
+        y = self.decoder(
+            Qcrossover,
+            None,
+            h_ilevel1, 
+            h_endDownSampling,
+            flag=False
+        ) # Note: add skip connection
+        
         print('netB', simg.shape, smask.shape, sinfgray.shape)
         signal_save(torch.cat([
             (simg+1) * 127.5,
-            # (y+1) * 127.5,
+            (y+1) * 127.5,
             torch.cat([smask, smask, smask], dim=1) * 255,
             (torch.cat([sinfgray, sinfgray, sinfgray], dim=1)+1) * 127.5,
         ], dim=0), f'/content/export/netB.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
