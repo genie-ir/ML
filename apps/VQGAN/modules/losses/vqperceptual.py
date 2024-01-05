@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from apps.VQGAN.modules.losses.lpips import LPIPS
 from apps.VQGAN.modules.discriminator.model import NLayerDiscriminator
 from libs.basicIO import signal_save
+from utils.pt.tricks.gradfns import dzq_dz_eq1
 
 
 class DummyLoss(nn.Module):
@@ -94,6 +95,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
     def start(self):
         # print(self.discriminator)
         # assert False
+        self.eps = torch.tensor(-5, device=self.device).exp() # tensor(0.0067)
         pass
     
     def omega_of_phi(self, x):
@@ -105,13 +107,19 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return self.vgg16_head(ro).mean()
     
     def D1(self, x): # discriminator
-        return (self.discriminator(x.contiguous())).mean()
+        disc = (self.discriminator(x.contiguous())).mean()
+        DlossCorrect = disc.detach().clamp(self.eps)
+        DlossCorrect = dzq_dz_eq1(DlossCorrect, disc)
+        return DlossCorrect
     def D2(self, x): # discriminator_large
-        return (self.discriminator_large(x.contiguous())).mean()
+        disc = (self.discriminator_large(x.contiguous())).mean()
+        DlossCorrect = disc.detach().clamp(self.eps)
+        DlossCorrect = dzq_dz_eq1(DlossCorrect, disc)
+        return DlossCorrect
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
-        d1 = self.D1(x) # 0<= d1 <=1
-        d2 = self.D2(x) # 0<= d2 <=1
+        d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
+        d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
         if flag:
             d1 = 1 - d1
             d2 = 1 - d2
