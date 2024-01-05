@@ -795,8 +795,10 @@ class VQModel(pl.LightningModule):
         C_xsmask = (1-xslmask).detach()
         C_xcmask = (1-xclmask).detach()
         
+        print('before SSSSSSSSSSSSSSSS', batch['ynl'][cidx], cidx)
         ynl = batch['ynl'][cidx][0] # I dont know why is a tuple!!
         y_edit = batch['y_edit'].item()
+        print('after SSSSSSSSSSSSSSSS', ynl, cidx)
         y_edit_xc = ynl[cidx]
 
         # print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
