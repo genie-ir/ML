@@ -114,7 +114,7 @@ class GenieLoggerBase(Logger):
         col0 = list(metrics.keys())[0]
         # print(col0, col0.lower().startswith('val') and col0.lower().endswith('epoch'))
         if self.flag_lock:
-            print('@@@@@@@@@@@@@@@@@@@')
+            print('@@@@@@@@@@@@@@@@@@@ lock')
             return
         # metrics is a dictionary of metric names and values
         # your code to record metrics goes here
