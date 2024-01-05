@@ -466,8 +466,7 @@ class VQModel(pl.LightningModule):
         
     def netA(self, simg, smask):
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
-        # Qcrossover = Qsurface + q_eye16 * Qdiagonal
-        Qcrossover = Qorg
+        Qcrossover = Qsurface + q_eye16 * Qdiagonal
         y = self.decoder(
             Qcrossover,
             None, 
