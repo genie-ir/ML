@@ -449,11 +449,12 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False
         ) # Note: add skip connection
-        signal_save(torch.cat([
-            (simg+1) * 127.5,
-            (y+1) * 127.5,
-        ], dim=0), f'/content/export/netConditins.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-        assert False
+        
+        # signal_save(torch.cat([
+        #     (simg+1) * 127.5,
+        #     (y+1) * 127.5,
+        # ], dim=0), f'/content/export/netConditins.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        # assert False
 
         return y
 
@@ -483,6 +484,7 @@ class VQModel(pl.LightningModule):
         
     def netA(self, simg, smask):
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+        Qsurface = Qsurface.detach()
         Qcrossover = Qsurface + q_eye16 * Qdiagonal
         y = self.decoder(
             Qcrossover,
