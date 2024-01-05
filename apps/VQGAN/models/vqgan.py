@@ -182,6 +182,8 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.encoder.Qbias.parameters():
             param.requires_grad = True
+        for param in self.encoder.netb_diagonal.parameters():
+            param.requires_grad = True
         
         for param in self.encoder.down[4].parameters():
             param.requires_grad = True
@@ -516,8 +518,15 @@ class VQModel(pl.LightningModule):
         #     h_endDownSampling,
         #     flag=False
         # ) # Note: add skip connection
+        n = 16
+        ch = 256
         sinfgray_diesis = self.loss.vgg16(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
+        v = self.encoder.netb_diagonal(sinfgray_diesis).view(ch, n, 1, 1)
+        z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device)
+        V = (v + z.unsqueeze(-1)).view((1, ch, n, n))
         print('sinfgray_diesis', sinfgray_diesis.shape, sinfgray_diesis.min(), sinfgray_diesis.max())
+        print('v', v.shape, v.min(), v.max())
+        print('V', V.shape, V.min(), V.max())
         assert False
         print('netB', simg.shape, smask.shape, sinfgray.shape)
         signal_save(torch.cat([

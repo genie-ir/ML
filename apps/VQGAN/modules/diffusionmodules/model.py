@@ -364,6 +364,11 @@ class Encoder(nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(128, 256, 3, 2, 1)
         )
+        self.netb_diagonal = nn.Sequential(
+            nn.Linear(256, 1024),
+            nn.Tanh(),
+            nn.Linear(1024, 16*256),
+        )
         #################################################################################
 
 
