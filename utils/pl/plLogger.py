@@ -125,6 +125,7 @@ class GenieLoggerBase(Logger):
             step = int(metrics['epoch'])
         
         if col0.lower().startswith('val') and col0.lower().endswith('step'):
+            print('hoooooooooooooooooooo!!')
             return
         
         hash_metrics_keys = sha1(' | '.join(sorted(list(metrics.keys()))))
@@ -134,6 +135,7 @@ class GenieLoggerBase(Logger):
             tbl = self.all_metrics_tbls[hash_metrics_keys]
         M = {str(m).replace('/', '__'): v for m, v in metrics.items()}
         tbl.add({**M, 'step': step})
+        print('done!')
 
     @rank_zero_only
     def save(self):
