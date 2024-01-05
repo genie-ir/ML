@@ -636,8 +636,12 @@ class VQModel(pl.LightningModule):
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
                 print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
         
-        loss = Cond_loss + A_loss + B_loss
-        print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
+        if optidx == 0:
+            loss = Cond_loss + A_loss + B_loss
+            print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
+        else:
+            loss = A_loss + B_loss
+            print(optidx, 'Aloss, Bloss, loss', A_loss, B_loss, loss)
         print('-'*30)
         return loss, None
 
@@ -867,7 +871,6 @@ class VQModel(pl.LightningModule):
             optidx=optimizer_idx,
             y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
         )
-        print('############# at the end:', loss, loss.shape, losslogdict)
         return loss, losslogdict
 
 
