@@ -114,6 +114,7 @@ class GenieLoggerBase(Logger):
         col0 = list(metrics.keys())[0]
         # print(col0, col0.lower().startswith('val') and col0.lower().endswith('epoch'))
         if self.flag_lock:
+            print('@@@@@@@@@@@@@@@@@@@')
             return
         # metrics is a dictionary of metric names and values
         # your code to record metrics goes here
@@ -124,7 +125,6 @@ class GenieLoggerBase(Logger):
             step = int(metrics['epoch'])
         
         if col0.lower().startswith('val') and col0.lower().endswith('step'):
-            print('@@@@@@@@@@@@@@@@@@@')
             return
         
         hash_metrics_keys = sha1(' | '.join(sorted(list(metrics.keys()))))
