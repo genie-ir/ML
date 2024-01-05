@@ -637,10 +637,10 @@ class VQModel(pl.LightningModule):
                 print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
         
         loss = Cond_loss + A_loss + B_loss
-        print('Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
-        assert False
+        print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
         return loss
 
+    def recent_pipline(self):
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
         q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
@@ -750,7 +750,6 @@ class VQModel(pl.LightningModule):
         # print('dec_Xs', dec_Xs.shape) # dec_Xs torch.Size([1, 1, 256, 256])
         
         return xs0 + dec_Xs, xs0 + dec_xscl, diff, dec_Xc, diff_xc
-
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
