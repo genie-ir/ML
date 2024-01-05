@@ -46,7 +46,6 @@ class Metrics():
         assert 'step' in spec, 'metric record does not have "step" key.'
         spec['timestamp'] = str(time.time())
         statuscode = self.Model(spec).save()
-        print('@@@@@@@@@@@@@@@@@@@@@@@', statuscode)
         if statuscode == -1:
             pk = spec.get('step', None)
             obj = self.Model.objects.get(pk=pk)

@@ -113,6 +113,8 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
+        self.ignore_go = True
+
         # print('encoder', self.encoder)
         # print('decoder', self.decoder)
         # print('disc', self.loss.discriminator)
@@ -522,6 +524,8 @@ class VQModel(pl.LightningModule):
                 self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         assert False
     def validation_step(self, batch, batch_idx):
+        if self.ignore_go:
+            return
         # opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
@@ -535,6 +539,9 @@ class VQModel(pl.LightningModule):
                 # else:
                 #     opt_disc.step()
                 self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
+    
+    def on_train_epoch_end(self):
+        self.ignore_go = False
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
