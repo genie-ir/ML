@@ -508,6 +508,8 @@ class VQModel(pl.LightningModule):
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
+        if self.ignore_go:
+            return
         opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(2):
