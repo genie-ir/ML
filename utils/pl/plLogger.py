@@ -31,7 +31,7 @@ class GenieLoggerBase(Logger):
         self.all_metrics_tbls = dict()
 
         self.db_fname = 'metrics'
-        self.db_path_dir = getenv(self.select_storage)
+        self.db_path_dir = '/content/' # getenv(self.select_storage)
         makedirs(self.db_path_dir, exist_ok=True)
         self.sqlite_dbms = SqliteDBMS(join(self.db_path_dir, self.db_fname))
         table_names = self.sqlite_dbms.get_tables()
