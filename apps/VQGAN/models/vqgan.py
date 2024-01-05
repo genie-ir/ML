@@ -796,8 +796,8 @@ class VQModel(pl.LightningModule):
         C_xcmask = (1-xclmask).detach()
         
         y_edit = batch['y_edit'].item()
-        print('y_edit_xc SSSSSSSSSSSSSSSS', batch['ynl'], batch['ynl'][0][cidx], cidx)
-        y_edit_xc = batch['ynl'][0][cidx]
+        print('y_edit_xc SSSSSSSSSSSSSSSS', batch['ynl'], batch['ynl'][cidx][0], cidx)
+        y_edit_xc = batch['ynl'][cidx][0]
 
         # print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
         # 0 <class 'int'> 2 <class 'str'>
