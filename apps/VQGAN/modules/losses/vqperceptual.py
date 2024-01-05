@@ -132,8 +132,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/d1".format(split): d1.clone().detach().mean().item(),
             "{}/d2".format(split): d2.clone().detach().mean().item(),
         }
-        print(log)
-        return loss
+        return loss, log
 
     def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False): # pw=0.1
         rec_loss = torch.abs(grandtrouth.contiguous() - prediction.contiguous())
@@ -151,7 +150,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/rec_loss".format(split): rec_loss.clone().detach().mean().item(),
             "{}/p_loss".format(split): p_loss.clone().detach().mean().item(),
         }
-        print(log)
         return loss, log
     
 
