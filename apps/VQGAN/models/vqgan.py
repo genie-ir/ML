@@ -624,7 +624,9 @@ class VQModel(pl.LightningModule):
                 R_𝝍s_tp = self.loss.Ro(𝝍s_tp)
                 B_loss0 = -1 * (self.loss.omega_of_phi_givvenRo(R_𝝍s_tp)).log()
                 B_loss1 = self.loss.D12(𝝍s_tp, l1=1, l2=1, split=split + 'B_el0_Rpsistp')
-                B_loss2, B_loss2_logdict = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, split=split + 'B_Geo_Ro')
+                print('KKKKKKKKKKKKKKK', self.loss.Ro(Xc).shape)
+                assert False
+                # B_loss2, B_loss2_logdict = self.loss.geometry(, R_𝝍s_tp, split=split + 'B_Geo_Ro')
                 B_loss = B_loss0 + B_loss1 + B_loss2
                 print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
             else:
