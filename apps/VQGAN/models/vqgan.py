@@ -638,6 +638,7 @@ class VQModel(pl.LightningModule):
         
         loss = Cond_loss + A_loss + B_loss
         print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
+        print('-'*30)
         return loss
 
     def recent_pipline(self):
