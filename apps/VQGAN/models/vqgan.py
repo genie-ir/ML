@@ -378,7 +378,7 @@ class VQModel(pl.LightningModule):
             xs_noneGrayAreaPart_gtru  = xs * C_xsmask
             xs_noneGrayAreaPart_pred = self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
-            print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
+            # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
 
         # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
@@ -390,7 +390,7 @@ class VQModel(pl.LightningModule):
             𝝍s_tm_final = xs
             if optidx == 0:
                 A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo')
-                print('A) IF) OPTIDX0)', A_loss, A_loss.shape)
+                # print('A) IF) OPTIDX0)', A_loss, A_loss.shape)
             else:
                 A_loss0 = -1 * (1 - self.loss.omega_of_phi(xs)).log()
                 A_loss5 = -1 * (self.loss.omega_of_phi(Xc)).log()
@@ -399,7 +399,7 @@ class VQModel(pl.LightningModule):
                 A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_if1_Fpsistm')
                 A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_if1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4 + A_loss5
-                print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
+                # print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
         else: # 𝝍s_tm ===> #NOTE: adversial loss
             xss = xs * C_xsmask
             𝝍s_tm = xss + xsmask * self.netA(xss, xsmask)
@@ -408,7 +408,7 @@ class VQModel(pl.LightningModule):
                 A_loss0 = -1 * (1 - self.loss.omega_of_phi(𝝍s_tm)).log()
                 A_loss1 = self.loss.D12(𝝍s_tm, l1=1, l2=1, split=split + 'A_el0_Rpsistm')
                 A_loss = A_loss0 + A_loss1
-                print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
+                # print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
             else:
                 A_loss0 = -1 * (self.loss.omega_of_phi(xs)).log()
                 A_loss1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'A_el1_Rxs')
@@ -416,7 +416,7 @@ class VQModel(pl.LightningModule):
                 A_loss3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_el1_Fpsistm')
                 A_loss4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_el1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4
-                print('A) ELSE) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss, A_loss.shape)
+                # print('A) ELSE) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss, A_loss.shape)
 
         # B)
         # using 𝝍s_tm_final (xs with absolutly no diesis) and punching it only in `xcmask` and considder gray information of `xc lessions` as xcm_gray.
@@ -428,7 +428,7 @@ class VQModel(pl.LightningModule):
             𝝍s_tp_final = 𝝍s_tm_final
             if optidx == 0:
                 B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
-                print('B) IF) OPTIDX0)', B_loss, B_loss.shape)
+                # print('B) IF) OPTIDX0)', B_loss, B_loss.shape)
             else:
                 B_loss0 = -1 * (1 - self.loss.omega_of_phi(Xc)).log()
                 B_loss1 = -1 * (self.loss.omega_of_phi(xs)).log()
@@ -437,7 +437,7 @@ class VQModel(pl.LightningModule):
                 B_loss4 = self.loss.D12(xsss, l1=1, l2=1, flag=True, split=split + 'B_if1_Fxsss')
                 B_loss5 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_if1_Fpsistp')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4 + B_loss5
-                print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
+                # print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
         else: # 𝝍s_tp ===> # Note: adversial loss
             𝝍s_tm_final_s = (𝝍s_tm_final * C_xcmask).detach()
             𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.netB(𝝍s_tm_final_s, xcmask, xcm_gray)
@@ -448,7 +448,7 @@ class VQModel(pl.LightningModule):
                 B_loss1 = self.loss.D12(𝝍s_tp, l1=1, l2=1, split=split + 'B_el0_Rpsistp')
                 B_loss2, B_loss2_logdict = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, pw=0, recln1p=True, split=split + 'B_Geo_Ro')
                 B_loss = B_loss0 + B_loss1 + B_loss2
-                print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
+                # print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
             else:
                 B_loss0 = -1 * (self.loss.omega_of_phi(Xc)).log()
                 B_loss1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'B_el1_Rxs')
@@ -456,15 +456,15 @@ class VQModel(pl.LightningModule):
                 B_loss3 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistp')
                 B_loss4 = self.loss.D12(𝝍s_tm_final_s, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistmfs')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
-                print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
+                # print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
         
         if optidx == 0:
             loss = Cond_loss + A_loss + B_loss
-            print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
+            # print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
         else:
             loss = A_loss + B_loss
-            print(optidx, 'Aloss, Bloss, loss', A_loss, B_loss, loss)
-        print('-'*30)
+            # print(optidx, 'Aloss, Bloss, loss', A_loss, B_loss, loss)
+        # print('-'*30)
         return loss, None
 
     # NOTE: Syn Idea
@@ -472,15 +472,31 @@ class VQModel(pl.LightningModule):
         opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(2):
+                # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 opt_ae.zero_grad()
                 opt_disc.zero_grad()
-                # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
                 self.manual_backward(loss)
                 if optimizer_idx == 0:
                     opt_ae.step()
                 else:
                     opt_disc.step()
+                self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
+        assert False
+    def validation_step(self, batch, batch_idx):
+        opt_ae, opt_disc = self.optimizers()
+        for cidx in range(2):
+            for optimizer_idx in range(2):
+                # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
+                # opt_ae.zero_grad()
+                # opt_disc.zero_grad()
+                loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
+                # self.manual_backward(loss)
+                # if optimizer_idx == 0:
+                #     opt_ae.step()
+                # else:
+                #     opt_disc.step()
+                self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
         assert False
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
@@ -507,7 +523,6 @@ class VQModel(pl.LightningModule):
         C_xcmask = (1-xclmask).detach()
         
         y_edit = batch['y_edit'].item()
-        print('y_edit_xc SSSSSSSSSSSSSSSS', batch['ynl'], batch['ynl'][cidx][0], cidx)
         y_edit_xc = batch['ynl'][cidx][0]
 
         # print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
@@ -587,7 +602,7 @@ class VQModel(pl.LightningModule):
     def validation_step_syn(self, batch, batch_idx):
         print('validation_step_syn')
         return
-    def validation_step(self, batch, batch_idx):
+    def validation_step0000000(self, batch, batch_idx):
         return
         # print('validation_step')
         # logged = self.log_images(batch, fName='badRec/' + random_string())

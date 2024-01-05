@@ -128,9 +128,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
         loss = d1 + d2
 
         log = {
-            "{}/loss".format(split): loss.clone().detach().mean(),
-            "{}/d1".format(split): d1.clone().detach().mean(),
-            "{}/d2".format(split): d2.clone().detach().mean(),
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+            "{}/d1".format(split): d1.clone().detach().mean().item(),
+            "{}/d2".format(split): d2.clone().detach().mean().item(),
         }
         print(log)
         return loss
@@ -147,9 +147,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
 
         loss = (rec_loss + p_loss).mean()
         log = {
-            "{}/loss".format(split): loss.clone().detach().mean(),
-            "{}/rec_loss".format(split): rec_loss.clone().detach().mean(),
-            "{}/p_loss".format(split): p_loss.clone().detach().mean(),
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+            "{}/rec_loss".format(split): rec_loss.clone().detach().mean().item(),
+            "{}/p_loss".format(split): p_loss.clone().detach().mean().item(),
         }
         print(log)
         return loss, log
