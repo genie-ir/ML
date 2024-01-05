@@ -508,8 +508,6 @@ class VQModel(pl.LightningModule):
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
-        if self.ignore_go:
-            return
         opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(2):
@@ -526,8 +524,6 @@ class VQModel(pl.LightningModule):
                 self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
     def validation_step(self, batch, batch_idx):
-        if self.ignore_go:
-            return
         # opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
@@ -541,7 +537,8 @@ class VQModel(pl.LightningModule):
                 # else:
                 #     opt_disc.step()
                 self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
-    
+        assert False
+
     def on_train_epoch_end(self):
         self.ignore_go = False
     
