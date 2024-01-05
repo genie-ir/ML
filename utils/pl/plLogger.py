@@ -124,6 +124,7 @@ class GenieLoggerBase(Logger):
             step = int(metrics['epoch'])
         
         if col0.lower().startswith('val') and col0.lower().endswith('step'):
+            print('@@@@@@@@@@@@@@@@@@@')
             return
         
         hash_metrics_keys = sha1(' | '.join(sorted(list(metrics.keys()))))
