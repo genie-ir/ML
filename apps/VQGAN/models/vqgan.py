@@ -474,12 +474,13 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False
         ) # Note: add skip connection
-        signal_save(torch.cat([
-            (simg+1) * 127.5,
-            (y+1) * 127.5,
-            torch.cat([smask, smask, smask], dim=1) * 255,
-        ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
-        assert False
+        
+        # signal_save(torch.cat([
+        #     (simg+1) * 127.5,
+        #     (y+1) * 127.5,
+        #     torch.cat([smask, smask, smask], dim=1) * 255,
+        # ], dim=0), f'/content/export/netA.png', stype='img', sparams={'chw2hwc': True, 'nrow': 3})
+        # assert False
         
         return y
     
