@@ -35,7 +35,7 @@ dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
 
-
+import time
 
 from utils.pl.plLogger import GenieLoggerBase
 
@@ -515,6 +515,7 @@ class VQModel(pl.LightningModule):
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
+        start_time = time.time()
         opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(2):
@@ -528,6 +529,8 @@ class VQModel(pl.LightningModule):
                 else:
                     opt_disc.step()
                 # self.gl.log_metrics(logdict, self.global_step)
+        execution_time_in_sec = (time.time() - start_time)
+        print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
         # assert False
     
     def validation_step(self, batch, batch_idx):
