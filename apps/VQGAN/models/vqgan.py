@@ -506,7 +506,8 @@ class VQModel(pl.LightningModule):
         return loss, {
             **Cond_loss_logdict,
             **A_loss_logdict,
-            **B_loss_logdict
+            **B_loss_logdict,
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
         }
 
     # NOTE: Syn Idea
@@ -529,6 +530,7 @@ class VQModel(pl.LightningModule):
                 self.gl.log_metrics(logdict, self.global_step)
                 # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
+    
     def validation_step(self, batch, batch_idx):
         if batch_idx >=1:
             return
