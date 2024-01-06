@@ -534,7 +534,7 @@ class VQModel(pl.LightningModule):
                 
                 # self.gl.log_metrics(logdict, self.global_step)
         # execution_time_in_sec = (time.time() - start_time)
-        print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
+        # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
         # assert False
     
     def validation_step(self, batch, batch_idx):
