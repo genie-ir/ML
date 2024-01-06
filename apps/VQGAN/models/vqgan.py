@@ -541,6 +541,8 @@ class VQModel(pl.LightningModule):
                 self.gl.log_metrics(logdict, self.global_step)
         # assert False
 
+    def on_fit_start(self):
+        print('hoooooooooooooooooooooooooo!!')
     # def on_train_epoch_end(self):
     #     self.ignore_go = False
     
