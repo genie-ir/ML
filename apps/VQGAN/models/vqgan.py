@@ -523,14 +523,19 @@ class VQModel(pl.LightningModule):
                 opt_ae.zero_grad()
                 opt_disc.zero_grad()
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
-                self.manual_backward(loss)
-                if optimizer_idx == 0:
-                    opt_ae.step()
-                else:
-                    opt_disc.step()
+                
+                
+                # self.manual_backward(loss)
+                # if optimizer_idx == 0:
+                #     opt_ae.step()
+                # else:
+                #     opt_disc.step()
+                
+                
                 # self.gl.log_metrics(logdict, self.global_step)
         execution_time_in_sec = (time.time() - start_time)
         print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
+        assert False
         # assert False
     
     def validation_step(self, batch, batch_idx):
