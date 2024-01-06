@@ -110,7 +110,7 @@ class GenieLoggerBase(Logger):
     
     @rank_zero_only
     def log_metrics(self, metrics, step):
-        print('log...', metrics, step)
+        # print('log...', metrics, step)
         col0 = list(metrics.keys())[0]
         # print(col0, col0.lower().startswith('val') and col0.lower().endswith('epoch'))
         if self.flag_lock:
