@@ -98,13 +98,22 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.eps = torch.tensor(-5).exp() # tensor(0.0067)
         pass
     
+    def vgg16head_mean(self, x):
+        disc = self.vgg16_head(x).mean()
+
+        DlossCorrect = disc.detach().clamp(self.eps)
+        DlossCorrect = dzq_dz_eq1(DlossCorrect, disc)
+        return DlossCorrect
+
     def omega_of_phi(self, x):
-        return self.vgg16_head(self.vgg16(x)).mean()
+        return self.vgg16head_mean(self.vgg16(x))
+    
+    def omega_of_phi_givvenRo(self, ro):
+        return self.vgg16head_mean(ro)
     
     def Ro(self, x):
         return self.vgg16(x)
-    def omega_of_phi_givvenRo(self, ro):
-        return self.vgg16_head(ro).mean()
+    
     
     def D1(self, x): # discriminator
         disc = (self.discriminator(x.contiguous())).mean()

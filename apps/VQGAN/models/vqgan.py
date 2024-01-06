@@ -503,13 +503,14 @@ class VQModel(pl.LightningModule):
             loss = A_loss + B_loss
             # print(optidx, 'Aloss, Bloss, loss', A_loss, B_loss, loss)
         # print('-'*30)
+        
         return loss, {
-            # **Cond_loss_logdict,
-            # **A_loss_logdict,
-            # **B_loss_logdict,
+            **Cond_loss_logdict,
+            **A_loss_logdict,
+            **B_loss_logdict,
             "{}/total_loss".format(split): loss.clone().detach().mean().item(),
-            "{}/A_loss".format(split): A_loss.clone().detach().mean().item(),
-            "{}/B_loss".format(split): B_loss.clone().detach().mean().item(),
+            "{}/total_A_loss".format(split): A_loss.clone().detach().mean().item(),
+            "{}/total_B_loss".format(split): B_loss.clone().detach().mean().item(),
         }
 
     # NOTE: Syn Idea
