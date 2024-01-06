@@ -98,33 +98,43 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.eps = torch.tensor(-5, device='cuda').exp() # tensor(0.0067)
         pass
     
-    def vgg16head_mean(self, x):
-        disc = self.vgg16_head(x).mean()
-
-        DlossCorrect = disc.detach().clamp(self.eps)
-        DlossCorrect = dzq_dz_eq1(DlossCorrect, disc)
-        return DlossCorrect
-
-    def omega_of_phi(self, x):
-        return self.vgg16head_mean(self.vgg16(x))
     
-    def omega_of_phi_givvenRo(self, ro):
-        return self.vgg16head_mean(ro)
+    def logp(self, p): # rename to some meningful name!! later!!
+        pd = p.detach().clamp(self.eps)
+        pd = dzq_dz_eq1(pd, p)
+        return pd
+    
+    def vgg16head_mean(self, x, flag=False):
+        p = self.vgg16_head(x).mean()
+        if flag:
+            p = 1 - p
+        
+        p = self.logp(p)
+        return -1 * p.log()
+
+    def omega_of_phi(self, x, flag=False, split=''):
+        loss = self.vgg16head_mean(self.vgg16(x), flag=flag)
+        log = {
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+        }
+        return loss, log
+    
+    def omega_of_phi_givvenRo(self, ro, flag=False, split=''):
+        loss = self.vgg16head_mean(ro, flag=flag)
+        log = {
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+        }
+        return loss, log
     
     def Ro(self, x):
         return self.vgg16(x)
     
     
     def D1(self, x): # discriminator
-        disc = (self.discriminator(x.contiguous())).mean()
-        DlossCorrect = disc.detach().clamp(self.eps)
-        DlossCorrect = dzq_dz_eq1(DlossCorrect, disc)
-        return DlossCorrect
+        return (self.discriminator(x.contiguous())).mean()
+    
     def D2(self, x): # discriminator_large
-        disc = (self.discriminator_large(x.contiguous())).mean()
-        DlossCorrect = disc.detach().clamp(self.eps)
-        DlossCorrect = dzq_dz_eq1(DlossCorrect, disc)
-        return DlossCorrect
+        return (self.discriminator_large(x.contiguous())).mean()
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
         d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
@@ -132,6 +142,10 @@ class VQLPIPSWithDiscriminator(nn.Module):
         if flag:
             d1 = 1 - d1
             d2 = 1 - d2
+        
+        d1 = self.logp(d1)
+        d2 = self.logp(d2)
+
         d1 = l1 * (-1 * (d1.log()))
         d2 = l2 * (-1 * (d2.log()))
         

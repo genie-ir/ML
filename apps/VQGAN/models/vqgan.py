@@ -333,7 +333,7 @@ class VQModel(pl.LightningModule):
     def netB(self, simg, smask, sinfgray):
         n = 16
         ch = 256
-        sinfgray_diesis = self.loss.vgg16(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
+        sinfgray_diesis = self.loss.Ro(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
         v = self.encoder.netb_diagonal(sinfgray_diesis).view(ch, n, 1, 1)
         z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device).detach()
         V = (v + z.unsqueeze(-1)).view((1, ch, n, n))
@@ -399,14 +399,16 @@ class VQModel(pl.LightningModule):
                 A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo')
                 # print('A) IF) OPTIDX0)', A_loss, A_loss.shape)
             else:
-                A_loss0 = -1 * (1 - self.loss.omega_of_phi(xs)).log()
-                A_loss5 = -1 * (self.loss.omega_of_phi(Xc)).log()
+                A_loss0, A_d0 = self.loss.omega_of_phi(xs, flag=True, split=split + 'A_if1_OFxs') # OK!
+                A_loss5, A_d5 = self.loss.omega_of_phi(Xc, split=split + 'A_if1_ORxc') # OK!
                 A_loss1, A_d1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'A_if1_Rxs')
                 A_loss2, A_d2 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'A_if1_Rxc')
                 A_loss3, A_d3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_if1_Fpsistm')
                 A_loss4, A_d4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_if1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4 + A_loss5
                 A_loss_logdict = {
+                    **A_d0,
+                    **A_d5,
                     **A_d1,
                     **A_d2,
                     **A_d3,
@@ -418,21 +420,23 @@ class VQModel(pl.LightningModule):
             𝝍s_tm = xss + xsmask * self.netA(xss, xsmask)
             𝝍s_tm_final = 𝝍s_tm
             if optidx == 0:
-                A_loss0 = -1 * (1 - self.loss.omega_of_phi(𝝍s_tm)).log()
+                A_loss0, A_d0 = self.loss.omega_of_phi(𝝍s_tm, flag=True, split=split + 'A_el0_OFpsistm') # OK!
                 A_loss1, A_d1 = self.loss.D12(𝝍s_tm, l1=1, l2=1, split=split + 'A_el0_Rpsistm')
                 A_loss = A_loss0 + A_loss1
                 A_loss_logdict = {
+                    **A_d0,
                     **A_d1
                 }
                 # print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
             else:
-                A_loss0 = -1 * (self.loss.omega_of_phi(xs)).log()
+                A_loss0, A_d0 = self.loss.omega_of_phi(xs, split=split + 'A_el1_ORxs') # OK!
                 A_loss1, A_d1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'A_el1_Rxs')
                 A_loss2, A_d2 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'A_el1_Rxc')
                 A_loss3, A_d3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_el1_Fpsistm')
                 A_loss4, A_d4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_el1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4
                 A_loss_logdict = {
+                    **A_d0,
                     **A_d1,
                     **A_d2,
                     **A_d3,
@@ -452,14 +456,16 @@ class VQModel(pl.LightningModule):
                 B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
                 # print('B) IF) OPTIDX0)', B_loss, B_loss.shape)
             else:
-                B_loss0 = -1 * (1 - self.loss.omega_of_phi(Xc)).log()
-                B_loss1 = -1 * (self.loss.omega_of_phi(xs)).log()
+                B_loss0, B_d0 = self.loss.omega_of_phi(Xc, flag=True, split=split + 'B_if1_OFxc') # OK!
+                B_loss1, B_d1 = self.loss.omega_of_phi(xs, split=split + 'B_if1_ORxs') # OK!
                 B_loss2, B_d2 = self.loss.D12(xs, l1=1, l2=1, split=split + 'B_if1_Rxs')
                 B_loss3, B_d3 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'B_if1_Rxc')
                 B_loss4, B_d4 = self.loss.D12(xsss, l1=1, l2=1, flag=True, split=split + 'B_if1_Fxsss')
                 B_loss5, B_d5 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_if1_Fpsistp')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4 + B_loss5
                 B_loss_logdict = {
+                    **B_d0,
+                    **B_d1,
                     **B_d2,
                     **B_d3,
                     **B_d4,
@@ -472,23 +478,25 @@ class VQModel(pl.LightningModule):
             𝝍s_tp_final = 𝝍s_tp
             if optidx == 0:
                 R_𝝍s_tp = self.loss.Ro(𝝍s_tp)
-                B_loss0 = -1 * (self.loss.omega_of_phi_givvenRo(R_𝝍s_tp)).log()
+                B_loss0, B_d0 = self.loss.omega_of_phi_givvenRo(R_𝝍s_tp, split=split + 'B_el0_ORropsistp') # OK!
                 B_loss1, B_d1 = self.loss.D12(𝝍s_tp, l1=1, l2=1, split=split + 'B_el0_Rpsistp')
                 B_loss2, B_d2 = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, pw=0, recln1p=True, split=split + 'B_Geo_Ro')
                 B_loss = B_loss0 + B_loss1 + B_loss2
                 B_loss_logdict = {
+                    **B_d0,
                     **B_d1,
                     **B_d2,
                 }
                 # print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
             else:
-                B_loss0 = -1 * (self.loss.omega_of_phi(Xc)).log()
+                B_loss0, B_d0 = self.loss.omega_of_phi(Xc, split=split + 'B_el1_ORxc') # OK!
                 B_loss1, B_d1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'B_el1_Rxs')
                 B_loss2, B_d2 = self.loss.D12(Xc, l1=1, l2=1, split=split + 'B_el1_Rxc')
                 B_loss3, B_d3 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistp')
                 B_loss4, B_d4 = self.loss.D12(𝝍s_tm_final_s, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistmfs')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
                 B_loss_logdict = {
+                    **B_d0,
                     **B_d1,
                     **B_d2,
                     **B_d3,
