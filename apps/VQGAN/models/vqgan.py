@@ -525,9 +525,8 @@ class VQModel(pl.LightningModule):
                     opt_ae.step()
                 else:
                     opt_disc.step()
-                print('train', self.global_step)
                 print(logdict)
-                # self.gl.log_metrics(logdict)
+                self.gl.log_metrics(logdict, self.global_step)
                 # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
     def validation_step(self, batch, batch_idx):
@@ -537,17 +536,9 @@ class VQModel(pl.LightningModule):
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
-                # opt_ae.zero_grad()
-                # opt_disc.zero_grad()
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
-                print('val', self.global_step)
-                # self.manual_backward(loss)
-                # if optimizer_idx == 0:
-                #     opt_ae.step()
-                # else:
-                #     opt_disc.step()
                 # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
-                # self.gl.log_metrics(logdict)
+                self.gl.log_metrics(logdict, self.global_step)
         # assert False
 
     # def on_train_epoch_end(self):
