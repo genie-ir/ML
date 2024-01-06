@@ -406,12 +406,12 @@ class VQModel(pl.LightningModule):
                 A_loss3, A_d3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_if1_Fpsistm')
                 A_loss4, A_d4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_if1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4 + A_loss5
-                # A_loss_logdict = {
-                #     **A_d1,
-                #     **A_d2,
-                #     **A_d3,
-                #     **A_d4,
-                # }
+                A_loss_logdict = {
+                    **A_d1,
+                    **A_d2,
+                    **A_d3,
+                    **A_d4,
+                }
                 # print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
         else: # 𝝍s_tm ===> #NOTE: adversial loss
             xss = xs * C_xsmask
@@ -421,9 +421,9 @@ class VQModel(pl.LightningModule):
                 A_loss0 = -1 * (1 - self.loss.omega_of_phi(𝝍s_tm)).log()
                 A_loss1, A_d1 = self.loss.D12(𝝍s_tm, l1=1, l2=1, split=split + 'A_el0_Rpsistm')
                 A_loss = A_loss0 + A_loss1
-                # A_loss_logdict = {
-                #     **A_d1
-                # }
+                A_loss_logdict = {
+                    **A_d1
+                }
                 # print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
             else:
                 A_loss0 = -1 * (self.loss.omega_of_phi(xs)).log()
@@ -432,12 +432,12 @@ class VQModel(pl.LightningModule):
                 A_loss3, A_d3 = self.loss.D12(𝝍s_tm, l1=1, l2=1, flag=True, split=split + 'A_el1_Fpsistm')
                 A_loss4, A_d4 = self.loss.D12(xss, l1=1, l2=1, flag=True, split=split + 'A_el1_Fxss')
                 A_loss = A_loss0 + A_loss1 + A_loss2 + A_loss3 + A_loss4
-                # A_loss_logdict = {
-                #     **A_d1,
-                #     **A_d2,
-                #     **A_d3,
-                #     **A_d4,
-                # }
+                A_loss_logdict = {
+                    **A_d1,
+                    **A_d2,
+                    **A_d3,
+                    **A_d4,
+                }
                 # print('A) ELSE) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss, A_loss.shape)
 
         # B)
@@ -459,12 +459,12 @@ class VQModel(pl.LightningModule):
                 B_loss4, B_d4 = self.loss.D12(xsss, l1=1, l2=1, flag=True, split=split + 'B_if1_Fxsss')
                 B_loss5, B_d5 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_if1_Fpsistp')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4 + B_loss5
-                # B_loss_logdict = {
-                #     **B_d2,
-                #     **B_d3,
-                #     **B_d4,
-                #     **B_d5,
-                # }
+                B_loss_logdict = {
+                    **B_d2,
+                    **B_d3,
+                    **B_d4,
+                    **B_d5,
+                }
                 # print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
         else: # 𝝍s_tp ===> # Note: adversial loss
             𝝍s_tm_final_s = (𝝍s_tm_final * C_xcmask).detach()
@@ -476,10 +476,10 @@ class VQModel(pl.LightningModule):
                 B_loss1, B_d1 = self.loss.D12(𝝍s_tp, l1=1, l2=1, split=split + 'B_el0_Rpsistp')
                 B_loss2, B_d2 = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, pw=0, recln1p=True, split=split + 'B_Geo_Ro')
                 B_loss = B_loss0 + B_loss1 + B_loss2
-                # B_loss_logdict = {
-                #     **B_d1,
-                #     **B_d2,
-                # }
+                B_loss_logdict = {
+                    **B_d1,
+                    **B_d2,
+                }
                 # print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
             else:
                 B_loss0 = -1 * (self.loss.omega_of_phi(Xc)).log()
@@ -488,12 +488,12 @@ class VQModel(pl.LightningModule):
                 B_loss3, B_d3 = self.loss.D12(𝝍s_tp, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistp')
                 B_loss4, B_d4 = self.loss.D12(𝝍s_tm_final_s, l1=1, l2=1, flag=True, split=split + 'B_el1_Fpsistmfs')
                 B_loss = B_loss0 + B_loss1 + B_loss2 + B_loss3 + B_loss4
-                # B_loss_logdict = {
-                #     **B_d1,
-                #     **B_d2,
-                #     **B_d3,
-                #     **B_d4,
-                # }
+                B_loss_logdict = {
+                    **B_d1,
+                    **B_d2,
+                    **B_d3,
+                    **B_d4,
+                }
                 # print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
         
         if optidx == 0:
@@ -505,9 +505,9 @@ class VQModel(pl.LightningModule):
         # print('-'*30)
         
         return loss, {
-            # **Cond_loss_logdict,
-            # **A_loss_logdict,
-            # **B_loss_logdict,
+            **Cond_loss_logdict,
+            **A_loss_logdict,
+            **B_loss_logdict,
             "{}/total_loss".format(split): loss.clone().detach().mean().item(),
             "{}/total_A_loss".format(split): A_loss.clone().detach().mean().item(),
             "{}/total_B_loss".format(split): B_loss.clone().detach().mean().item(),
@@ -532,7 +532,7 @@ class VQModel(pl.LightningModule):
                     opt_disc.step()
                 
                 
-                # self.gl.log_metrics(logdict, self.global_step)
+                self.gl.log_metrics(logdict, self.global_step)
         # execution_time_in_sec = (time.time() - start_time)
         # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
         # assert False
@@ -544,7 +544,7 @@ class VQModel(pl.LightningModule):
             for optimizer_idx in range(1): #range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
-                # self.gl.log_metrics(logdict, self.global_step)
+                self.gl.log_metrics(logdict, self.global_step)
         # assert False
 
     def on_fit_start(self):

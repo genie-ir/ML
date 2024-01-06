@@ -138,12 +138,12 @@ class VQLPIPSWithDiscriminator(nn.Module):
         loss = d1 + d2
         # loss = d2
 
-        # log = {
-        #     "{}/loss".format(split): loss.clone().detach().mean().item(),
-        #     "{}/d1".format(split): d1.clone().detach().mean().item(),
-        #     "{}/d2".format(split): d2.clone().detach().mean().item(),
-        # }
-        log = None
+        log = {
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+            "{}/d1".format(split): d1.clone().detach().mean().item(),
+            "{}/d2".format(split): d2.clone().detach().mean().item(),
+        }
+        # log = None
         return loss, log
 
     def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False): # pw=0.1
@@ -157,12 +157,12 @@ class VQLPIPSWithDiscriminator(nn.Module):
             p_loss = torch.tensor(0.0)
 
         loss = (rec_loss + p_loss).mean()
-        # log = {
-        #     "{}/loss".format(split): loss.clone().detach().mean().item(),
-        #     "{}/rec_loss".format(split): rec_loss.clone().detach().mean().item(),
-        #     "{}/p_loss".format(split): p_loss.clone().detach().mean().item(),
-        # }
-        log = None
+        log = {
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+            "{}/rec_loss".format(split): rec_loss.clone().detach().mean().item(),
+            "{}/p_loss".format(split): p_loss.clone().detach().mean().item(),
+        }
+        # log = None
         return loss, log
     
 
