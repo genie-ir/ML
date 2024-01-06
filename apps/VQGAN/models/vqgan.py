@@ -511,8 +511,6 @@ class VQModel(pl.LightningModule):
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
-        print('train', self.current_epoch)
-        return
         opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(2):
@@ -525,13 +523,12 @@ class VQModel(pl.LightningModule):
                     opt_ae.step()
                 else:
                     opt_disc.step()
+                print('train', self.global_step)
                 print(logdict)
                 # self.gl.log_metrics(logdict)
                 # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
     def validation_step(self, batch, batch_idx):
-        print('val', self.current_epoch)
-        return
         # opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
@@ -539,6 +536,7 @@ class VQModel(pl.LightningModule):
                 # opt_ae.zero_grad()
                 # opt_disc.zero_grad()
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
+                print('val', self.global_step)
                 # self.manual_backward(loss)
                 # if optimizer_idx == 0:
                 #     opt_ae.step()
@@ -548,8 +546,8 @@ class VQModel(pl.LightningModule):
                 # self.gl.log_metrics(logdict)
         assert False
 
-    def on_train_epoch_end(self):
-        self.ignore_go = False
+    # def on_train_epoch_end(self):
+    #     self.ignore_go = False
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
@@ -649,6 +647,7 @@ class VQModel(pl.LightningModule):
             optidx=optimizer_idx,
             y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
         )
+        losslogdict['epoch'] = self.current_epoch
         return loss, losslogdict
 
     def validation_step_syn(self, batch, batch_idx):
