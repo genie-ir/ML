@@ -507,7 +507,9 @@ class VQModel(pl.LightningModule):
             # **Cond_loss_logdict,
             # **A_loss_logdict,
             # **B_loss_logdict,
-            "{}/loss".format(split): loss.clone().detach().mean().item(),
+            "{}/total_loss".format(split): loss.clone().detach().mean().item(),
+            "{}/A_loss".format(split): A_loss.clone().detach().mean().item(),
+            "{}/B_loss".format(split): B_loss.clone().detach().mean().item(),
         }
 
     # NOTE: Syn Idea
@@ -524,15 +526,11 @@ class VQModel(pl.LightningModule):
                     opt_ae.step()
                 else:
                     opt_disc.step()
-                print(logdict)
                 self.gl.log_metrics(logdict, self.global_step)
                 # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
     
     def validation_step(self, batch, batch_idx):
-        if batch_idx >=1:
-            return
-        # opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
