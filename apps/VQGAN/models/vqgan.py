@@ -542,7 +542,7 @@ class VQModel(pl.LightningModule):
         # assert False
 
     def on_fit_start(self):
-        print('hoooooooooooooooooooooooooo!!')
+        self.gl.unlockFlag()
     # def on_train_epoch_end(self):
     #     self.ignore_go = False
     
