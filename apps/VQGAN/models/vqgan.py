@@ -525,11 +525,11 @@ class VQModel(pl.LightningModule):
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
                 
                 
-                # self.manual_backward(loss)
-                # if optimizer_idx == 0:
-                #     opt_ae.step()
-                # else:
-                #     opt_disc.step()
+                self.manual_backward(loss)
+                if optimizer_idx == 0:
+                    opt_ae.step()
+                else:
+                    opt_disc.step()
                 
                 
                 # self.gl.log_metrics(logdict, self.global_step)
