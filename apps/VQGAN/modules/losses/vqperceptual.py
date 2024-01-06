@@ -95,7 +95,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
     def start(self):
         # print(self.discriminator)
         # assert False
-        self.eps = torch.tensor(-5, device=self.device).exp() # tensor(0.0067)
+        self.eps = torch.tensor(-5, device='cuda').exp() # tensor(0.0067)
         pass
     
     def vgg16head_mean(self, x):
