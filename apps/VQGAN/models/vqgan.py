@@ -527,8 +527,7 @@ class VQModel(pl.LightningModule):
                     opt_ae.step()
                 else:
                     opt_disc.step()
-                self.gl.log_metrics(logdict, self.global_step)
-                # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
+                # self.gl.log_metrics(logdict, self.global_step)
         # assert False
     
     def validation_step(self, batch, batch_idx):
@@ -538,8 +537,7 @@ class VQModel(pl.LightningModule):
             for optimizer_idx in range(1): #range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
-                # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=True, batch_size=1)
-                self.gl.log_metrics(logdict, self.global_step)
+                # self.gl.log_metrics(logdict, self.global_step)
         # assert False
 
     def on_fit_start(self):
