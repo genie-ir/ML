@@ -529,6 +529,8 @@ class VQModel(pl.LightningModule):
                 # self.log_dict(logdict, prog_bar=False, logger=True, on_step=True, on_epoch=False, batch_size=1)
         # assert False
     def validation_step(self, batch, batch_idx):
+        if batch_idx >=1:
+            return
         # opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
