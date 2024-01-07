@@ -94,6 +94,7 @@ class Metrics(PYBASE):
 
         print('R', R)
         print('self.reductions[tag]', self.reductions[tag])
+        assert False
         return R
 
     def reduction_sum(self, tag: str, mk: str, mv):
@@ -136,9 +137,6 @@ class SQLiteLogger(Metrics):
             else:
                 raise e
             
-
-
-
 
 
             
