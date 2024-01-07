@@ -552,7 +552,7 @@ class VQModel(pl.LightningModule):
         if batch_idx >= 10:
             return
         for cidx in range(2):
-            for optimizer_idx in range(1): #range(2):
+            for optimizer_idx in range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
                 self.metrics.log('val', logdict)
