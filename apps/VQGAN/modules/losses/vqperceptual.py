@@ -189,6 +189,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         
         if d2 == 0:
             d2 = 0 * d2
+            print('---d2=0-->', split)
 
         loss = d1 + d2
 
