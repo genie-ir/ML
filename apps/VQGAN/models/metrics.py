@@ -49,6 +49,10 @@ class SQLite(PYBASE):
         return BaseModel
 
 
+
+
+
+
 class Metrics(PYBASE):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -76,6 +80,8 @@ class Metrics(PYBASE):
         for MK, mv in self.metrics.get(tag, dict()).items():
             mk, mr = (MK + ':reduction_mean').split(':')[:2]
             mrv = getattr(self, mr)(tag, mk, mv)
+            if mrv is None:
+                continue
             try:
                 self.reductions[tag][mk] = mrv
             except Exception as e:
@@ -87,11 +93,24 @@ class Metrics(PYBASE):
         self.metrics[tag] = dict()
         self.reductions[tag] = dict()
 
-    def reduction_sum(self, tag, mk, mv):
+    def reduction_sum(self, tag: str, mk: str, mv):
         return sum(mv)
     
-    def reduction_mean(self, tag, mk, mv):
+    def reduction_mean(self, tag: str, mk: str, mv):
         return sum(mv) / len(mv)
+    
+    def reduction_ignore(self, tag: str, mk: str, mv):
+        return None
+    
+    def reduction_accuracy(self, tag: str, mk: str, mv):
+        globalname, localname = mk.split('/')
+        subname = '{}/{}'.format(globalname, localname.replace('ACC', ''))
+        TP = sum(self.metrics[tag][f'{subname}TP'])
+        TN = sum(self.metrics[tag][f'{subname}TN'])
+        FP = sum(self.metrics[tag][f'{subname}FP'])
+        FN = sum(self.metrics[tag][f'{subname}FN'])
+        return (TP + TN) / (TP + TN + FP + FN)
+
 
 class SQLiteLogger(Metrics):
     def __init__(self, **kwargs):
@@ -108,9 +127,25 @@ class SQLiteLogger(Metrics):
             if self.sqlite.tables.get(tag, None) is None:
                 self.sqlite.create_tables({
                     tag: dict((mk, dict(type='FloatField', params=dict())) for mk, mv in self.reductions[tag].items())
-                    # TODO currently only we assume each field is FloatField taht have no params for FloatField class, you can extend types later...
+                    # TODO currently only we assume each field is FloatField and have no params for FloatField class, you can extend types later...
                 })
                 self.sqlite.tables[tag].create(**self.reductions[tag])
             else:
                 raise e
             
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+
+

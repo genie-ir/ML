@@ -68,7 +68,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
             nn.Linear(n_inputs, 256)
         )
         self.vgg16_head = nn.Sequential(
-            nn.ReLU(), nn.Dropout(0.4),
+            nn.ReLU(), #nn.Dropout(0.4),
             nn.Linear(256, 128), nn.Sigmoid()
         )
 
@@ -104,27 +104,56 @@ class VQLPIPSWithDiscriminator(nn.Module):
         pd = dzq_dz_eq1(pd, p)
         return pd
     
-    def vgg16head_mean(self, x, flag=False):
+    def analyse_p(self, p, flag):
+        if p >= 0.5:
+            if flag:
+                TN = 1
+                TP = 0
+                FP = 0
+                FN = 0
+            else:
+                TP = 1
+                TN = 0
+                FP = 0
+                FN = 0
+        else:
+            if flag:
+                FP = 1
+                FN = 0
+                TP = 0
+                TN = 0
+            else:
+                FN = 1
+                FP = 0
+                TP = 0
+                TN = 0
+        return TP, TN, FP, FN
+
+    def vgg16head_mean(self, x, flag=False, split=''):
         p = self.vgg16_head(x).mean()
         if flag:
             p = 1 - p
         
+        TP, TN, FP, FN = self.analyse_p(p, flag)
+
         p = self.logp(p)
-        return -1 * p.log()
+        loss = -1 * p.log()
+
+        log = {
+            "{}/TP:reduction_ignore".format(split): TP,
+            "{}/TN:reduction_ignore".format(split): TN,
+            "{}/FP:reduction_ignore".format(split): FP,
+            "{}/FN:reduction_ignore".format(split): FN,
+            "{}/ACC:reduction_accuracy".format(split): None,
+            "{}/loss".format(split): loss.clone().detach().mean().item(),
+        }
+        return loss, log
 
     def omega_of_phi(self, x, flag=False, split=''):
-        loss = self.vgg16head_mean(self.vgg16(x), flag=flag)
-        log = {
-            "{}/loss".format(split): loss.clone().detach().mean().item(),
-        }
-        return loss, log
+        return self.vgg16head_mean(self.vgg16(x), flag=flag, split=split)
     
     def omega_of_phi_givvenRo(self, ro, flag=False, split=''):
-        loss = self.vgg16head_mean(ro, flag=flag)
-        log = {
-            "{}/loss".format(split): loss.clone().detach().mean().item(),
-        }
-        return loss, log
+        return self.vgg16head_mean(ro, flag=flag, split=split)
     
     def Ro(self, x):
         return self.vgg16(x)
@@ -143,6 +172,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
             d1 = 1 - d1
             d2 = 1 - d2
         
+        d1TP, d1TN, d1FP, d1FN = self.analyse_p(d1, flag)
+        d2TP, d2TN, d2FP, d2FN = self.analyse_p(d2, flag)
+
         d1 = self.logp(d1)
         d2 = self.logp(d2)
 
@@ -150,14 +182,24 @@ class VQLPIPSWithDiscriminator(nn.Module):
         d2 = l2 * (-1 * (d2.log()))
         
         loss = d1 + d2
-        # loss = d2
 
         log = {
             "{}/loss".format(split): loss.clone().detach().mean().item(),
             "{}/d1".format(split): d1.clone().detach().mean().item(),
             "{}/d2".format(split): d2.clone().detach().mean().item(),
+            
+            "{}/d1TP:reduction_ignore".format(split): d1TP,
+            "{}/d1TN:reduction_ignore".format(split): d1TN,
+            "{}/d1FP:reduction_ignore".format(split): d1FP,
+            "{}/d1FN:reduction_ignore".format(split): d1FN,
+            "{}/d1ACC:reduction_accuracy".format(split): None,
+            
+            "{}/d2TP:reduction_ignore".format(split): d2TP,
+            "{}/d2TN:reduction_ignore".format(split): d2TN,
+            "{}/d2FP:reduction_ignore".format(split): d2FP,
+            "{}/d2FN:reduction_ignore".format(split): d2FN,
+            "{}/d2ACC:reduction_accuracy".format(split): None,
         }
-        # log = None
         return loss, log
 
     def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False): # pw=0.1
@@ -196,6 +238,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return d_weight
 
     def forward(self, codebook_loss, inputs, reconstructions, optimizer_idx, global_step, last_layer=None, cond=None, dw=0.1, split="train"):
+        assert False
         rec_loss = torch.abs(inputs.contiguous() - reconstructions.contiguous())
         if self.perceptual_weight > 0:
             p_loss = self.perceptual_loss(inputs.contiguous(), reconstructions.contiguous())

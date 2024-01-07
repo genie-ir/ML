@@ -568,11 +568,6 @@ class VQModel(pl.LightningModule):
     def on_validation_epoch_end(self):
         self.metrics.save('val')
     
-    def on_fit_start(self):
-        self.gl.unlockFlag()
-    # def on_train_epoch_end(self):
-    #     self.ignore_go = False
-    
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
         xsl = batch['xsl']
