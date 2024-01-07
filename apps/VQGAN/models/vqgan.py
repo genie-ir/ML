@@ -36,8 +36,12 @@ dr_transformer0 = A.Compose([
 ])
 
 import time
-
+from apps.VQGAN.models.metrics import SQLiteLogger
 from utils.pl.plLogger import GenieLoggerBase
+
+class Metrics(Metrics):
+    def logger(self):
+        return super().logger()
 
 def fold3d(x, gp=None):
     """
@@ -116,7 +120,8 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
-        self.gl = GenieLoggerBase()
+        # self.gl = GenieLoggerBase()
+        self.metrics = SQLiteLogger(db='/content/metrics.db')
 
         # print('encoder', self.encoder)
         # print('decoder', self.decoder)
@@ -523,6 +528,8 @@ class VQModel(pl.LightningModule):
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
+        if self.batch_idx >= 5:
+            return
         # start_time = time.time()
         opt_ae, opt_disc = self.optimizers()
         for cidx in range(2):
@@ -540,21 +547,27 @@ class VQModel(pl.LightningModule):
                     opt_disc.step()
                 
                 
-                self.gl.log_metrics(logdict, self.global_step)
+                self.metrics.log('train', logdict)
         # execution_time_in_sec = (time.time() - start_time)
         # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
         # assert False
     
     def validation_step(self, batch, batch_idx):
-        if self.gl.flag_lock:
+        if self.batch_idx >= 10:
             return
         for cidx in range(2):
             for optimizer_idx in range(1): #range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
-                self.gl.log_metrics(logdict, self.global_step)
+                self.metrics.log('val', logdict)
         # assert False
 
+    def on_train_epoch_end(self):
+        self.metrics.save('train')
+    
+    def on_validation_epoch_end(self):
+        self.metrics.save('val')
+    
     def on_fit_start(self):
         self.gl.unlockFlag()
     # def on_train_epoch_end(self):
