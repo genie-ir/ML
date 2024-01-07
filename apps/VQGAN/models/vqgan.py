@@ -39,10 +39,6 @@ import time
 from apps.VQGAN.models.metrics import SQLiteLogger
 from utils.pl.plLogger import GenieLoggerBase
 
-class Metrics(Metrics):
-    def logger(self):
-        return super().logger()
-
 def fold3d(x, gp=None):
     """
         x is x3d
