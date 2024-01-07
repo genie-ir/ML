@@ -51,8 +51,6 @@ class SQLite(PYBASE):
 
 
 
-
-
 class Metrics(PYBASE):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -104,16 +102,11 @@ class Metrics(PYBASE):
     
     def reduction_accuracy(self, tag: str, mk: str, mv):
         globalname, localname = mk.split('/')
-        subname = '{}/{}'.format(globalname, localname.replace('ACC', ''))
-        try:
-            TP = sum(self.metrics[tag][f'{subname}TP'])
-        except Exception as e:
-            print(list(self.metrics[tag].keys()))
-            print(list(self.reductions[tag].keys()))
-            raise e
-        TN = sum(self.metrics[tag][f'{subname}TN'])
-        FP = sum(self.metrics[tag][f'{subname}FP'])
-        FN = sum(self.metrics[tag][f'{subname}FN'])
+        subname = '{}/{}'.format(globalname, localname.replace('ACC:reduction_accuracy', ''))
+        TP = sum(self.metrics[tag][f'{subname}TP:reduction_ignore'])
+        TN = sum(self.metrics[tag][f'{subname}TN:reduction_ignore'])
+        FP = sum(self.metrics[tag][f'{subname}FP:reduction_ignore'])
+        FN = sum(self.metrics[tag][f'{subname}FN:reduction_ignore'])
         return (TP + TN) / (TP + TN + FP + FN)
 
 
@@ -138,14 +131,6 @@ class SQLiteLogger(Metrics):
             else:
                 raise e
             
-
-
-
-
-
-
-
-
 
 
 
