@@ -121,7 +121,7 @@ class VQModel(pl.LightningModule):
 
         # print('encoder', self.encoder)
         # print('decoder', self.decoder)
-        print('disc', self.loss.discriminator)
+        # print('disc', self.loss.discriminator)
 
         for param in self.encoder.parameters():
             param.requires_grad = False
