@@ -116,6 +116,9 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
+        self.expected_acc_val = dict()
+        self.expected_acc_train = dict()
+
         # self.gl = GenieLoggerBase()
         self.metrics = SQLiteLogger(db='/content/metrics.db')
 
@@ -559,10 +562,13 @@ class VQModel(pl.LightningModule):
         # assert False
 
     def on_train_epoch_end(self):
-        self.metrics.save('train')
+        R = self.metrics.save('train')
+        # for i in ['']:
+        #     pass
+        # self.expected_acc_train['']
     
     def on_validation_epoch_end(self):
-        self.metrics.save('val')
+        R = self.metrics.save('val')
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
