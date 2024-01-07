@@ -139,6 +139,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
         p = self.logp(p)
         loss = -1 * p.log()
 
+        if loss == 0:
+            print('loss is zero', loss)
+
         log = {
             "{}/TP:reduction_ignore".format(split): TP,
             "{}/TN:reduction_ignore".format(split): TN,
@@ -202,8 +205,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
         return loss, log
 
-    def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False): # pw=0.1
-        rec_loss = torch.abs(grandtrouth.contiguous() - prediction.contiguous())
+    def geometry(self, grandtrouth, prediction, split, pw=0.1, recln1p=False, landa1=1): # pw=0.1
+        rec_loss = landa1 * torch.abs(grandtrouth.contiguous() - prediction.contiguous())
         if recln1p:
             rec_loss = (1+rec_loss).log()
         
