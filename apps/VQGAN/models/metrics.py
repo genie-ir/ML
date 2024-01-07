@@ -108,8 +108,8 @@ class Metrics(PYBASE):
         try:
             TP = sum(self.metrics[tag][f'{subname}TP'])
         except Exception as e:
-            print(self.metrics)
-            print(self.reductions)
+            print(list(self.metrics[tag].keys()))
+            print(list(self.reductions[tag].keys()))
             raise e
         TN = sum(self.metrics[tag][f'{subname}TN'])
         FP = sum(self.metrics[tag][f'{subname}FP'])
