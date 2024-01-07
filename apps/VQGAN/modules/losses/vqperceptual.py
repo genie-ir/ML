@@ -184,6 +184,12 @@ class VQLPIPSWithDiscriminator(nn.Module):
         d1 = l1 * (-1 * (d1.log()))
         d2 = l2 * (-1 * (d2.log()))
         
+        if d1 == 0:
+            d1 = 0 * d1
+        
+        if d2 == 0:
+            d2 = 0 * d2
+
         loss = d1 + d2
 
         log = {
