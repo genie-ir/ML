@@ -88,8 +88,13 @@ class Metrics(PYBASE):
         
         self.logger(tag, **kwargs)
 
+        R = self.reductions[tag]
         self.metrics[tag] = dict()
         self.reductions[tag] = dict()
+
+        print('R', R)
+        print('self.reductions[tag]', self.reductions[tag])
+        return R
 
     def reduction_sum(self, tag: str, mk: str, mv):
         return sum(mv)
