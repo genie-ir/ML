@@ -105,7 +105,12 @@ class Metrics(PYBASE):
     def reduction_accuracy(self, tag: str, mk: str, mv):
         globalname, localname = mk.split('/')
         subname = '{}/{}'.format(globalname, localname.replace('ACC', ''))
-        TP = sum(self.metrics[tag][f'{subname}TP'])
+        try:
+            TP = sum(self.metrics[tag][f'{subname}TP'])
+        except Exception as e:
+            print(self.metrics)
+            print(self.reductions)
+            raise e
         TN = sum(self.metrics[tag][f'{subname}TN'])
         FP = sum(self.metrics[tag][f'{subname}FP'])
         FN = sum(self.metrics[tag][f'{subname}FN'])
