@@ -163,7 +163,7 @@ class VQModel(pl.LightningModule):
         # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
 
         # print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
-        for pidx in [6, 8, 9, 11]:
+        for pidx in [5, 6, 8, 9, 11]:
             for param in self.loss.discriminator.main[pidx].parameters():
                 param.requires_grad = True
         # print('after self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
@@ -771,7 +771,7 @@ class VQModel(pl.LightningModule):
                             )
         opt_disc = torch.optim.Adam(
                                     list(self.loss.discriminator.parameters())+
-                                    list(self.loss.discriminator_large.parameters())+
+                                    # list(self.loss.discriminator_large.parameters())+
                                     list(self.loss.vgg16.parameters())+
                                     list(self.loss.vgg16_head.parameters()),
                                 lr=lr, 
