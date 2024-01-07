@@ -140,7 +140,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         loss = -1 * p.log()
 
         if loss == 0:
-            print('loss is zero', loss)
+            loss = 0 * loss
 
         log = {
             "{}/TP:reduction_ignore".format(split): TP,
