@@ -116,6 +116,8 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
+        self.select_query_d1_acc = '/d1ACC'
+
         self.expected_acc_val = dict()
         self.expected_acc_train = dict()
 
@@ -563,12 +565,14 @@ class VQModel(pl.LightningModule):
 
     def on_train_epoch_end(self):
         R = self.metrics.save('train')
+        self.metrics.inference(self.select_query_d1_acc, R)
         # for i in ['']:
         #     pass
         # self.expected_acc_train['']
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
+        self.metrics.inference(self.select_query_d1_acc, R)
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']

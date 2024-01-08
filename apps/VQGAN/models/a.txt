@@ -1,0 +1,28 @@
+#NOTE: omegaOFphi:
+A_if1_OFxs
+A_if1_ORxc
+A_el1_ORxs
+B_if1_OFxc
+B_if1_ORxs
+B_el1_ORxc
+
+
+
+
+#NOTE: D12
+A_if1_Rxs
+A_if1_Rxc
+A_if1_Fpsistm
+A_if1_Fxss
+A_el1_Rxs
+A_el1_Rxc
+A_el1_Fpsistm
+A_el1_Fxss
+B_if1_Rxs
+B_if1_Rxc
+B_if1_Fxsss
+B_if1_Fpsistp
+B_el1_Rxs
+B_el1_Rxc
+B_el1_Fpsistp
+B_el1_Fpsistmfs

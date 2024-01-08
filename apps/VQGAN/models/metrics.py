@@ -1,5 +1,5 @@
 from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
-
+import re
 
 
 # https://github.com/coleifer/peewee
@@ -94,6 +94,21 @@ class Metrics(PYBASE):
 
         return R
 
+    
+    
+    def inference(self, select, R, reduction: str ='reduction_mean'):
+        pattern = re.compile(select)
+        print(select)
+        print(pattern)
+        for rk, rv in R.items():
+            if pattern.match(rk):
+                print('->', rk)
+        print('*'*30)
+    
+    
+    
+    
+    
     def reduction_sum(self, tag: str, mk: str, mv):
         return sum(mv)
     
