@@ -43,6 +43,20 @@ class Reshape4096To64x64(nn.Module):
     def forward(self, x):
         return x.view(-1, 1, 64, 64)
 
+class ReshapeToV256(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
+        return x.view(-1, 256)
+
+class Reshape256To16x16(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
+        return x.view(-1, 1, 16, 16)
+
 class View(nn.Module):
     def __init__(self):
         super().__init__()
@@ -86,14 +100,19 @@ class VQLPIPSWithDiscriminator(nn.Module):
             nn.Conv2d(32, 64, 3, 2, 1), #16x16
             nn.Conv2d(64, 128, 3, 2, 1), #8x8
             nn.Conv2d(128, 256, 3, 2, 1), #4x4
-            nn.Conv2d(256, 256, 4, 1, 0), #4x4
-            View(),
-            # nn.Conv2d(1, 256, 4, 1, 0), #4x4
+            nn.Conv2d(256, 256, 4, 1, 0), #1x1
+            ReshapeToV256(),
             # nn.Linear(n_inputs, 256)
         )
         self.vgg16_head = nn.Sequential(
             nn.ReLU(), #nn.Dropout(0.4),
-            nn.Linear(256, 128), nn.Sigmoid()
+            Reshape256To16x16(),
+            nn.Conv2d(1, 64, 3,2,1), #8x8
+            nn.Conv2d(64, 128, 3,2,1), # 4x4
+            nn.Conv2d(128, 128, 4,1,0), # 1x1
+            View(),
+            # nn.Linear(256, 128), 
+            nn.Sigmoid()
         )
 
 
