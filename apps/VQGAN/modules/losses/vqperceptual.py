@@ -130,7 +130,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return TP, TN, FP, FN
 
     def vgg16head_mean(self, x, flag=False, split='', l=1):
-        print(self.vgg16.classifier[6][0].weight.sum())
+        print(self.vgg16.classifier[6][0].weight[128, 128])
 
         p = self.vgg16_head(x).mean()
         if flag:
