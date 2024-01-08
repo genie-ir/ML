@@ -1,7 +1,11 @@
 bestCKPT:
   '@off': True
 
+CustomProgressBar:
+  '@off': True
+
 signal_logger:
   '@off': True
   batch_frequency: 10
   max_signals: 4
+
