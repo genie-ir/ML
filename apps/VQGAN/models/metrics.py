@@ -97,9 +97,12 @@ class Metrics(PYBASE):
     def inference(self, regexp: str, R, reduction: str ='reduction_mean'):
         pattern = re.compile(regexp)
         RV = []
+        print(regexp)
         for rk, rv in R.items():
             if pattern.match(rk):
+                print(rk)
                 RV.append(rv)
+        print('-'*30)
         return getattr(self, reduction)(None, None, RV)
     
     

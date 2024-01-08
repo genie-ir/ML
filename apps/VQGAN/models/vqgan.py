@@ -117,6 +117,8 @@ class VQModel(pl.LightningModule):
 
     def start(self):
         self.regexp_d1_acc = '^.*1_.*\/d1ACC$'
+        self.regexp_d2_acc = '^.*1_.*\/d2ACC$'
+        self.regexp_OP_acc = '^.*1_.*\/ACC$'
 
         self.expected_acc_val = dict()
         self.expected_acc_train = dict()
@@ -566,12 +568,21 @@ class VQModel(pl.LightningModule):
     def on_train_epoch_end(self):
         R = self.metrics.save('train')
         last_d1_acc = self.metrics.inference(self.regexp_d1_acc, R)
+        last_d2_acc = self.metrics.inference(self.regexp_d2_acc, R)
+        last_op_acc = self.metrics.inference(self.regexp_OP_acc, R)
         print('last_d1_acc', last_d1_acc)
+        print('last_d2_acc', last_d2_acc)
+        print('last_op_acc', last_op_acc)
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
         last_d1_acc = self.metrics.inference(self.regexp_d1_acc, R)
+        last_d2_acc = self.metrics.inference(self.regexp_d2_acc, R)
+        last_op_acc = self.metrics.inference(self.regexp_OP_acc, R)
         print('last_d1_acc', last_d1_acc)
+        print('last_d2_acc', last_d2_acc)
+        print('last_op_acc', last_op_acc)
+        assert False
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
