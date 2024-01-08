@@ -151,5 +151,9 @@ class SQLiteLogger(Metrics):
                 })
                 self.sqlite.tables[tag].create(**self.reductions[tag])
             else:
+                print("ERROR")
+                print(e)
+                print(self.reductions[tag])
+                print(self.reductions[tag].keys())
                 raise e
             
