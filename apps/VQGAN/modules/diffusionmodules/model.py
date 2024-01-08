@@ -375,10 +375,11 @@ class Encoder(nn.Module):
         self.netb_diagonal = nn.Sequential(
             Reshape256To16x16(),
             nn.ConvTranspose2d(1, 32, 4,2,1), #32x32
+            nn.Tanh(),
             nn.ConvTranspose2d(32, 64, 4,2,1), #64x64
+            nn.Tanh(),
             nn.Conv2d(64, 1, 1),
             Reshape64x64ToV16x256(),
-            View()
             # nn.Linear(256, 1024),
             # nn.Tanh(),
             # nn.Linear(1024, 16*256),
