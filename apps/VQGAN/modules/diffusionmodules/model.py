@@ -373,7 +373,6 @@ class Encoder(nn.Module):
         ################################################################################# for VQGAN
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
-            View(),
             Reshape256To16x16(),
             nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
             nn.Tanh(),
@@ -386,6 +385,7 @@ class Encoder(nn.Module):
             nn.Conv2d(128, 64, 3,2,1), #128x128
             nn.Tanh(),
             nn.Conv2d(64, 1, 3,2,1), #64x64
+            nn.Tanh(),
             Reshape64x64ToV16x256(),
             
             # nn.Linear(256, 1024),
