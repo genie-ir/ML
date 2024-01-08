@@ -109,6 +109,7 @@ class Metrics(PYBASE):
             if pattern.match(rk):
                 print(rk)
                 RV.append(rv)
+        print('R', R)
         print('-'*30)
         return getattr(self, reduction)(None, None, RV)
 
