@@ -51,12 +51,16 @@ class SQLite(PYBASE):
 
 
 
+
+
+
 class Metrics(PYBASE):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.__start()
 
     def __start(self):
+        self.R = dict()
         self.metrics = dict()
         self.reductions = dict()
 
@@ -88,13 +92,16 @@ class Metrics(PYBASE):
         
         self.logger(tag, **kwargs)
 
-        R = self.reductions[tag]
+        self.R[tag] = self.reductions[tag]
         self.metrics[tag] = dict()
         self.reductions[tag] = dict()
 
-        return R
+        return self.R[tag]
 
-    def inference(self, regexp: str, R, reduction: str ='reduction_mean'):
+    def inference(self, tag: str, regexp: str, **kwargs):
+        R = kwargs.get('R', self.R[tag]) # OPTIONAL
+        reduction = kwargs.get('reduction', 'reduction_mean') # OPTIONAL
+
         pattern = re.compile(regexp)
         RV = []
         print(regexp)
@@ -104,10 +111,7 @@ class Metrics(PYBASE):
                 RV.append(rv)
         print('-'*30)
         return getattr(self, reduction)(None, None, RV)
-    
-    
-    
-    
+
     def reduction_sum(self, tag: str, mk: str, mv):
         return sum(mv)
     
@@ -148,8 +152,3 @@ class SQLiteLogger(Metrics):
             else:
                 raise e
             
-
-
-            
-
-

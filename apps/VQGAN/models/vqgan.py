@@ -572,18 +572,19 @@ class VQModel(pl.LightningModule):
 
     def on_train_epoch_end(self):
         R = self.metrics.save('train')
-        last_d1_acc = self.metrics.inference(self.regexp_d1_acc, R)
-        last_d2_acc = self.metrics.inference(self.regexp_d2_acc, R)
-        last_op_acc = self.metrics.inference(self.regexp_OP_acc, R)
+        last_d1_acc = self.metrics.inference('train', self.regexp_d1_acc)
+        last_d2_acc = self.metrics.inference('train', self.regexp_d2_acc)
+        last_op_acc = self.metrics.inference('train', self.regexp_OP_acc)
         self.acc['train_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
         print('train_', self.acc['train_'])
+        print('R', R)
         assert False
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
-        last_d1_acc = self.metrics.inference(self.regexp_d1_acc, R)
-        last_d2_acc = self.metrics.inference(self.regexp_d2_acc, R)
-        last_op_acc = self.metrics.inference(self.regexp_OP_acc, R)
+        last_d1_acc = self.metrics.inference('val', self.regexp_d1_acc, R)
+        last_d2_acc = self.metrics.inference('val', self.regexp_d2_acc, R)
+        last_op_acc = self.metrics.inference('val', self.regexp_OP_acc, R)
         self.acc['val_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
         print('val_', self.acc['val_'])
     
