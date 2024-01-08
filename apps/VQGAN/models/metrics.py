@@ -99,7 +99,7 @@ class Metrics(PYBASE):
     def inference(self, tag: str, regexp: str, **kwargs):
         R = kwargs.get('R', self.R[tag]) # OPTIONAL
         reduction = kwargs.get('reduction', 'reduction_mean') # OPTIONAL
-
+        print('r', R)
         RV = []
         pattern = re.compile(regexp)
         for rk, rv in R.items():
