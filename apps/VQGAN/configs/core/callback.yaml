@@ -1,8 +1,8 @@
 bestCKPT:
   '@off': True
 
-CustomProgressBar:
-  '@off': True
+# CustomProgressBar:
+#   '@off': True
 
 signal_logger:
   '@off': True

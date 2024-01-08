@@ -228,12 +228,12 @@ class ConfigBase:
                     'lightning_config': lightning_config,
                 }, **app_ctrl_cfg(app_cfg_master['callback'].get('setup_callback', dict()))}
             },
-            # 'custom_progressBar': {
-            #     'target': 'apps.' + app_name_master + '.modules.callback.CustomProgressBar',
-            #     'params': {
-            #         **app_ctrl_cfg(app_cfg_master['callback'].get('custom_progressBar', dict()))
-            #     }
-            # },
+            'custom_progressBar': {
+                'target': 'apps.' + app_name_master + '.modules.callback.CustomProgressBar',
+                'params': {
+                    **app_ctrl_cfg(app_cfg_master['callback'].get('custom_progressBar', dict()))
+                }
+            },
             'signal_logger': {
                 'target': 'apps.' + app_name_master + '.modules.callback.SignalLogger',
                 'params': {**{

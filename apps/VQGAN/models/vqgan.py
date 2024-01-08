@@ -539,7 +539,7 @@ class VQModel(pl.LightningModule):
 
     # NOTE: Syn Idea
     def training_step(self, batch, batch_idx):
-        if batch_idx >= 20:
+        if batch_idx >= 15:
             return
         # start_time = time.time()
         opt_ae, opt_disc = self.optimizers()
@@ -564,8 +564,8 @@ class VQModel(pl.LightningModule):
         # assert False
     
     def validation_step(self, batch, batch_idx):
-        # if batch_idx >= 40:
-        #     return
+        if batch_idx >= 15:
+            return
         for cidx in range(2):
             for optimizer_idx in range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
