@@ -94,17 +94,13 @@ class Metrics(PYBASE):
 
         return R
 
-    
-    
-    def inference(self, select, R, reduction: str ='reduction_mean'):
-        pattern = re.compile(select)
-        print(select)
-        print(pattern)
+    def inference(self, regexp: str, R, reduction: str ='reduction_mean'):
+        pattern = re.compile(regexp)
+        RV = []
         for rk, rv in R.items():
             if pattern.match(rk):
-                print('[ok] ->', rk)
-        print('*'*30)
-        assert False
+                RV.append(rv)
+        return getattr(self, reduction)(None, None, RV)
     
     
     
