@@ -361,7 +361,7 @@ class View(nn.Module):
         super().__init__()
     
     def forward(self, x):
-        print(x.min().item(), x.max().item())
+        print(x.min().item(), x.max().item(), x.shape)
         assert False
 
 class Encoder(nn.Module):
@@ -373,14 +373,20 @@ class Encoder(nn.Module):
         ################################################################################# for VQGAN
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
-            View(),
             Reshape256To16x16(),
-            nn.ConvTranspose2d(1, 32, 4,2,1), #32x32
+            nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
             nn.Tanh(),
-            nn.ConvTranspose2d(32, 64, 4,2,1), #64x64
+            nn.ConvTranspose2d(16, 32, 4,2,1), #64x64
             nn.Tanh(),
-            nn.Conv2d(64, 1, 1),
+            nn.ConvTranspose2d(32, 64, 4,2,1), #128x128
+            nn.Tanh(),
+            nn.ConvTranspose2d(64, 128, 4,2,1), #256x256
+            nn.Tanh(),
+            nn.Conv2d(128, 64, 3,2,1), #128x128
+            nn.Tanh(),
+            nn.Conv2d(64, 1, 3,2,1), #64x64
             Reshape64x64ToV16x256(),
+            View()
             # nn.Linear(256, 1024),
             # nn.Tanh(),
             # nn.Linear(1024, 16*256),
