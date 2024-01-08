@@ -410,6 +410,7 @@ class VQModel(pl.LightningModule):
             𝝍s_tm_final = xs
             if optidx == 0:
                 A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo')
+                print('--------------------------A_loss-->', A_loss)
                 # print('A) IF) OPTIDX0)', A_loss, A_loss.shape)
             else:
                 A_loss0, A_d0 = self.loss.omega_of_phi(xs, flag=True, split=split + 'A_if1_OFxs') # OK!
