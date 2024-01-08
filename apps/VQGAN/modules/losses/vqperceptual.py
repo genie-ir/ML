@@ -56,7 +56,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
 
 
         self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf)
-        self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=5)
+        # self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=5)
         self.vgg16 = torchvision.models.vgg16(pretrained=True)
         for param in self.vgg16.parameters():
             param.requires_grad = False
@@ -167,39 +167,39 @@ class VQLPIPSWithDiscriminator(nn.Module):
     def D1(self, x): # discriminator
         return (self.discriminator(x.contiguous())).mean()
     
-    def D2(self, x): # discriminator_large
-        return (self.discriminator_large(x.contiguous())).mean()
+    # def D2(self, x): # discriminator_large
+    #     return (self.discriminator_large(x.contiguous())).mean()
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
         d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
-        d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
+        # d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
         if flag:
             d1 = 1 - d1
-            d2 = 1 - d2
+            # d2 = 1 - d2
         
         d1TP, d1TN, d1FP, d1FN = self.analyse_p(d1, flag)
-        d2TP, d2TN, d2FP, d2FN = self.analyse_p(d2, flag)
+        # d2TP, d2TN, d2FP, d2FN = self.analyse_p(d2, flag)
 
         d1 = self.logp(d1)
-        d2 = self.logp(d2)
+        # d2 = self.logp(d2)
 
         d1 = l1 * (-1 * (d1.log()))
-        d2 = l2 * (-1 * (d2.log()))
+        # d2 = l2 * (-1 * (d2.log()))
         
         if d1 == 0:
             d1 = 0 * d1
         
-        if d2 == 0:
-            d2 = 0 * d2
+        # if d2 == 0:
+        #     d2 = 0 * d2
 
-        loss = d1 + d2
+        loss = d1 #+ d2
 
         log = {
             "{}/loss".format(split): loss.clone().detach().mean().item(),
             "{}/d1".format(split): d1.clone().detach().mean().item(),
-            "{}/d2".format(split): d2.clone().detach().mean().item(),
+            # "{}/d2".format(split): d2.clone().detach().mean().item(),
             "{}/l1".format(split): l1,
-            "{}/l2".format(split): l2,
+            # "{}/l2".format(split): l2,
             
             "{}/d1TP:reduction_ignore".format(split): d1TP,
             "{}/d1TN:reduction_ignore".format(split): d1TN,
@@ -207,11 +207,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/d1FN:reduction_ignore".format(split): d1FN,
             "{}/d1ACC:reduction_accuracy".format(split): None,
             
-            "{}/d2TP:reduction_ignore".format(split): d2TP,
-            "{}/d2TN:reduction_ignore".format(split): d2TN,
-            "{}/d2FP:reduction_ignore".format(split): d2FP,
-            "{}/d2FN:reduction_ignore".format(split): d2FN,
-            "{}/d2ACC:reduction_accuracy".format(split): None,
+            # "{}/d2TP:reduction_ignore".format(split): d2TP,
+            # "{}/d2TN:reduction_ignore".format(split): d2TN,
+            # "{}/d2FP:reduction_ignore".format(split): d2FP,
+            # "{}/d2FN:reduction_ignore".format(split): d2FN,
+            # "{}/d2ACC:reduction_accuracy".format(split): None,
         }
         return loss, log
 
