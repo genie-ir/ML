@@ -116,6 +116,11 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
+        self.acc = {
+            'train_': {'d1': 0, 'd2': 0, 'O': 0},
+            'val_': {'d1': 0, 'd2': 0, 'O': 0}
+        }
+
         self.regexp_d1_acc = '^.*1_.*\/d1ACC$'
         self.regexp_d2_acc = '^.*1_.*\/d2ACC$'
         self.regexp_OP_acc = '^.*1_.*\/ACC$'
@@ -428,8 +433,8 @@ class VQModel(pl.LightningModule):
             𝝍s_tm = xss + xsmask * self.netA(xss, xsmask)
             𝝍s_tm_final = 𝝍s_tm
             if optidx == 0:
-                A_loss0, A_d0 = self.loss.omega_of_phi(𝝍s_tm, flag=True, split=split + 'A_el0_OFpsistm') # OK!
-                A_loss1, A_d1 = self.loss.D12(𝝍s_tm, l1=1, l2=1, split=split + 'A_el0_Rpsistm')
+                A_loss0, A_d0 = self.loss.omega_of_phi(𝝍s_tm, flag=True, split=split + 'A_el0_OFpsistm', l=self.acc[split]['O']) # OK!
+                A_loss1, A_d1 = self.loss.D12(𝝍s_tm, l1=self.acc[split]['d1'], l2=self.acc[split]['d2'], split=split + 'A_el0_Rpsistm')
                 A_loss = A_loss0 + A_loss1
                 A_loss_logdict = {
                     **A_d0,
@@ -486,8 +491,8 @@ class VQModel(pl.LightningModule):
             𝝍s_tp_final = 𝝍s_tp
             if optidx == 0:
                 R_𝝍s_tp = self.loss.Ro(𝝍s_tp)
-                B_loss0, B_d0 = self.loss.omega_of_phi_givvenRo(R_𝝍s_tp, split=split + 'B_el0_ORropsistp') # OK!
-                B_loss1, B_d1 = self.loss.D12(𝝍s_tp, l1=1, l2=1, split=split + 'B_el0_Rpsistp')
+                B_loss0, B_d0 = self.loss.omega_of_phi_givvenRo(R_𝝍s_tp, split=split + 'B_el0_ORropsistp', l=self.acc[split]['O']) # OK!
+                B_loss1, B_d1 = self.loss.D12(𝝍s_tp, l1=self.acc[split]['d1'], l2=self.acc[split]['d2'], split=split + 'B_el0_Rpsistp')
                 B_loss2, B_d2 = self.loss.geometry(self.loss.Ro(Xc), R_𝝍s_tp, pw=0, recln1p=True, split=split + 'B_Geo_Ro', landa1=0.01)
                 B_loss = B_loss0 + B_loss1 + B_loss2
                 B_loss_logdict = {
@@ -570,9 +575,8 @@ class VQModel(pl.LightningModule):
         last_d1_acc = self.metrics.inference(self.regexp_d1_acc, R)
         last_d2_acc = self.metrics.inference(self.regexp_d2_acc, R)
         last_op_acc = self.metrics.inference(self.regexp_OP_acc, R)
-        print('last_d1_acc', last_d1_acc)
-        print('last_d2_acc', last_d2_acc)
-        print('last_op_acc', last_op_acc)
+        self.acc['train_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
+        print('train_', self.acc['train_'])
         assert False
     
     def on_validation_epoch_end(self):
@@ -580,9 +584,8 @@ class VQModel(pl.LightningModule):
         last_d1_acc = self.metrics.inference(self.regexp_d1_acc, R)
         last_d2_acc = self.metrics.inference(self.regexp_d2_acc, R)
         last_op_acc = self.metrics.inference(self.regexp_OP_acc, R)
-        print('last_d1_acc', last_d1_acc)
-        print('last_d2_acc', last_d2_acc)
-        print('last_op_acc', last_op_acc)
+        self.acc['val_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
+        print('val_', self.acc['val_'])
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']

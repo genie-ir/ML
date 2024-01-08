@@ -129,7 +129,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 TN = 0
         return TP, TN, FP, FN
 
-    def vgg16head_mean(self, x, flag=False, split=''):
+    def vgg16head_mean(self, x, flag=False, split='', l=1):
         p = self.vgg16_head(x).mean()
         if flag:
             p = 1 - p
@@ -137,12 +137,14 @@ class VQLPIPSWithDiscriminator(nn.Module):
         TP, TN, FP, FN = self.analyse_p(p, flag)
 
         p = self.logp(p)
-        loss = -1 * p.log()
+        
+        loss = l * (-1 * p.log())
 
         if loss == 0:
             loss = 0 * loss
 
         log = {
+            "{}/l".format(split): l,
             "{}/TP:reduction_ignore".format(split): TP,
             "{}/TN:reduction_ignore".format(split): TN,
             "{}/FP:reduction_ignore".format(split): FP,
@@ -152,11 +154,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
         return loss, log
 
-    def omega_of_phi(self, x, flag=False, split=''):
-        return self.vgg16head_mean(self.vgg16(x), flag=flag, split=split)
+    def omega_of_phi(self, x, flag=False, split='', l=1):
+        return self.vgg16head_mean(self.vgg16(x), flag=flag, split=split, l=l)
     
-    def omega_of_phi_givvenRo(self, ro, flag=False, split=''):
-        return self.vgg16head_mean(ro, flag=flag, split=split)
+    def omega_of_phi_givvenRo(self, ro, flag=False, split='', l=1):
+        return self.vgg16head_mean(ro, flag=flag, split=split, l=l)
     
     def Ro(self, x):
         return self.vgg16(x)
@@ -196,6 +198,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/loss".format(split): loss.clone().detach().mean().item(),
             "{}/d1".format(split): d1.clone().detach().mean().item(),
             "{}/d2".format(split): d2.clone().detach().mean().item(),
+            "{}/l1".format(split): l1,
+            "{}/l2".format(split): l2,
             
             "{}/d1TP:reduction_ignore".format(split): d1TP,
             "{}/d1TN:reduction_ignore".format(split): d1TN,
