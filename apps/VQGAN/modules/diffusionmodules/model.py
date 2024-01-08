@@ -341,6 +341,22 @@ class Model(nn.Module):
         return h
 
 
+
+class Reshape256To16x16(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
+        return x.view(-1, 1, 16, 16)
+
+class View(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
+        print(x.shape)
+        assert False
+
 class Encoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
@@ -350,9 +366,12 @@ class Encoder(nn.Module):
         ################################################################################# for VQGAN
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
-            nn.Linear(256, 1024),
-            nn.Tanh(),
-            nn.Linear(1024, 16*256),
+            Reshape256To16x16(),
+            nn.ConvTranspose2d(1, 16, 3,2,1),
+            View()
+            # nn.Linear(256, 1024),
+            # nn.Tanh(),
+            # nn.Linear(1024, 16*256),
         )
         #################################################################################
 
