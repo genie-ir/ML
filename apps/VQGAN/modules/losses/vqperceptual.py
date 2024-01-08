@@ -41,6 +41,13 @@ class Reshape4096To64x64(nn.Module):
         super().__init__()
     
     def forward(self, x):
+        return x.view(-1, 1, 64, 64)
+
+class View(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
         print(x.shape)
         assert False
 
@@ -75,6 +82,12 @@ class VQLPIPSWithDiscriminator(nn.Module):
         
         self.vgg16.classifier[6] = nn.Sequential(
             Reshape4096To64x64(),
+            nn.Conv2d(1, 32, 3, 2, 1), #32x32
+            nn.Conv2d(1, 64, 3, 2, 1), #16x16
+            nn.Conv2d(1, 128, 3, 2, 1), #8x8
+            nn.Conv2d(1, 256, 3, 2, 1), #4x4
+            View(),
+            # nn.Conv2d(1, 256, 4, 1, 0), #4x4
             # nn.Linear(n_inputs, 256)
         )
         self.vgg16_head = nn.Sequential(
