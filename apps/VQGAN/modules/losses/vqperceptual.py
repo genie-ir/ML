@@ -36,6 +36,14 @@ def vanilla_d_loss(logits_real, logits_fake):
     return d_loss
 
 
+class Reshape4096To64x64(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
+        print(x.shape)
+        assert False
+
 class VQLPIPSWithDiscriminator(nn.Module):
     def __init__(self, disc_start, codebook_weight=1.0, pixelloss_weight=1.0,
                  disc_num_layers=3, disc_in_channels=3, disc_factor=1.0, disc_weight=1.0,
@@ -65,10 +73,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
                 param.requires_grad = True
         n_inputs = self.vgg16.classifier[6].in_features
         
-        print('#########', n_inputs)
-        assert False
         self.vgg16.classifier[6] = nn.Sequential(
-            nn.Linear(n_inputs, 256)
+            Reshape4096To64x64(),
+            # nn.Linear(n_inputs, 256)
         )
         self.vgg16_head = nn.Sequential(
             nn.ReLU(), #nn.Dropout(0.4),
