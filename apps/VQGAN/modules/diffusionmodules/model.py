@@ -349,6 +349,13 @@ class Reshape256To16x16(nn.Module):
     def forward(self, x):
         return x.view(-1, 1, 16, 16)
 
+class Reshape64x64ToV16x256(nn.Module):
+    def __init__(self):
+        super().__init__()
+    
+    def forward(self, x):
+        return x.view(-1, 16*256)
+
 class View(nn.Module):
     def __init__(self):
         super().__init__()
@@ -370,6 +377,7 @@ class Encoder(nn.Module):
             nn.ConvTranspose2d(1, 32, 4,2,1), #32x32
             nn.ConvTranspose2d(32, 64, 4,2,1), #64x64
             nn.Conv2d(64, 1, 1),
+            Reshape64x64ToV16x256(),
             View()
             # nn.Linear(256, 1024),
             # nn.Tanh(),
