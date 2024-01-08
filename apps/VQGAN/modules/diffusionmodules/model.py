@@ -367,7 +367,7 @@ class Encoder(nn.Module):
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
             Reshape256To16x16(),
-            nn.ConvTranspose2d(1, 16, 4,2,0),
+            nn.ConvTranspose2d(1, 16, 4,2,1),
             View()
             # nn.Linear(256, 1024),
             # nn.Tanh(),
