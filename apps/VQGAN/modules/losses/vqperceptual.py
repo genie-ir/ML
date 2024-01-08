@@ -56,7 +56,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
 
 
         self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf)
-        self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=9)
+        self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=5)
         self.vgg16 = torchvision.models.vgg16(pretrained=True)
         for param in self.vgg16.parameters():
             param.requires_grad = False
