@@ -564,7 +564,7 @@ class VQModel(pl.LightningModule):
         # assert False
     
     def validation_step(self, batch, batch_idx):
-        if batch_idx >= 20:
+        if batch_idx >= 40:
             return
         for cidx in range(2):
             for optimizer_idx in range(2):
