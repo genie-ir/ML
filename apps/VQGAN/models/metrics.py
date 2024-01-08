@@ -155,5 +155,7 @@ class SQLiteLogger(Metrics):
                 print(e)
                 print(self.reductions[tag])
                 print(self.reductions[tag].keys())
+                print('@@@@@@@@@@', self.reductions[tag]['val_A_Geo/loss'])
+                print('ok!!!!!!!!!!!!!!!!!!!!!!!!!')
                 raise e
             
