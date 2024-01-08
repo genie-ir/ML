@@ -577,7 +577,6 @@ class VQModel(pl.LightningModule):
         last_op_acc = self.metrics.inference('train', self.regexp_OP_acc)
         self.acc['train_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
         print('train_', self.acc['train_'])
-        print('R', R)
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
@@ -586,7 +585,6 @@ class VQModel(pl.LightningModule):
         last_op_acc = self.metrics.inference('val', self.regexp_OP_acc)
         self.acc['val_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
         print('val_', self.acc['val_'])
-        print('R', R)
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
