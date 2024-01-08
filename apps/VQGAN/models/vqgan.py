@@ -116,7 +116,7 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
-        self.select_query_d1_acc = '/d1ACC$'
+        self.select_query_d1_acc = '\/d1ACC$'
 
         self.expected_acc_val = dict()
         self.expected_acc_train = dict()
