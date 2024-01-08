@@ -180,7 +180,7 @@ class VQModel(pl.LightningModule):
                 param.requires_grad = True
         # print('after self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
         
-        
+
 
 
     def init_from_ckpt(self, path, ignore_keys=list()):
@@ -800,8 +800,8 @@ class VQModel(pl.LightningModule):
         opt_disc = torch.optim.Adam([
                                         {'params': self.loss.discriminator.parameters()},
                                         # {'params': self.loss.discriminator_large.parameters()},
-                                        {'params': self.loss.vgg16.parameters(), 'lr': .2},
-                                        {'params': self.loss.vgg16_head.parameters(), 'lr': .2}
+                                        {'params': self.loss.vgg16.parameters(), 'lr': 2},
+                                        {'params': self.loss.vgg16_head.parameters(), 'lr': 2}
                                     ],
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
