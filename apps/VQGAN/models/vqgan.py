@@ -573,6 +573,7 @@ class VQModel(pl.LightningModule):
         print('last_d1_acc', last_d1_acc)
         print('last_d2_acc', last_d2_acc)
         print('last_op_acc', last_op_acc)
+        assert False
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
@@ -582,7 +583,6 @@ class VQModel(pl.LightningModule):
         print('last_d1_acc', last_d1_acc)
         print('last_d2_acc', last_d2_acc)
         print('last_op_acc', last_op_acc)
-        assert False
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
         xs = batch['xs']
