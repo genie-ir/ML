@@ -578,7 +578,6 @@ class VQModel(pl.LightningModule):
         self.acc['train_'] = {'d1': last_d1_acc, 'd2': last_d2_acc, 'O': last_op_acc}
         print('train_', self.acc['train_'])
         print('R', R)
-        assert False
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
