@@ -64,6 +64,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
             for param in self.vgg16.features[param_fidx].parameters():
                 param.requires_grad = True
         n_inputs = self.vgg16.classifier[6].in_features
+        
+        print('#########', n_inputs)
+        assert False
         self.vgg16.classifier[6] = nn.Sequential(
             nn.Linear(n_inputs, 256)
         )
