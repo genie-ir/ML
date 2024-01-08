@@ -132,7 +132,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
             nn.Conv2d(128, 128, 4,1,0), # 1x1
             Bypolar2Binary(),
             ReshapeToV128(),
-            View()
             # nn.Linear(256, 128), 
             # nn.Sigmoid()
         )
@@ -195,7 +194,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return TP, TN, FP, FN
 
     def vgg16head_mean(self, x, flag=False, split='', l=1):
-        # print(self.vgg16.classifier[6][0].weight[128, 128])
+        print(self.vgg16.classifier[6][1].weight[0])
 
         p = self.vgg16_head(x).mean()
         if flag:
