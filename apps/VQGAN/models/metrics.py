@@ -101,10 +101,11 @@ class Metrics(PYBASE):
         print(select)
         print(pattern)
         for rk, rv in R.items():
+            print(rk)
             if pattern.match(rk):
-                print('->', rk)
+                print('[ok] ->', rk)
         print('*'*30)
-    
+        assert False
     
     
     
