@@ -86,6 +86,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
             nn.Conv2d(32, 64, 3, 2, 1), #16x16
             nn.Conv2d(64, 128, 3, 2, 1), #8x8
             nn.Conv2d(128, 256, 3, 2, 1), #4x4
+            nn.Conv2d(256, 256, 4, 1, 0), #4x4
             View(),
             # nn.Conv2d(1, 256, 4, 1, 0), #4x4
             # nn.Linear(n_inputs, 256)
