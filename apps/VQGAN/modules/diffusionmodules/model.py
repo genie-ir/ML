@@ -365,9 +365,13 @@ class View(nn.Module):
         assert False
 
 class ConvT_Tanh(nn.Module):
-    def __init__(self, inch, outch, k, s, p):
+    def __init__(self, inch, outch, k, s, p, flag=True):
         super().__init__()
-        self.convt = nn.ConvTranspose2d(inch, outch, k,s,p)
+        if flag:
+            self.convt = nn.ConvTranspose2d(inch, outch, k,s,p)
+        else:
+            self.convt = nn.Conv2d(inch, outch, k,s,p)
+        
         self.tgh = nn.Tanh()
     
     def forward(self, x):
@@ -382,15 +386,15 @@ class ConvT_Tanh_SuperNode(nn.Module):
         self.c1 = ConvT_Tanh(16, 32, 4,2,1) #64x64
         self.c2 = ConvT_Tanh(32, 64, 4,2,1) #128x128
         self.c3 = ConvT_Tanh(64, 128, 4,2,1) #256x256
-        self.c4 = ConvT_Tanh(128, 64, 3,2,1) #128x128
-        self.c5 = ConvT_Tanh(64, 1, 3,2,1) #64x64
+        self.c4 = ConvT_Tanh(128, 64, 3,2,1, False) #128x128
+        self.c5 = ConvT_Tanh(64, 1, 3,2,1, False) #64x64
         
         self.e0 = ConvT_Tanh(1, 16, 4,2,1) #32x32
         self.e1 = ConvT_Tanh(16, 32, 4,2,1) #64x64
         self.e2 = ConvT_Tanh(32, 64, 4,2,1) #128x128
         self.e3 = ConvT_Tanh(64, 128, 4,2,1) #256x256
-        self.e4 = ConvT_Tanh(128, 64, 3,2,1) #128x128
-        self.e5 = ConvT_Tanh(64, 1, 3,2,1) #64x64
+        self.e4 = ConvT_Tanh(128, 64, 3,2,1, False) #128x128
+        self.e5 = ConvT_Tanh(64, 1, 3,2,1, False) #64x64
     
     def forward(self, x, y):
         Y = self.em(torch.tensor(y, device='cuda')).view(-1, 1, 16, 16)
