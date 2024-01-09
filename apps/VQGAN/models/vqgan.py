@@ -559,6 +559,7 @@ class VQModel(pl.LightningModule):
             opt_ae, opt_disc = self.optimizers()
         
         xs = batch['xs']
+        self.bb(xs)
         xsl = batch['xsl']
         xsc = batch['xsc']
         xsf = batch['xsf']
@@ -647,8 +648,10 @@ class VQModel(pl.LightningModule):
     
     
     def bb(self, img):
-        return torchvision.utils.draw_bounding_boxes(((img.squeeze()+1)*127.5).to(torch.uint8), torch.tensor([0,0, 255,255], dtype=torch.int).unsqueeze(0), colors='red').unsqueeze(0) /127.5 -1
-
+        img = torchvision.utils.draw_bounding_boxes(((img.squeeze()+1)*127.5).to(torch.uint8), torch.tensor([0,0, 255,255], dtype=torch.int).unsqueeze(0), colors='red').unsqueeze(0) /127.5 -1
+        print(img.shape, img.dtype)
+        assert False
+        return img
     def on_train_epoch_end(self):
         # self.imglogger --> save!!
         signal_save((torch.cat([
