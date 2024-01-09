@@ -548,7 +548,7 @@ class VQModel(pl.LightningModule):
     # def batch(self, batch): # TODO
     #     return batch
     def step(self, batch, batch_idx, **kwargs):
-        if batch_idx >= 15:
+        if batch_idx >= 2:
             return
         
         tag = kwargs['tag']
@@ -559,7 +559,6 @@ class VQModel(pl.LightningModule):
             opt_ae, opt_disc = self.optimizers()
         
         xs = batch['xs']
-        self.bb(xs)
         xsl = batch['xsl']
         xsc = batch['xsc']
         xsf = batch['xsf']
