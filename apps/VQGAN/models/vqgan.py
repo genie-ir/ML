@@ -547,7 +547,7 @@ class VQModel(pl.LightningModule):
     # NOTE: Syn Idea
     # def batch(self, batch): # TODO
     #     return batch
-    def step(self, batch, batch_idx, tag='', **kwargs):
+    def step(self, batch, batch_idx, tag, **kwargs):
         if batch_idx >= 15:
             return
         
