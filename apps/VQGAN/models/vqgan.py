@@ -594,9 +594,9 @@ class VQModel(pl.LightningModule):
             if kwargs.get('show_dataset', False):
                 if y_edit == 0 and cidx == 1:
                     signal_save((torch.cat([
-                        (xs+1)*127.5, (xsl+1)*127.5, xsf*255, xslmask*255, 
-                        (xc+1)*127.5, (xcl+1)*127.5, xcf*255, xclmask*255, 
-                        ((xs*C_xsmask)+1)*127.5, (xcm_gray+1)*127.5, (((xs*M_C_Union + xc*xclmask))+1)*127.5, M_union_L_xs_xc*255, 
+                        (xs+1)*127.5, (xsl+1)*127.5, self.cat3d(xsf)*255, self.cat3d(xslmask)*255, 
+                        (xc+1)*127.5, (xcl+1)*127.5, self.cat3d(xcf)*255, self.cat3d(xclmask)*255, 
+                        ((xs*C_xsmask)+1)*127.5, (xcm_gray+1)*127.5, ((xs*M_C_Union + xc*xclmask)+1)*127.5, self.cat3d(M_union_L_xs_xc)*255, 
                     ], dim=0)+1)*127.5, f'/content/export/dataset/B{batch_idx}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
@@ -646,11 +646,12 @@ class VQModel(pl.LightningModule):
         return self.step(batch, batch_idx, tag='val', force_train=force_train)
     
     
+    
+    def cat3d(self, x):
+        return torch.cat([x,x,x], dim=0) 
     def bb(self, img):
-        img = torchvision.utils.draw_bounding_boxes(((img.squeeze()+1)*127.5).to(torch.uint8), torch.tensor([0,0, 255,255], dtype=torch.int).unsqueeze(0), colors='red').unsqueeze(0) /127.5 -1
-        print(img.shape, img.dtype)
-        assert False
-        return img
+        return torchvision.utils.draw_bounding_boxes(((img.squeeze()+1)*127.5).to(torch.uint8), torch.tensor([0,0, 255,255], dtype=torch.int).unsqueeze(0), colors='red').unsqueeze(0) /127.5 -1
+    
     def on_train_epoch_end(self):
         # self.imglogger --> save!!
         signal_save((torch.cat([
