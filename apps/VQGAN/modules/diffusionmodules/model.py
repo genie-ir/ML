@@ -396,8 +396,6 @@ class ConvT_Tanh_SuperNode(nn.Module):
         Y = self.em(torch.tensor(y, device='cuda')).view(-1, 1, 16, 16)
         
         e0 = self.e0(Y)
-        print(e0.shape)
-        assert False
         e1 = self.e1(e0)
         e2 = self.e2(e1)
         e3 = self.e3(e2)
@@ -405,11 +403,17 @@ class ConvT_Tanh_SuperNode(nn.Module):
         e5 = self.e5(e4)
 
         c0 = self.c0(x)  + e0
+        print('c0', c0.shape)
         c1 = self.c1(c0) + e1
+        print('c1', c1.shape)
         c2 = self.c2(c1) + e2
+        print('c2', c2.shape)
         c3 = self.c3(c2) + e3
+        print('c3', c3.shape)
         c4 = self.c4(c3) + e4
+        print('c4', c4.shape)
         c5 = self.c5(c4) + e5
+        print('c5', c5.shape)
         print('!!!!!!!!!!', x.shape, y, Y.shape, c5.shape, c5.min().item(), c5.max().item())
         assert False
 
