@@ -423,6 +423,49 @@ class ConvT_Tanh_SuperNode(nn.Module):
         
         return c5
 
+
+
+class ConvT_Tanh_SN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.c0 = ConvT_Tanh(256, 128, 3,2,1, False)#8x8
+        self.c1 = ConvT_Tanh(128, 64, 3,2,1, False)#4x4
+        self.c2 = ConvT_Tanh(64, 32, 3,2,1, False)#2x2
+        self.c3 = ConvT_Tanh(32, 16, 3,2,1, False)#1x1
+
+        self.z0 = ConvT_Tanh(16, 32, 4,2,1)#2x2
+        self.z1 = ConvT_Tanh(32, 64, 4,2,1)#4x4
+        self.z2 = ConvT_Tanh(64, 128, 4,2,1)#8x8
+        self.z3 = ConvT_Tanh(128, 256, 4,2,1)#16x16
+
+    def forward(self, x): # x is surface 1x256x16x16
+        z = torch.randn((1,16,1,1), device='cuda')
+        print('========================>', z[0,0,0,0])
+        c0 = self.c0(x)
+        c1 = self.c0(c0)
+        c2 = self.c0(c1)
+        c3 = self.c0(c2)
+
+        z0 = self.z0(z)
+        z1 = self.z0(z0)
+        z2 = self.z0(z1)
+        z3 = self.z0(z2)
+        
+        print('x', x.shape)
+        print('c0', c0.shape)
+        print('c1', c1.shape)
+        print('c2', c2.shape)
+        print('c3', c3.shape)
+        print('z0', z0.shape)
+        print('z1', z1.shape)
+        print('z2', z2.shape)
+        print('z3', z3.shape)
+        
+
+
+        print(z3.min().item(), z3.max().item(), z3.shape)
+        assert False
+
 class Encoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
@@ -430,7 +473,7 @@ class Encoder(nn.Module):
         super().__init__()
 
         ################################################################################# for VQGAN
-        self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
+        self.Qsurface2Qdiagonal = ConvT_Tanh_SN()# torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = ConvT_Tanh_SuperNode()
         #################################################################################
 
