@@ -446,25 +446,12 @@ class ConvT_Tanh_SN(nn.Module):
         c2 = self.c2(c1)
         c3 = self.c3(c2)
 
-        z0 = self.z0(z)
-        z1 = self.z1(z0)
-        z2 = self.z2(z1)
-        z3 = self.z3(z2)
-        
-        print('x', x.shape)
-        print('c0', c0.shape)
-        print('c1', c1.shape)
-        print('c2', c2.shape)
-        print('c3', c3.shape)
-        print('z0', z0.shape)
-        print('z1', z1.shape)
-        print('z2', z2.shape)
-        print('z3', z3.shape)
-        
+        z0 = self.z0(z) + c2
+        z1 = self.z1(z0) + c1
+        z2 = self.z2(z1) + c0
+        z3 = self.z3(z2) + x
 
-
-        print(z3.min().item(), z3.max().item(), z3.shape)
-        assert False
+        return z3        
 
 class Encoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
