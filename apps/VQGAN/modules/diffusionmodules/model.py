@@ -379,7 +379,7 @@ class ConvT_Tanh_SuperNode(nn.Module):
         self.em = nn.Embedding(3, 256)
     
     def forward(self, x, y):
-        Y = self.em(y)
+        Y = self.em(torch.tensor(y, device='cuda'))
         print('!!!!!!!!!!', x.shape, Y.shape, y)
         assert False
 
