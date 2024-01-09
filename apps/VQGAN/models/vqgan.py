@@ -627,7 +627,7 @@ class VQModel(pl.LightningModule):
     
     def validation_step(self, batch, batch_idx):
         p = torch.rand(1)
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', p)
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', p, p>.5)
         # return self.step(self, batch, batch_idx, tag='val', force_train=force_train)
     
     def on_train_epoch_end(self):
