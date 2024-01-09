@@ -279,6 +279,7 @@ class VQModel(pl.LightningModule):
         return x_image 
     
     def netConditins(self, simg):
+        self.decoder_grad_controller(True)
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
         y = self.decoder(
             Qsurface,
@@ -399,9 +400,6 @@ class VQModel(pl.LightningModule):
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
             return Cond_loss, Cond_loss_logdict
-        if optidx == 0 and condstep == False:
-            assert False
-
 
         # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
@@ -567,6 +565,7 @@ class VQModel(pl.LightningModule):
 
         
         for cidx in range(2):
+            self.decoder_grad_controller(False)
             xc = batch['xc'][cidx] # ROT
             xcl = batch['xcl'][cidx] # ROT
             xcc = batch['xcc'][cidx] # ROT
@@ -604,6 +603,7 @@ class VQModel(pl.LightningModule):
                 pack_logdata[f'xc{cidx}'] = xc
 
             for optimizer_idx, optimizer_params in [[0, {}], [0, {'condstep': True}], [1, {}]]:
+                print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 if optFlag:
                     opt_ae.zero_grad()
@@ -628,6 +628,8 @@ class VQModel(pl.LightningModule):
                 
                 if flag_logdata:
                     pack_logdata[f'c{cidx}_optidx{optimizer_idx}_pipline'] = logdata
+                
+                print(f'after optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
 
         if flag_logdata:
             self.imglogger[y_edit] = pack_logdata
