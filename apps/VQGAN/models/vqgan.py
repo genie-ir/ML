@@ -552,9 +552,10 @@ class VQModel(pl.LightningModule):
             return
         
         tag = kwargs['tag']
+        optFlag = tag == 'train' or kwargs.get('force_train', False)
         
         # start_time = time.time()
-        if tag == 'train':
+        if optFlag:
             opt_ae, opt_disc = self.optimizers()
         
         xs = batch['xs']
@@ -596,7 +597,7 @@ class VQModel(pl.LightningModule):
 
             for optimizer_idx in range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
-                if tag == 'train' or kwargs.get('force_train', False):
+                if optFlag:
                     opt_ae.zero_grad()
                     opt_disc.zero_grad()
                 
@@ -607,7 +608,7 @@ class VQModel(pl.LightningModule):
                 )
                 logdict['epoch'] = self.current_epoch
                 
-                if tag == 'train' or kwargs.get('force_train', False):
+                if optFlag:
                     self.manual_backward(loss)
                     if optimizer_idx == 0:
                         opt_ae.step()
