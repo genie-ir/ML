@@ -119,6 +119,11 @@ class VQModel(pl.LightningModule):
     def __start(self):
         setattr(self, 'forward', self.pipline)
         self.imglogger = [None, None, None]
+        self.QclassDict = {
+            '[01]': 0,
+            '2': 1,
+            '[34]': 2
+        }
         
         self.acc = {
             'train_': {'d1': 0, 'd2': 0, 'O': 0},
@@ -339,7 +344,7 @@ class VQModel(pl.LightningModule):
         n = 16
         ch = 256
         sinfgray_diesis = self.loss.Ro(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
-        v = self.encoder.netb_diagonal(sinfgray_diesis, Qclass).view(ch, n, 1, 1)
+        v = self.encoder.netb_diagonal(sinfgray_diesis, self.QclassDict[Qclass]).view(ch, n, 1, 1)
         z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device).detach()
         V = (v + z.unsqueeze(-1)).view((1, ch, n, n))
         # `sinfgray_diesis` -> torch.Size([1, 256]) tensor(-0.5701) tensor(0.5360)
@@ -454,7 +459,7 @@ class VQModel(pl.LightningModule):
         if y_edit_xc == '[01]': # 𝝍s_tp, xs ===> # Note: geometry loss
             xsss = xs * C_xsmask
             xsm_gray = (xs * xsmask).mean(dim=1, keepdim=True).detach()
-            𝝍s_tp = xsss + xsmask * self.netB(xsss, xsmask, xsm_gray)
+            𝝍s_tp = xsss + xsmask * self.netB(xsss, xsmask, xsm_gray, y_edit_xc)
             𝝍s_tp_final = 𝝍s_tm_final
             if optidx == 0:
                 B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
@@ -478,7 +483,7 @@ class VQModel(pl.LightningModule):
                 # print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
         else: # 𝝍s_tp ===> # Note: adversial loss
             𝝍s_tm_final_s = (𝝍s_tm_final * C_xcmask).detach()
-            𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.netB(𝝍s_tm_final_s, xcmask, xcm_gray)
+            𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.netB(𝝍s_tm_final_s, xcmask, xcm_gray, y_edit_xc)
             𝝍s_tp_final = 𝝍s_tp
             if optidx == 0:
                 R_𝝍s_tp = self.loss.Ro(𝝍s_tp)

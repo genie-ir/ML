@@ -346,7 +346,9 @@ class Reshape256To16x16(nn.Module):
     def __init__(self):
         super().__init__()
     
-    def forward(self, x):
+    def forward(self, x, y):
+        print(x.shape, y)
+        assert False
         return x.view(-1, 1, 16, 16)
 
 class Reshape64x64ToV16x256(nn.Module):
@@ -364,6 +366,7 @@ class View(nn.Module):
         print(x.min().item(), x.max().item(), x.shape)
         assert False
 
+
 class Encoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
@@ -374,6 +377,7 @@ class Encoder(nn.Module):
         self.netb_embedding = nn.Embedding(3, 500)
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
+
             Reshape256To16x16(),
             nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
             nn.Tanh(),
