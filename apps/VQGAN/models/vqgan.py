@@ -624,12 +624,12 @@ class VQModel(pl.LightningModule):
         # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
     
     def training_step(self, batch, batch_idx):
-        return self.step(self, batch, batch_idx, tag='train')
+        return self.step(batch, batch_idx, tag='train')
     
     def validation_step(self, batch, batch_idx):
         p = torch.rand(1)
         force_train = (p>.5).item()
-        return self.step(self, batch, batch_idx, tag='val', force_train=force_train)
+        return self.step(batch, batch_idx, tag='val', force_train=force_train)
     
     
     def bb(self, img):
