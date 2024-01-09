@@ -393,13 +393,15 @@ class VQModel(pl.LightningModule):
         # Conditins)
         # Qsurface should be contain all information for reconstructiong none gray area part of xs. # NOTE: Geometry loss
         if optidx == 0 and condstep == True:
-            assert False
             Cond_loss_logdict = {}
             xs_noneGrayAreaPart_gtru  = xs * C_xsmask
             xs_noneGrayAreaPart_pred = self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
             return Cond_loss, Cond_loss_logdict
+        if optidx == 0 and condstep == False:
+            assert False
+
 
         # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
