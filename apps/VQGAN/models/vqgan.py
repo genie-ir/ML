@@ -573,7 +573,7 @@ class VQModel(pl.LightningModule):
             # M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
             M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
             # M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
-            xcm_gray = (xsf * (xclmask * xc).mean(dim=1, keepdim=True)).detach() # torch.Size([1, 1, 256, 256])
+            xcm_gray = ((xclmask * xc * xsf).mean(dim=1, keepdim=True)).detach() # torch.Size([1, 1, 256, 256])
             C_xcmask = (1-xclmask).detach()
 
             if y_edit == 1 and cidx == 1:
