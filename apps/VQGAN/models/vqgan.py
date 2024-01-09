@@ -636,7 +636,7 @@ class VQModel(pl.LightningModule):
     
     
     def bb(self, img):
-        return torchvision.utils.draw_bounding_boxes(((img+1)*127.5).to('uint8'), [0,0, 255,255], colors='red') /127.5 -1
+        return torchvision.utils.draw_bounding_boxes(((img+1)*127.5).to(torch.uint8), [0,0, 255,255], colors='red') /127.5 -1
 
     def on_train_epoch_end(self):
         # self.imglogger --> save!!
