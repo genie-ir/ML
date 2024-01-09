@@ -590,6 +590,17 @@ class VQModel(pl.LightningModule):
             xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
             C_xcmask = (1-xclmask).detach()
 
+
+            if kwargs.get('show_dataset', False):
+                if y_edit == 0 and cidx == 1:
+                    signal_save((torch.cat([
+                        (xs+1)*127.5, (xsl+1)*127.5, xsf*255, xslmask*255, 
+                        (xc+1)*127.5, (xcl+1)*127.5, xcf*255, xclmask*255, 
+                        ((xs*C_xsmask)+1)*127.5, (xcm_gray+1)*127.5, (((xs*M_C_Union + xc*xclmask))+1)*127.5, M_union_L_xs_xc*255, 
+                    ], dim=0)+1)*127.5, f'/content/export/dataset/B{batch_idx}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+
+
+
             y_edit_xc = batch['ynl'][cidx][0]
 
             if flag_logdata:
@@ -627,7 +638,7 @@ class VQModel(pl.LightningModule):
         # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
     
     def training_step(self, batch, batch_idx):
-        return self.step(batch, batch_idx, tag='train')
+        return self.step(batch, batch_idx, tag='train', show_dataset=True)
     
     def validation_step(self, batch, batch_idx):
         p = torch.rand(1)
