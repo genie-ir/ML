@@ -450,7 +450,7 @@ class ConvT_Tanh_SN(nn.Module):
         z2 = self.z2(z1) + c0
         z3 = self.z3(z2) + x
 
-        print('abs', (z3-x).abs().sum().item())
+        print('abs', ((z3-x)**2).mean().item())
         return z3        
 
 class Encoder(nn.Module):
