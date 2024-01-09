@@ -371,7 +371,7 @@ class ConvT_Tanh(nn.Module):
         self.tgh = nn.Tanh()
     
     def forward(self, x):
-        return self.tgh(self.convt)
+        return self.tgh(self.convt(x))
 
 class ConvT_Tanh_SuperNode(nn.Module):
     def __init__(self):
