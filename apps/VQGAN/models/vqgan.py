@@ -604,7 +604,6 @@ class VQModel(pl.LightningModule):
 
             for optimizer_idx, optimizer_params in [[0, {}], [0, {'condstep': True}], [1, {}]]:
                 print(optimizer_idx, optimizer_params, self.encoder.netb_diagonal.c0.convt.weight.sum().item())
-                assert False
                 # print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 if optFlag:
