@@ -379,7 +379,7 @@ class VQModel(pl.LightningModule):
         
         return y
 
-    def pipline(self, xs, Xc, 
+    def pipline(self, xs, Xc, xsf,
                 split,
                 optidx,
                 y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray, condstep=False
@@ -396,7 +396,7 @@ class VQModel(pl.LightningModule):
         if optidx == 0 and condstep == True:
             Cond_loss_logdict = {}
             xs_noneGrayAreaPart_gtru  = xs * C_xsmask
-            xs_noneGrayAreaPart_pred = self.netConditins(xs_noneGrayAreaPart_gtru)
+            xs_noneGrayAreaPart_pred = xsf * self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
             return Cond_loss, Cond_loss_logdict, None
@@ -407,7 +407,7 @@ class VQModel(pl.LightningModule):
         if y_edit == 0: # 𝝍s_tm, xs ===> # NOTE: geometry loss
             # here xcmask was used as random mask.
             xss = xs * C_xcmask
-            𝝍s_tm = xss + xcmask * self.netA(xss, xcmask)
+            𝝍s_tm = xsf * (xss + xcmask * self.netA(xss, xcmask))
             𝝍s_tm_final = xs
             if optidx == 0:
                 A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo')
@@ -431,7 +431,7 @@ class VQModel(pl.LightningModule):
                 # print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
         else: # 𝝍s_tm ===> #NOTE: adversial loss
             xss = xs * C_xsmask
-            𝝍s_tm = xss + xsmask * self.netA(xss, xsmask)
+            𝝍s_tm = xsf * (xss + xsmask * self.netA(xss, xsmask))
             𝝍s_tm_final = 𝝍s_tm
             if optidx == 0:
                 A_loss0, A_d0 = self.loss.omega_of_phi(𝝍s_tm, flag=True, split=split + 'A_el0_OFpsistm', l=self.acc[split]['O']) # OK!
@@ -464,7 +464,7 @@ class VQModel(pl.LightningModule):
         if y_edit_xc == '[01]': # 𝝍s_tp, xs ===> # Note: geometry loss
             xsss = xs * C_xsmask
             xsm_gray = (xs * xsmask).mean(dim=1, keepdim=True).detach()
-            𝝍s_tp = xsss + xsmask * self.netB(xsss, xsmask, xsm_gray, y_edit_xc)
+            𝝍s_tp = xsf * (xsss + xsmask * self.netB(xsss, xsmask, xsm_gray, y_edit_xc))
             𝝍s_tp_final = 𝝍s_tm_final
             if optidx == 0:
                 B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
@@ -488,7 +488,7 @@ class VQModel(pl.LightningModule):
                 # print('B) IF) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss5, B_loss, B_loss.shape)
         else: # 𝝍s_tp ===> # Note: adversial loss
             𝝍s_tm_final_s = (𝝍s_tm_final * C_xcmask).detach()
-            𝝍s_tp = 𝝍s_tm_final_s + xcmask * self.netB(𝝍s_tm_final_s, xcmask, xcm_gray, y_edit_xc)
+            𝝍s_tp = xsf * (𝝍s_tm_final_s + xcmask * self.netB(𝝍s_tm_final_s, xcmask, xcm_gray, y_edit_xc))
             𝝍s_tp_final = 𝝍s_tp
             if optidx == 0:
                 R_𝝍s_tp = self.loss.Ro(𝝍s_tp)
@@ -573,9 +573,9 @@ class VQModel(pl.LightningModule):
             xclmask = batch['xclmask'][cidx] # ROT
 
             # NOTE: Mask design
-            M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
+            # M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
             # M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
-            M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
+            # M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
             # M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
             xcm_gray = ((xclmask * xc * xsf).mean(dim=1, keepdim=True)).detach() # torch.Size([1, 1, 256, 256])
             C_xcmask = (1-xclmask).detach()
@@ -603,14 +603,14 @@ class VQModel(pl.LightningModule):
                 pack_logdata[f'xc{cidx}'] = xc
 
             for optimizer_idx, optimizer_params in [[0, {}], [0, {'condstep': True}], [1, {}]]:
-                print(optimizer_idx, optimizer_params, self.encoder.netb_diagonal.c0.convt.weight.sum().item())
+                # print(optimizer_idx, optimizer_params, self.encoder.netb_diagonal.c0.convt.weight.sum().item())
                 # print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 if optFlag:
                     opt_ae.zero_grad()
                     opt_disc.zero_grad()
                 
-                loss, logdict, logdata = self.pipline(xs, xc, 
+                loss, logdict, logdata = self.pipline(xs, xc, xsf,
                     split=f'{tag}_',
                     optidx=optimizer_idx,
                     y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray,
