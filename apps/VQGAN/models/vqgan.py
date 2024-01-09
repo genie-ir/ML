@@ -158,8 +158,6 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.encoder.netb_diagonal.parameters():
             param.requires_grad = True
-        for param in self.encoder.netb_embedding.parameters():
-            param.requires_grad = True
         
         for param in self.encoder.down[4].parameters():
             param.requires_grad = True
@@ -343,8 +341,8 @@ class VQModel(pl.LightningModule):
     def netB(self, simg, smask, sinfgray, Qclass):
         n = 16
         ch = 256
-        sinfgray_diesis = self.loss.Ro(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
-        v = self.encoder.netb_diagonal(sinfgray_diesis, self.QclassDict[Qclass]).view(ch, n, 1, 1)
+        sinfgray_diesis = self.loss.Ro(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).view(-1, 1, 16, 16).detach()
+        v = self.encoder.netb_diagonal_fn(sinfgray_diesis, self.QclassDict[Qclass]).view(ch, n, 1, 1)
         z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device).detach()
         V = (v + z.unsqueeze(-1)).view((1, ch, n, n))
         # `sinfgray_diesis` -> torch.Size([1, 256]) tensor(-0.5701) tensor(0.5360)

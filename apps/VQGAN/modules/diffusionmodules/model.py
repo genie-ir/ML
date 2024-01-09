@@ -342,14 +342,12 @@ class Model(nn.Module):
 
 
 
-class Reshape256To16x16(nn.Module):
-    def __init__(self):
-        super().__init__()
+# class Reshape256To16x16(nn.Module):
+#     def __init__(self):
+#         super().__init__()
     
-    def forward(self, x, y):
-        print(x.shape, y)
-        assert False
-        return x.view(-1, 1, 16, 16)
+#     def forward(self, x):
+#         return x.view(-1, 1, 16, 16)
 
 class Reshape64x64ToV16x256(nn.Module):
     def __init__(self):
@@ -366,33 +364,57 @@ class View(nn.Module):
         print(x.min().item(), x.max().item(), x.shape)
         assert False
 
+class ConvT_Tanh(nn.Module):
+    def __init__(self, inch, outch, k, s, p, edim):
+        super().__init__()
+        self.convt = nn.ConvTranspose2d(inch, outch, k,s,p)
+        self.tgh = nn.Tanh()
+        self.em = nn.Embedding(3, edim)
+    
+    def forward(self, x, y):
+        X = self.tgh(self.convt)
+        Y = self.tgh(self.em(y))
+        print(X.shape, Y.shape)
+        assert False
+
 
 class Encoder(nn.Module):
+    def netb_diagonal_fn(x, y):
+        print(x.shape, y)
+
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
                  resolution, z_channels, double_z=True, returnSkipPath=False, **ignore_kwargs):
         super().__init__()
 
         ################################################################################# for VQGAN
-        self.netb_embedding = nn.Embedding(3, 500)
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
-
-            Reshape256To16x16(),
-            nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
-            nn.Tanh(),
-            nn.ConvTranspose2d(16, 32, 4,2,1), #64x64
-            nn.Tanh(),
-            nn.ConvTranspose2d(32, 64, 4,2,1), #128x128
-            nn.Tanh(),
-            nn.ConvTranspose2d(64, 128, 4,2,1), #256x256
-            nn.Tanh(),
-            nn.Conv2d(128, 64, 3,2,1), #128x128
-            nn.Tanh(),
-            nn.Conv2d(64, 1, 3,2,1), #64x64
-            nn.Tanh(),
-            Reshape64x64ToV16x256(),
+            ConvT_Tanh(1,16,4,2,1, 256)
+            # nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
+            # nn.Tanh(),
+            # nn.ConvTranspose2d(16, 32, 4,2,1), #64x64
+            # nn.Tanh(),
+            # nn.ConvTranspose2d(32, 64, 4,2,1), #128x128
+            # nn.Tanh(),
+            # nn.ConvTranspose2d(64, 128, 4,2,1), #256x256
+            # nn.Tanh(),
+            # nn.Conv2d(128, 64, 3,2,1), #128x128
+            # nn.Tanh(),
+            # nn.Conv2d(64, 1, 3,2,1), #64x64
+            # nn.Tanh(),
+            # Reshape64x64ToV16x256(),
             
+
+
+
+
+
+
+
+
+
+
             # nn.Linear(256, 1024),
             # nn.Tanh(),
             # nn.Linear(1024, 16*256),
