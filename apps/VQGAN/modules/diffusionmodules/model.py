@@ -440,7 +440,7 @@ class ConvT_Tanh_SN(nn.Module):
         self.z3 = ConvT_Tanh(128, 256, 4,2,1)#16x16
 
     def forward(self, x): # x is surface 1x256x16x16
-        q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
+        q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
         z = torch.randn((1,16,1,1), device='cuda')
         c0 = self.c0(x)
         c1 = self.c1(c0)
