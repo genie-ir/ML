@@ -440,7 +440,6 @@ class ConvT_Tanh_SN(nn.Module):
 
     def forward(self, x): # x is surface 1x256x16x16
         z = torch.randn((1,16,1,1), device='cuda')
-        print('========================>', z[0,0,0,0])
         c0 = self.c0(x)
         c1 = self.c1(c0)
         c2 = self.c2(c1)
@@ -451,6 +450,8 @@ class ConvT_Tanh_SN(nn.Module):
         z2 = self.z2(z1) + c0
         z3 = self.z3(z2) + x
 
+        print('x', x.min().item(), x.max().item())
+        print('z3', z3.min().item(), z3.max().item())
         return z3        
 
 class Encoder(nn.Module):
