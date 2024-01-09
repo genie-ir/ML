@@ -399,7 +399,7 @@ class VQModel(pl.LightningModule):
             xs_noneGrayAreaPart_pred = self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
-            return Cond_loss, Cond_loss_logdict
+            return Cond_loss, Cond_loss_logdict, None
 
         # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
@@ -626,7 +626,7 @@ class VQModel(pl.LightningModule):
                 
                 self.metrics.log(tag, logdict)
                 
-                if flag_logdata:
+                if flag_logdata and logdata != None:
                     pack_logdata[f'c{cidx}_optidx{optimizer_idx}_pipline'] = logdata
                 
                 print(f'after optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
