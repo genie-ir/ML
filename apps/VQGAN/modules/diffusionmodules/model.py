@@ -371,6 +371,7 @@ class Encoder(nn.Module):
         super().__init__()
 
         ################################################################################# for VQGAN
+        self.netb_embedding = nn.Embedding(3, d)
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = nn.Sequential(
             Reshape256To16x16(),

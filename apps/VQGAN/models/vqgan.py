@@ -153,6 +153,8 @@ class VQModel(pl.LightningModule):
             param.requires_grad = True
         for param in self.encoder.netb_diagonal.parameters():
             param.requires_grad = True
+        for param in self.encoder.netb_embedding.parameters():
+            param.requires_grad = True
         
         for param in self.encoder.down[4].parameters():
             param.requires_grad = True
@@ -255,24 +257,6 @@ class VQModel(pl.LightningModule):
     def unfold(self, x, Ps, Nk):
         return x.unfold(2, Ps, Ps).unfold(3, Ps, Ps).contiguous().view(-1, int(Nk*Nk), Ps, Ps).permute(1,0,2,3).contiguous()
 
-    # def fold(self, x, batchsize=4):
-    #     print('@@@@@@@@@@@@', x.shape)
-    #     num_patches, B_CH, jigsaw_h, jigsaw_w = x.shape
-    #     c = B_CH // batchsize
-    #     batch_size = batchsize
-    #     # x = x.unsqueeze(0)
-    #     grid_size = int(num_patches ** .5)
-    #     grid_size = (grid_size, grid_size)
-    #     # x shape is batch_size x num_patches x c x jigsaw_h x jigsaw_w
-    #     # batch_size, num_patches, c, jigsaw_h, jigsaw_w = x.size()
-    #     # print('****************', batch_size, num_patches, c, jigsaw_h, jigsaw_w)
-    #     x_image = x.view(batch_size, grid_size[0], grid_size[1], c, jigsaw_h, jigsaw_w)
-    #     output_h = grid_size[0] * jigsaw_h
-    #     output_w = grid_size[1] * jigsaw_w
-    #     x_image = x_image.permute(0, 3, 1, 4, 2, 5).contiguous()
-    #     x_image = x_image.view(batch_size, c, output_h, output_w)
-    #     return x_image.view(batchsize, -1, output_h, output_w)
-    
     def fold(self, x, grid_size):
         x = x.unsqueeze(0)
         grid_size = (grid_size,grid_size)
@@ -338,7 +322,9 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling,
             flag=False
-        ) # Note: add skip connection
+        ).detach()
+
+
         
         # signal_save(torch.cat([
         #     (simg+1) * 127.5,
@@ -349,11 +335,11 @@ class VQModel(pl.LightningModule):
         
         return y
     
-    def netB(self, simg, smask, sinfgray):
+    def netB(self, simg, smask, sinfgray, Qclass):
         n = 16
         ch = 256
         sinfgray_diesis = self.loss.Ro(torch.cat([sinfgray,sinfgray,sinfgray], dim=1)).detach()
-        v = self.encoder.netb_diagonal(sinfgray_diesis).view(ch, n, 1, 1)
+        v = self.encoder.netb_diagonal(sinfgray_diesis, Qclass).view(ch, n, 1, 1)
         z = torch.zeros(ch, n, n, dtype=torch.float32, device=self.device).detach()
         V = (v + z.unsqueeze(-1)).view((1, ch, n, n))
         # `sinfgray_diesis` -> torch.Size([1, 256]) tensor(-0.5701) tensor(0.5360)
@@ -372,7 +358,7 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling,
             flag=False
-        ) # Note: add skip connection
+        ).detach()
         
         # signal_save(torch.cat([
         #     (simg+1) * 127.5,
@@ -548,8 +534,8 @@ class VQModel(pl.LightningModule):
     # def batch(self, batch): # TODO
     #     return batch
     def step(self, batch, batch_idx, **kwargs):
-        # if batch_idx >= 20:
-        #     return
+        if batch_idx >= 20:
+            return
         
         tag = kwargs['tag']
         optFlag = tag == 'train' or kwargs.get('force_train', False)
@@ -591,14 +577,13 @@ class VQModel(pl.LightningModule):
             C_xcmask = (1-xclmask).detach()
 
 
-            if kwargs.get('show_dataset', False):
-                if y_edit == 1 and cidx == 1:
-                    signal_save(torch.cat([
-                        (xs+1)*127.5, (xsl+1)*127.5, self.cat3d(xsf)*255, self.cat3d(xslmask)*255, 
-                        (xc+1)*127.5, (xcl+1)*127.5, self.cat3d(xcf)*255, self.cat3d(xclmask)*255, 
-                        ((xs*C_xsmask)+1)*127.5, xsf * (self.cat3d(xcm_gray)+1)*127.5, xsf * ((xs*M_C_Union + xc*xclmask)+1)*127.5, xsf * self.cat3d(M_union_L_xs_xc)*255, 
-                    ], dim=0), f'/content/export/dataset/B{batch_idx}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-
+            # if kwargs.get('show_dataset', False):
+            #     if y_edit == 1 and cidx == 1:
+            #         signal_save(torch.cat([
+            #             (xs+1)*127.5, (xsl+1)*127.5, self.cat3d(xsf)*255, self.cat3d(xslmask)*255, 
+            #             (xc+1)*127.5, (xcl+1)*127.5, self.cat3d(xcf)*255, self.cat3d(xclmask)*255, 
+            #             ((xs*C_xsmask)+1)*127.5, xsf * (self.cat3d(xcm_gray)+1)*127.5, xsf * ((xs*M_C_Union + xc*xclmask)+1)*127.5, xsf * self.cat3d(M_union_L_xs_xc)*255, 
+            #         ], dim=0), f'/content/export/dataset/B{batch_idx}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
 
             y_edit_xc = batch['ynl'][cidx][0]
@@ -641,6 +626,7 @@ class VQModel(pl.LightningModule):
         return self.step(batch, batch_idx, tag='train', show_dataset=True)
     
     def validation_step(self, batch, batch_idx):
+        return
         p = torch.rand(1)
         force_train = False # (p>.5).item()
         return self.step(batch, batch_idx, tag='val', force_train=force_train)
@@ -671,6 +657,7 @@ class VQModel(pl.LightningModule):
         self.imglogger = [None, None, None]
     
     def on_validation_epoch_end(self):
+        return
         self.metrics.save('val')
         last_d1_acc = self.metrics.inference('val', self.regexp_d1_acc)
         # last_d2_acc = self.metrics.inference('val', self.regexp_d2_acc)
