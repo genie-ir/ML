@@ -377,10 +377,38 @@ class ConvT_Tanh_SuperNode(nn.Module):
     def __init__(self):
         super().__init__()
         self.em = nn.Embedding(3, 256)
+        
+        self.c0 = ConvT_Tanh(1, 16, 4,2,1) #32x32
+        self.c1 = ConvT_Tanh(16, 32, 4,2,1) #64x64
+        self.c2 = ConvT_Tanh(32, 64, 4,2,1) #128x128
+        self.c3 = ConvT_Tanh(64, 128, 4,2,1) #256x256
+        self.c4 = ConvT_Tanh(128, 64, 3,2,1) #128x128
+        self.c5 = ConvT_Tanh(64, 1, 3,2,1) #64x64
+        
+        self.e0 = ConvT_Tanh(1, 16, 4,2,1) #32x32
+        self.e1 = ConvT_Tanh(16, 32, 4,2,1) #64x64
+        self.e2 = ConvT_Tanh(32, 64, 4,2,1) #128x128
+        self.e3 = ConvT_Tanh(64, 128, 4,2,1) #256x256
+        self.e4 = ConvT_Tanh(128, 64, 3,2,1) #128x128
+        self.e5 = ConvT_Tanh(64, 1, 3,2,1) #64x64
     
     def forward(self, x, y):
-        Y = self.em(torch.tensor(y, device='cuda'))
-        print('!!!!!!!!!!', x.shape, Y.shape, y)
+        Y = self.em(torch.tensor(y, device='cuda')).view(-1, 1, 16, 16)
+        
+        e0 = self.e0(Y)
+        e1 = self.e1(e0)
+        e2 = self.e2(e1)
+        e3 = self.e3(e2)
+        e4 = self.e4(e3)
+        e5 = self.e5(e4)
+
+        c0 = self.c0(x)  + e0
+        c1 = self.c1(c0) + e1
+        c2 = self.c2(c1) + e2
+        c3 = self.c3(c2) + e3
+        c4 = self.c4(c3) + e4
+        c5 = self.c5(c4) + e5
+        print('!!!!!!!!!!', x.shape, y, Y.shape, c5.shape, c5.min().item(), c5.max().item())
         assert False
 
 
@@ -393,35 +421,6 @@ class Encoder(nn.Module):
         ################################################################################# for VQGAN
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = ConvT_Tanh_SuperNode()
-        # nn.Sequential(
-            # nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
-            # nn.Tanh(),
-            # nn.ConvTranspose2d(16, 32, 4,2,1), #64x64
-            # nn.Tanh(),
-            # nn.ConvTranspose2d(32, 64, 4,2,1), #128x128
-            # nn.Tanh(),
-            # nn.ConvTranspose2d(64, 128, 4,2,1), #256x256
-            # nn.Tanh(),
-            # nn.Conv2d(128, 64, 3,2,1), #128x128
-            # nn.Tanh(),
-            # nn.Conv2d(64, 1, 3,2,1), #64x64
-            # nn.Tanh(),
-            # Reshape64x64ToV16x256(),
-            
-
-
-
-
-
-
-
-
-
-
-            # nn.Linear(256, 1024),
-            # nn.Tanh(),
-            # nn.Linear(1024, 16*256),
-        # )
         #################################################################################
 
 

@@ -116,6 +116,21 @@ class VQModel(pl.LightningModule):
         
         self.__start()
 
+    
+    def decoder_grad_controller(self, flag):
+        # print('before self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
+        for param in self.decoder.up[4].parameters():
+            param.requires_grad = flag
+        for param in self.decoder.norm_out.parameters():
+            param.requires_grad = flag
+        for param in self.decoder.conv_out.parameters():
+            param.requires_grad = flag
+        # for param in self.decoder.spade_ilevel1.parameters():
+        #     param.requires_grad = flag
+        # for param in self.decoder.spade_endDownSampling.parameters():
+        #     param.requires_grad = flag
+        # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
+    
     def __start(self):
         setattr(self, 'forward', self.pipline)
         self.imglogger = [None, None, None]
@@ -170,18 +185,8 @@ class VQModel(pl.LightningModule):
         # print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
 
 
-        # print('before self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
-        for param in self.decoder.up[4].parameters():
-            param.requires_grad = True
-        for param in self.decoder.norm_out.parameters():
-            param.requires_grad = True
-        for param in self.decoder.conv_out.parameters():
-            param.requires_grad = True
-        # for param in self.decoder.spade_ilevel1.parameters():
-        #     param.requires_grad = True
-        # for param in self.decoder.spade_endDownSampling.parameters():
-        #     param.requires_grad = True
-        # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
+        self.decoder_grad_controller(True)
+
 
         # print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
         for pidx in [5, 6, 8, 9, 11]:
@@ -283,6 +288,8 @@ class VQModel(pl.LightningModule):
             flag=False
         ) # Note: add skip connection
         
+        
+
         # signal_save(torch.cat([
         #     (simg+1) * 127.5,
         #     (y+1) * 127.5,
@@ -326,6 +333,7 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False
         ).detach()
+        y.register_hook(lambda grad: print('neta->y->grad', grad))
 
 
         
@@ -362,6 +370,8 @@ class VQModel(pl.LightningModule):
             h_endDownSampling,
             flag=False
         ).detach()
+        y.register_hook(lambda grad: print('netb->y->grad', grad))
+        print('netb', y.shape)
         
         # signal_save(torch.cat([
         #     (simg+1) * 127.5,
@@ -376,7 +386,7 @@ class VQModel(pl.LightningModule):
     def pipline(self, xs, Xc, 
                 split,
                 optidx,
-                y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray
+                y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray, condstep=False
     ):
         """
             By: ***alihejrati***
@@ -387,12 +397,14 @@ class VQModel(pl.LightningModule):
         """
         # Conditins)
         # Qsurface should be contain all information for reconstructiong none gray area part of xs. # NOTE: Geometry loss
-        Cond_loss_logdict = {}
-        if optidx == 0:
+        if optidx == 0 and condstep == True:
+            assert False
+            Cond_loss_logdict = {}
             xs_noneGrayAreaPart_gtru  = xs * C_xsmask
             xs_noneGrayAreaPart_pred = self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
+            return Cond_loss, Cond_loss_logdict
 
         # A)
         # punching xs only in xsmask Not in Union of lesions and getting it as xss.
@@ -516,16 +528,9 @@ class VQModel(pl.LightningModule):
             '𝝍s_tp_final': 𝝍s_tp_final.detach()
         }
         
-        if optidx == 0:
-            loss = Cond_loss + A_loss + B_loss
-            # print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
-        else:
-            loss = A_loss + B_loss
-            # print(optidx, 'Aloss, Bloss, loss', A_loss, B_loss, loss)
-        # print('-'*30)
+        loss = A_loss + B_loss
         
         return loss, {
-            **Cond_loss_logdict,
             **A_loss_logdict,
             **B_loss_logdict,
             "{}/total_loss".format(split): loss.clone().detach().mean().item(),
@@ -601,7 +606,7 @@ class VQModel(pl.LightningModule):
             if flag_logdata:
                 pack_logdata[f'xc{cidx}'] = xc
 
-            for optimizer_idx in range(2):
+            for optimizer_idx, optimizer_params in [[0, {}], [0, {'condstep': True}], [1, {}]]:
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 if optFlag:
                     opt_ae.zero_grad()
@@ -610,7 +615,8 @@ class VQModel(pl.LightningModule):
                 loss, logdict, logdata = self.pipline(xs, xc, 
                     split=f'{tag}_',
                     optidx=optimizer_idx,
-                    y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
+                    y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray,
+                    **optimizer_params
                 )
                 logdict['epoch'] = self.current_epoch
                 
