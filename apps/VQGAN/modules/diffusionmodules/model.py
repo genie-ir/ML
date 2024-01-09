@@ -422,6 +422,7 @@ class ConvT_Tanh_SuperNode(nn.Module):
         c5 = self.c5(c4) + e5
         
         print(c5.shape, c5.min().item(), c5.max().item())
+        assert False
         return c5
 
 class Encoder(nn.Module):

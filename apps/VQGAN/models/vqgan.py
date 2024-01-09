@@ -603,7 +603,7 @@ class VQModel(pl.LightningModule):
                 pack_logdata[f'xc{cidx}'] = xc
 
             for optimizer_idx, optimizer_params in [[0, {}], [0, {'condstep': True}], [1, {}]]:
-                print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
+                # print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 if optFlag:
                     opt_ae.zero_grad()
@@ -629,7 +629,7 @@ class VQModel(pl.LightningModule):
                 if flag_logdata and logdata != None:
                     pack_logdata[f'c{cidx}_optidx{optimizer_idx}_pipline'] = logdata
                 
-                print(f'after optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
+                # print(f'after optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
 
         if flag_logdata:
             self.imglogger[y_edit] = pack_logdata
