@@ -332,10 +332,7 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling,
             flag=False
-        ).detach()
-        y.register_hook(lambda grad: print('neta->y->grad', grad))
-
-
+        )
         
         # signal_save(torch.cat([
         #     (simg+1) * 127.5,
@@ -369,9 +366,7 @@ class VQModel(pl.LightningModule):
             h_ilevel1, 
             h_endDownSampling,
             flag=False
-        ).detach()
-        y.register_hook(lambda grad: print('netb->y->grad', grad))
-        print('netb', y.shape)
+        )
         
         # signal_save(torch.cat([
         #     (simg+1) * 127.5,
