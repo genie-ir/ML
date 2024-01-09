@@ -596,8 +596,10 @@ class VQModel(pl.LightningModule):
 
             for optimizer_idx in range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
-                opt_ae.zero_grad()
-                opt_disc.zero_grad()
+                if tag == 'train' or kwargs.get('force_train', False):
+                    opt_ae.zero_grad()
+                    opt_disc.zero_grad()
+                
                 loss, logdict, logdata = self.pipline(xs, xc, 
                     split=f'{tag}_',
                     optidx=optimizer_idx,
