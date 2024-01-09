@@ -396,6 +396,8 @@ class ConvT_Tanh_SuperNode(nn.Module):
         Y = self.em(torch.tensor(y, device='cuda')).view(-1, 1, 16, 16)
         
         e0 = self.e0(Y)
+        print(e0.shape)
+        assert False
         e1 = self.e1(e0)
         e2 = self.e2(e1)
         e3 = self.e3(e2)
