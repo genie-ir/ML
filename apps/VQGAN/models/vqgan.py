@@ -116,6 +116,8 @@ class VQModel(pl.LightningModule):
         self.start()
 
     def start(self):
+        self.imglogger = [None, None, None]
+        
         self.acc = {
             'train_': {'d1': 0, 'd2': 0, 'O': 0},
             'val_': {'d1': 0, 'd2': 0, 'O': 0}
@@ -520,6 +522,12 @@ class VQModel(pl.LightningModule):
                 }
                 # print('B) ELSE) OPTIDX1)', B_loss0, B_loss1, B_loss2, B_loss3, B_loss4, B_loss, B_loss.shape)
         
+        logdata = {
+            '𝝍s_tm_final': 𝝍s_tm_final.detach(),
+            '𝝍s_tp_final': 𝝍s_tp_final.detach()
+        }
+        
+        
         if optidx == 0:
             loss = Cond_loss + A_loss + B_loss
             # print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
@@ -535,45 +543,96 @@ class VQModel(pl.LightningModule):
             "{}/total_loss".format(split): loss.clone().detach().mean().item(),
             "{}/total_A_loss".format(split): A_loss.clone().detach().mean().item(),
             "{}/total_B_loss".format(split): B_loss.clone().detach().mean().item(),
-        }
+        }, logdata
 
     # NOTE: Syn Idea
-    def training_step(self, batch, batch_idx):
+    # def batch(self, batch): # TODO
+    #     return batch
+    def step(self, batch, batch_idx, tag='', **kwargs):
         if batch_idx >= 15:
             return
         # start_time = time.time()
-        opt_ae, opt_disc = self.optimizers()
+        if tag == 'train':
+            opt_ae, opt_disc = self.optimizers()
+        
+        xs = batch['xs']
+        xsl = batch['xsl']
+        xsc = batch['xsc']
+        xsf = batch['xsf']
+        xslmask = batch['xslmask']
+        C_xsmask = (1-xslmask).detach()
+
+        y_edit = batch['y_edit'].item()
+        
+        flag_logdata = False
+        pack_logdata = dict()
+        if self.imglogger[y_edit] == None and tag == 'train':
+            flag_logdata = True
+            pack_logdata['xs'] = xs
+            pack_logdata['y_edit'] = y_edit
+
+        
         for cidx in range(2):
+            xc = batch['xc'][cidx] # ROT
+            xcl = batch['xcl'][cidx] # ROT
+            xcc = batch['xcc'][cidx] # ROT
+            xcf = batch['xcf'][cidx] # ROT
+            xclmask = batch['xclmask'][cidx] # ROT
+
+            # NOTE: Mask design
+            M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
+            # M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
+            M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
+            # M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
+            xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
+            C_xcmask = (1-xclmask).detach()
+
+            y_edit_xc = batch['ynl'][cidx][0]
+
+            if flag_logdata:
+                pack_logdata[f'xc_{cidx}'] = xc
+
             for optimizer_idx in range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 opt_ae.zero_grad()
                 opt_disc.zero_grad()
-                loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='train_')
+                loss, logdict, logdata = self.pipline(xs, xc, 
+                    split=f'{tag}_',
+                    optidx=optimizer_idx,
+                    y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
+                )
+                logdict['epoch'] = self.current_epoch
                 
+                if tag == 'train' or kwargs.get('force_train', False):
+                    self.manual_backward(loss)
+                    if optimizer_idx == 0:
+                        opt_ae.step()
+                    else:
+                        opt_disc.step()
                 
-                self.manual_backward(loss)
-                if optimizer_idx == 0:
-                    opt_ae.step()
-                else:
-                    opt_disc.step()
+                self.metrics.log(tag, logdict)
                 
-                
-                self.metrics.log('train', logdict)
+                if flag_logdata:
+                    pack_logdata[f'c{cidx}_optidx{optimizer_idx}_pipline'] = logdata
+
+        if flag_logdata:
+            self.imglogger[y_edit] = pack_logdata
+
         # execution_time_in_sec = (time.time() - start_time)
         # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
         # assert False
     
+    def training_step(self, batch, batch_idx):
+        return self.step(self, batch, batch_idx, tag='train')
+    
     def validation_step(self, batch, batch_idx):
-        if batch_idx >= 15:
-            return
-        for cidx in range(2):
-            for optimizer_idx in range(2):
-                # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
-                loss, logdict = self.training_step_slave(batch, batch_idx, optimizer_idx, cidx=cidx, split='val_')
-                self.metrics.log('val', logdict)
-        # assert False
-
+        p = torch.rand()
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', p)
+        # return self.step(self, batch, batch_idx, tag='val', force_train=force_train)
+    
     def on_train_epoch_end(self):
+        # self.imglogger --> save!!
+
         R = self.metrics.save('train')
         last_d1_acc = self.metrics.inference('train', self.regexp_d1_acc)
         # last_d2_acc = self.metrics.inference('train', self.regexp_d2_acc)
@@ -582,6 +641,7 @@ class VQModel(pl.LightningModule):
                               'd2': 0, 
                               'O': last_op_acc}
         print('train_', self.acc['train_'])
+        self.imglogger = [None, None, None]
     
     def on_validation_epoch_end(self):
         R = self.metrics.save('val')
@@ -594,30 +654,7 @@ class VQModel(pl.LightningModule):
         print('val_', self.acc['val_'])
     
     def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
-        xs = batch['xs']
-        xsl = batch['xsl']
-        xsc = batch['xsc']
-        xsf = batch['xsf']
-        xslmask = batch['xslmask']
-
-        xc = batch['xc'][cidx] # ROT
-        xcl = batch['xcl'][cidx] # ROT
-        xcc = batch['xcc'][cidx] # ROT
-        xcf = batch['xcf'][cidx] # ROT
-        xclmask = batch['xclmask'][cidx] # ROT
-
-        # NOTE: Mask design
-        M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
-        # M_L_xs_mines_xc = (xslmask - (xslmask * xclmask)).detach() # TODO Interpolation
-        M_C_Union = ((1 - M_union_L_xs_xc) * xsf).detach() #shape:torch.Size([1, 1, 256, 256]) # reconstruct xs
-        # M_xrec_xcl = (xclmask * xsf).detach() # reconstruct xc
-        xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
-        
-        C_xsmask = (1-xslmask).detach()
-        C_xcmask = (1-xclmask).detach()
-        
-        y_edit = batch['y_edit'].item()
-        y_edit_xc = batch['ynl'][cidx][0]
+        # DELETE
 
         # print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
         # 0 <class 'int'> 2 <class 'str'>
@@ -686,13 +723,13 @@ class VQModel(pl.LightningModule):
 
         # ], dim=0), f'/content/export/data.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
 
-        loss, losslogdict = self.pipline(xs, xc, 
+        loss, losslogdict, logdata = self.pipline(xs, xc, 
             split=split,
             optidx=optimizer_idx,
             y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
         )
         losslogdict['epoch'] = self.current_epoch
-        return loss, losslogdict
+        return loss, losslogdict, logdata
 
     def validation_step_syn(self, batch, batch_idx):
         print('validation_step_syn')
