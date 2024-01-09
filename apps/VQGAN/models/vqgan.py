@@ -592,7 +592,7 @@ class VQModel(pl.LightningModule):
 
 
             if kwargs.get('show_dataset', False):
-                if y_edit == 0 and cidx == 1:
+                if y_edit == 1 and cidx == 1:
                     signal_save(torch.cat([
                         (xs+1)*127.5, (xsl+1)*127.5, self.cat3d(xsf)*255, self.cat3d(xslmask)*255, 
                         (xc+1)*127.5, (xcl+1)*127.5, self.cat3d(xcf)*255, self.cat3d(xclmask)*255, 
