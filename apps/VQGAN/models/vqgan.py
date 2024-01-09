@@ -648,7 +648,7 @@ class VQModel(pl.LightningModule):
     
     
     def cat3d(self, x):
-        return torch.cat([x,x,x], dim=0) 
+        return torch.cat([x,x,x], dim=1) 
     def bb(self, img):
         return torchvision.utils.draw_bounding_boxes(((img.squeeze()+1)*127.5).to(torch.uint8), torch.tensor([0,0, 255,255], dtype=torch.int).unsqueeze(0), colors='red').unsqueeze(0) /127.5 -1
     
