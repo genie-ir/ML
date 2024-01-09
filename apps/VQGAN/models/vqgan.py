@@ -576,6 +576,11 @@ class VQModel(pl.LightningModule):
             xcm_gray = (xclmask * xc).mean(dim=1, keepdim=True).detach() # torch.Size([1, 1, 256, 256])
             C_xcmask = (1-xclmask).detach()
 
+            signal_save(torch.cat([
+                torch.cat([xcm_gray,xcm_gray,xcm_gray], dim=1) * 255
+            ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+            assert False
+
 
             # if kwargs.get('show_dataset', False):
             #     if y_edit == 1 and cidx == 1:
