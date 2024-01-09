@@ -547,9 +547,11 @@ class VQModel(pl.LightningModule):
     # NOTE: Syn Idea
     # def batch(self, batch): # TODO
     #     return batch
-    def step(self, batch, batch_idx, tag, **kwargs):
+    def step(self, batch, batch_idx, **kwargs):
         if batch_idx >= 15:
             return
+        
+        tag = kwargs['tag']
         
         # start_time = time.time()
         if tag == 'train':
