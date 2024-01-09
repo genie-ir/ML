@@ -436,7 +436,7 @@ class ConvT_Tanh_SN(nn.Module):
         self.z0 = ConvT_Tanh(16, 32, 4,2,1)#2x2
         self.z1 = ConvT_Tanh(32, 64, 4,2,1)#4x4
         self.z2 = ConvT_Tanh(64, 128, 4,2,1)#8x8
-        self.z3 = ConvT_Tanh(128, 256, 4,2,1)#16x16
+        self.z3 = nn.ConvTranspose2d(128, 256, 4,2,1)#16x16
 
     def forward(self, x): # x is surface 1x256x16x16
         z = torch.randn((1,16,1,1), device='cuda')
