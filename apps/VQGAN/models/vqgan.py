@@ -577,7 +577,7 @@ class VQModel(pl.LightningModule):
             C_xcmask = (1-xclmask).detach()
 
             signal_save(torch.cat([
-                torch.cat([xcm_gray,xcm_gray,xcm_gray], dim=1) * 255
+                (torch.cat([xcm_gray,xcm_gray,xcm_gray], dim=1)+1) * 127.5
             ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
             assert False
 
