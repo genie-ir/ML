@@ -399,7 +399,6 @@ class ConvT_Tanh_SuperNode(nn.Module):
         self.z0 = ConvT_Tanh(1, 1, 3,2,1, False) #128x128
         self.z1 = ConvT_Tanh(1, 1, 3,2,1, False) #64x64
         self.z2 = ConvT_Tanh(1, 1, 3,2,1, False) #32x32
-        self.z3 = ConvT_Tanh(1, 1, 3,2,1, False) #16x16
     
     def forward(self, x, y, z):
         Y = self.em(torch.tensor(y, device='cuda')).view(-1, 1, 16, 16)
@@ -414,21 +413,15 @@ class ConvT_Tanh_SuperNode(nn.Module):
         z0 = self.z0(z)
         z1 = self.z1(z0)
         z2 = self.z2(z1)
-        z3 = self.z3(z2)
-        print('z', z.shape)
-        print('z0', z0.shape)
-        print('z1', z1.shape)
-        print('z2', z2.shape)
-        print('z3', z3.shape)
-        assert False
 
-
-        c0 = self.c0(x)  + e0
-        c1 = self.c1(c0) + e1
-        c2 = self.c2(c1) + e2
-        c3 = self.c3(c2) + e3
+        c0 = self.c0(x)  + e0 + z2
+        c1 = self.c1(c0) + e1 + z1
+        c2 = self.c2(c1) + e2 + z0
+        c3 = self.c3(c2) + e3 + z
         c4 = self.c4(c3) + e4
         c5 = self.c5(c4) + e5
+        
+        print(c5.shape, c5.min().item(), c5.max().item())
         return c5
 
 class Encoder(nn.Module):
