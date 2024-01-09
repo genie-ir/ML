@@ -35,6 +35,7 @@ dr_transformer0 = A.Compose([
     ToTensorV2()
 ])
 
+import torchvision
 import time
 from apps.VQGAN.models.metrics import SQLiteLogger
 from utils.pl.plLogger import GenieLoggerBase
@@ -113,9 +114,10 @@ class VQModel(pl.LightningModule):
             for fnName in rfn_list:
                 setattr(self, fnName[:RfnLen], getattr(self, fnName))
         
-        self.start()
+        self.__start()
 
-    def start(self):
+    def __start(self):
+        setattr(self, 'forward', self.pipline)
         self.imglogger = [None, None, None]
         
         self.acc = {
@@ -302,7 +304,6 @@ class VQModel(pl.LightningModule):
 
         return y
 
-
     def net(self, x):
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
@@ -383,7 +384,6 @@ class VQModel(pl.LightningModule):
         
         return y
 
-    
     def pipline(self, xs, Xc, 
                 split,
                 optidx,
@@ -527,7 +527,6 @@ class VQModel(pl.LightningModule):
             '𝝍s_tp_final': 𝝍s_tp_final.detach()
         }
         
-        
         if optidx == 0:
             loss = Cond_loss + A_loss + B_loss
             # print(optidx, 'Condloss, Aloss, Bloss, loss', Cond_loss, A_loss, B_loss, loss)
@@ -551,6 +550,7 @@ class VQModel(pl.LightningModule):
     def step(self, batch, batch_idx, tag='', **kwargs):
         if batch_idx >= 15:
             return
+        
         # start_time = time.time()
         if tag == 'train':
             opt_ae, opt_disc = self.optimizers()
@@ -590,7 +590,7 @@ class VQModel(pl.LightningModule):
             y_edit_xc = batch['ynl'][cidx][0]
 
             if flag_logdata:
-                pack_logdata[f'xc_{cidx}'] = xc
+                pack_logdata[f'xc{cidx}'] = xc
 
             for optimizer_idx in range(2):
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
@@ -620,7 +620,6 @@ class VQModel(pl.LightningModule):
 
         # execution_time_in_sec = (time.time() - start_time)
         # print(f'batch_idx={batch_idx} | execution_time_in_sec={execution_time_in_sec}')
-        assert False
     
     def training_step(self, batch, batch_idx):
         return self.step(self, batch, batch_idx, tag='train')
@@ -628,13 +627,21 @@ class VQModel(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         p = torch.rand(1)
         force_train = (p>.5).item()
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', p, force_train)
-        # return self.step(self, batch, batch_idx, tag='val', force_train=force_train)
+        return self.step(self, batch, batch_idx, tag='val', force_train=force_train)
     
+    
+    def bb(self, img):
+        return torchvision.utils.draw_bounding_boxes((img+1)*127.5, [0,0, 255,255], colors='red') /127.5 -1
+
     def on_train_epoch_end(self):
         # self.imglogger --> save!!
+        signal_save((torch.cat([
+            self.imglogger[0]['xc0'], self.imglogger[0]['xc1'], self.bb(self.imglogger[0]['xs']), self.imglogger[0]['c0_optidx0_pipline']['𝝍s_tp_final'], self.imglogger[0]['c1_optidx0_pipline']['𝝍s_tp_final'],
+            self.imglogger[1]['xc0'], self.imglogger[1]['xc1'], self.imglogger[1]['c0_optidx0_pipline']['𝝍s_tp_final'], self.bb(self.imglogger[1]['xs']), self.imglogger[1]['c1_optidx0_pipline']['𝝍s_tp_final'],
+            self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], self.bb(self.imglogger[2]['xs'])
+        ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
 
-        R = self.metrics.save('train')
+        self.metrics.save('train')
         last_d1_acc = self.metrics.inference('train', self.regexp_d1_acc)
         # last_d2_acc = self.metrics.inference('train', self.regexp_d2_acc)
         last_op_acc = self.metrics.inference('train', self.regexp_OP_acc)
@@ -645,7 +652,7 @@ class VQModel(pl.LightningModule):
         self.imglogger = [None, None, None]
     
     def on_validation_epoch_end(self):
-        R = self.metrics.save('val')
+        self.metrics.save('val')
         last_d1_acc = self.metrics.inference('val', self.regexp_d1_acc)
         # last_d2_acc = self.metrics.inference('val', self.regexp_d2_acc)
         last_op_acc = self.metrics.inference('val', self.regexp_OP_acc)
@@ -654,176 +661,6 @@ class VQModel(pl.LightningModule):
                             'O': last_op_acc}
         print('val_', self.acc['val_'])
     
-    def training_step_slave(self, batch, batch_idx, optimizer_idx, cidx, split='train_'):
-        # DELETE
-
-        # print(y_edit, type(y_edit), y_edit_xc, type(y_edit_xc))
-        # 0 <class 'int'> 2 <class 'str'>
-
-        # print('xs, ...')
-        # print(xs.shape, xs.dtype, xs.min().item(), xs.max().item())
-        # print(xsl.shape, xsl.dtype, xsl.min().item(), xsl.max().item())
-        # print(xsc.shape, xsc.dtype, xsc.min().item(), xsc.max().item())
-        # print(xsf.shape, xsf.dtype, xsf.min().item(), xsf.max().item())
-        # print(xslmask.shape, xslmask.dtype, xslmask.min().item(), xslmask.max().item())
-        
-        # print('xc, ...')
-        # print(xc.shape, xc.dtype, xc.min().item(), xc.max().item())
-        # print(xcl.shape, xcl.dtype, xcl.min().item(), xcl.max().item())
-        # print(xcc.shape, xcc.dtype, xcc.min().item(), xcc.max().item())
-        # print(xcf.shape, xcf.dtype, xcf.min().item(), xcf.max().item())
-        # print(xclmask.shape, xclmask.dtype, xclmask.min().item(), xclmask.max().item())
-        # print('-'*30)
-
-        # print('mask...')
-        # print(xcm_gray.shape, xcm_gray.dtype, xcm_gray.min().item(), xcm_gray.max().item())
-        # print(C_xsmask.shape, C_xsmask.dtype, C_xsmask.min().item(), C_xsmask.max().item())
-        # print(C_xcmask.shape, C_xcmask.dtype, C_xcmask.min().item(), C_xcmask.max().item())
-        # print(M_union_L_xs_xc.shape, M_union_L_xs_xc.dtype, M_union_L_xs_xc.min().item(), M_union_L_xs_xc.max().item())
-        # print(M_C_Union.shape, M_C_Union.dtype, M_C_Union.min().item(), M_C_Union.max().item())
-        # print('-'*30)
-
-        # xs, ...
-        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 1.0
-        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 0.6392157077789307
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # xc, ...
-        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 1.0
-        # torch.Size([1, 3, 256, 256]) torch.float32 -1.0 0.20784318447113037
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # ------------------------------
-        # mask...
-        # torch.Size([1, 1, 256, 256]) torch.float32 -0.6287581324577332 0.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-        # torch.Size([1, 1, 256, 256]) torch.float32 0.0 1.0
-
-        # signal_save(torch.cat([
-        #     (xs+1) * 127.5,
-        #     (xsl+1) * 127.5,
-        #     torch.cat([xsc, xsc, xsc], dim=1) * 255,
-        #     torch.cat([xsf, xsf, xsf], dim=1) * 255,
-        #     torch.cat([xslmask, xslmask, xslmask], dim=1) * 255,
-            
-        #     (xc+1) * 127.5,
-        #     (xcl+1) * 127.5,
-        #     torch.cat([xcc, xcc, xcc], dim=1) * 255,
-        #     torch.cat([xcf, xcf, xcf], dim=1) * 255,
-        #     torch.cat([xclmask, xclmask, xclmask], dim=1) * 255,
-            
-        #     (torch.cat([xcm_gray, xcm_gray, xcm_gray], dim=1) +1) * 127.5,
-        #     torch.cat([C_xsmask, C_xsmask, C_xsmask], dim=1) * 255,
-        #     torch.cat([C_xcmask, C_xcmask, C_xcmask], dim=1) * 255,
-        #     torch.cat([M_C_Union, M_C_Union, M_C_Union], dim=1) * 255,
-        #     torch.cat([M_union_L_xs_xc, M_union_L_xs_xc, M_union_L_xs_xc], dim=1) * 255,
-
-        # ], dim=0), f'/content/export/data.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
-
-        loss, losslogdict, logdata = self.pipline(xs, xc, 
-            split=split,
-            optidx=optimizer_idx,
-            y_edit=y_edit, y_edit_xc=y_edit_xc, xsmask=xslmask, xcmask=xclmask, C_xsmask=C_xsmask, C_xcmask=C_xcmask, xcm_gray=xcm_gray
-        )
-        losslogdict['epoch'] = self.current_epoch
-        return loss, losslogdict, logdata
-
-    def validation_step_syn(self, batch, batch_idx):
-        print('validation_step_syn')
-        return
-    def validation_step0000000(self, batch, batch_idx):
-        return
-        # print('validation_step')
-        # logged = self.log_images(batch, fName='badRec/' + random_string())
-        # return
-        # T = A.Compose([
-        #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-        #     ToTensorV2()
-        # ])
-        # R = []
-        # rr = self.vqgan_fn_phi_denormalize(logged['inputs'])
-        # for i in range(logged['inputs'].shape[0]):
-        #     r = rr[i]
-        #     R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
-        # signal_save(torch.cat([
-        #     rr,
-        #     torch.cat(R, dim=0)
-            
-        # ], dim=0), '/content/D1.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        
-        
-        
-        
-        # Tf0 = A.Compose([
-        #     A.Resize(256, 256),
-        #     ToTensorV2()
-        # ])
-        # Tf = A.Compose([
-        #     A.Resize(256, 256),
-        #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-        #     A.ToGray(),
-        #     ToTensorV2()
-        # ])
-        # Tm = A.Compose([
-        #     A.Resize(256, 256),
-        #     ToTensorV2()
-        # ])
-        # fundus_drive = np.array(Image.open('/content/dataset_drive/DRIVE/training/images/24_training.tif'))
-        # fd = Tf0(image=fundus_drive)['image'].unsqueeze(0)
-        # # fundus_drive = (fundus_drive[:,:,0] + fundus_drive[:,:,1] + fundus_drive[:,:,2]) / 3
-        # fundus_drive = fundus_drive.astype(np.uint8)
-        # fundus_mask = np.array(Image.open('/content/dataset_drive/DRIVE/training/1st_manual/24_manual1.gif'))
-        
-        # fundus_drive = Tf(image=fundus_drive)['image'].unsqueeze(0)
-        # fundus_mask = Tm(image=fundus_mask)['image'].unsqueeze(0)
-        # fundus_mask = torch.cat([fundus_mask,fundus_mask,fundus_mask], dim=1)
-        # print(fundus_drive.shape, fundus_mask.shape)
-        
-        # patches_f0 = fd.unfold(2, 64, 32).unfold(3, 64, 32)
-        # patches_f = fundus_drive.unfold(2, 64, 32).unfold(3, 64, 32)
-        # patches_m = fundus_mask.unfold(2, 64, 32).unfold(3, 64, 32)
-
-
-
-
-        # signal_save(torch.cat([#fundus_drive, fundus_mask, 
-        #     torch.cat([
-        #         patches_f0[0:1, :, 3,3,:,:], patches_f[0:1, :, 3,3,:,:], patches_m[0:1, :, 3,3,:,:],
-        #         patches_f0[0:1, :, 2,5,:,:], patches_f[0:1, :, 2,5,:,:], patches_m[0:1, :, 2,5,:,:]
-        # ], dim=0)
-        # ], dim=0), '/content/dri2.png',stype='img', sparams={'chw2hwc': True, 'nrow': 6})
-        
-        # self.save_phi(torch.cat([logged['inputs'], logged['reconstructions']], dim=0), '/content/inp.png', nrow=4)
-        
-        
-        
-        
-        
-        
-        # assert False
-        x = self.get_input(batch, self.image_key)
-        xrec, qloss = self(x)
-        Vorg, Vrec = self.get_V(x, xrec)
-        # vasl = None # self.get_input(batch, 'vasl')
-        # vasl = self.get_input(batch, 'vasl')
-        aeloss, log_dict_ae = self.loss(qloss, x, xrec, 0, self.global_step, last_layer=self.get_last_layer(), split="val"
-            # , cond=vasl
-        )
-        discloss, log_dict_disc = self.loss(qloss, x, xrec, 1, self.global_step, last_layer=self.get_last_layer(), split="val"
-            # , cond=vasl
-        )
-        # rec_loss = log_dict_ae["val/rec_loss"]
-        # self.log("val/rec_loss", rec_loss, prog_bar=True, logger=True, on_step=True, on_epoch=True, sync_dist=True)
-        # self.log("val/aeloss", aeloss, prog_bar=True, logger=True, on_step=True, on_epoch=True, sync_dist=True)
-        self.log_dict({'val/aeloss':aeloss, 'val/discloss':discloss}, prog_bar=False, logger=True, on_step=True, on_epoch=True)
-        self.log_dict(log_dict_ae, prog_bar=False, logger=True, on_step=True, on_epoch=True)
-        self.log_dict(log_dict_disc, prog_bar=False, logger=True, on_step=True, on_epoch=True)
-        # return self.log_dict
-
     def configure_optimizers(self):
         # lr = self.learning_rate
         lr = 0.02
@@ -867,52 +704,3 @@ class VQModel(pl.LightningModule):
 
         return [opt_ae, opt_disc], []
         return [opt_ae], []
-
-    def get_last_layer(self, flag2=True):
-        if flag2:
-            return self.decoder.conv_out_1ch_main.weight
-        else:
-            return self.decoder.conv_out_1ch.weight
-
-    def log_images(self, batch, **kwargs):
-        # if kwargs.get('ignore', True):
-        #     return
-        """this function is must be exist for ptCallback.ImageLoggerBase"""
-        log = dict()
-        x = self.get_input(batch, self.image_key)
-        x = x.to(self.device)
-        
-        # T = A.Compose([
-        #     A.CLAHE(clip_limit=4.0, tile_grid_size=(8, 8), always_apply=True, p=1.0),
-        #     ToTensorV2()
-        # ])
-        # R = []
-        # rr = self.vqgan_fn_phi_denormalize(x)
-        # for i in range(x.shape[0]):
-        #     r = rr[i]
-        #     R.append(T(image=rearrange(r, 'c h w -> h w c').cpu().detach().numpy().astype(np.uint8))['image'].unsqueeze(0).to('cuda'))
-        # x = torch.cat(R, dim=0)
-        # print('--------------------->', x.shape)
-
-        xrec, _ = self(x)
-        if x.shape[1] > 3:
-            # colorize with random projection
-            assert xrec.shape[1] > 3
-            x = self.to_rgb(x)
-            xrec = self.to_rgb(xrec)
-        log["inputs"] = x
-        log["reconstructions"] = xrec
-        pathimg = f'/content/{kwargs.get("fName", "rec")}.png'
-        signal_save(torch.cat([
-            (x + 1 ) * 127.5,
-            self.vqgan_fn_phi_denormalize(xrec)
-        ], dim=0), pathimg, stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-        return log
-
-    def to_rgb(self, x):
-        assert self.image_key == "segmentation"
-        if not hasattr(self, "colorize"):
-            self.register_buffer("colorize", torch.randn(3, x.shape[1], 1, 1).to(x))
-        x = F.conv2d(x, weight=self.colorize)
-        x = 2.*(x-x.min())/(x.max()-x.min()) - 1.
-        return x
