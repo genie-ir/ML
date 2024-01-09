@@ -534,8 +534,8 @@ class VQModel(pl.LightningModule):
     # def batch(self, batch): # TODO
     #     return batch
     def step(self, batch, batch_idx, **kwargs):
-        # if batch_idx >= 20:
-        #     return
+        if batch_idx >= 20:
+            return
         
         tag = kwargs['tag']
         optFlag = tag == 'train' or kwargs.get('force_train', False)
@@ -576,12 +576,12 @@ class VQModel(pl.LightningModule):
             xcm_gray = ((xclmask * xc * xsf).mean(dim=1, keepdim=True)).detach() # torch.Size([1, 1, 256, 256])
             C_xcmask = (1-xclmask).detach()
 
-            if y_edit == 1 and cidx == 1:
-                signal_save(torch.cat([
-                    (torch.cat([xcm_gray,xcm_gray,xcm_gray], dim=1)+1) * 127.5
-                ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
-                assert False
-            continue
+            # if y_edit == 1 and cidx == 1:
+            #     signal_save(torch.cat([
+            #         (torch.cat([xcm_gray,xcm_gray,xcm_gray], dim=1)+1) * 127.5
+            #     ], dim=0), f'/content/export/xcm_gray.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+            #     assert False
+            # continue
 
 
             # if kwargs.get('show_dataset', False):
