@@ -365,24 +365,26 @@ class View(nn.Module):
         assert False
 
 class ConvT_Tanh(nn.Module):
-    def __init__(self, inch, outch, k, s, p, edim):
+    def __init__(self, inch, outch, k, s, p):
         super().__init__()
         self.convt = nn.ConvTranspose2d(inch, outch, k,s,p)
         self.tgh = nn.Tanh()
-        self.em = nn.Embedding(3, edim)
+    
+    def forward(self, x):
+        return self.tgh(self.convt)
+
+class ConvT_Tanh_SuperNode(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.em = nn.Embedding(3, 256)
     
     def forward(self, x, y):
-        X = self.tgh(self.convt)
-        Y = self.tgh(self.em(y))
-        print(X.shape, Y.shape)
+        Y = self.em(y)
+        print('!!!!!!!!!!', x.shape, Y.shape, y)
         assert False
 
 
 class Encoder(nn.Module):
-    def netb_diagonal_fn(self, x, y):
-        print(x.shape, y)
-        assert False
-        
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
                  attn_resolutions, dropout=0.0, resamp_with_conv=True, in_channels,
                  resolution, z_channels, double_z=True, returnSkipPath=False, **ignore_kwargs):
@@ -390,8 +392,8 @@ class Encoder(nn.Module):
 
         ################################################################################# for VQGAN
         self.Qsurface2Qdiagonal = torch.nn.Conv2d(256, 256, 3, 1, 1)
-        self.netb_diagonal = nn.Sequential(
-            ConvT_Tanh(1,16,4,2,1, 256)
+        self.netb_diagonal = ConvT_Tanh_SuperNode()
+        # nn.Sequential(
             # nn.ConvTranspose2d(1, 16, 4,2,1), #32x32
             # nn.Tanh(),
             # nn.ConvTranspose2d(16, 32, 4,2,1), #64x64
@@ -419,7 +421,7 @@ class Encoder(nn.Module):
             # nn.Linear(256, 1024),
             # nn.Tanh(),
             # nn.Linear(1024, 16*256),
-        )
+        # )
         #################################################################################
 
 
