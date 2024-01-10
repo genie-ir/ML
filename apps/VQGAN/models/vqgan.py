@@ -299,7 +299,7 @@ class VQModel(pl.LightningModule):
 
         return y
 
-    def net(self, x):
+    def net(self, x, Qd_wg=1):
         Sk = 64 # patch size
         Nk = 4  # num patches in each row and column
         q_eye16 = torch.eye(16, dtype=torch.float32, device=self.device).detach()
@@ -318,12 +318,12 @@ class VQModel(pl.LightningModule):
         Qorg = h_new
         
         Qsurface = (1-q_eye16) * Qorg
-        Qdiagonal = self.encoder.Qsurface2Qdiagonal(Qsurface.detach(), self.VgradViewrFlag)
+        Qdiagonal = self.encoder.Qsurface2Qdiagonal(Qsurface.detach(), self.VgradViewrFlag, Qd_wg)
         
         return h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal
         
-    def netA(self, simg, smask):
-        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
+    def netA(self, simg, smask, wg=1):
+        h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg, Qd_wg=wg)
         Qsurface = Qsurface.detach()
         Qcrossover = Qsurface + q_eye16 * Qdiagonal
         y = self.decoder(
@@ -411,7 +411,7 @@ class VQModel(pl.LightningModule):
             if self.VgradViewrFlag:
                 print('IF ---------')
             
-            𝝍s_tm = xsf * (xss + xcmask * self.netA(xss, xcmask))
+            𝝍s_tm = xsf * (xss + xcmask * self.netA(xss, xcmask, 1e5))
             𝝍s_tm_final = xs
             if optidx == 0:
                 A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo', hoo=True)

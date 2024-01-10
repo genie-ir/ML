@@ -446,7 +446,7 @@ class ConvT_Tanh_SN(nn.Module):
         self.z2 = ConvT_Tanh(64, 32, 4,2,1)#8x8
         self.z3 = ConvT_Tanh(32, 16, 4,2,1)#16x16
 
-    def forward(self, x, flag=False): # x is surface 1x256x16x16
+    def forward(self, x, flag=False, wg=1): # x is surface 1x256x16x16
         # q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
         z = torch.randn((1,256,1,1), device='cuda')
         c0 = self.c0(x) + self.C0(x)
@@ -468,7 +468,7 @@ class ConvT_Tanh_SN(nn.Module):
         zout = z3.view(256, 16, 1, 1)
         zeros = torch.zeros(256, 16, 16, dtype=torch.float32, device='cuda').detach()
         V = (zout + zeros.unsqueeze(-1)).view((1, 256, 16, 16))
-        
+        V.register_hook(lambda grad: wg * grad)
         # print('x', x.min().item(), x.max().item(), x.mean().item(), x)
         # print('V', V.min().item(), V.max().item(), V.mean().item(), V)
         # print('x-V', x-V)
