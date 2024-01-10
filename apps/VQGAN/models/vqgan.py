@@ -163,8 +163,8 @@ class VQModel(pl.LightningModule):
             param.requires_grad = False
         for param in self.post_quant_conv.parameters():
             param.requires_grad = False
-        # for param in self.quantize.parameters():
-        #     param.requires_grad = False
+        for param in self.quantize.parameters():
+            param.requires_grad = True
         for param in self.encoder.parameters():
             param.requires_grad = False
         for param in self.decoder.parameters():
