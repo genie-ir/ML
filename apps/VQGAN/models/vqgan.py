@@ -288,8 +288,8 @@ class VQModel(pl.LightningModule):
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
         y = self.decoder(
             # Qorg,
-            # (q_eye16) * Qorg,
-            Qsurface,
+            (q_eye16) * Qorg,
+            # Qsurface,
             None, 
             h_ilevel1, 
             h_endDownSampling,
@@ -321,7 +321,6 @@ class VQModel(pl.LightningModule):
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
 
-        print('!!!!!!!!!!!!!!!!!!', quant.shape, quant[0,0,0,0].requires_grad)
         h_new = self.post_quant_conv(quant)
         # Qorg = self.encoder.catconv_hnew_h(torch.cat([h_new, h], dim=1))
         Qorg = h_new
