@@ -460,10 +460,10 @@ class ConvT_Tanh_SN(nn.Module):
 
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
+        z3 = self.z3(z2)
         
         m = ((x.min().abs() + x.max().abs()) /2).detach()
-        z3 = m * self.z3(z2)
-
+        m * z3
         
         zout = z3.view(256, 16, 1, 1)
         zeros = torch.zeros(256, 16, 16, dtype=torch.float32, device='cuda').detach()
