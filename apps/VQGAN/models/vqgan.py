@@ -164,7 +164,7 @@ class VQModel(pl.LightningModule):
         for param in self.post_quant_conv.parameters():
             param.requires_grad = False
         for param in self.quantize.parameters():
-            param.requires_grad = True
+            param.requires_grad = False
         for param in self.encoder.parameters():
             param.requires_grad = False
         for param in self.decoder.parameters():
@@ -178,6 +178,8 @@ class VQModel(pl.LightningModule):
             for param in self.encoder.Qsurface2Qdiagonal.parameters():
                 param.requires_grad = True
             for param in self.encoder.netb_diagonal.parameters():
+                param.requires_grad = True
+            for param in self.encoder.Qadjustion.parameters():
                 param.requires_grad = True
             
         if False:
@@ -323,7 +325,7 @@ class VQModel(pl.LightningModule):
 
         h_new = self.post_quant_conv(quant)
         # Qorg = self.encoder.catconv_hnew_h(torch.cat([h_new, h], dim=1))
-        Qorg = h_new
+        Qorg = self.encoder.Qadjustion(h_new)
         
         Qsurface = (1-q_eye16) * Qorg
         Qdiagonal = self.encoder.Qsurface2Qdiagonal(Qsurface.detach(), self.VgradViewrFlag, Qd_wg)

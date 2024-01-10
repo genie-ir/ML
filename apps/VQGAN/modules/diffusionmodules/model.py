@@ -364,6 +364,17 @@ class View(nn.Module):
         print(x.min().item(), x.max().item(), x.shape)
         assert False
 
+class Qadjustion(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.mue = nn.Parameter(torch.zeros((1,256,16,16)))
+        self.std = nn.Parameter(torch.ones((1,256,16,16)))
+    
+    def forward(self, x):
+        r =  self.mue + x * self.std
+        print(r.shape, x.shape)
+        assert False
+
 class ConvT_Tanh(nn.Module):
     def __init__(self, inch, outch, k, s, p, flag=True, act='tanh'):
         super().__init__()
@@ -494,6 +505,7 @@ class Encoder(nn.Module):
         ################################################################################# for VQGAN
         self.Qsurface2Qdiagonal = ConvT_Tanh_SN()# torch.nn.Conv2d(256, 256, 3, 1, 1)
         self.netb_diagonal = ConvT_Tanh_SuperNode()
+        self.Qadjustion = Qadjustion()
         #################################################################################
 
 
