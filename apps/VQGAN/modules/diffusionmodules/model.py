@@ -365,14 +365,19 @@ class View(nn.Module):
         assert False
 
 class ConvT_Tanh(nn.Module):
-    def __init__(self, inch, outch, k, s, p, flag=True):
+    def __init__(self, inch, outch, k, s, p, flag=True, act='tanh'):
         super().__init__()
         if flag:
             self.convt = nn.ConvTranspose2d(inch, outch, k,s,p)
         else:
             self.convt = nn.Conv2d(inch, outch, k,s,p)
         
-        self.tgh = nn.Tanh()
+        if act == 'tanh':
+            self.tgh = nn.Tanh()
+        elif act == 'relu':
+            self.tgh = nn.ReLU()
+        else:
+            assert False, f'act={act} is not defined!'
     
     def forward(self, x):
         return self.tgh(self.convt(x))
@@ -440,6 +445,9 @@ class ConvT_Tanh_SN(nn.Module):
         self.z1 = ConvT_Tanh(128, 64, 4,2,1)#4x4
         self.z2 = ConvT_Tanh(64, 32, 4,2,1)#8x8
         self.z3 = ConvT_Tanh(32, 16, 4,2,1)#16x16
+        self.z3m = ConvT_Tanh(32, 16, 4,2,1, act='relu')#16x16
+
+        self.m = nn.Linear(16*256, )
 
     def forward(self, x): # x is surface 1x256x16x16
         q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
@@ -452,8 +460,8 @@ class ConvT_Tanh_SN(nn.Module):
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
         z3 = self.z3(z2)
-
-        # z3/2
+        z3m = self.z3m(z2)
+        zout = z3m * z3
 
         print('c0', c0.shape)
         print('c1', c1.shape)
@@ -463,8 +471,9 @@ class ConvT_Tanh_SN(nn.Module):
         print('z1', z1.shape)
         print('z2', z2.shape)
         print('z3', z3.shape)
+        print('zout', zout.shape)
         print('--------------------------')
-        print(x.min().item(), x.max().item(), z3.min().item(), z3.max().item())
+        print(x.min().item(), x.max().item(), zout.min().item(), zout.max().item())
         assert False
 
         zz = q_eye16 * z3
