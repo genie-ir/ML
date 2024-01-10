@@ -458,7 +458,7 @@ class ConvT_Tanh_SN(nn.Module):
 
         z0 = self.z0(z) + c2
 
-        z0.register_hook(g)
+        z0.register_hook(self.g)
 
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
