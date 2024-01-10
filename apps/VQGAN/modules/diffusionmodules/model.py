@@ -448,7 +448,7 @@ class ConvT_Tanh_SN(nn.Module):
         c1 = self.c1(x) + self.C1(x)
         c2 = self.c2(x) + self.C2(x)
 
-        z0 = self.z0(z) + c0
+        z0 = self.z0(z) + c2
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
         z3 = self.z3(z2)
