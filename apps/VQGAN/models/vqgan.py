@@ -603,7 +603,7 @@ class VQModel(pl.LightningModule):
                 pack_logdata[f'xc{cidx}'] = xc
 
             for optimizer_idx, optimizer_params in [[0, {}], [0, {'condstep': True}], [1, {}]]:
-                print('start', optimizer_idx, optimizer_params, self.encoder.Qsurface2Qdiagonal.z0.convt.weight.sum())
+                print('start', optimizer_idx, optimizer_params, self.encoder.Qsurface2Qdiagonal.z0.convt.weight.abs().sum())
                 # print(optimizer_idx, optimizer_params, self.encoder.netb_diagonal.c0.convt.weight[0][0,0])
                 # print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
                 # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
