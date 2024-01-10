@@ -458,18 +458,13 @@ class ConvT_Tanh_SN(nn.Module):
         z2 = self.z2(z1) + c0
         z3 = 10 * self.z3(z2)
 
-        # print(x.min().item(), x.max().item(), z3.min().item(), z3.max().item(), z3.shape)
         
         zout = z3.view(256, 16, 1, 1)
         zeros = torch.zeros(256, 16, 16, dtype=torch.float32, device='cuda').detach()
         V = (zout + zeros.unsqueeze(-1)).view((1, 256, 16, 16))
+        print(x.min().item(), x.max().item(), V.min().item(), V.max().item(), V.shape)
         
-        print((q_eye16*V).sum().item(), z3.sum().item())
-        assert False
-
-        zz = q_eye16 * z3
-        print('I16', zz.min().item(), zz.max().item(), zz.mean().item())
-        return z3
+        return V
 
 class Encoder(nn.Module):
     def __init__(self, *, ch, out_ch, ch_mult=(1,2,4,8), num_res_blocks,
