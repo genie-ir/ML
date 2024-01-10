@@ -458,7 +458,13 @@ class ConvT_Tanh_SN(nn.Module):
         z2 = self.z2(z1) + c0
         z3 = 10 * self.z3(z2)
 
-        print(x.min().item(), x.max().item(), z3.min().item(), z3.max().item(), z3.shape)
+        # print(x.min().item(), x.max().item(), z3.min().item(), z3.max().item(), z3.shape)
+        
+        zout = z3.view(256, 16, 1, 1)
+        zeros = torch.zeros(256, 16, 16, dtype=torch.float32, device=self.device).detach()
+        V = (zout + zeros.unsqueeze(-1)).view((1, 256, 16, 16))
+        
+        print((q_eye16*V).sum().item(), z3.sum().item())
         assert False
 
         zz = q_eye16 * z3
