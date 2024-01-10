@@ -279,12 +279,12 @@ class VQModel(pl.LightningModule):
         return x_image 
     
     def netConditins(self, simg):
-        self.decoder_grad_controller(True)
+        # self.decoder_grad_controller(True)
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
         y = self.decoder(
-            Qorg,
+            # Qorg,
             # (q_eye16) * Qorg,
-            # Qsurface,
+            Qsurface,
             None, 
             h_ilevel1, 
             h_endDownSampling,
