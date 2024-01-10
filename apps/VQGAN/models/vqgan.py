@@ -318,6 +318,8 @@ class VQModel(pl.LightningModule):
         Qorg = h_new
         
         Qsurface = (1-q_eye16) * Qorg
+        print(Qsurface)
+        assert False
         Qdiagonal = self.encoder.Qsurface2Qdiagonal(Qsurface.detach())
 
         

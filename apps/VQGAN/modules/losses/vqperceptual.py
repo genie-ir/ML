@@ -163,10 +163,10 @@ class VQLPIPSWithDiscriminator(nn.Module):
         pass
     
     def logp(self, p): # rename to some meningful name!! later!!
-        p.register_hook(lambda grad: print('p', grad, (grad**2).mean()))
+        # p.register_hook(lambda grad: print('p', grad, (grad**2).mean()))
         pd = p.detach().clamp(self.eps)
         pd = dzq_dz_eq1(pd, p)
-        pd.register_hook(lambda grad: print('pd', grad, (grad**2).mean()))
+        # pd.register_hook(lambda grad: print('pd', grad, (grad**2).mean()))
         return pd
     
     def analyse_p(self, p, flag):
