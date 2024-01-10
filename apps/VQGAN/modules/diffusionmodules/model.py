@@ -439,7 +439,7 @@ class ConvT_Tanh_SN(nn.Module):
         self.z0 = ConvT_Tanh(256, 128, 4,2,1)#2x2
         self.z1 = ConvT_Tanh(128, 64, 4,2,1)#4x4
         self.z2 = ConvT_Tanh(64, 32, 4,2,1)#8x8
-        self.z3 = ConvT_Tanh(32, 16, 4,2,1)#16x16
+        self.z3 = nn.ConvTranspose2d(32, 16, 4,2,1)#16x16
 
     def forward(self, x): # x is surface 1x256x16x16
         q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
@@ -461,6 +461,8 @@ class ConvT_Tanh_SN(nn.Module):
         print('z1', z1.shape)
         print('z2', z2.shape)
         print('z3', z3.shape)
+        print('--------------------------')
+        print(x.min().item(), x.max().item(), z3.min().item(), z3.max().item())
         assert False
 
         zz = q_eye16 * z3
