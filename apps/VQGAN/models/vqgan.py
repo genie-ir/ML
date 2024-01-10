@@ -546,8 +546,8 @@ class VQModel(pl.LightningModule):
     # def batch(self, batch): # TODO
     #     return batch
     def step(self, batch, batch_idx, **kwargs):
-        if batch_idx >= 20:
-            return
+        # if batch_idx >= 20:
+        #     return
         
         tag = kwargs['tag']
         optFlag = tag == 'train' or kwargs.get('force_train', False)
@@ -571,6 +571,8 @@ class VQModel(pl.LightningModule):
             flag_logdata = True
             pack_logdata['xs'] = xs
             pack_logdata['y_edit'] = y_edit
+        else:
+            return
 
         
         for cidx in range(2):
