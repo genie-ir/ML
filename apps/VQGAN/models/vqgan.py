@@ -440,7 +440,7 @@ class VQModel(pl.LightningModule):
                 print('ELSE -------------------------')
             
             
-            𝝍s_tm = xsf * (xss + xsmask * self.netA(xss, xsmask))
+            𝝍s_tm = xsf * (xss + xsmask * self.netA(xss, xsmask, 1e9))
             𝝍s_tm_final = 𝝍s_tm
             if optidx == 0:
                 A_loss0, A_d0 = self.loss.omega_of_phi(𝝍s_tm, flag=True, split=split + 'A_el0_OFpsistm', l=self.acc[split]['O']) # OK!

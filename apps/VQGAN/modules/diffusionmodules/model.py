@@ -474,7 +474,7 @@ class ConvT_Tanh_SN(nn.Module):
         # print('x-V', x-V)
         # V.register_hook(self.Vgrad)
         if flag:
-            V.register_hook(lambda grad: print('V.grad', grad.mean()))
+            V.register_hook(lambda grad: print(wg, 'V.grad', grad.mean()))
         # V.register_hook(lambda grad: print('V.grad', grad))
         
         # print(x.min().item(), x.max().item(), V.min().item(), V.max().item(), V.shape)
