@@ -372,8 +372,8 @@ class Qadjustion(nn.Module):
     
     def forward(self, x):
         r =  self.mue + x * self.std
-        print(r.shape, x.shape)
-        assert False
+        print(self.mue[0,0,0])
+        return r
 
 class ConvT_Tanh(nn.Module):
     def __init__(self, inch, outch, k, s, p, flag=True, act='tanh'):
