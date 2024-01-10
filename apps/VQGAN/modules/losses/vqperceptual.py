@@ -305,9 +305,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
             # signal_save((torch.cat([
             #     grandtrouth, prediction
             # ], dim=0)+1)*127.5, f'/content/export/geo.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
-            # signal_save((torch.cat([
-            #     rec_loss
-            # ], dim=0)+1)*127.5, f'/content/export/geo.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+            signal_save((torch.cat([
+                rec_loss / rec_loss.max()
+            ], dim=0))*255, f'/content/export/netA_geo_recloss.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
             # assert False
 
