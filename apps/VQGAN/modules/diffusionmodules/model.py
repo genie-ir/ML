@@ -369,9 +369,10 @@ class Qadjustion(nn.Module):
         super().__init__()
         self.mue = nn.Parameter(torch.zeros((1,256,16,16)))
         self.std = nn.Parameter(torch.ones((1,256,16,16)))
+        self.tanh = nn.Tanh()
     
     def forward(self, x):
-        r =  self.mue + x * self.std
+        r =  self.tanh(self.mue + x * self.std)
         # print(self.mue[0,0,0])
         return r
 
