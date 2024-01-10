@@ -328,7 +328,7 @@ class VQModel(pl.LightningModule):
         Qsurface = Qsurface.detach()
         Qcrossover = Qsurface + q_eye16 * Qdiagonal
         y = self.decoder(
-            Qcrossover,
+            q_eye16 * Qdiagonal, #Qcrossover,
             None, 
             h_ilevel1, 
             h_endDownSampling,
@@ -362,7 +362,7 @@ class VQModel(pl.LightningModule):
         Qdb = Qdiagonal + V
         Qcrossover = Qsurface + q_eye16 * Qdb
         y = self.decoder(
-            Qcrossover,
+            q_eye16 * Qdb, #Qcrossover,
             None,
             h_ilevel1, 
             h_endDownSampling,
