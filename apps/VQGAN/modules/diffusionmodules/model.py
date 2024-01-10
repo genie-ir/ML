@@ -446,6 +446,9 @@ class ConvT_Tanh_SN(nn.Module):
         self.z2 = ConvT_Tanh(64, 32, 4,2,1)#8x8
         self.z3 = ConvT_Tanh(32, 16, 4,2,1)#16x16
 
+    def g(self, grad):
+        print((grad**2).sum())
+        assert False
     def forward(self, x): # x is surface 1x256x16x16
         # q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
         z = torch.randn((1,256,1,1), device='cuda')
@@ -454,6 +457,9 @@ class ConvT_Tanh_SN(nn.Module):
         c2 = self.c2(x) + self.C2(x)
 
         z0 = self.z0(z) + c2
+
+        z0.register_hook(g)
+
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
         
