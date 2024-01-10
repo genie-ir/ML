@@ -159,6 +159,12 @@ class VQModel(pl.LightningModule):
         # print('decoder', self.decoder)
         # print('disc', self.loss.discriminator)
 
+        for param in self.quant_conv.parameters():
+            param.requires_grad = False
+        for param in self.post_quant_conv.parameters():
+            param.requires_grad = False
+        for param in self.quantize.parameters():
+            param.requires_grad = False
         for param in self.encoder.parameters():
             param.requires_grad = False
         for param in self.decoder.parameters():
@@ -167,25 +173,25 @@ class VQModel(pl.LightningModule):
             param.requires_grad = False
 
         
-        
-        # print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
-        for param in self.encoder.Qsurface2Qdiagonal.parameters():
-            param.requires_grad = True
-        for param in self.encoder.netb_diagonal.parameters():
-            param.requires_grad = True
-        
-        for param in self.encoder.down[4].parameters():
-            param.requires_grad = True
-        for param in self.encoder.mid.parameters():
-            param.requires_grad = True
-        for param in self.encoder.norm_out.parameters():
-            param.requires_grad = True
-        for param in self.encoder.conv_out.parameters():
-            param.requires_grad = True
-        # print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
+        if False: 
+            # print('before self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
+            for param in self.encoder.Qsurface2Qdiagonal.parameters():
+                param.requires_grad = True
+            for param in self.encoder.netb_diagonal.parameters():
+                param.requires_grad = True
+            
+            for param in self.encoder.down[4].parameters():
+                param.requires_grad = True
+            for param in self.encoder.mid.parameters():
+                param.requires_grad = True
+            for param in self.encoder.norm_out.parameters():
+                param.requires_grad = True
+            for param in self.encoder.conv_out.parameters():
+                param.requires_grad = True
+            # print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
 
 
-        self.decoder_grad_controller(True)
+            self.decoder_grad_controller(True)
 
 
         # print('before self.loss.discriminator.main[8]', self.loss.discriminator.main[8].weight.requires_grad)
