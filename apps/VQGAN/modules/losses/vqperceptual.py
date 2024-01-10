@@ -282,7 +282,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
         return loss, log
 
-    def geometry(self, grandtrouth, prediction, split, pw=0.1, recln1p=False, landa1=1): # pw=0.1
+    def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False, landa1=1): # pw=0.1
         rec_loss = landa1 * torch.abs(grandtrouth.contiguous() - prediction.contiguous())
         if recln1p:
             rec_loss = (1+rec_loss).log()
