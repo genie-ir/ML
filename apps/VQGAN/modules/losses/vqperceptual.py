@@ -300,12 +300,13 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
 
         if hoo:
-            print(landa1, rec_loss)
-            signal_save((torch.cat([
-                grandtrouth, prediction
-            ], dim=0)+1)*127.5, f'/content/export/geo.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+            # print(landa1, rec_loss)
+            print(loss)
+            # signal_save((torch.cat([
+            #     grandtrouth, prediction
+            # ], dim=0)+1)*127.5, f'/content/export/geo.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
-            assert False
+            # assert False
 
         # log = None
         return loss, log
