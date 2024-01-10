@@ -282,7 +282,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
         return loss, log
 
-    def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False, landa1=1, hoo=False): # pw=0.1
+    def geometry(self, grandtrouth, prediction, split, pw=0.1, recln1p=False, landa1=1, hoo=False, losscontroller=None): # pw=0.1
         rec_loss = landa1 * torch.abs(grandtrouth.contiguous() - prediction.contiguous())
         if recln1p:
             rec_loss = (1+rec_loss).log()
@@ -292,8 +292,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
         else:
             p_loss = torch.tensor(0.0)
 
-        # loss = (rec_loss + p_loss).mean()
-        loss = (rec_loss + p_loss).sum()
+        if losscontroller == 'CondGeo':
+            loss = (rec_loss + p_loss).mean()
+        else:
+            loss = (rec_loss + p_loss).sum()
+        
         log = {
             "{}/loss".format(split): loss.clone().detach().mean().item(),
             "{}/rec_loss".format(split): rec_loss.clone().detach().mean().item(),
@@ -301,7 +304,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
 
         if hoo:
-            print('recloss', loss)
+            print('recloss', loss, rec_loss.mean(), p_loss.mean())
             # print(loss, rec_loss.shape, rec_loss.min().item(), rec_loss.max().item())
             # signal_save((torch.cat([
             #     grandtrouth, prediction
