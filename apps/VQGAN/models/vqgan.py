@@ -289,7 +289,8 @@ class VQModel(pl.LightningModule):
         # self.decoder_grad_controller(True)
         h_ilevel1, h_endDownSampling, q_eye16, Qsurface, Qorg, Qdiagonal = self.net(simg)
         y = self.decoder(
-            Qorg,
+            Qsurface,
+            # Qorg,
             # (q_eye16) * Qorg,
             # (1 - q_eye16) * Qorg,
             None, 

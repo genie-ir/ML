@@ -372,7 +372,7 @@ class Qadjustion(nn.Module):
     
     def forward(self, x):
         r =  self.mue + x * self.std
-        print(self.mue[0,0,0])
+        # print(self.mue[0,0,0])
         return r
 
 class ConvT_Tanh(nn.Module):
