@@ -162,7 +162,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.eps = torch.tensor(-5, device='cuda').exp() # tensor(0.0067)
         pass
     
-    def pdgrad(grad):
+    def pdgrad(self, grad):
         print('pdgrad', grad, (grad**2).mean())
         assert False
     def logp(self, p): # rename to some meningful name!! later!!
