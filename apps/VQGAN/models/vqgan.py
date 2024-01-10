@@ -410,7 +410,7 @@ class VQModel(pl.LightningModule):
         if optidx == 0 and condstep == True:
             Cond_loss_logdict = {}
             xs_noneGrayAreaPart_gtru  = xs * C_xsmask
-            xs_noneGrayAreaPart_pred = xsf * self.netConditins(xs_noneGrayAreaPart_gtru)
+            xs_noneGrayAreaPart_pred = xsf * C_xsmask * self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo', losscontroller='CondGeo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
             self.report('Cond', 2, [xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred])
