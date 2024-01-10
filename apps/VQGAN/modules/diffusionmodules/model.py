@@ -471,7 +471,7 @@ class ConvT_Tanh_SN(nn.Module):
         
         print('x is surface', x.min().item(), x.max().item(), x.mean().item())
         print('x is surface', V.min().item(), V.max().item(), V.mean().item())
-        
+        print('x-V', V-x)
         # V.register_hook(self.Vgrad)
         
         # print(x.min().item(), x.max().item(), V.min().item(), V.max().item(), V.shape)
