@@ -404,7 +404,7 @@ class VQModel(pl.LightningModule):
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
             self.report('Cond', 2, [xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred])
-            assert False
+            # assert False
             return Cond_loss, Cond_loss_logdict, None
 
         # A)
