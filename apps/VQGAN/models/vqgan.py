@@ -407,6 +407,7 @@ class VQModel(pl.LightningModule):
         if y_edit == 0: # 𝝍s_tm, xs ===> # NOTE: geometry loss
             # here xcmask was used as random mask.
             xss = xs * C_xcmask
+            print('IF ---------')
             𝝍s_tm = xsf * (xss + xcmask * self.netA(xss, xcmask))
             𝝍s_tm_final = xs
             if optidx == 0:
@@ -431,6 +432,7 @@ class VQModel(pl.LightningModule):
                 # print('A) IF) OPTIDX1)', A_loss0, A_loss1, A_loss2, A_loss3, A_loss4, A_loss5, A_loss, A_loss.shape)
         else: # 𝝍s_tm ===> #NOTE: adversial loss
             xss = xs * C_xsmask
+            print('ELSE -------------------------')
             𝝍s_tm = xsf * (xss + xsmask * self.netA(xss, xsmask))
             𝝍s_tm_final = 𝝍s_tm
             if optidx == 0:
