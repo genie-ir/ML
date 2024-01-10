@@ -378,6 +378,9 @@ class VQModel(pl.LightningModule):
         
         return y
 
+    def report(self, name, N, listimgs):
+        signal_save((torch.cat(listimgs, dim=0)+1)*127.5, f'/content/export/{name}.png', stype='img', sparams={'chw2hwc': True, 'nrow': N})
+
     def pipline(self, xs, Xc, xsf,
                 split,
                 optidx,
@@ -399,6 +402,7 @@ class VQModel(pl.LightningModule):
             xs_noneGrayAreaPart_pred = xsf * self.netConditins(xs_noneGrayAreaPart_gtru)
             Cond_loss, Cond_loss_logdict = self.loss.geometry(xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred, split=split + 'Cond_Geo')
             # print('Conditins) OPTIDX0)', Cond_loss, Cond_loss.shape)
+            self.report('Cond', 2, [xs_noneGrayAreaPart_gtru, xs_noneGrayAreaPart_pred])
             return Cond_loss, Cond_loss_logdict, None
 
         # A)
@@ -415,6 +419,7 @@ class VQModel(pl.LightningModule):
             𝝍s_tm_final = xs
             if optidx == 0:
                 A_loss, A_loss_logdict = self.loss.geometry(xs, 𝝍s_tm, split=split + 'A_Geo', hoo=True)
+                self.report('netA_Geo', 2, [xs, 𝝍s_tm])
                 # print('A) IF) OPTIDX0)', A_loss, A_loss.shape)
             else:
                 A_loss0, A_d0 = self.loss.omega_of_phi(xs, flag=True, split=split + 'A_if1_OFxs') # OK!
@@ -451,6 +456,7 @@ class VQModel(pl.LightningModule):
                     **A_d1
                 }
                 # print('A) ELSE) OPTIDX0)', A_loss0, A_loss1, A_loss, A_loss.shape)
+                self.report('netA_adv', 2, [xss, 𝝍s_tm])
             else:
                 A_loss0, A_d0 = self.loss.omega_of_phi(xs, split=split + 'A_el1_ORxs') # OK!
                 A_loss1, A_d1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'A_el1_Rxs')
@@ -477,6 +483,7 @@ class VQModel(pl.LightningModule):
             𝝍s_tp_final = 𝝍s_tm_final
             if optidx == 0:
                 B_loss, B_loss_logdict = self.loss.geometry(xs, 𝝍s_tp, split=split + 'B_Geo')
+                self.report('netB_Geo', 4, [xs, 𝝍s_tp, xsss, 𝝍s_tp_final])
                 # print('B) IF) OPTIDX0)', B_loss, B_loss.shape)
             else:
                 B_loss0, B_d0 = self.loss.omega_of_phi(Xc, flag=True, split=split + 'B_if1_OFxc') # OK!
@@ -511,6 +518,7 @@ class VQModel(pl.LightningModule):
                     **B_d2,
                 }
                 # print('B) ELSE) OPTIDX0)', B_loss0, B_loss1, B_loss2, B_loss, B_loss.shape)
+                self.report('netB_adv', 2, [𝝍s_tm_final_s, 𝝍s_tp])
             else:
                 B_loss0, B_d0 = self.loss.omega_of_phi(Xc, split=split + 'B_el1_ORxc') # OK!
                 B_loss1, B_d1 = self.loss.D12(xs, l1=1, l2=1, split=split + 'B_el1_Rxs')
