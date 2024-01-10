@@ -457,7 +457,7 @@ class ConvT_Tanh_SN(nn.Module):
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
         
-        m = ((z2.min().abs() + z2.max().abs()) /2).detach()
+        m = ((x.min().abs() + x.max().abs()) /2).detach()
         z3 = m * self.z3(z2)
 
         
