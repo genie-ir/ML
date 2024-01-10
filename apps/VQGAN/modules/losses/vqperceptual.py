@@ -282,7 +282,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
         return loss, log
 
-    def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False, landa1=1): # pw=0.1
+    def geometry(self, grandtrouth, prediction, split, pw=0, recln1p=False, landa1=1, hoo=False): # pw=0.1
         rec_loss = landa1 * torch.abs(grandtrouth.contiguous() - prediction.contiguous())
         if recln1p:
             rec_loss = (1+rec_loss).log()
@@ -298,6 +298,15 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/rec_loss".format(split): rec_loss.clone().detach().mean().item(),
             "{}/p_loss".format(split): p_loss.clone().detach().mean().item(),
         }
+
+        if hoo:
+            print(landa1, rec_loss)
+            signal_save((torch.cat([
+                grandtrouth, prediction
+            ], dim=0)+1)*127.5, f'/content/export/geo.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+
+            assert False
+
         # log = None
         return loss, log
     
