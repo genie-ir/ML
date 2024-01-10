@@ -556,10 +556,10 @@ class VQModel(pl.LightningModule):
         if optFlag:
             opt_ae, opt_disc = self.optimizers()
         
-        xs = batch['xs']
-        xsl = batch['xsl']
-        xsc = batch['xsc']
+        # xsl = batch['xsl']
+        # xsc = batch['xsc']
         xsf = batch['xsf']
+        xs = batch['xs'] * xsf
         xslmask = batch['xslmask']
         C_xsmask = (1-xslmask).detach()
 
@@ -575,10 +575,10 @@ class VQModel(pl.LightningModule):
         
         for cidx in range(2):
             self.decoder_grad_controller(False)
-            xc = batch['xc'][cidx] # ROT
-            xcl = batch['xcl'][cidx] # ROT
-            xcc = batch['xcc'][cidx] # ROT
+            # xcl = batch['xcl'][cidx] # ROT
+            # xcc = batch['xcc'][cidx] # ROT
             xcf = batch['xcf'][cidx] # ROT
+            xc = batch['xc'][cidx] * xcf # ROT
             xclmask = batch['xclmask'][cidx] # ROT
 
             # NOTE: Mask design
