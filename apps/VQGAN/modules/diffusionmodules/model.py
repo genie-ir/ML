@@ -459,7 +459,7 @@ class ConvT_Tanh_SN(nn.Module):
         z2 = self.z2(z1) + c0
         z3 = self.z3(z2)
         z3m = self.z3m(z2)
-        zout = z3m * z3
+        zout = 10 * z3m * z3
 
         print('c0', c0.shape)
         print('c1', c1.shape)
