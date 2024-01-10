@@ -301,7 +301,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         }
 
         if hoo:
-            print(landa1, rec_loss)
+            print('recloss', rec_loss)
             # print(loss, rec_loss.shape, rec_loss.min().item(), rec_loss.max().item())
             # signal_save((torch.cat([
             #     grandtrouth, prediction
