@@ -454,7 +454,7 @@ class ConvT_Tanh_SN(nn.Module):
         c2 = self.c2(x) + self.C2(x)
 
         z0 = self.z0(z) + c2
-        z0.register_hook(lambda grad: print('z0.grad', grad, grad.mean()))
+        # z0.register_hook(lambda grad: print('z0.grad', grad, grad.mean()))
 
         
 
