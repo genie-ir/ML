@@ -454,7 +454,7 @@ class ConvT_Tanh_SN(nn.Module):
         c2 = self.c2(x) + self.C2(x)
 
         z0 = self.z0(z) + c2
-        z0.register_hook(lambda grad: print('z0', (grad**2).mean()))
+        # z0.register_hook(lambda grad: print('z0', (grad**2).mean()))
 
         
 
@@ -469,7 +469,10 @@ class ConvT_Tanh_SN(nn.Module):
         zeros = torch.zeros(256, 16, 16, dtype=torch.float32, device='cuda').detach()
         V = (zout + zeros.unsqueeze(-1)).view((1, 256, 16, 16))
         
-        V.register_hook(self.Vgrad)
+        print('x is surface', x.min().item(), x.max().item(), x.mean().item())
+        print('x is surface', V.min().item(), V.max().item(), V.mean().item())
+        
+        # V.register_hook(self.Vgrad)
         
         # print(x.min().item(), x.max().item(), V.min().item(), V.max().item(), V.shape)
         
