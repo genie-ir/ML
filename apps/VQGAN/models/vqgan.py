@@ -321,6 +321,7 @@ class VQModel(pl.LightningModule):
 
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
+        quant.requires_grad = True
 
         print('!!!!!!!!!!!!!!!!!!', quant.shape, quant[0,0,0,0].requires_grad)
         h_new = self.post_quant_conv(quant)
