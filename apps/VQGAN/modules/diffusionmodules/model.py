@@ -428,29 +428,40 @@ class ConvT_Tanh_SuperNode(nn.Module):
 class ConvT_Tanh_SN(nn.Module):
     def __init__(self):
         super().__init__()
-        self.c0 = ConvT_Tanh(256, 128, 3,2,1, False)#8x8
-        self.c1 = ConvT_Tanh(128, 64, 3,2,1, False)#4x4
-        self.c2 = ConvT_Tanh(64, 32, 3,2,1, False)#2x2
-        self.c3 = ConvT_Tanh(32, 16, 3,2,1, False)#1x1
+        self.c0 = ConvT_Tanh(256, 32,  3,2,1, False)#8x8
+        self.c1 = ConvT_Tanh(256, 64,  11,2,1, False)#4x4
+        self.c2 = ConvT_Tanh(256, 128, 15,2,1, False)#2x2
+        
+        self.C0 = ConvT_Tanh(256, 32,  3,2,1, False)#8x8
+        self.C1 = ConvT_Tanh(256, 64,  3,4,1, False)#4x4
+        self.C2 = ConvT_Tanh(256, 128, 3,8,1, False)#2x2
 
-        self.z0 = ConvT_Tanh(16, 32, 4,2,1)#2x2
-        self.z1 = ConvT_Tanh(32, 64, 4,2,1)#4x4
-        self.z2 = ConvT_Tanh(64, 128, 4,2,1)#8x8
-        # self.z3 = nn.ConvTranspose2d(128, 256, 4,2,1)#16x16
-        self.z3 = ConvT_Tanh(128, 256, 4,2,1)#16x16
+        self.z0 = ConvT_Tanh(256, 128, 4,2,1)#2x2
+        self.z1 = ConvT_Tanh(128, 64, 4,2,1)#4x4
+        self.z2 = ConvT_Tanh(64, 32, 4,2,1)#8x8
+        self.z3 = ConvT_Tanh(32, 16, 4,2,1)#16x16
 
     def forward(self, x): # x is surface 1x256x16x16
         q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
-        z = torch.randn((1,16,1,1), device='cuda')
-        c0 = self.c0(x)
-        c1 = self.c1(c0)
-        c2 = self.c2(c1)
-        c3 = self.c3(c2)
+        z = torch.randn((1,256,1,1), device='cuda')
+        c0 = self.c0(x) + self.C0(x)
+        c1 = self.c1(x) + self.C1(x)
+        c2 = self.c2(x) + self.C2(x)
 
-        z0 = self.z0(z) + c2
+        z0 = self.z0(z) + c0
         z1 = self.z1(z0) + c1
         z2 = self.z2(z1) + c0
-        z3 = self.z3(z2) + x
+        z3 = self.z3(z2)
+
+        print('c0', c0.shape)
+        print('c1', c1.shape)
+        print('c2', c2.shape)
+        print('--------------------------')
+        print('z0', z0.shape)
+        print('z1', z1.shape)
+        print('z2', z2.shape)
+        print('z3', z3.shape)
+        assert False
 
         zz = q_eye16 * z3
         print('I16', zz.min().item(), zz.max().item(), zz.mean().item())
