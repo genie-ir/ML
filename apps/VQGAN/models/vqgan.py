@@ -190,8 +190,6 @@ class VQModel(pl.LightningModule):
             for param in self.encoder.conv_out.parameters():
                 param.requires_grad = True
             # print('after self.encoder.down[4]', self.encoder.down[4].block[1].conv1.weight.requires_grad)
-
-
             self.decoder_grad_controller(True)
 
 
