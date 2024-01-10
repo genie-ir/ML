@@ -162,13 +162,11 @@ class VQLPIPSWithDiscriminator(nn.Module):
         self.eps = torch.tensor(-5, device='cuda').exp() # tensor(0.0067)
         pass
     
-    def pdgrad(self, grad):
-        print('pdgrad', grad, (grad**2).mean())
-        assert False
     def logp(self, p): # rename to some meningful name!! later!!
+        p.register_hook(lambda grad: print('p', grad, (grad**2).mean()))
         pd = p.detach().clamp(self.eps)
         pd = dzq_dz_eq1(pd, p)
-        pd.register_hook(self.pdgrad)
+        pd.register_hook(lambda grad: print('pd', grad, (grad**2).mean()))
         return pd
     
     def analyse_p(self, p, flag):
