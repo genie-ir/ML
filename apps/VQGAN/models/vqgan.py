@@ -381,7 +381,8 @@ class VQModel(pl.LightningModule):
     def pipline(self, xs, Xc, xsf,
                 split,
                 optidx,
-                y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray, condstep=False
+                y_edit, y_edit_xc, xsmask, xcmask, C_xsmask, C_xcmask, xcm_gray, condstep=False,
+                **kwargs
     ):
         """
             By: ***alihejrati***
