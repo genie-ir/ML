@@ -448,7 +448,7 @@ class ConvT_Tanh_SN(nn.Module):
 
     def g(self, grad):
         print((grad**2).sum())
-        assert False
+        # assert False
     def forward(self, x): # x is surface 1x256x16x16
         # q_eye16 = torch.eye(16, dtype=torch.float32, device='cuda').detach()
         z = torch.randn((1,256,1,1), device='cuda')
