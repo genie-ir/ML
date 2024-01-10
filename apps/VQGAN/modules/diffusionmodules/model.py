@@ -464,7 +464,7 @@ class ConvT_Tanh_SN(nn.Module):
         zout = z3.view(256, 16, 1, 1)
         zeros = torch.zeros(256, 16, 16, dtype=torch.float32, device='cuda').detach()
         V = (zout + zeros.unsqueeze(-1)).view((1, 256, 16, 16))
-        print(x.min().item(), x.max().item(), V.min().item(), V.max().item(), V.shape)
+        # print(x.min().item(), x.max().item(), V.min().item(), V.max().item(), V.shape)
         
         return V
 
