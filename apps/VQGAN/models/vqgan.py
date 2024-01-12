@@ -196,7 +196,6 @@ class VQModel(PLModule):
 
         print('phix1', phix1.requires_grad)
         print('dp1', dp1.requires_grad)
-        assert False
 
         A_loss1, A_loss_logdict1 = self.Loss.geometry(x1, dp1, split=self.tag + 'S0_GeoX')
         A_loss2, A_loss_logdict2 = self.Loss.geometry(x2, self.decoder(self.phi(x2)), split=self.tag + 'S0_GeoXM')
