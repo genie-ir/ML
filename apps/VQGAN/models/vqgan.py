@@ -266,7 +266,7 @@ class VQModel(PLModule):
                 })
             else:
                 B_loss1, B_d1 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'B_el1_Rxs')
-                B_loss3, B_d3 = self.Loss.D12(xp, l1=1, l2=1, flag=True, split=self.tag + 'B_el1_Fpsistp')
+                B_loss3, B_d3 = self.Loss.D12(xp.detach(), l1=1, l2=1, flag=True, split=self.tag + 'B_el1_Fpsistp')
                 self.loss(B_loss1 + B_loss3)
                 self.log({
                     **B_d1,
