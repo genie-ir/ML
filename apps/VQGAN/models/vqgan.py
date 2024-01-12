@@ -182,7 +182,14 @@ class VQModel(PLModule):
         x1 = self.batch['x']
         x2 = self.batch['x'] * self.batch['M']
         x3 = self.batch['x'] * self.batch['Mbar']
-        A_loss1, A_loss_logdict1 = self.Loss.geometry(x1, self.decoder(self.phi(x1)), split=self.tag + 'S0_GeoX')
+
+        phix1 = self.phi(x1)
+        dp1 = self.decoder(phix1)
+
+        print('phix1', phix1.requires_grad)
+        print('dp1', dp1.requires_grad)
+
+        A_loss1, A_loss_logdict1 = self.Loss.geometry(x1, dp1, split=self.tag + 'S0_GeoX')
         A_loss2, A_loss_logdict2 = self.Loss.geometry(x2, self.decoder(self.phi(x2)), split=self.tag + 'S0_GeoXM')
         A_loss3, A_loss_logdict3 = self.Loss.geometry(x3, self.decoder(self.phi(x3)), split=self.tag + 'S0_GeoXMbar')
         self.loss(A_loss1+A_loss2+A_loss3)
