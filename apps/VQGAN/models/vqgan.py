@@ -113,6 +113,8 @@ class PLModule(pl.LightningModule):
                 })
                 
                 if optFlag: # TODO
+                    print(self._loss, self._loss.requires_grad)
+                    assert False
                     self.manual_backward(self._loss)
                     if self.optidx == 0:
                         opt_ae.step()
