@@ -405,8 +405,6 @@ class VQModel(PLModule):
             'val_': {'d1': 0, 'd2': 0, 'O': 0}
         }
         self.regexp_d1_acc = '^.*_opt1_.*\/d1ACC$'
-        self.regexp_d2_acc = '^.*_opt1_.*\/d2ACC$'
-        self.regexp_OP_acc = '^.*_opt1_.*\/ACC$'
 
         self.freeze()
 
