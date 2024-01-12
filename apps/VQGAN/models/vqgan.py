@@ -138,9 +138,17 @@ class VQModel(PLModule):
     def phi(self, t): # NOTE: kernel function
         """t.shape=Bx3x256x256"""
         h, h_ilevel1, h_endDownSampling = self.encoder(t)
+        print('t', t.grad)
+        print('h1', h.grad)
         h = self.quant_conv(h)
+        print('h2', h.grad)
         quant, diff = self.quantize(h)
-        return self.post_quant_conv(quant)
+        print('quant', quant.grad)
+        out = self.post_quant_conv(quant)
+        print('out', out.grad)
+        
+        
+        return out
 
     def netA(self, Cmue, mue, tag):
         alpha = self.batch['x'] * Cmue
