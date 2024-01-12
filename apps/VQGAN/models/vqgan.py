@@ -49,7 +49,7 @@ class PLModule(pl.LightningModule):
             self._loss = self._loss + loss_value
     
     def log(self, lDict, lType='metrics'):
-        # print(lDict)
+        print(lDict)
         self._log[lType] = {**self._log[lType], **lDict} # TODO better performance can be achived by replacing unpack aproch with other methods:)
 
     def save(self, tag):
