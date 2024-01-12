@@ -182,9 +182,9 @@ class VQModel(PLModule):
         x1 = self.batch['x']
         x2 = self.batch['x'] * self.batch['M']
         x3 = self.batch['x'] * self.batch['Mbar']
-        A_loss1, A_loss_logdict1 = self.loss.geometry(x1, self.decoder(self.phi(x1)), split=self.tag + 'S0_GeoX')
-        A_loss2, A_loss_logdict2 = self.loss.geometry(x2, self.decoder(self.phi(x2)), split=self.tag + 'S0_GeoXM')
-        A_loss3, A_loss_logdict3 = self.loss.geometry(x3, self.decoder(self.phi(x3)), split=self.tag + 'S0_GeoXMbar')
+        A_loss1, A_loss_logdict1 = self.Loss.geometry(x1, self.decoder(self.phi(x1)), split=self.tag + 'S0_GeoX')
+        A_loss2, A_loss_logdict2 = self.Loss.geometry(x2, self.decoder(self.phi(x2)), split=self.tag + 'S0_GeoXM')
+        A_loss3, A_loss_logdict3 = self.Loss.geometry(x3, self.decoder(self.phi(x3)), split=self.tag + 'S0_GeoXMbar')
         self.loss(A_loss1+A_loss2+A_loss3)
         self.log({
             **A_loss_logdict1,
@@ -198,12 +198,12 @@ class VQModel(PLModule):
             xn = self.netA(self.batch['Mcbar'], self.batch['Mc'], tag=self.tag + 'A_IF')
             
             if self.optidx == 0:
-                A_loss, A_loss_logdict = self.loss.geometry(self.batch['x'], xn, split=self.tag + 'A_Geo', hoo=True)
+                A_loss, A_loss_logdict = self.Loss.geometry(self.batch['x'], xn, split=self.tag + 'A_Geo', hoo=True)
                 self.loss(A_loss)
                 self.log(A_loss_logdict)
             else:
-                A_loss1, A_d1 = self.loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'A_if1_Rxs')
-                A_loss3, A_d3 = self.loss.D12(xn, l1=1, l2=1, flag=True, split=self.tag + 'A_if1_Fpsistm')
+                A_loss1, A_d1 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'A_if1_Rxs')
+                A_loss3, A_d3 = self.Loss.D12(xn, l1=1, l2=1, flag=True, split=self.tag + 'A_if1_Fpsistm')
                 self.loss(A_loss1 + A_loss3)
                 self.log({
                     **A_d1,
@@ -214,14 +214,14 @@ class VQModel(PLModule):
             xnf = xn
 
             if self.optidx == 0:
-                A_loss1, A_d1 = self.loss.D12(xn, l1=self.acc[f'{self.TAG}_']['d1'], l2=self.acc[f'{self.TAG}_']['d2'], split=self.tag + 'A_el0_Rpsistm')
+                A_loss1, A_d1 = self.Loss.D12(xn, l1=self.acc[f'{self.TAG}_']['d1'], l2=self.acc[f'{self.TAG}_']['d2'], split=self.tag + 'A_el0_Rpsistm')
                 self.loss(A_loss1)
                 self.log({
                     **A_d1
                 })
             else:
-                A_loss1, A_d1 = self.loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'A_el1_Rxs')
-                A_loss3, A_d3 = self.loss.D12(xn, l1=1, l2=1, flag=True, split=self.tag + 'A_el1_Fpsistm')
+                A_loss1, A_d1 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'A_el1_Rxs')
+                A_loss3, A_d3 = self.Loss.D12(xn, l1=1, l2=1, flag=True, split=self.tag + 'A_el1_Fpsistm')
                 self.loss(A_loss1 + A_loss3)
                 self.log({
                     **A_d1,
@@ -238,12 +238,12 @@ class VQModel(PLModule):
             # xp = self.netB(self.batch['x'], self.batch['x'], self.batch['x']*self.batch['Mbar'], self.batch['Mbar'], self.batch['Mbar'], self.batch['M'], tag=self.tag + 'B_IF')
 
             # if self.optidx == 0:
-            #     B_loss, B_loss_logdict = self.loss.geometry(self.batch['x'], xp, split=self.tag + 'B_Geo')
+            #     B_loss, B_loss_logdict = self.Loss.geometry(self.batch['x'], xp, split=self.tag + 'B_Geo')
             #     self.loss(B_loss)
             #     self.log(B_loss_logdict)
             # else:
-            #     B_loss2, B_d2 = self.loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'B_if1_Rxs')
-            #     B_loss5, B_d5 = self.loss.D12(xp, l1=1, l2=1, flag=True, split=self.tag + 'B_if1_Fpsistp')
+            #     B_loss2, B_d2 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'B_if1_Rxs')
+            #     B_loss5, B_d5 = self.Loss.D12(xp, l1=1, l2=1, flag=True, split=self.tag + 'B_if1_Fpsistp')
             #     self.loss(B_loss2 + B_loss5)
             #     self.log({
             #         **B_d2,
@@ -254,14 +254,14 @@ class VQModel(PLModule):
             xpf = xp
 
             if self.optidx == 0:
-                B_loss1, B_d1 = self.loss.D12(xp, l1=self.acc[f'{self.TAG}_']['d1'], l2=self.acc[f'{self.TAG}_']['d2'], split=self.tag + 'B_el0_Rpsistp')
+                B_loss1, B_d1 = self.Loss.D12(xp, l1=self.acc[f'{self.TAG}_']['d1'], l2=self.acc[f'{self.TAG}_']['d2'], split=self.tag + 'B_el0_Rpsistp')
                 self.loss(B_loss1)
                 self.log({
                     **B_d1,
                 })
             else:
-                B_loss1, B_d1 = self.loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'B_el1_Rxs')
-                B_loss3, B_d3 = self.loss.D12(xp, l1=1, l2=1, flag=True, split=self.tag + 'B_el1_Fpsistp')
+                B_loss1, B_d1 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'B_el1_Rxs')
+                B_loss3, B_d3 = self.Loss.D12(xp, l1=1, l2=1, flag=True, split=self.tag + 'B_el1_Fpsistp')
                 self.loss(B_loss1 + B_loss3)
                 self.log({
                     **B_d1,
@@ -348,7 +348,7 @@ class VQModel(PLModule):
         self.image_key = image_key
         self.encoder = Encoder(**ddconfig, returnSkipPath=True)
         self.decoder = Decoder(**ddconfig)
-        self.loss = instantiate_from_config(lossconfig)
+        self.Loss = instantiate_from_config(lossconfig)
         self.quantize = VectorQuantizer(n_e=n_embed, e_dim=embed_dim, beta=0.25, remap=remap, sane_index_shape=sane_index_shape)
         self.quant_conv = torch.nn.Conv2d(ddconfig["z_channels"], embed_dim, 1)
         self.post_quant_conv = torch.nn.Conv2d(embed_dim, ddconfig["z_channels"], 1)
@@ -416,7 +416,7 @@ class VQModel(PLModule):
         #     param.requires_grad = True
         
         # for pidx in [5, 6, 8, 9, 11]:
-        #     for param in self.loss.discriminator.main[pidx].parameters():
+        #     for param in self.Loss.discriminator.main[pidx].parameters():
         #         param.requires_grad = True
 
     def continueStart000(self):
@@ -497,10 +497,7 @@ class VQModel(PLModule):
                                 # betas=(0.5, 0.9)
                             )
         opt_disc = torch.optim.Adam([
-                                        {'params': self.loss.discriminator.parameters()},
-                                        # {'params': self.loss.discriminator_large.parameters()},
-                                        # {'params': self.loss.vgg16.parameters(), 'lr': .02},
-                                        # {'params': self.loss.vgg16_head.parameters(), 'lr': .02}
+                                        {'params': self.Loss.discriminator.parameters()},
                                     ],
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
