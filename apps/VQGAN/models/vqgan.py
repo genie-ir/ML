@@ -138,14 +138,14 @@ class VQModel(PLModule):
     def phi(self, t): # NOTE: kernel function
         """t.shape=Bx3x256x256"""
         h, h_ilevel1, h_endDownSampling = self.encoder(t)
-        print('t', t.grad)
-        print('h1', h.grad)
+        print('t', t.requires_grad)
+        print('h1', h.requires_grad)
         h = self.quant_conv(h)
-        print('h2', h.grad)
+        print('h2', h.requires_grad)
         quant, diff = self.quantize(h)
-        print('quant', quant.grad)
+        print('quant', quant.requires_grad)
         out = self.post_quant_conv(quant)
-        print('out', out.grad)
+        print('out', out.requires_grad)
         
         
         return out
