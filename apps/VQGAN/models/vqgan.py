@@ -118,7 +118,7 @@ class PLModule(pl.LightningModule):
                     else:
                         opt_disc.step()
                 
-                self.metrics.log(self.TAG, self._log)
+                self.metrics.log(self.TAG, self._log['metrics'])
                 
                 # print(f'after optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
 
