@@ -134,7 +134,7 @@ class PLModule(pl.LightningModule):
 class VQModel(PLModule):
     def H(self, phi1, phi2): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
-        h.register_hook(lambda grad: print('h.hrad', grad))
+        h.register_hook(lambda grad: print('h.hrad', grad.mean().item()))
         return h
 
     def phi(self, t): # NOTE: kernel function
