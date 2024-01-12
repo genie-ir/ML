@@ -134,6 +134,7 @@ class PLModule(pl.LightningModule):
 class VQModel(PLModule):
     def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
+        h.register_hook(lambda grad: self.HGrad.get(tag, 1) * grad)
         h.register_hook(lambda grad: print(f'h.grad | {tag}', grad.mean().item()))
         return h
 
@@ -406,6 +407,9 @@ class VQModel(PLModule):
         # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
     
     def __start(self):
+        self.HGrad = {
+            'train_opt0_A_IF': 1e7
+        }
         self.IDX = 2
         self.OPT = [
             [0, {'condstep': True}],
