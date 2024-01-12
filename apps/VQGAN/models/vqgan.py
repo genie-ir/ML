@@ -499,8 +499,8 @@ class VQModel(PLModule):
         opt_disc = torch.optim.Adam([
                                         {'params': self.loss.discriminator.parameters()},
                                         # {'params': self.loss.discriminator_large.parameters()},
-                                        {'params': self.loss.vgg16.parameters(), 'lr': .02},
-                                        {'params': self.loss.vgg16_head.parameters(), 'lr': .02}
+                                        # {'params': self.loss.vgg16.parameters(), 'lr': .02},
+                                        # {'params': self.loss.vgg16_head.parameters(), 'lr': .02}
                                     ],
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
