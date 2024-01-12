@@ -134,7 +134,7 @@ class PLModule(pl.LightningModule):
 class VQModel(PLModule):
     def H(self, phi1, phi2): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
-        h.register_hook(lambda grad: print('h.hrad', grad.mean().item()))
+        h.register_hook(lambda grad: print('h.grad', grad.mean().item()))
         return h
 
     def phi(self, t): # NOTE: kernel function
@@ -208,7 +208,7 @@ class VQModel(PLModule):
                 self.log(A_loss_logdict)
             else:
                 A_loss1, A_d1 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'A_if1_Rxs')
-                A_loss3, A_d3 = self.Loss.D12(xn, l1=1, l2=1, flag=True, split=self.tag + 'A_if1_Fpsistm')
+                A_loss3, A_d3 = self.Loss.D12(xn.detach(), l1=1, l2=1, flag=True, split=self.tag + 'A_if1_Fpsistm')
                 self.loss(A_loss1 + A_loss3)
                 self.log({
                     **A_d1,
@@ -226,7 +226,7 @@ class VQModel(PLModule):
                 })
             else:
                 A_loss1, A_d1 = self.Loss.D12(self.batch['x'], l1=1, l2=1, split=self.tag + 'A_el1_Rxs')
-                A_loss3, A_d3 = self.Loss.D12(xn, l1=1, l2=1, flag=True, split=self.tag + 'A_el1_Fpsistm')
+                A_loss3, A_d3 = self.Loss.D12(xn.detach(), l1=1, l2=1, flag=True, split=self.tag + 'A_el1_Fpsistm')
                 self.loss(A_loss1 + A_loss3)
                 self.log({
                     **A_d1,
