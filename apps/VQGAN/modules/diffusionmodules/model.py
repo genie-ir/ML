@@ -406,10 +406,6 @@ class KernelRegressor(nn.Module):
         z2 = self.z2(torch.cat([z1, c1], dim=1)) # 192x4x4 -> 128x8x8
         z3 = self.z3(torch.cat([z2, c0], dim=1)) # 384x8x8 -> 256x16x16
 
-        print('phil, phir', phil, phir)
-        print('--------------')
-        print('z3', z3.shape, z3)
-        assert False
         return z3
 
 class QGfazzy(nn.Module):
