@@ -364,6 +364,83 @@ class View(nn.Module):
         print(x.min().item(), x.max().item(), x.shape)
         assert False
 
+class KernelRegressor(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.z0 = ConvT_Tanh(64,  32,   4,2,1) # 2x2
+        self.z1 = ConvT_Tanh(96,  64,   4,2,1) # 4x4
+        self.z2 = ConvT_Tanh(192,  128,  4,2,1) # 8x8
+        self.z3 = ConvT_Tanh(384, 256,  4,2,1) # 16x16
+        
+        self.l0 = ConvT_Tanh(256, 128, 3,2,1, False) # 8x8
+        self.l1 = ConvT_Tanh(128, 64,  3,2,1, False) # 4x4
+        self.l2 = ConvT_Tanh(64,  32,  3,2,1, False) # 2x2
+        
+        self.r0 = ConvT_Tanh(256, 128, 3,2,1, False) # 8x8
+        self.r1 = ConvT_Tanh(128, 64,  3,2,1, False) # 4x4
+        self.r2 = ConvT_Tanh(64,  32,  3,2,1, False) # 2x2
+        
+        self.c0 = ConvT_Tanh(512, 256, 3,2,1, False) # 8x8
+        self.c1 = ConvT_Tanh(256, 128, 3,2,1, False) # 4x4
+        self.c2 = ConvT_Tanh(128, 64,  3,2,1, False) # 2x2
+        self.c3 = ConvT_Tanh(64,  32,  2,1,0, False) # 1x1
+
+    def forward(self, phil, phir):
+        c0 = self.c0(torch.cat([phil, phir], dim=1)) # 512x16x16 -> 256x8x8
+        
+        l0 = self.l0(phil) # 256x16x16 -> 128x8x8
+        r0 = self.r0(phir) # 256x16x16 -> 128x8x8
+        c1 = self.c1(torch.cat([l0, r0], dim=1)) # 256x8x8 -> 128x4x4
+
+        l1 = self.l1(l0) # 128x8x8 -> 64x4x4
+        r1 = self.r1(r0) # 128x8x8 -> 64x4x4
+        c2 = self.c2(torch.cat([l1, r1], dim=1)) # 128x4x4 -> 64x2x2
+
+        l2 = self.l2(l1) # 64x4x4 -> 32x2x2
+        r2 = self.r2(r1) # 64x4x4 -> 32x2x2
+        c3 = self.c3(torch.cat([l2, r2], dim=1)) # 64x2x2 -> 32x1x1
+
+        z = torch.randn((1,32,1,1), device='cuda')
+        z0 = self.z0(torch.cat([z, c3], dim=1)) # 64x1x1 -> 32x2x2
+        z1 = self.z1(torch.cat([z0, c2], dim=1)) # 96x2x2 -> 64x4x4
+        z2 = self.z2(torch.cat([z1, c1], dim=1)) # 192x4x4 -> 128x8x8
+        z3 = self.z3(torch.cat([z2, c0], dim=1)) # 384x8x8 -> 256x16x16
+
+        print('phil, phir', phil, phir)
+        print('--------------')
+        print('z3', z3.shape, z3)
+        assert False
+        return z3
+
+class QGfazzy(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.m0 = ConvT_Tanh(1, 32, 3,2,1, False)
+        self.m1 = ConvT_Tanh(32, 64, 3,2,1, False)
+        self.m2 = ConvT_Tanh(64, 128, 3,2,1, False)
+        self.m3 = ConvT_Tanh(128, 256, 3,2,1, False)
+
+        self.q0 = ConvT_Tanh(256, 128, 4,2,1)
+        self.q1 = ConvT_Tanh(128, 64, 4,2,1)
+        self.q2 = ConvT_Tanh(64, 32, 4,2,1)
+        self.q3 = ConvT_Tanh(32, 1, 4,2,1)
+
+        self.classifire = ConvT_Tanh(256, 256, 1,1,0, False)
+
+    def forward(self, Q, M):
+        q0 = self.q0(Q)
+        q1 = self.q1(q0)
+        q2 = self.q2(q1)
+        q3 = self.q3(q2)
+        
+        m = (M - 0.5) + q3
+        m0 = self.m0(m) + q2
+        m1 = self.m1(m0) + q1
+        m2 = self.m2(m1) + q0
+        m3 = self.m3(m2) + Q
+
+        return self.classifire(m3) / 2 + 0.5
+
 class Qadjustion(nn.Module):
     def __init__(self):
         super().__init__()
@@ -440,8 +517,6 @@ class ConvT_Tanh_SuperNode(nn.Module):
         
         return c5
 
-
-
 class ConvT_Tanh_SN(nn.Module):
     def __init__(self):
         super().__init__()
@@ -504,9 +579,7 @@ class Encoder(nn.Module):
         super().__init__()
 
         ################################################################################# for VQGAN
-        self.Qsurface2Qdiagonal = ConvT_Tanh_SN()# torch.nn.Conv2d(256, 256, 3, 1, 1)
-        self.netb_diagonal = ConvT_Tanh_SuperNode()
-        self.Qadjustion = Qadjustion()
+        self.kernel_regressor = KernelRegressor()
         #################################################################################
 
 
@@ -758,7 +831,7 @@ class Decoder(nn.Module):
         # self.spade_ilevel1 = SPADE(fwd='ilevel1') # ([B, 128, 256, 256])
         # self.spade_endDownSampling = SPADE(fwd='endDownSampling') # ([B, 512, 16, 16]) -> reshape: ([B, 2, 256, 256])
     
-    def forward(self, z, xcl_pure, h_ilevel1, h_endDownSampling, flag=True, flag2=True):
+    def forward(self, z, xcl_pure=None, h_ilevel1=None, h_endDownSampling=None, flag=True, flag2=True):
         """xcl_pure is ROT version"""
         #assert z.shape[1:] == self.z_shape[1:]
         self.last_z_shape = z.shape

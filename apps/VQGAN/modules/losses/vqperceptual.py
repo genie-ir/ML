@@ -100,41 +100,44 @@ class VQLPIPSWithDiscriminator(nn.Module):
 
         self.discriminator = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf)
         # self.discriminator_large = NLayerDiscriminator(input_nc=disc_in_channels, n_layers=disc_num_layers, use_actnorm=use_actnorm, ndf=disc_ndf, kw=5)
-        self.vgg16 = torchvision.models.vgg16(pretrained=True)
-        for param in self.vgg16.parameters():
-            param.requires_grad = False
-        for param_fidx in [26, 28]:
-            for param in self.vgg16.features[param_fidx].parameters():
-                param.requires_grad = True
-        n_inputs = self.vgg16.classifier[6].in_features
         
-        self.vgg16.classifier[6] = nn.Sequential(
-            Reshape4096To64x64(),
-            nn.Conv2d(1, 32, 3, 2, 1), #32x32
-            nn.Tanh(),
-            nn.Conv2d(32, 64, 3, 2, 1), #16x16
-            nn.Tanh(),
-            nn.Conv2d(64, 128, 3, 2, 1), #8x8
-            nn.Tanh(),
-            nn.Conv2d(128, 256, 3, 2, 1), #4x4
-            nn.Tanh(),
-            nn.Conv2d(256, 256, 4, 1, 0), #1x1
-            ReshapeToV256(),
-            # nn.Linear(n_inputs, 256)
-        )
-        self.vgg16_head = nn.Sequential(
-            nn.Tanh(), #nn.Dropout(0.4),
-            Reshape256To16x16(),
-            nn.Conv2d(1, 64, 3,2,1), #8x8
-            nn.Tanh(),
-            nn.Conv2d(64, 128, 3,2,1), # 4x4
-            nn.Tanh(),
-            nn.Conv2d(128, 128, 4,1,0), # 1x1
-            Bypolar2Binary(),
-            ReshapeToV128(),
-            # nn.Linear(256, 128), 
-            # nn.Sigmoid()
-        )
+        
+        
+        # self.vgg16 = torchvision.models.vgg16(pretrained=True)
+        # for param in self.vgg16.parameters():
+        #     param.requires_grad = False
+        # for param_fidx in [26, 28]:
+        #     for param in self.vgg16.features[param_fidx].parameters():
+        #         param.requires_grad = True
+        # n_inputs = self.vgg16.classifier[6].in_features
+        
+        # self.vgg16.classifier[6] = nn.Sequential(
+        #     Reshape4096To64x64(),
+        #     nn.Conv2d(1, 32, 3, 2, 1), #32x32
+        #     nn.Tanh(),
+        #     nn.Conv2d(32, 64, 3, 2, 1), #16x16
+        #     nn.Tanh(),
+        #     nn.Conv2d(64, 128, 3, 2, 1), #8x8
+        #     nn.Tanh(),
+        #     nn.Conv2d(128, 256, 3, 2, 1), #4x4
+        #     nn.Tanh(),
+        #     nn.Conv2d(256, 256, 4, 1, 0), #1x1
+        #     ReshapeToV256(),
+        #     # nn.Linear(n_inputs, 256)
+        # )
+        # self.vgg16_head = nn.Sequential(
+        #     nn.Tanh(), #nn.Dropout(0.4),
+        #     Reshape256To16x16(),
+        #     nn.Conv2d(1, 64, 3,2,1), #8x8
+        #     nn.Tanh(),
+        #     nn.Conv2d(64, 128, 3,2,1), # 4x4
+        #     nn.Tanh(),
+        #     nn.Conv2d(128, 128, 4,1,0), # 1x1
+        #     Bypolar2Binary(),
+        #     ReshapeToV128(),
+        #     # nn.Linear(256, 128), 
+        #     # nn.Sigmoid()
+        # )
 
 
 
@@ -292,7 +295,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         else:
             p_loss = torch.tensor(0.0)
 
-        if losscontroller == 'CondGeo':
+        if losscontroller == 'Mean':
             loss = (rec_loss + p_loss).mean()
         else:
             loss = (rec_loss + p_loss).sum()
