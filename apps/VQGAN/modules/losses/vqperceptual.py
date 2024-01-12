@@ -258,7 +258,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         # d2 = self.logp(d2)
 
         DoneLoss = -1 * (d1.log())
-        DoneLoss.register_hook(lambda grad: self.d12grad(grad, split, '!!!!!!!'))
+        DoneLoss.register_hook(lambda grad: self.d12grad(grad, split, f'!!!!!!! {DoneLoss.item()}'))
 
 
 
