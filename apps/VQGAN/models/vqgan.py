@@ -33,6 +33,7 @@ class PLModule(pl.LightningModule):
         self._log = dict(metrics=dict(), data=dict()) # current log dict
 
     def freeze(self, *M):
+        """every where recursivly..."""
         if len(M) == 0:
             for param in self.parameters():
                 param.requires_grad = False
@@ -93,7 +94,7 @@ class PLModule(pl.LightningModule):
             self.batch = self.setbatch(batch, self.idx) # current batch
 
             for optimizer_idx, optimizer_params in self.OPT:
-                print('START)', optimizer_idx, optimizer_params)
+                # print('START)', optimizer_idx, optimizer_params)
 
                 self.reset()
                 self.opt = optimizer_params # current opt params
