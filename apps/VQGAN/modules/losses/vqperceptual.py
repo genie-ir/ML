@@ -250,7 +250,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
         if x.requires_grad:
-            x.register_hook(lambda grad: self.d12grad(grad, split, ')))))))'))
+            x.register_hook(lambda grad: self.d12grad(grad.mean().item(), split, ')))))))'))
         d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
         # d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
         d1.register_hook(lambda grad: self.d12grad(grad, split, '////////'))
