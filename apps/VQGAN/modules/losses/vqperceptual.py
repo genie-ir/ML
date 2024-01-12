@@ -244,12 +244,15 @@ class VQLPIPSWithDiscriminator(nn.Module):
         if split.endswith('A_el0_Rpsistm'):
             print('A_el0_Rpsistm', stag, grad)
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
+        x.register_hook(lambda grad: self.d12grad(grad, split, ')))))))'))
         d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
         # d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
+        d1.register_hook(lambda grad: self.d12grad(grad, split, '////////'))
         if flag:
             d1 = 1 - d1
             # d2 = 1 - d2
         
+        d1.register_hook(lambda grad: self.d12grad(grad, split, ';;;;;;;;'))
         d1TP, d1TN, d1FP, d1FN = self.analyse_p(d1, flag)
         # d2TP, d2TN, d2FP, d2FN = self.analyse_p(d2, flag)
         d1.register_hook(lambda grad: self.d12grad(grad, split, '--------'))
