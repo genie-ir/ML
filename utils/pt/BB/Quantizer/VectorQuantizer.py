@@ -89,9 +89,10 @@ class VectorQuantizer(BB):
             loss = torch.mean((z_q.detach()-z)**2) + self.beta * \
                 torch.mean((z_q - z.detach()) ** 2)
         # preserve gradients 
+        print('z_q BBB', z_q.requires_grad)
         z_q = dzq_dz_eq1(z_q, z)
         # reshape back to match original input shape
-        print('z_q', z_q.requires_grad)
+        print('z_q AAA', z_q.requires_grad)
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
         print('z_q last', z_q.requires_grad)
         return z_q, loss
