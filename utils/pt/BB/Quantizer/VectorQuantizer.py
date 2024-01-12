@@ -91,7 +91,9 @@ class VectorQuantizer(BB):
         # preserve gradients 
         z_q = dzq_dz_eq1(z_q, z)
         # reshape back to match original input shape
+        print('z_q', z_q.requires_grad)
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
+        print('z_q last', z_q.requires_grad)
         return z_q, loss
     
     def fwd_getIndices(self, z, argmin=True, topk=False):
