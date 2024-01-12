@@ -75,7 +75,7 @@ class VectorQuantizer(BB):
         back=torch.gather(used[None,:][inds.shape[0]*[0],:], 1, inds)
         return back.reshape(ishape)
 
-    def fwd(self, z):
+    def fwd0(self, z):
         z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
         z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
         min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
@@ -91,6 +91,27 @@ class VectorQuantizer(BB):
         # preserve gradients 
         print('z_q BBB', z_q.requires_grad)
         z_q = dzq_dz_eq1(z_q, z)
+        # reshape back to match original input shape
+        print('z_q AAA', z_q.requires_grad)
+        z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
+        print('z_q last', z_q.requires_grad)
+        return z_q, loss
+    def fwd(self, z):
+        z = rearrange(z.float(), 'b c h w -> b h w c').contiguous() # before: z.shape=# torch.Size([2, 256, 16, 16]) | after: z.shape=torch.Size([2, 16, 16, 256])
+        z_flattened = z.view(-1, self.e_dim) # torch.Size([512, 256])
+        min_encoding_indices = L2S(z_flattened, self.embedding.weight, argmin=True)
+        z_q = self.embedding(min_encoding_indices).view(self.zshape) # phi
+        print('---->', z_q.requires_grad)
+        # compute loss for embedding
+        if not self.legacy:
+            loss = self.beta * torch.mean((z_q.detach()-z)**2) + \
+                torch.mean((z_q - z.detach()) ** 2)
+        else:
+            loss = torch.mean((z_q.detach()-z)**2) + self.beta * \
+                torch.mean((z_q - z.detach()) ** 2)
+        # preserve gradients 
+        print('z_q BBB', z_q.requires_grad)
+        # z_q = dzq_dz_eq1(z_q, z)
         # reshape back to match original input shape
         print('z_q AAA', z_q.requires_grad)
         z_q = rearrange(z_q, 'b h w c -> b c h w').contiguous()
