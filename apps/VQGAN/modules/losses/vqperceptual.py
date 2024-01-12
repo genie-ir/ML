@@ -306,8 +306,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
             "{}/p_loss".format(split): p_loss.clone().detach().mean().item(),
         }
 
-        if hoo:
-            print('recloss', loss, rec_loss.mean(), p_loss.mean())
+        # if hoo:
+        #     print('recloss', loss, rec_loss.mean(), p_loss.mean())
             # print(loss, rec_loss.shape, rec_loss.min().item(), rec_loss.max().item())
             # signal_save((torch.cat([
             #     grandtrouth, prediction

@@ -408,15 +408,15 @@ class VQModel(PLModule):
         self.freeze()
 
 
-        # for param in self.encoder.kernel_regressor.parameters():
-        #     param.requires_grad = True
+        for param in self.encoder.kernel_regressor.parameters():
+            param.requires_grad = True
         
         for param in self.quantize.parameters():
             param.requires_grad = True
         
-        # for pidx in [5, 6, 8, 9, 11]:
-        #     for param in self.Loss.discriminator.main[pidx].parameters():
-        #         param.requires_grad = True
+        for pidx in [5, 6, 8, 9, 11]:
+            for param in self.Loss.discriminator.main[pidx].parameters():
+                param.requires_grad = True
 
     def continueStart000(self):
 
@@ -487,11 +487,11 @@ class VQModel(PLModule):
         # lr = self.learning_rate
         lr = 0.02
         opt_ae = torch.optim.Adam(
-                                    list(self.encoder.parameters())+
-                                    list(self.decoder.parameters())+
-                                    list(self.quantize.parameters())+
-                                    list(self.quant_conv.parameters())+
-                                    list(self.post_quant_conv.parameters()),
+                                    list(self.encoder.kernel_regressor.parameters())+
+                                    # list(self.decoder.parameters())+
+                                    list(self.quantize.parameters()),
+                                    # list(self.quant_conv.parameters())+
+                                    # list(self.post_quant_conv.parameters()),
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
                             )
