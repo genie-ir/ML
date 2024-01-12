@@ -308,8 +308,8 @@ class VQModel(PLModule):
             batch['x_class'] = batch['y_edit'].item()
             return batch
 
-        batch['FMc'] = batch['xcf'][idx] * batch['FMc'] # ROT
-        batch['xc'] = batch['Xc'][idx] # ROT
+        batch['FMc'] = batch['xcf'][idx] # ROT
+        batch['xc'] = batch['Xc'][idx] * batch['FMc'] # ROT
         batch['Mc'] = batch['xclmask'][idx] * batch['FM'] # ROT
         batch['Mcbar'] = (1-batch['Mc']) * batch['FM']
         batch['xc_class'] = batch['ynl'][idx][0]
