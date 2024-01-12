@@ -412,8 +412,8 @@ class VQModel(PLModule):
         for param in self.encoder.kernel_regressor.parameters():
             param.requires_grad = True
         
-        # for param in self.quantize.parameters():
-        #     param.requires_grad = True
+        for param in self.quantize.parameters():
+            param.requires_grad = True
         
         for pidx in [5, 6, 8, 9, 11]:
             for param in self.Loss.discriminator.main[pidx].parameters():
