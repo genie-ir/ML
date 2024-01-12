@@ -140,6 +140,7 @@ class VQModel(PLModule):
         h, h_ilevel1, h_endDownSampling = self.encoder(t)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
+        quant.register_hook(lambda grad: print('phi.grad', self.opt, grad))
         return self.post_quant_conv(quant)
 
     def netA(self, Cmue, mue, tag):
@@ -149,12 +150,12 @@ class VQModel(PLModule):
         Qn = self.H(phi_alpha.detach(), phi_null.detach())
         xn = self.batch['x'] * Cmue + mue * self.decoder(Qn)
 
-        # signal_save(torch.cat([
-        #     (self.batch['x']+1)*127.5,
-        #     (xn+1)*127.5,
-        #     torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
-        #     torch.cat([mue, mue, mue], dim=1)*255,
-        # ], dim=0), f'/content/export/netA_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        signal_save(torch.cat([
+            (self.batch['x']+1)*127.5,
+            (xn+1)*127.5,
+            torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
+            torch.cat([mue, mue, mue], dim=1)*255,
+        ], dim=0), f'/content/export/netA_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
         return xn
 
@@ -166,15 +167,15 @@ class VQModel(PLModule):
         Qp = self.H(phi_alpha.detach(), phi_betta.detach())
         xp = xnf * Cmuel + muel * self.decoder(Qp)
 
-        # signal_save(torch.cat([
-        #     (x+1)*127.5,
-        #     (xc+1)*127.5,
-        #     (xnf+1)*127.5,
-        #     (xp+1)*127.5,
-        #     torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
-        #     torch.cat([Cmuel, Cmuel, Cmuel], dim=1)*255,
-        #     torch.cat([muel, muel, muel], dim=1)*255,
-        # ], dim=0), f'/content/export/netB_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        signal_save(torch.cat([
+            (x+1)*127.5,
+            (xc+1)*127.5,
+            (xnf+1)*127.5,
+            (xp+1)*127.5,
+            torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
+            torch.cat([Cmuel, Cmuel, Cmuel], dim=1)*255,
+            torch.cat([muel, muel, muel], dim=1)*255,
+        ], dim=0), f'/content/export/netB_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         return xp
     
