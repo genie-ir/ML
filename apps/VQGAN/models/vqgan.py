@@ -93,15 +93,13 @@ class PLModule(pl.LightningModule):
             self.batch = self.setbatch(batch, self.idx) # current batch
 
             for optimizer_idx, optimizer_params in self.OPT:
+                print('START)', optimizer_idx, optimizer_params)
+
                 self.reset()
                 self.opt = optimizer_params # current opt params
                 self.optidx = optimizer_idx # current opt index
                 self.tag = f'{self.TAG}_opt{self.optidx}_' # current tag
 
-                # print('Qs) start', optimizer_idx, optimizer_params)#, self.encoder.Qsurface2Qdiagonal.z0.convt.weight[0,0])
-                # print(optimizer_idx, optimizer_params, self.encoder.netb_diagonal.c0.convt.weight[0][0,0])
-                # print(f'before optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
-                # print(f'batch_idx={batch_idx} | optimizer_idx={optimizer_idx} | cidx={cidx}')
                 if optFlag:
                     opt_ae.zero_grad()
                     opt_disc.zero_grad()
