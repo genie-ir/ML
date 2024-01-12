@@ -140,7 +140,8 @@ class VQModel(PLModule):
         h, h_ilevel1, h_endDownSampling = self.encoder(t)
         h = self.quant_conv(h)
         quant, diff = self.quantize(h)
-        quant.register_hook(lambda grad: print('phi.grad', self.opt, grad))
+        quant.register_hook(lambda grad: 1e5*grad)
+        # quant.register_hook(lambda grad: print('phi.grad', self.opt, grad))
         return self.post_quant_conv(quant)
 
     def netA(self, Cmue, mue, tag):
