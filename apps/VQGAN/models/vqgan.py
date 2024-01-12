@@ -132,9 +132,9 @@ class PLModule(pl.LightningModule):
 
 
 class VQModel(PLModule):
-    def H(self, phi1, phi2): # NOTE: kernel regressor
+    def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
-        h.register_hook(lambda grad: print('h.grad', grad.mean().item()))
+        h.register_hook(lambda grad: print(f'h.grad | {tag}', grad.mean().item()))
         return h
 
     def phi(self, t): # NOTE: kernel function
@@ -150,7 +150,7 @@ class VQModel(PLModule):
         alpha = self.batch['x'] * Cmue
         phi_alpha = self.phi(alpha)
         phi_null = self.phi(self.Z.detach())
-        Qn = self.H(phi_alpha.detach(), phi_null.detach())
+        Qn = self.H(phi_alpha.detach(), phi_null.detach(), tag)
         xn = self.batch['x'] * Cmue + mue * self.decoder(Qn)
 
         # signal_save(torch.cat([
@@ -167,7 +167,7 @@ class VQModel(PLModule):
         betta = xc * muel
         phi_alpha = self.phi(alhpa)
         phi_betta = self.phi(betta)
-        Qp = self.H(phi_alpha.detach(), phi_betta.detach())
+        Qp = self.H(phi_alpha.detach(), phi_betta.detach(), tag)
         xp = xnf * Cmuel + muel * self.decoder(Qp)
 
         # signal_save(torch.cat([
