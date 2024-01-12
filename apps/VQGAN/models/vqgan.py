@@ -49,6 +49,7 @@ class PLModule(pl.LightningModule):
             self._loss = self._loss + loss_value
     
     def log(self, lDict, lType='metrics'):
+        print(lDict)
         self._log[lType] = {**self._log[lType], **lDict} # TODO better performance can be achived by replacing unpack aproch with other methods:)
 
     def save(self, tag):
@@ -94,7 +95,7 @@ class PLModule(pl.LightningModule):
             self.batch = self.setbatch(batch, self.idx) # current batch
 
             for optimizer_idx, optimizer_params in self.OPT:
-                # print('START)', optimizer_idx, optimizer_params)
+                print('START)', optimizer_idx, optimizer_params)
 
                 self.reset()
                 self.opt = optimizer_params # current opt params
@@ -148,12 +149,12 @@ class VQModel(PLModule):
         Qn = self.H(phi_alpha.detach(), phi_null.detach())
         xn = self.batch['x'] * Cmue + mue * self.decoder(Qn)
 
-        signal_save(torch.cat([
-            (self.batch['x']+1)*127.5,
-            (xn+1)*127.5,
-            torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
-            torch.cat([mue, mue, mue], dim=1)*255,
-        ], dim=0), f'/content/export/netA_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        # signal_save(torch.cat([
+        #     (self.batch['x']+1)*127.5,
+        #     (xn+1)*127.5,
+        #     torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
+        #     torch.cat([mue, mue, mue], dim=1)*255,
+        # ], dim=0), f'/content/export/netA_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
         return xn
 
@@ -165,15 +166,15 @@ class VQModel(PLModule):
         Qp = self.H(phi_alpha.detach(), phi_betta.detach())
         xp = xnf * Cmuel + muel * self.decoder(Qp)
 
-        signal_save(torch.cat([
-            (x+1)*127.5,
-            (xc+1)*127.5,
-            (xnf+1)*127.5,
-            (xp+1)*127.5,
-            torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
-            torch.cat([Cmuel, Cmuel, Cmuel], dim=1)*255,
-            torch.cat([muel, muel, muel], dim=1)*255,
-        ], dim=0), f'/content/export/netB_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
+        # signal_save(torch.cat([
+        #     (x+1)*127.5,
+        #     (xc+1)*127.5,
+        #     (xnf+1)*127.5,
+        #     (xp+1)*127.5,
+        #     torch.cat([Cmue, Cmue, Cmue], dim=1)*255,
+        #     torch.cat([Cmuel, Cmuel, Cmuel], dim=1)*255,
+        #     torch.cat([muel, muel, muel], dim=1)*255,
+        # ], dim=0), f'/content/export/netB_{tag}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 4})
 
         return xp
     
@@ -314,14 +315,14 @@ class VQModel(PLModule):
         batch['Mcbar'] = (1-batch['Mc']) * batch['FM']
         batch['xc_class'] = batch['ynl'][idx][0]
 
-        signal_save(torch.cat([
-            (batch['x']+1)*127.5, 
-            (batch['xc']+1)*127.5,
-            torch.cat([batch['M'],batch['M'],batch['M']], dim=1)*255,
-            torch.cat([batch['Mbar'],batch['Mbar'],batch['Mbar']], dim=1)*255,
-            torch.cat([batch['Mc'],batch['Mc'],batch['Mc']], dim=1)*255,
-            torch.cat([batch['Mcbar'],batch['Mcbar'],batch['Mcbar']], dim=1)*255,
-        ], dim=0), f'/content/export/dataset_c{batch["xc_class"]}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+        # signal_save(torch.cat([
+        #     (batch['x']+1)*127.5, 
+        #     (batch['xc']+1)*127.5,
+        #     torch.cat([batch['M'],batch['M'],batch['M']], dim=1)*255,
+        #     torch.cat([batch['Mbar'],batch['Mbar'],batch['Mbar']], dim=1)*255,
+        #     torch.cat([batch['Mc'],batch['Mc'],batch['Mc']], dim=1)*255,
+        #     torch.cat([batch['Mcbar'],batch['Mcbar'],batch['Mcbar']], dim=1)*255,
+        # ], dim=0), f'/content/export/dataset_c{batch["xc_class"]}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
 
         # NOTE: Mask design
