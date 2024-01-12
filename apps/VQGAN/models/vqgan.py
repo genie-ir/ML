@@ -302,17 +302,27 @@ class VQModel(PLModule):
             ########################################
 
             batch['FM'] = batch['xsf']
-            batch['x'] = batch['xs']
+            batch['x'] = batch['xs'] * batch['FM']
             batch['M'] = batch['xslmask']
             batch['Mbar'] = (1-batch['M']) * batch['FM']
             batch['x_class'] = batch['y_edit'].item()
             return batch
 
-        batch['FMc'] = batch['xcf'][idx] # ROT
+        batch['FMc'] = batch['xcf'][idx] * batch['FMc'] # ROT
         batch['xc'] = batch['Xc'][idx] # ROT
         batch['Mc'] = batch['xclmask'][idx] * batch['FM'] # ROT
         batch['Mcbar'] = (1-batch['Mc']) * batch['FM']
         batch['xc_class'] = batch['ynl'][idx][0]
+
+        signal_save(torch.cat([
+            (batch['x']+1)*127.5, 
+            (batch['xc']+1)*127.5,
+            torch.cat([batch['M'],batch['M'],batch['M']], dim=0)*255,
+            torch.cat([batch['Mbar'],batch['Mbar'],batch['Mbar']], dim=0)*255,
+            torch.cat([batch['Mc'],batch['Mc'],batch['Mc']], dim=0)*255,
+            torch.cat([batch['Mcbar'],batch['Mcbar'],batch['Mcbar']], dim=0)*255,
+        ], dim=0), f'/content/export/dataset_c{batch["xc_class"]}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
+
 
         # NOTE: Mask design
         # # M_union_L_xs_xc = ((xslmask + xclmask) - (xslmask * xclmask)).detach()
