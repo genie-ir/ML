@@ -253,7 +253,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
         d1 = self.logp(d1)
         # d2 = self.logp(d2)
 
-        d1 = l1 * (-1 * (d1.log()))
+        DoneLoss = -1 * (d1.log())
+        d1 = l1 * DoneLoss
         # d2 = l2 * (-1 * (d2.log()))
         
         if d1 == 0:
@@ -265,6 +266,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         loss = d1 #+ d2
 
         log = {
+            "{}/DoneLoss".format(split): DoneLoss.clone().detach().mean().item(),
             "{}/loss".format(split): loss.clone().detach().mean().item(),
             "{}/d1".format(split): d1.clone().detach().mean().item(),
             # "{}/d2".format(split): d2.clone().detach().mean().item(),
