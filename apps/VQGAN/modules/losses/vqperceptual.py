@@ -249,8 +249,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
         
         d1TP, d1TN, d1FP, d1FN = self.analyse_p(d1, flag)
         # d2TP, d2TN, d2FP, d2FN = self.analyse_p(d2, flag)
-
+        d1.register_hook(lambda grad: print('----------', grad.mean().item()))
         d1 = self.logp(d1)
+        d1.register_hook(lambda grad: print('++++++++++', grad.mean().item()))
         # d2 = self.logp(d2)
 
         DoneLoss = -1 * (d1.log())
