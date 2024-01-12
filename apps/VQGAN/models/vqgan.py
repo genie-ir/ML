@@ -317,10 +317,10 @@ class VQModel(PLModule):
         signal_save(torch.cat([
             (batch['x']+1)*127.5, 
             (batch['xc']+1)*127.5,
-            torch.cat([batch['M'],batch['M'],batch['M']], dim=0)*255,
-            torch.cat([batch['Mbar'],batch['Mbar'],batch['Mbar']], dim=0)*255,
-            torch.cat([batch['Mc'],batch['Mc'],batch['Mc']], dim=0)*255,
-            torch.cat([batch['Mcbar'],batch['Mcbar'],batch['Mcbar']], dim=0)*255,
+            torch.cat([batch['M'],batch['M'],batch['M']], dim=1)*255,
+            torch.cat([batch['Mbar'],batch['Mbar'],batch['Mbar']], dim=1)*255,
+            torch.cat([batch['Mc'],batch['Mc'],batch['Mc']], dim=1)*255,
+            torch.cat([batch['Mcbar'],batch['Mcbar'],batch['Mcbar']], dim=1)*255,
         ], dim=0), f'/content/export/dataset_c{batch["xc_class"]}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 2})
 
 
