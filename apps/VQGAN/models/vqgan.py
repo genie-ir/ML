@@ -469,7 +469,7 @@ class VQModel(PLModule):
             param.requires_grad = True
         
         for pidx in [21, 23, 24, 26, 28, 30]:
-            for param in self.Loss.discriminator.vgg16.features[pidx].parameters():
+            for param in self.Loss.discriminator.vgg16[pidx].parameters():
                 param.requires_grad = True
 
     def continueStart000(self):
