@@ -73,9 +73,11 @@ class NLayerDiscriminator(BB):
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)
         main_out = self.main(input)
+        main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
         main_out.register_hook(lambda grad: 1e6 * grad)
-        main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base)'))
+        main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 2nd'))
         Mue = main_out.mean().detach()
+        print('===============Mue', Mue.item())
         main_out = main_out - Mue
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out | {Mue.item()}'))
         tanhout_out = self.tanh_actfn(main_out) # I think 3x256x256 -> 1x30x30
