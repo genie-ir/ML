@@ -155,7 +155,7 @@ class VQModel(PLModule):
 
     def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
-        h.register_hook(lambda grad: self.HGrad.get(tag, 1) * grad)
+        h.register_hook(lambda grad: (self.HGrad.get(tag, 1) * grad) * self.HGrad2.get(tag, 1))
         h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
         return h
 
@@ -437,14 +437,14 @@ class VQModel(PLModule):
         self.counter = [0,0,0]
         self.HGrad = {
             'train_opt0_A_IF': 1e7,
-            'train_opt0_A_ELSE': 1e40,
-            'train_opt0_B_ELSE': 1e40,
+            'train_opt0_A_ELSE': 1e25,
+            'train_opt0_B_ELSE': 1e25,
         }
-        # self.HGrad2 = {
-        #     'train_opt0_A_IF': 1,
-        #     'train_opt0_A_ELSE': 1e10,
-        #     'train_opt0_B_ELSE': 1e10,
-        # }
+        self.HGrad2 = {
+            'train_opt0_A_IF': 1,
+            'train_opt0_A_ELSE': 1e15,
+            'train_opt0_B_ELSE': 1e15,
+        }
         self.IDX = 2
         self.OPT = [
             [0, {'condstep': True}],
