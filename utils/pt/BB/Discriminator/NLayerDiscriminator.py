@@ -59,6 +59,7 @@ class NLayerDiscriminator(BB):
             nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
         self.main = nn.Sequential(*sequence)
 
+        self.tanh_actfn = nn.Tanh()
     
     def d12grad(self, grad, split: str, stag: str):
         print(split, grad.mean().item(), stag)
@@ -76,6 +77,6 @@ class NLayerDiscriminator(BB):
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base)'))
         main_out = main_out - main_out.mean().abs().detach()
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out | {main_out.mean().item()}'))
-        sigout = self.sig(main_out) # I think 3x256x256 -> 1x30x30
-        sigout.register_hook(lambda grad: self.d12grad(grad, split, 'D_sigout'))
-        return sigout
+        tanhout_out = self.tanh_actfn(main_out) # I think 3x256x256 -> 1x30x30
+        tanhout_out.register_hook(lambda grad: self.d12grad(grad, split, 'D_tanhout_out'))
+        return tanhout_out/2 + 0.5
