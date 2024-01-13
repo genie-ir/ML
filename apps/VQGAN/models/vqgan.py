@@ -468,7 +468,7 @@ class VQModel(PLModule):
         for param in self.quantize.parameters():
             param.requires_grad = True
         
-        for pidx in [24, 26, 28, 30]:
+        for pidx in [26, 28, 30]:
             for param in self.Loss.discriminator.vgg16[0][pidx].parameters():
                 param.requires_grad = True
         for param in self.Loss.discriminator.vgg16[1].parameters():
