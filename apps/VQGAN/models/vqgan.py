@@ -182,6 +182,7 @@ class VQModel(PLModule):
         phi_betta = self.phi(betta)
         Qp = self.H(phi_alpha.detach(), phi_betta.detach(), tag)
         xp = xnf * Cmuel + muel * self.decoder(Qp)
+        xp.register_hook(lambda grad: print(f'xp.grad | {tag}', grad.mean().item()))
 
         # signal_save(torch.cat([
         #     (x+1)*127.5,
