@@ -126,7 +126,6 @@ class PLModule(pl.LightningModule):
 
 class VQModel(PLModule):
     def acceptance(self, N=4):
-        self.pack_logdata = dict()
         if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
             counter = getattr(self, 'counter', 0)
             if counter == 0:
@@ -134,6 +133,7 @@ class VQModel(PLModule):
             else:
                 self.counter = self.counter + 1
             if self.counter == N:
+                self.pack_logdata = dict()
                 self.pack_logdata['xs'] = self.batch['x']
                 self.pack_logdata['y_edit'] = self.batch['x_class']
                 self.imglogger[self.batch['x_class']] = self.pack_logdata
@@ -217,7 +217,7 @@ class VQModel(PLModule):
             xn = self.netA(self.batch['Mcbar'], self.batch['Mc'], tag=self.tag + 'A_IF')
             
             if self.optidx == 0:
-                A_loss, A_loss_logdict = self.Loss.geometry(self.batch['x'], xn, split=self.tag + 'A_Geo', hoo=True)
+                A_loss, A_loss_logdict = self.Loss.geometry(self.batch['x'], xn, split=self.tag + 'A_Geo', λ1=10, λ2=10)
                 self.loss(A_loss)
                 self.log(A_loss_logdict)
             else:
