@@ -125,11 +125,11 @@ class PLModule(pl.LightningModule):
 
 
 class VQModel(PLModule):
-    def acceptance(self, N=11):
+    def acceptance(self, N=[254, 2, 3]):
         if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
             self.counter[self.batch['x_class']] = self.counter[self.batch['x_class']] + 1
 
-            if self.counter[self.batch['x_class']] == N:
+            if self.counter[self.batch['x_class']] == N[self.batch['x_class']]:
                 self.pack_logdata = dict()
                 self.pack_logdata['xs'] = self.batch['x']
                 self.pack_logdata['y_edit'] = self.batch['x_class']
