@@ -324,7 +324,6 @@ class VQModel(PLModule):
         print(f'{tag}_', self.acc[f'{tag}_'])
         self.imglogger = [None, None, None]
         self.counter = [0,0,0]
-        assert False
 
     def setbatch(self, batch, idx=-1):
         if idx == -1:
