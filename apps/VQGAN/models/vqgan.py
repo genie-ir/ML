@@ -302,6 +302,10 @@ class VQModel(PLModule):
 
     def save(self, tag):
         super().save(tag)
+
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        print(self.imglogger)
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
         # self.imglogger --> save!! # TODO
         signal_save((torch.cat([
             self.imglogger[0]['xc0'], self.imglogger[0]['xc1'], self.bb(self.imglogger[0]['xs']), self.bb(self.imglogger[0]['c0_optidx0_pipline']['𝝍s_tp_final'], 'green'), self.bb(self.imglogger[0]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
