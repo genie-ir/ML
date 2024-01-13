@@ -77,7 +77,7 @@ class NLayerDiscriminator(BB):
         main_out.register_hook(lambda grad: 1e6 * grad)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 2nd'))
         Mue = main_out.mean().detach()
-        print('===============Mue', Mue.item())
+        print('===============Mue', Mue.item(), Mue.max().item())
         main_out = main_out - Mue
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out | {Mue.item()}'))
         tanhout_out = self.tanh_actfn(main_out) # I think 3x256x256 -> 1x30x30
