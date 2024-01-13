@@ -32,7 +32,7 @@ class NLayerDiscriminator(BB):
             nn.Conv2d(512, 512, 3,2,1), # 8x8 -> 4x4
             nn.Sigmoid()
         )
-
+        print(self.vgg16)
 
         # if not use_actnorm:
         #     norm_layer = nn.BatchNorm2d
@@ -86,6 +86,7 @@ class NLayerDiscriminator(BB):
         
         main_out = self.vgg16(input)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
+        self.vgg16[0][0].register_hook(lambda grad: self.d12grad(grad, split, f'self.vgg16[0][0]'))
         # main_out.register_hook(lambda grad: 1e6 * grad)
         # main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 2nd'))
         return main_out
