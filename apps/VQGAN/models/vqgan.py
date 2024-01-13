@@ -128,7 +128,7 @@ class VQModel(PLModule):
     def acceptance(self,
             # N=[254, 110, 3],
             F=[
-                'prototype/fundus/1/10192_left.jpg',
+                'prototype/fundus/1/10192_left.jpg', # NOTE OK
                 
                 'prototype/fundus/2/14651_right_clahe.jpg', # NOTE OK
                 
@@ -149,6 +149,8 @@ class VQModel(PLModule):
                 self.imglogger[self.batch['x_class']] = self.pack_logdata
                 return True
             else:
+                print('REJECT', self.batch['names'][0])
+                assert False
                 return False
         else:
             return False
