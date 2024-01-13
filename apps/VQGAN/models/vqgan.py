@@ -130,6 +130,9 @@ class VQModel(PLModule):
             self.counter[self.batch['x_class']] = self.counter[self.batch['x_class']] + 1
 
             if self.counter[self.batch['x_class']] == N[self.batch['x_class']]:
+                print('*******************************************')
+                print(f"class={self.batch['x_class']} | N={N[self.batch['x_class']]}", self.batch['names'])
+                print('*******************************************')
                 self.pack_logdata = dict()
                 self.pack_logdata['xs'] = self.batch['x']
                 self.pack_logdata['y_edit'] = self.batch['x_class']
@@ -315,6 +318,7 @@ class VQModel(PLModule):
     def setbatch(self, batch, idx=-1):
         if idx == -1:
             ######################################## [changing name:)]
+            batch['names'] = batch['x']
             batch['Xc'] = batch['xc']
             batch['xc'] = dict()
             ########################################
