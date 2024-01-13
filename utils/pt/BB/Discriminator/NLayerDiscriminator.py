@@ -30,7 +30,6 @@ class NLayerDiscriminator(BB):
         self.vgg16 = nn.Sequential(
             self.vgg16_head,
             nn.Conv2d(512, 512, 3,2,1), # 8x8 -> 4x4
-            nn.Sigmoid()
         )
         self.vgg16[0][24].weight.register_hook(lambda grad: self.d12grad(grad, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb A', f'self.vgg16'))
         self.vgg16[0][28].weight.register_hook(lambda grad: self.d12grad(grad, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb B', f'self.vgg16'))
@@ -89,7 +88,6 @@ class NLayerDiscriminator(BB):
         
         main_out = self.vgg16(input)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
-        
-        # main_out.register_hook(lambda grad: 1e6 * grad)
-        # main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 2nd'))
-        return main_out
+        sigout = self.sig(main_out)
+        sigout.register_hook(lambda grad: self.d12grad(grad, split, f'sigout'))
+        return sigout
