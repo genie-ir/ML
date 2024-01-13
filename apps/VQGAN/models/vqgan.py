@@ -128,11 +128,11 @@ class VQModel(PLModule):
     def acceptance(self,
             # N=[254, 110, 3],
             F=[
-                'fumdata/train/fundus/1/8856_left.jpg',
+                'fumdata/train/fundus/1/10192_left.jpg',
                 
+                'fumdata/train/fundus/2/14651_right_clahe.jpg', # NOTE OK
                 
-                'fumdata/train/fundus/2/14205_left_clahe.jpg',
-                'fumdata/train/fundus/3/5450_left.jpg',
+                'fumdata/train/fundus/4/2800_left_clahe.jpg', # NOTE OK
             ]
     ):
         if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
