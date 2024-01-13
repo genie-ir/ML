@@ -234,9 +234,9 @@ class VQLPIPSWithDiscriminator(nn.Module):
         return self.vgg16(x)
     
     
-    def D1(self, x): # discriminator
+    def D1(self, x, split): # discriminator
         dout = (self.discriminator(x.contiguous()))
-        dout.register_hook(lambda grad: self.d12grad(grad, 'D1', 'DDDDDDDDDDD'))
+        dout.register_hook(lambda grad: self.d12grad(grad, split, 'D1'))
         return dout.mean()
     
     # def D2(self, x): # discriminator_large
@@ -255,7 +255,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
         if x.requires_grad:
             x.register_hook(lambda grad: self.d12grad(grad, split, ')))))))')) # DELETE there is not been in D training
-        d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
+        d1 = self.D1(x, split) # 0 -> exp(-5) <= d1 <=1
         # d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
         d1.register_hook(lambda grad: self.d12grad(grad, split, '////////'))
         if flag:
