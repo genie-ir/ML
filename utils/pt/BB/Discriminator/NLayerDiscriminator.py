@@ -33,7 +33,6 @@ class NLayerDiscriminator(BB):
             nn.Sigmoid()
         )
 
-        print(self.vgg16)
 
         # if not use_actnorm:
         #     norm_layer = nn.BatchNorm2d
@@ -85,20 +84,8 @@ class NLayerDiscriminator(BB):
             (D=1 / real classified) -> dloss=0
         """
         
-        print(input.shape, input.mean().item(), input.min().item(), input.max().item())
         main_out = self.vgg16(input)
-        print('main_out', main_out.shape, main_out.min().item(), main_out.max().item(), main_out.mean().item(), main_out)
-        assert False
-        # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
-        # logger.critical(input.shape)
-        main_out = self.main(input)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
-        main_out.register_hook(lambda grad: 1e6 * grad)
-        main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 2nd'))
-        Mue = main_out.mean().detach()
-        print('===============Mue', Mue.item(), Mue.max().item())
-        main_out = main_out - Mue
-        main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out | {Mue.item()}'))
-        tanhout_out = self.tanh_actfn(main_out) # I think 3x256x256 -> 1x30x30
-        tanhout_out.register_hook(lambda grad: self.d12grad(grad, split, 'D_tanhout_out'))
-        return self.sig(tanhout_out/2 + 0.5)
+        # main_out.register_hook(lambda grad: 1e6 * grad)
+        # main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 2nd'))
+        return main_out
