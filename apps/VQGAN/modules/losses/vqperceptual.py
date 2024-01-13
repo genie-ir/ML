@@ -235,7 +235,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
     
     
     def D1(self, x, split): # discriminator
-        dout = (self.discriminator(x.contiguous()))
+        dout = (self.discriminator(x.contiguous(), split))
         dout.register_hook(lambda grad: self.d12grad(grad, split, 'D1'))
         return dout.mean()
     
@@ -243,12 +243,6 @@ class VQLPIPSWithDiscriminator(nn.Module):
     #     return (self.discriminator_large(x.contiguous())).mean()
     
     def d12grad(self, grad, split: str, stag: str):
-        # if split.endswith('A_el0_Rpsistm'):
-        #     print('A_el0_Rpsistm', stag, grad)
-        
-        # if split.endswith('A_el1_Rxs') or split.endswith('A_el1_Fpsistm'):
-        #     print('SSSSSSSSSSSS', stag, grad)
-        
         print(split, grad.mean().item(), stag)
     
     

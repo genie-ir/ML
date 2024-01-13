@@ -59,7 +59,10 @@ class NLayerDiscriminator(BB):
             nn.Conv2d(ndf * nf_mult, 1, kernel_size=kw, stride=1, padding=padw)]  # output 1 channel prediction map
         self.main = nn.Sequential(*sequence)
 
-    def forward(self, input):
+    
+    def d12grad(self, grad, split: str, stag: str):
+        print(split, grad.mean().item(), stag)
+    def forward(self, input, split):
         """
             Standard forward.
             dloss = -Expectation(ln D)
@@ -68,4 +71,6 @@ class NLayerDiscriminator(BB):
         """
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)
-        return self.sig(self.main(input)) # I think 3x256x256 -> 1x30x30
+        main_out = self.main(input)
+        main_out.register_hook(lambda grad: self.d12grad(grad, split, 'D_main_out'))
+        return self.sig(main_out) # I think 3x256x256 -> 1x30x30
