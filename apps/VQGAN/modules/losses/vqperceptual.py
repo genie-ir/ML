@@ -241,11 +241,13 @@ class VQLPIPSWithDiscriminator(nn.Module):
     #     return (self.discriminator_large(x.contiguous())).mean()
     
     def d12grad(self, grad, split: str, stag: str):
-        if split.endswith('A_el0_Rpsistm'):
-            print('A_el0_Rpsistm', stag, grad)
+        # if split.endswith('A_el0_Rpsistm'):
+        #     print('A_el0_Rpsistm', stag, grad)
         
-        if split.endswith('A_el1_Rxs') or split.endswith('A_el1_Fpsistm'):
-            print('SSSSSSSSSSSS', stag, grad)
+        # if split.endswith('A_el1_Rxs') or split.endswith('A_el1_Fpsistm'):
+        #     print('SSSSSSSSSSSS', stag, grad)
+        
+        print(split, grad)
     
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
