@@ -3,6 +3,7 @@ import functools
 from torch import nn
 from utils.pt.building_block import BB
 from utils.pt.BB.Norm.ActNorm import ActNorm
+import torchvision
 
 class NLayerDiscriminator(BB):
     """Defines a PatchGAN discriminator as in Pix2Pix
@@ -24,6 +25,14 @@ class NLayerDiscriminator(BB):
 
         self.sig = nn.Sigmoid()
         self.tanh_actfn = nn.Tanh()
+
+        self.vgg16 = torchvision.models.vgg16(pretrained=True)
+        print(self.vgg16)
+        # for param in self.vgg16.parameters():
+        #     param.requires_grad = False
+        # for param_fidx in [26, 28]:
+        #     for param in self.vgg16.features[param_fidx].parameters():
+        #         param.requires_grad = True
 
         # if not use_actnorm:
         #     norm_layer = nn.BatchNorm2d
