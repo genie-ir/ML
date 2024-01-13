@@ -249,37 +249,44 @@ class VQLPIPSWithDiscriminator(nn.Module):
     
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
-        # if x.requires_grad:
-            # x.register_hook(lambda grad: self.d12grad(grad.mean().item(), split, ')))))))'))
+        if x.requires_grad:
+            x.register_hook(lambda grad: self.d12grad(grad.mean().item(), split, ')))))))'))
         d1 = self.D1(x) # 0 -> exp(-5) <= d1 <=1
         # d2 = self.D2(x) # 0 -> exp(-5) <= d2 <=1
-        # d1.register_hook(lambda grad: self.d12grad(grad, split, '////////'))
+        d1.register_hook(lambda grad: self.d12grad(grad, split, '////////'))
         if flag:
             d1 = 1 - d1
             # d2 = 1 - d2
         
-        # d1.register_hook(lambda grad: self.d12grad(grad, split, ';;;;;;;;'))
+        d1.register_hook(lambda grad: self.d12grad(grad, split, ';;;;;;;;'))
         d1TP, d1TN, d1FP, d1FN = self.analyse_p(d1, flag)
         # d2TP, d2TN, d2FP, d2FN = self.analyse_p(d2, flag)
-        # d1.register_hook(lambda grad: self.d12grad(grad, split, '--------'))
+        d1.register_hook(lambda grad: self.d12grad(grad, split, '--------'))
         d1 = self.logp(d1)
-        # d1.register_hook(lambda grad: self.d12grad(grad, split, '+++++++++'))
+        d1.register_hook(lambda grad: self.d12grad(grad, split, '+++++++++'))
         # d2 = self.logp(d2)
 
         DoneLoss = -1 * (d1.log())
-        # DoneLoss.register_hook(lambda grad: self.d12grad(grad, split, f'!!!!!!! {DoneLoss.item()} | {d1.item()}'))
+        DoneLoss.register_hook(lambda grad: self.d12grad(grad, split, f'!!!!!!! {DoneLoss.item()} | {d1.item()}'))
 
 
+        d1.register_hook(lambda grad: self.d12grad(grad, split, f'FFFFFFFFF'))
 
         d1 = l1 * DoneLoss
         # d2 = l2 * (-1 * (d2.log()))
-        
+
+        d1.register_hook(lambda grad: self.d12grad(grad, split, f'HHHHHHHH'))
+
+
         if d1 == 0:
             d1 = 0 * d1
         
         # if d2 == 0:
         #     d2 = 0 * d2
 
+        d1.register_hook(lambda grad: self.d12grad(grad, split, f'JJJJJJ'))
+
+        
         loss = d1 #+ d2
 
         log = {
