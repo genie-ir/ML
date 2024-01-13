@@ -247,7 +247,7 @@ class VQLPIPSWithDiscriminator(nn.Module):
         # if split.endswith('A_el1_Rxs') or split.endswith('A_el1_Fpsistm'):
         #     print('SSSSSSSSSSSS', stag, grad)
         
-        print(split, grad)
+        print(split, grad.mean())
     
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
