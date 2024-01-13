@@ -27,12 +27,9 @@ class NLayerDiscriminator(BB):
         self.tanh_actfn = nn.Tanh()
 
         self.vgg16 = torchvision.models.vgg16(pretrained=True)
-        print(self.vgg16)
-        # for param in self.vgg16.parameters():
-        #     param.requires_grad = False
-        # for param_fidx in [26, 28]:
-        #     for param in self.vgg16.features[param_fidx].parameters():
-        #         param.requires_grad = True
+        self.vgg16.classifier = nn.Sequential(
+            # nn.Conv2d()
+        )
 
         # if not use_actnorm:
         #     norm_layer = nn.BatchNorm2d
@@ -85,6 +82,8 @@ class NLayerDiscriminator(BB):
         """
         
         print(input.shape, input.mean().item(), input.min().item(), input.max().item())
+        main_out = self.vgg16(input)
+        print('main_out', main_out.min().item(), main_out.max().item(), main_out.mean().item(), main_out)
         assert False
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)

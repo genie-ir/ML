@@ -468,8 +468,8 @@ class VQModel(PLModule):
         for param in self.quantize.parameters():
             param.requires_grad = True
         
-        for pidx in [5, 6, 8, 9, 11]:
-            for param in self.Loss.discriminator.main[pidx].parameters():
+        for pidx in [21, 23, 24, 26, 28, 30]:
+            for param in self.Loss.discriminator.vgg16.features[pidx].parameters():
                 param.requires_grad = True
 
     def continueStart000(self):
@@ -550,7 +550,7 @@ class VQModel(PLModule):
                                 # betas=(0.5, 0.9)
                             )
         opt_disc = torch.optim.Adam([
-                                        {'params': self.Loss.discriminator.parameters()},
+                                        {'params': self.Loss.discriminator.vgg16.parameters()},
                                     ],
                                 lr=lr, 
                                 # betas=(0.5, 0.9)
