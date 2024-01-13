@@ -125,11 +125,12 @@ class PLModule(pl.LightningModule):
 
 
 class VQModel(PLModule):
-    def acceptance(
-            self,
+    def acceptance(self,
             # N=[254, 110, 3],
             F=[
-                'fumdata/train/fundus/1/10177_left_clahe.jpg',
+                'fumdata/train/fundus/1/8856_left.jpg',
+                
+                
                 'fumdata/train/fundus/2/14205_left_clahe.jpg',
                 'fumdata/train/fundus/3/5450_left.jpg',
             ]
