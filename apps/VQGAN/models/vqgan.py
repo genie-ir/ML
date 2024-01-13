@@ -125,14 +125,23 @@ class PLModule(pl.LightningModule):
 
 
 class VQModel(PLModule):
-    def acceptance(self, N=[254, 110, 3]):
+    def acceptance(
+            self,
+            # N=[254, 110, 3],
+            F=[
+                'fumdata/train/fundus/1/10177_left_clahe.jpg',
+                'fumdata/train/fundus/2/14205_left_clahe.jpg',
+                'fumdata/train/fundus/3/5450_left.jpg',
+            ]
+    ):
         if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
-            self.counter[self.batch['x_class']] = self.counter[self.batch['x_class']] + 1
+            # self.counter[self.batch['x_class']] = self.counter[self.batch['x_class']] + 1
 
-            if self.counter[self.batch['x_class']] == N[self.batch['x_class']]:
-                print('*******************************************')
-                print(f"class={self.batch['x_class']} | N={N[self.batch['x_class']]}", self.batch['names'])
-                print('*******************************************')
+            # if self.counter[self.batch['x_class']] == N[self.batch['x_class']]:
+            if self.batch['names'][0] == F[self.batch['x_class']]:
+                # print('*******************************************')
+                # print(f"class={self.batch['x_class']} | N={N[self.batch['x_class']]}", self.batch['names'])
+                # print('*******************************************')
                 self.pack_logdata = dict()
                 self.pack_logdata['xs'] = self.batch['x']
                 self.pack_logdata['y_edit'] = self.batch['x_class']
