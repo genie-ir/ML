@@ -127,11 +127,9 @@ class PLModule(pl.LightningModule):
 class VQModel(PLModule):
     def acceptance(self, N=6):
         if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
-            key = f'counter__{self.batch["x_class"]}'
-            counter = getattr(self, key, 0) + 1
-            setattr(self, key, counter)
+            self.counter[self.batch['x_class']] = self.counter[self.batch['x_class']] + 1
 
-            if counter == N:
+            if self.counter[self.batch['x_class']] == N:
                 self.pack_logdata = dict()
                 self.pack_logdata['xs'] = self.batch['x']
                 self.pack_logdata['y_edit'] = self.batch['x_class']
@@ -312,6 +310,7 @@ class VQModel(PLModule):
         self.acc[f'{tag}_'] = {'d1': last_d1_acc, 'd2': 0, 'O': 0}
         print(f'{tag}_', self.acc[f'{tag}_'])
         self.imglogger = [None, None, None]
+        self.counter = [0,0,0]
 
     def setbatch(self, batch, idx=-1):
         if idx == -1:
@@ -420,6 +419,7 @@ class VQModel(PLModule):
         # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
     
     def __start(self):
+        self.counter = [0,0,0]
         self.HGrad = {
             'train_opt0_A_IF': 1e7
         }
