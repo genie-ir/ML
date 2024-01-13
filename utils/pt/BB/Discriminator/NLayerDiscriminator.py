@@ -28,7 +28,7 @@ class NLayerDiscriminator(BB):
 
         self.vgg16 = torchvision.models.vgg16(pretrained=True)
         self.vgg16.classifier = nn.Sequential(
-            # nn.Conv2d()
+            # nn.Sigmoid()
         )
 
         # if not use_actnorm:
@@ -83,7 +83,7 @@ class NLayerDiscriminator(BB):
         
         print(input.shape, input.mean().item(), input.min().item(), input.max().item())
         main_out = self.vgg16(input)
-        print('main_out', main_out.min().item(), main_out.max().item(), main_out.mean().item(), main_out)
+        print('main_out', main_out.shape, main_out.min().item(), main_out.max().item(), main_out.mean().item(), main_out)
         assert False
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)
