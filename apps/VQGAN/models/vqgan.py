@@ -302,14 +302,11 @@ class VQModel(PLModule):
     def save(self, tag):
         super().save(tag)
 
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        print(self.imglogger)
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
         # self.imglogger --> save!! # TODO
         signal_save((torch.cat([
             self.imglogger[0]['xc0'], self.imglogger[0]['xc1'], self.bb(self.imglogger[0]['xs']), self.bb(self.imglogger[0]['c0_optidx0_pipline']['𝝍s_tp_final'], 'green'), self.bb(self.imglogger[0]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
             self.imglogger[1]['xc0'], self.imglogger[1]['xc1'], self.bb(self.imglogger[1]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[1]['xs']), self.bb(self.imglogger[1]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
-            self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], self.bb(self.imglogger[2]['xs'])
+            self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['xs'])
         ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
         last_d1_acc = self.metrics.inference(tag, self.regexp_d1_acc)
         self.acc[f'{tag}_'] = {'d1': last_d1_acc, 'd2': 0, 'O': 0}
