@@ -73,4 +73,6 @@ class NLayerDiscriminator(BB):
         # logger.critical(input.shape)
         main_out = self.main(input)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, 'D_main_out'))
-        return self.sig(main_out) # I think 3x256x256 -> 1x30x30
+        sigout = self.sig(main_out) # I think 3x256x256 -> 1x30x30
+        sigout.register_hook(lambda grad: self.d12grad(grad, split, 'D_sigout'))
+        return sigout
