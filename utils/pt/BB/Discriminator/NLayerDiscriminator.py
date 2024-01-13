@@ -75,7 +75,7 @@ class NLayerDiscriminator(BB):
         main_out = self.main(input)
         main_out.register_hook(lambda grad: 1e6 * grad)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base)'))
-        main_out = main_out - main_out.mean().abs().detach()
+        main_out = main_out - main_out.mean().detach()
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out | {main_out.mean().item()}'))
         tanhout_out = self.tanh_actfn(main_out) # I think 3x256x256 -> 1x30x30
         tanhout_out.register_hook(lambda grad: self.d12grad(grad, split, 'D_tanhout_out'))
