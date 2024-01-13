@@ -67,6 +67,10 @@ class PLModule(pl.LightningModule):
         self.load_state_dict(sd, strict=False)
         logger.critical(f"Restored from {path}")
     
+    def acceptance(self):
+        """All Batches will be accept in default"""
+        return True
+    
     def step(self, batch, batch_idx, **kwargs):
         self.TAG = kwargs['tag']
         optFlag = self.TAG == 'train' or kwargs.get('force_train', False)
@@ -79,16 +83,8 @@ class PLModule(pl.LightningModule):
         
         self.batch = self.setbatch(batch)
 
-        ########################################################################### # DELETE
-        flag_logdata = False
-        pack_logdata = dict()
-        if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
-            flag_logdata = True
-            pack_logdata['xs'] = self.batch['x']
-            pack_logdata['y_edit'] = self.batch['x_class']
-        else:
+        if not self.acceptance():
             return
-        ###########################################################################
 
         for idx in range(self.IDX):
             self.idx = idx # current index
@@ -106,7 +102,7 @@ class PLModule(pl.LightningModule):
                     opt_ae.zero_grad()
                     opt_disc.zero_grad()
                 
-                self.pipline(pack_logdata) # TODO pipline shoud hasnt any params...
+                self.pipline()
 
                 self.log({
                     'epoch': self.current_epoch
@@ -123,19 +119,34 @@ class PLModule(pl.LightningModule):
                 
                 # print(f'after optidx={optimizer_idx}',optimizer_params, self.decoder.up[4].attn[1].k.weight.requires_grad, self.decoder.up[4].attn[1].k.weight.sum().item())
 
-        if flag_logdata: # DELETE
-            self.imglogger[batch['x_class']] = pack_logdata
-
         dtime = (time() - stime)
 
 
 
 
 class VQModel(PLModule):
+    def acceptance(self, N=4):
+        self.pack_logdata = dict()
+        if self.imglogger[self.batch['x_class']] == None and self.TAG == 'train':
+            counter = getattr(self, 'counter', 0)
+            if counter == 0:
+                self.counter = 1
+            else:
+                self.counter = self.counter + 1
+            if self.counter == N:
+                self.pack_logdata['xs'] = self.batch['x']
+                self.pack_logdata['y_edit'] = self.batch['x_class']
+                self.imglogger[self.batch['x_class']] = self.pack_logdata
+                return True
+            else:
+                return False
+        else:
+            return False
+
     def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
         h.register_hook(lambda grad: self.HGrad.get(tag, 1) * grad)
-        h.register_hook(lambda grad: print(f'h.grad | {tag}', grad.mean().item()))
+        h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
         return h
 
     def phi(self, t): # NOTE: kernel function
@@ -277,7 +288,7 @@ class VQModel(PLModule):
 
         self.batch['xpf'] = xpf
 
-    def pipline(self, pack_logdata):
+    def pipline(self):
         if self.opt.get('condstep', False):
             self.sec0()
         else:
@@ -285,8 +296,8 @@ class VQModel(PLModule):
             self.secB()
 
             if self.opt.get('flag_logdata', False):
-                pack_logdata[f'xc{self.idx}'] = self.batch['xc']
-                pack_logdata[f'c{self.idx}_optidx{self.optidx}_pipline'] = {'𝝍s_tp_final': self.batch['xpf'], '𝝍s_tm_final': self.batch['xnf']}
+                self.pack_logdata[f'xc{self.idx}'] = self.batch['xc']
+                self.pack_logdata[f'c{self.idx}_optidx{self.optidx}_pipline'] = {'𝝍s_tp_final': self.batch['xpf'], '𝝍s_tm_final': self.batch['xnf']}
 
     def save(self, tag):
         super().save(tag)
