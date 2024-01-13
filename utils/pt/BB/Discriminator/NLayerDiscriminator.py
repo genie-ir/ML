@@ -71,7 +71,7 @@ class NLayerDiscriminator(BB):
             (D=1 / real classified) -> dloss=0
         """
         
-        print(input.shape, input)
+        print(input.shape, input.mean().item(), input.min().item(), input.max.item())
         assert False
         # input = torch.cat([input[:,0:1 ,:,:], input[:,1:2 ,:,:], input[:,3:4 ,:,:]], dim=1)
         # logger.critical(input.shape)
