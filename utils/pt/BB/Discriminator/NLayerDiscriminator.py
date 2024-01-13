@@ -26,7 +26,14 @@ class NLayerDiscriminator(BB):
         self.sig = nn.Sigmoid()
         self.tanh_actfn = nn.Tanh()
 
-        self.vgg16 = torchvision.models.vgg16(pretrained=True).features
+        self.vgg16_head = torchvision.models.vgg16(pretrained=True).features
+        self.vgg16 = nn.Sequential(
+            self.vgg16_head,
+            nn.Conv2d(512, 512, 3,2,1), # 8x8 -> 4x4
+            nn.Sigmoid()
+        )
+
+        print(self.vgg16)
 
         # if not use_actnorm:
         #     norm_layer = nn.BatchNorm2d
