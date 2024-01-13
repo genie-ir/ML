@@ -32,7 +32,7 @@ class NLayerDiscriminator(BB):
             nn.Conv2d(512, 512, 3,2,1), # 8x8 -> 4x4
             nn.Sigmoid()
         )
-        self.vgg16[0][0].weight.register_hook(lambda grad: self.d12grad(grad, 'split', f'self.vgg16[0][0]'))
+        self.vgg16[0][24].weight.register_hook(lambda grad: self.d12grad(grad, 'split', f'self.vgg16[0][0]'))
         print(self.vgg16)
 
         # if not use_actnorm:
