@@ -1,3 +1,5 @@
+# NOTE: this file shoud be used in repo asli!!
+
 # PEP 8 recommends using lowercase letters for variable and function names, 
 # with words separated by underscores. For class names, use the CamelCase convention, 
 # starting with an uppercase letter. It is also recommended to avoid using 
@@ -12,18 +14,19 @@ class PYBASE:
         starategy as left as possible and will be overwite all other right classes.
     """
     def __init__(self, *pargs, **kwargs):
-        try:
-            super().__init__(*pargs, **kwargs) # NOTE: this line shoulde be defined. in multi class inheritence, inherit this class as `left` as possible.
-        except Exception as e:
-            if str(e) == 'object.__init__() takes exactly one argument (the instance to initialize)':
-                super().__init__() # NOTE: there is no multi inheritence and we just ready for to go `object` class with no parammeters.
-            else: # NOTE: there is multi inheritence and exception was acourd in that class and we should raise this exception becuse its not my problem!
-                raise Exception(e)
-
         # NOTE: from heare and below all variables and functions you defined will be overwrite all variables and functions defined in other right classes in multi class inheritence strategy.
         self.pargs = pargs
         self.kwargs = kwargs
         self.__start()
+
+        try:
+            super().__init__(*pargs, **kwargs) # NOTE: this line shoulde be defined. in multi class inheritence, inherit this class as `left` as possible.
+        except Exception as e:
+            if str(e) == 'object.__init__() takes exactly one argument (the instance to initialize)':
+                assert False, e # DELETE
+                super().__init__() # NOTE: there is no multi inheritence and we just ready for to go `object` class with no parammeters.
+            else: # NOTE: there is multi inheritence and exception was acourd in that class and we should raise this exception becuse its not my problem!
+                raise Exception(e)
 
     def __start(self):
         pass

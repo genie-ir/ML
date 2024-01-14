@@ -1,3 +1,6 @@
+# DELETE not use it in repo asli:)
+
+
 from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 import re
 
