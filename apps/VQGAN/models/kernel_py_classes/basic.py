@@ -23,7 +23,6 @@ class PYBASE:
             super().__init__(*pargs, **kwargs) # NOTE: this line shoulde be defined. in multi class inheritence, inherit this class as `left` as possible.
         except Exception as e:
             if str(e) == 'object.__init__() takes exactly one argument (the instance to initialize)':
-                assert False, e # DELETE
                 super().__init__() # NOTE: there is no multi inheritence and we just ready for to go `object` class with no parammeters.
             else: # NOTE: there is multi inheritence and exception was acourd in that class and we should raise this exception becuse its not my problem!
                 raise Exception(e)
