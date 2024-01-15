@@ -449,6 +449,9 @@ class Qadjustion(nn.Module):
         # print(self.mue[0,0,0])
         return r
 
+
+
+from apps.VQGAN.models.learners import Activation
 class ConvT_Tanh(nn.Module):
     def __init__(self, inch, outch, k, s, p, flag=True, act='tanh'):
         super().__init__()
@@ -457,12 +460,7 @@ class ConvT_Tanh(nn.Module):
         else:
             self.convt = nn.Conv2d(inch, outch, k,s,p)
         
-        if act == 'tanh':
-            self.tgh = nn.Tanh()
-        elif act == 'relu':
-            self.tgh = nn.ReLU()
-        else:
-            assert False, f'act={act} is not defined!'
+        self.tgh = Activation(act)
     
     def forward(self, x):
         return self.tgh(self.convt(x))

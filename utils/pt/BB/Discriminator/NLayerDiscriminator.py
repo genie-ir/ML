@@ -25,8 +25,8 @@ class NLayerDiscriminator(BB):
         # use_actnorm=self.kwargs.get('use_actnorm', False)
 
         self.tanh = Activation()
-        # self.sig = Activation('sig')
-        self.sig = nn.Sigmoid()
+        self.sig = Activation('sig')
+        # self.sig = nn.Sigmoid()
 
         self.vgg16_head = torchvision.models.vgg16(pretrained=True).features
         self.vgg16 = nn.Sequential(
