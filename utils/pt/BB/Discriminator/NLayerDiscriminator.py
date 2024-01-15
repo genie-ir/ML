@@ -33,9 +33,9 @@ class NLayerDiscriminator(BB):
         self.vgg16.classifier[6] = nn.Sequential(
             nn.Linear(n_inputs, 256), 
             # nn.ReLU(), 
-            self.tanh,
+            # self.tanh,
             # nn.Dropout(0.4),
-            nn.Linear(256, 128)
+            # nn.Linear(256, 128)
         )
         self.vgg16.features[24].weight.register_hook(lambda grad: self.d12grad(grad, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb A', f'self.vgg16'))
         self.vgg16.features[28].weight.register_hook(lambda grad: self.d12grad(grad, 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb B', f'self.vgg16'))
