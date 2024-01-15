@@ -4,6 +4,7 @@ from torch import nn
 from utils.pt.building_block import BB
 from utils.pt.BB.Norm.ActNorm import ActNorm
 import torchvision
+from apps.VQGAN.models.learners import Activation
 
 class NLayerDiscriminator(BB):
     """Defines a PatchGAN discriminator as in Pix2Pix
@@ -23,8 +24,9 @@ class NLayerDiscriminator(BB):
         # n_layers=self.kwargs.get('n_layers', 3)
         # use_actnorm=self.kwargs.get('use_actnorm', False)
 
+        self.tanh = Activation()
+        # self.sig = Activation('sig')
         self.sig = nn.Sigmoid()
-        self.tanh = nn.Tanh()
 
         self.vgg16_head = torchvision.models.vgg16(pretrained=True).features
         self.vgg16 = nn.Sequential(
@@ -88,6 +90,6 @@ class NLayerDiscriminator(BB):
         
         main_out = self.vgg16(input)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
-        sigout = self.tanh(main_out)
-        sigout.register_hook(lambda grad: self.d12grad(grad, split, f'tanh'))
+        sigout = self.sig(main_out)
+        sigout.register_hook(lambda grad: self.d12grad(grad, split, f'sig'))
         return sigout

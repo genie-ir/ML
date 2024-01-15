@@ -25,11 +25,57 @@ class Grad(PYBASE):
         """
         return (w * z) + (zq - (w * z)).detach()
 
-    def safe(self, x, cb, w=1, **kwargs):
+    def __safe(self, x, cb, w=1, **kwargs):
         """kar dare hanoz!!"""
         xzq = cb(x.detach(), **kwargs)
         zxq = self.dzq_dz_eq1(xzq, x, w=w)
         return zxq
+
+# Bank of Basic Components
+class Activation(nn.Module):
+    def __init__(self, T: str = 'tanh', fwd='nsd', r=1, **kwargs):
+        """change fwd to None for orginal physical/semantic functionality; #NOTE nsd is default becuse I belive activation function should not been has contribution to changing scale of Derivative, becuse it should not been any samantic purpose just it should be operate as noneLinerity contributer to last function and it shoulde be contribute as extra bounding controller"""
+        super().__init__()
+        self.r = float(r) # search radius; # NOTE: each activation compute its static parammetters based on r.
+        self.Grad = Grad()
+
+        T_lower = T.lower()
+
+        if T_lower == 'tanh': # 0<=D<=1
+            T = 'Tanh'
+            self.tanh_scale = 1 if self.r == 1 else 'BAYAD MOHASEBE BASHE ALAN BALAD NISTAM :)' # TODO
+
+        if T_lower == 'sig': # 0<=D<=1
+            T = 'Sigmoid'
+            self.sig_scale = 1 if self.r == 1 else 'BAYAD MOHASEBE BASHE ALAN BALAD NISTAM :)' # TODO
+
+        # if T_lower == '?': # NOTE: define a new activation function!!
+        #     T = '?'
+
+        fwd = fwd or 'fwd'
+        self.activation = getattr(self, T, getattr(nn, T, None))(**kwargs)
+        setattr(self, 'forward', getattr(self, fwd))
+        setattr(self, 'variant', getattr(self, f'variant_{T}'))
+
+    def fwd(self, x):
+        return self.activation(x)
+    
+    def nsd(self, x):
+        """nsd: None Scale Derivative"""
+        y = self.activation(x)
+        y_requires_grad = y.requires_grad
+        y = self.variant(y).detach()
+        y.requires_grad = y_requires_grad
+        y = self.Grad.dzq_dz_eq1(y, x)
+        return y
+
+    def variant_Tanh(self, y):
+        return self.tanh_scale * y
+    
+    def variant_Sigmoid(self, y):
+        return self.sig_scale * y
+
+
 
 class Lerner(PYBASE, nn.Module):
     def __init__(self, **kwargs):
@@ -38,42 +84,35 @@ class Lerner(PYBASE, nn.Module):
 
     def __start(self):
         self.Grad = Grad()
+        self.Activation = Activation
         # self.m
         # self.pl.device self.device = 'cuda' # dynamic it...
-        pass
+        self.device = 'cuda'
 
     def List(self, list1D_components):
         return nn.ModuleList(list1D_components)
     
-    def component(self, T, **kwargs):
+    def component(self, __T, __name: str = None, **kwargs) -> None:
+        T = __T
+        name = __name
         if isinstance(T, str):
-            return getattr(self, T, getattr(nn, T))(**kwargs)
-        return T(**kwargs)
-
-class Activation(Lerner):
-    def __init__(self, T='tanh', **kwargs):
-        super().__init__(**kwargs)
+            _component = getattr(self, T, getattr(nn, T, None))(**kwargs)
+        else:
+            _component = T(**kwargs)
         
-        if T.lower() == 'tanh': # sign of derivative is positive
-            T = 'Tanh'
+        if name != None:
+            setattr(self, name, _component)
         
-        if T.lower() == 'sig': # sign of derivative is positive
-            T = 'Sigmoid'
-        
-        self.T = T
-        self.__start()
-
-    def __start(self):
-        self.act = self.component(self.T, **self.kwargs)
+        return _component
     
-    def forward(self, x):
-        y = self.act(x)
-        y_requires_grad = y.requires_grad
-        y = y.detach()
-        y.requires_grad = y_requires_grad
-        y = self.Grad.dzq_dz_eq1(y, x)
-
-        return y
+    # Linear Algebra Component
+    def LA(self, **kwargs): # TODO
+        """instantiation"""
+        return self.__la
+    
+    def __la(self):
+        """forward"""
+        return
 
 class T(Lerner):
     def __init__(self, T='conv', us=False, ds=True, b=1, n=100, act='tanh', actparams=None, **kwargs):
@@ -86,26 +125,29 @@ class T(Lerner):
         self.b = int(b) # branching factor
         self.n = int(n) # sinusoidal factor
 
+        if T.lower() == 'la':
+            T = 'LA'
+            pass # TODO
+        
         if 'conv' in T.lower():
-            k = None
-            s = None
-            p = None
-
-            if T.lower() == 'c2d' or T.lower() == 'conv':
-                if self.ds:
-                    T = 'Conv2d'
-                    k = self.kwargs.get('k', 3)
-                    s = self.kwargs.get('s', 2)
-                    p = self.kwargs.get('p', 1)
-                else:
-                    T = 'ConvTranspose2d'
-                    k = self.kwargs.get('k', 4)
-                    s = self.kwargs.get('s', 2)
-                    p = self.kwargs.get('p', 1)
-            
             inch = self.kwargs.get('inch', None)
             outch = self.kwargs.get('outch', None)
 
+            if self.ds:
+                k = self.kwargs.get('k', 3)
+                s = self.kwargs.get('s', 2)
+                p = self.kwargs.get('p', 1)
+            else:
+                k = self.kwargs.get('k', 4)
+                s = self.kwargs.get('s', 2)
+                p = self.kwargs.get('p', 1)
+
+            if T.lower() == 'conv2d' or T.lower() == 'conv': # 2D
+                if self.ds:
+                    T = 'Conv2d'
+                else:
+                    T = 'ConvTranspose2d'
+            
             if inch != None:
                 self.kwargs['in_channels'] = int(inch)
             
@@ -132,7 +174,9 @@ class T(Lerner):
         fwd = '_fwd'
         if self.act != None:
             fwd = '_fwd_act'
-            self.act = Activation(self.act, **self.actparams)
+            # self.component(self.Activation, 'afn1', T=self.act, **self.actparams)
+            self.component(self.Activation, 'afn1', T='tanh', **self.actparams)
+            self.component(self.Activation, 'afn2', T='sig', **self.actparams)
         
         setattr(self, 'fwd', getattr(self, fwd))
         
@@ -167,7 +211,7 @@ class T(Lerner):
         return y
     
     def _fwd_act(self, x, i=0):
-        return self.act(self._fwd(x, i))
+        return self.activation(self._fwd(x, i))
     
     def _bfwd(self, x):
         l = []
