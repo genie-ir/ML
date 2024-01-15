@@ -11,6 +11,23 @@ class Grad(PYBASE):
     def __start(self):
         pass
     
+    def normalizer(self, g):
+        t = g.clone().detach()
+        frexp = torch.tensor(t).frexp()
+        m = frexp.mantissa
+        e = frexp.exponent
+
+        ln2 = torch.tensor(2.0).log()
+        ln10 = torch.tensor(10.0).log()
+
+        n = (e * (ln2 / ln10))
+        new_n = n
+        # new_n = 0
+        new_e = new_n * (ln10 / ln2)
+        # new_e = torch.tensor(0)
+        x = torch.ldexp(m, e) * (10**(-n))
+        (t-x)
+    
     def sethook(self, tensor, callback):
         tensor.register_hook(callback)
     
