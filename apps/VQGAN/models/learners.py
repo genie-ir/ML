@@ -12,7 +12,7 @@ class Grad(PYBASE):
         pass
     
     def sethook(tensor, callback):
-        tensor.register_hook(lambda grad: callback(grad))
+        tensor.register_hook(callback)
     
     def dzq_dz_eq1(self, zq, z, w=1):
         """
@@ -62,6 +62,7 @@ class Activation(nn.Module):
     
     def nsd(self, x):
         """nsd: None Scale Derivative"""
+        self.Grad.sethook(x, lambda grad: print('------------------->', grad.mean().item()))
         y = self.activation(x)
         y_requires_grad = y.requires_grad
         y = self.variant(y).detach()
