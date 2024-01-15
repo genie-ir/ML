@@ -89,6 +89,7 @@ class NLayerDiscriminator(BB):
         """
         
         main_out = self.vgg16(input)
+        main_out.register_hook(lambda grad: 1e5 * grad)
         main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
         sigout = self.sig(main_out)
         sigout.register_hook(lambda grad: self.d12grad(grad, split, f'sig'))
