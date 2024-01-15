@@ -11,7 +11,7 @@ class Grad(PYBASE):
     def __start(self):
         pass
     
-    def sethook(tensor, callback):
+    def sethook(self, tensor, callback):
         tensor.register_hook(callback)
     
     def dzq_dz_eq1(self, zq, z, w=1):
