@@ -11,23 +11,6 @@ class Grad(PYBASE):
     def __start(self):
         pass
     
-    def normalizer(self, g):
-        t = g.clone().detach()
-        frexp = torch.tensor(t).frexp()
-        m = frexp.mantissa
-        e = frexp.exponent
-
-        ln2 = torch.tensor(2.0).log()
-        ln10 = torch.tensor(10.0).log()
-
-        n = (e * (ln2 / ln10))
-        new_n = n
-        # new_n = 0
-        new_e = new_n * (ln10 / ln2)
-        # new_e = torch.tensor(0)
-        x = torch.ldexp(m, e) * (10**(-n))
-        (t-x)
-    
     def sethook(self, tensor, callback):
         tensor.register_hook(callback)
     
@@ -50,48 +33,63 @@ class Grad(PYBASE):
 
 # Bank of Basic Components
 class Activation(nn.Module):
-    def __init__(self, T: str = 'tanh', fwd='nsd', r=1, **kwargs):
-        """change fwd to None for orginal physical/semantic functionality; #NOTE nsd is default becuse I belive activation function should not been has contribution to changing scale of Derivative, becuse it should not been any samantic purpose just it should be operate as noneLinerity contributer to last function and it shoulde be contribute as extra bounding controller"""
+    def __init__(self, r=1.0, e=0.15, λ=0.5, α=10, **kwargs):
         super().__init__()
+        self.α = float(α) # scaler for loss function GSL
+        self.λ = float(λ) # scaler for loss function GSL
+        self.e = float(e) # fault tolerance
         self.r = float(r) # search radius; # NOTE: each activation compute its static parammetters based on r.
+        self.s = float(1.0)
         self.Grad = Grad()
-
-        T_lower = T.lower()
-
-        if T_lower == 'tanh': # 0<=D<=1
-            T = 'Tanh'
-            self.tanh_scale = 1 if self.r == 1 else 'BAYAD MOHASEBE BASHE ALAN BALAD NISTAM :)' # TODO
-
-        if T_lower == 'sig': # 0<=D<=1
-            T = 'Sigmoid'
-            self.sig_scale = 1 if self.r == 1 else 'BAYAD MOHASEBE BASHE ALAN BALAD NISTAM :)' # TODO
-
-        # if T_lower == '?': # NOTE: define a new activation function!!
-        #     T = '?'
-
-        fwd = fwd or 'fwd'
-        self.activation = getattr(self, T, getattr(nn, T, None))(**kwargs)
-        setattr(self, 'forward', getattr(self, fwd))
-        setattr(self, 'variant', getattr(self, f'variant_{T}'))
-
-    def fwd(self, x):
-        return self.activation(x)
+        self.tanh = nn.Tanh()
     
-    def nsd(self, x):
-        """nsd: None Scale Derivative"""
-        self.Grad.sethook(x, lambda grad: print('------------------->', grad.mean().item()))
-        y = self.activation(x)
-        y_requires_grad = y.requires_grad
-        y = self.variant(y).detach()
-        y.requires_grad = y_requires_grad
+    def forward(self, x):
+        x_cd = x.clone().detach() # non_preemptive; hasnt share memory and hasnt derevative path
+        y = self.tanh(x)
+        y = (self.s * y).detach()
         y = self.Grad.dzq_dz_eq1(y, x)
+        if y.requires_grad:
+            self.Grad.sethook(y, lambda grad: self.GSL(grad.clone().detach(), x_cd))
         return y
 
-    def variant_Tanh(self, y):
-        return self.tanh_scale * y
+    def S(self, x_np):
+        """Tanh satisfaction loss function"""
+        x_np2 = 2 * x_np.abs()
+        return torch.min(torch.max((-x_np2+1), ((x_np2/5) - (1/5))), x_np**0)
     
-    def variant_Sigmoid(self, y):
-        return self.sig_scale * y
+    def GSL(self, g, x_np):
+        """gradient scaler loss function by Tanh properties"""
+        g_sign = g.sign().clone().detach()
+        
+        μ, β = g.frexp()
+        γ = β - 1
+        γ_new = γ / (γ.abs().max() + 1) # γ_new is in (-1, 1)
+        g_new = self.α * torch.ldexp(μ, 1+γ_new)
+
+        return (g_new.abs() * (1 + self.λ * self.S(x_np))) * g_sign
+    
+    def binary_decision(self, logit):
+        """logit is came from Tanh"""
+        logit_cd = logit.clone().detach()
+        decision = 0.5 * torch.ones_like(logit_cd, requires_grad=False) # every where has init value 0.5 === No Idea
+        decision.masked_fill_((logit_cd - 0.5).abs() <= self.e, 1.0) # +1/2 -> True  === 1.0
+        decision.masked_fill_((logit_cd + 0.5).abs() <= self.e, 0.0) # -1/2 -> False === 0.0
+        decision = decision.clone().detach()
+        # decision.requires_grad = True # DELETE this line shoude be deleted I comment it out, becuse you know that, I understand what i done! :)
+        decision = self.Grad.dzq_dz_eq1(decision, logit)
+        return decision
+
+    def decimal_decision(self, *logits):
+        """logit(s) is came from Tanh(s)"""
+        pass
+    
+    def binary_loss(self, logit, groundtruth):
+        """logit is came from Tanh"""
+        bd = self.binary_decision(logit)
+
+
+
+
 
 
 
