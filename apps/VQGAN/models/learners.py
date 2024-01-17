@@ -85,7 +85,7 @@ class Activation(nn.Module):
     
     def binary_loss(self, logit, groundtruth):
         """logit is came from Tanh"""
-        bd = self.binary_decision(logit)
+        prediction = self.binary_decision(logit)
 
 
 
