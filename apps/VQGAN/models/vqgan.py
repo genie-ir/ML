@@ -155,7 +155,7 @@ class VQModel(PLModule):
 
     def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
-        h.register_hook(lambda grad: (self.HGrad.get(tag, 1) * grad) * self.HGrad2.get(tag, 1))
+        # h.register_hook(lambda grad: (self.HGrad.get(tag, 1) * grad) * self.HGrad2.get(tag, 1))
         h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
         return h
 
@@ -319,9 +319,10 @@ class VQModel(PLModule):
             self.imglogger[1]['xc0'], self.imglogger[1]['xc1'], self.bb(self.imglogger[1]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[1]['xs']), self.bb(self.imglogger[1]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
             self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['xs'])
         ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
-        last_d1_acc = self.metrics.inference(tag, self.regexp_d1_acc)
-        self.acc[f'{tag}_'] = {'d1': last_d1_acc, 'd2': 0, 'O': 0}
-        print(f'{tag}_', self.acc[f'{tag}_'])
+        
+        # last_d1_acc = self.metrics.inference(tag, self.regexp_d1_acc)
+        # self.acc[f'{tag}_'] = {'d1': last_d1_acc, 'd2': 0, 'O': 0}
+        # print(f'{tag}_', self.acc[f'{tag}_'])
         self.imglogger = [None, None, None]
         self.counter = [0,0,0]
 
@@ -435,7 +436,7 @@ class VQModel(PLModule):
     def __start(self):
         self.counter = [0,0,0]
         self.HGrad = {
-            'train_opt0_A_IF': 1e7,
+            # 'train_opt0_A_IF': 1e7,
             # 'train_opt0_A_ELSE': 1e25,
             # 'train_opt0_B_ELSE': 1e25,
         }
@@ -457,7 +458,7 @@ class VQModel(PLModule):
             'train_': {'d1': 0, 'd2': 0, 'O': 0},
             'val_': {'d1': 0, 'd2': 0, 'O': 0}
         }
-        self.regexp_d1_acc = '^.*_opt1_.*\/d1ACC$'
+        # self.regexp_d1_acc = '^.*_opt1_.*\/d1ACC$'
 
         self.freeze()
 
@@ -468,10 +469,7 @@ class VQModel(PLModule):
         for param in self.quantize.parameters():
             param.requires_grad = True
         
-        for pidx in [24, 26, 28, 30]:
-            for param in self.Loss.discriminator.vgg16.features[pidx].parameters():
-                param.requires_grad = True
-        for param in self.Loss.discriminator.vgg16.classifier[6].parameters():
+        for param in self.Loss.discriminator.parameters():
             param.requires_grad = True
 
     def continueStart000(self):
@@ -552,7 +550,7 @@ class VQModel(PLModule):
                                 # betas=(0.5, 0.9)
                             )
         opt_disc = torch.optim.Adam([
-                                        {'params': self.Loss.discriminator.vgg16.parameters()},
+                                        {'params': self.Loss.discriminator.parameters()},
                                     ],
                                 lr=lr, 
                                 # betas=(0.5, 0.9)

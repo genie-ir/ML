@@ -247,6 +247,10 @@ class VQLPIPSWithDiscriminator(nn.Module):
     
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
+        f = not flag
+        return self.discriminator(x, f, split)
+    
+
         if x.requires_grad:
             x.register_hook(lambda grad: self.d12grad(grad, split, ')))))))')) # DELETE there is not been in D training
         d1 = self.D1(x, split) # 0 -> exp(-5) <= d1 <=1

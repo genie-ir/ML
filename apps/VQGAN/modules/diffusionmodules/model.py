@@ -364,7 +364,16 @@ class View(nn.Module):
         print(x.min().item(), x.max().item(), x.shape)
         assert False
 
+from apps.VQGAN.models.learners import FUM_H_Graph
 class KernelRegressor(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.graph = FUM_H_Graph()
+    
+    def forward(self, phil, phir):
+        return self.graph(phil, phir)
+
+class KernelRegressor000(nn.Module):
     def __init__(self):
         super().__init__()
         self.z0 = ConvT_Tanh(64,  32,   4,2,1) # 2x2

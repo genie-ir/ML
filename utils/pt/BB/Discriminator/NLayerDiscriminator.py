@@ -10,7 +10,7 @@ class NLayerDiscriminator(BB):
     """Defines a PatchGAN discriminator as in Pix2Pix
         --> see https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/models/networks.py
     """
-    def start(self):
+    def start00(self):
         """Construct a PatchGAN discriminator
         Parameters:
             input_nc (int)  -- the number of channels in input images
@@ -80,21 +80,26 @@ class NLayerDiscriminator(BB):
     def main(self, x):
         return x
     
+    def start(self):
+        from apps.VQGAN.models.learners import FUM_Disc_Graph
+        self.graph = FUM_Disc_Graph()
     
     def d12grad(self, grad, split: str, stag: str):
         print(split, grad.mean().item(), stag)
     
-    def forward(self, input, split):
+    def forward(self, input, flag, split):
         """
             Standard forward.
             dloss = -Expectation(ln D)
             (D=0 / fake classified) -> dloss=inf
             (D=1 / real classified) -> dloss=0
         """
-        
-        main_out = self.vgg16(input)
-        main_out.register_hook(lambda grad: 1e5 * grad)
-        main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
-        sigout = self.sig(main_out)
-        # sigout.register_hook(lambda grad: self.d12grad(grad, split, f'sig'))
-        return sigout
+        return self.graph(input, flag, split)
+    
+
+        # main_out = self.vgg16(input)
+        # main_out.register_hook(lambda grad: 1e5 * grad)
+        # main_out.register_hook(lambda grad: self.d12grad(grad, split, f'D_main_out (base) 1st'))
+        # sigout = self.sig(main_out)
+        # # sigout.register_hook(lambda grad: self.d12grad(grad, split, f'sig'))
+        # return sigout
