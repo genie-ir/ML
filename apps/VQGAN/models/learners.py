@@ -288,9 +288,9 @@ class FUM_Disc_Graph(Lerner):
 class FUM_H_Graph(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.a = Node(inch=256, outch=256, k=3, s=1, p=1), 
-        self.b = Node(inch=256, outch=256, k=3, s=1, p=1), 
-        self.c = Node(inch=256, outch=256, k=3, s=1, p=1),
+        self.a = Node(inch=256, outch=256, k=3, s=1, p=1)
+        self.b = Node(inch=256, outch=256, k=3, s=1, p=1) 
+        self.c = Node(inch=256, outch=256, k=3, s=1, p=1)
     
     def forward(self, x1, x2):
         y1 = self.a(x1)
