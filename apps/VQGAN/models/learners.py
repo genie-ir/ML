@@ -141,6 +141,7 @@ class System(Lerner):
         self.__start()
 
     def __start(self):
+        self.F_INIT()
         setattr(self, 'forward', self.F)
 
     def F_INIT(self):
