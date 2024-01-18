@@ -212,15 +212,16 @@ class BST_Regressor(Lerner):
         self.__start()
 
     def __start(self):
-        # self.BST = self.List([BST(**self.kwargs) for b in range(self.β)])
-        self.bst = BST(**self.kwargs)
+        self.BST = self.List([BST(**self.kwargs) for b in range(self.β)])
+        self.BST = self.List([BST(**self.kwargs) for b in range(50)])
+        # self.bst = BST(**self.kwargs)
 
     def forward(self, bipolar):
         """single bipolar current signal enters and the output is single bipolar signal"""
         μ = torch.zeros_like(bipolar, requires_grad=False, dtype=torch.float32)
         for b in range(self.β):
             # bst_b = self.binary_decision(self.BST[b](bipolar))
-            bst_b = self.binary_decision(self.bst(bipolar))
+            bst_b = self.binary_decision(self.bst[b](bipolar))
             bst_B = (bst_b.detach() * (2 ** (-(b+1)))).detach() # 0:ignores the bit position # 1:Keeps the bit position # 0.5: keeps the half bit posotion === here this is a good feature for regression
             bst_B = self.Grad.dzq_dz_eq1(bst_B, bst_b)
             μ = μ + bst_B
