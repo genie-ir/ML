@@ -201,6 +201,8 @@ class BST(Lerner):
             System(**self.kwargs),
             Activation(**self.kwargs)
         ])
+
+        len(self.bst)
     
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
