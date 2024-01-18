@@ -141,10 +141,10 @@ class System(Lerner):
         self.__start()
 
     def __start(self):
-        self.f = nn.Conv2d() # parameterized by θ
         setattr(self, 'forward', self.F)
 
     def F_INIT(self):
+        # parameterized by θs
         self.f = nn.Conv2d(self.kwargs['outch'], self.kwargs['outch'], 3, 1, 1)
     
     def F(self, bipolar):
