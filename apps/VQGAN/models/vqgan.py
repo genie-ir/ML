@@ -462,7 +462,7 @@ class VQModel(PLModule):
 
         self.freeze()
 
-        print(self.encoder.kernel_regressor)
+        print(self.encoder.kernel_regressor.graph.a)
         assert False
 
         for param in self.encoder.kernel_regressor.parameters():
