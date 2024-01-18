@@ -49,7 +49,7 @@ class PLModule(pl.LightningModule):
             self._loss = self._loss + loss_value
     
     def log(self, lDict, lType='metrics'):
-        print(lDict)
+        # print(lDict)
         self._log[lType] = {**self._log[lType], **lDict} # TODO better performance can be achived by replacing unpack aproch with other methods:)
 
     def save(self, tag):
@@ -91,7 +91,7 @@ class PLModule(pl.LightningModule):
             self.batch = self.setbatch(batch, self.idx) # current batch
 
             for optimizer_idx, optimizer_params in self.OPT:
-                print('START)', optimizer_idx, optimizer_params)
+                # print('START)', optimizer_idx, optimizer_params)
 
                 self.reset()
                 self.opt = optimizer_params # current opt params
@@ -156,7 +156,7 @@ class VQModel(PLModule):
     def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
         # h.register_hook(lambda grad: (self.HGrad.get(tag, 1) * grad) * self.HGrad2.get(tag, 1))
-        h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
+        # h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
         return h
 
     def phi(self, t): # NOTE: kernel function

@@ -7,7 +7,7 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 r = 1.0     # search radius
 e = 0.15    # fault tolerance
 β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
-ζ = 3       # depth of BST
+ζ = 9       # depth of BST
 λgs = 1     # GSL scaler
 λsl = 0.5   # GSL scaler
 λmc = 2.0   # misclassification loss coefficient
@@ -153,7 +153,9 @@ class System(Lerner):
             changes inside a coordinate system
             Bipolar current enters and the output is none-band
         """
-        return self.f(bipolar)
+        f = self.f(bipolar)
+        self.Grad.sethook(f, lambda g: print('f.grad', g.mean().item()))
+        return f
 
 
 class Activation(Lerner):
@@ -288,7 +290,7 @@ class FUM_H_Graph(Lerner):
         super().__init__(**kwargs)
         self.a = Node(inch=256, outch=256, k=3, s=1, p=1)
         self.b = Node(inch=256, outch=256, k=3, s=1, p=1) 
-        self.c = Node(inch=512, outch=256, k=3, s=1, p=1, ζ=5)
+        self.c = Node(inch=512, outch=256, k=3, s=1, p=1, ζ=10)
     
     def forward(self, x1, x2):
         y1 = self.a(x1)
