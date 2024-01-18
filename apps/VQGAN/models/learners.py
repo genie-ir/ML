@@ -36,9 +36,9 @@ class Grad(PYBASE):
         """
         return (w * z) + (zq - (w * z)).detach()
 
-class BaseLerner(PYBASE, nn.Module):
+class BaseLerner(nn.Module):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__()
         self.__start()
 
     def __start(self):
