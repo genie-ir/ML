@@ -83,6 +83,7 @@ class NLayerDiscriminator(BB):
     def start(self):
         from apps.VQGAN.models.learners import FUM_Disc_Graph
         self.graph = FUM_Disc_Graph()
+        # print(self.graph.parameters().numel())
     
     def d12grad(self, grad, split: str, stag: str):
         print(split, grad.mean().item(), stag)

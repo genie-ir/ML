@@ -283,8 +283,8 @@ class FUM_Disc_Graph(Lerner):
     
     def forward(self, x, groundtruth, tag):
         y = self.nodes(x)
-        print(y.requires_grad)
-        assert False
+        # print(y.requires_grad)
+        # assert False
         return self.Loss.binary(y, groundtruth=groundtruth, tag=tag)
 
 class FUM_H_Graph(Lerner):
