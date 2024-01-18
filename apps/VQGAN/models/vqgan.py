@@ -462,8 +462,8 @@ class VQModel(PLModule):
 
         self.freeze()
 
-        print(self.encoder.kernel_regressor.graph.a)
-        assert False
+        # print(self.encoder.kernel_regressor.graph.a)
+        # assert False
 
         for param in self.encoder.kernel_regressor.parameters():
             param.requires_grad = True
