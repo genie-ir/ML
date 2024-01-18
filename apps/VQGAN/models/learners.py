@@ -7,7 +7,7 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 r = 1.0     # search radius
 e = 0.15    # fault tolerance
 β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
-ζ = 9       # depth of BST
+ζ = 90       # depth of BST
 λgs = 4     # GSL scaler
 λsl = 0.5   # GSL scaler
 λmc = 2.0   # misclassification loss coefficient
