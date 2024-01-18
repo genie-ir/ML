@@ -292,7 +292,7 @@ class FUM_H_Graph(Lerner):
         super().__init__(**kwargs)
         self.a = Node(inch=256, outch=256, k=3, s=1, p=1)
         self.b = Node(inch=256, outch=256, k=3, s=1, p=1) 
-        self.c = Node(inch=512, outch=256, k=3, s=1, p=1, ζ=10)
+        self.c = Node(inch=512, outch=256, k=3, s=1, p=1)
     
     def forward(self, x1, x2):
         y1 = self.a(x1)
