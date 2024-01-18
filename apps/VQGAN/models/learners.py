@@ -291,13 +291,12 @@ class FUM_H_Graph(Lerner):
         super().__init__(**kwargs)
         self.a = Node(inch=256, outch=256, k=3, s=1, p=1)
         self.b = Node(inch=256, outch=256, k=3, s=1, p=1) 
-        self.c = Node(inch=256, outch=256, k=3, s=1, p=1)
+        self.c = Node(inch=512, outch=256, k=3, s=1, p=1, ζ=5)
     
     def forward(self, x1, x2):
         y1 = self.a(x1)
         y2 = self.b(x2)
-        ymean = (y1 + y2) / 2
-        y = self.c(ymean)
+        y = self.c(torch.cat([y1, y2], dim=1))
         return y
     
 
