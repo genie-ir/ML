@@ -213,7 +213,7 @@ class BST_Regressor(Lerner):
 
     def __start(self):
         self.BST = self.List([BST(**self.kwargs) for b in range(self.β)])
-        self.BST = self.List([BST(**self.kwargs) for b in range(50)])
+        self.bst = self.List([BST(**self.kwargs) for b in range(50)])
         # self.bst = BST(**self.kwargs)
 
     def forward(self, bipolar):
