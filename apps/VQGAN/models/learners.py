@@ -39,6 +39,7 @@ class Grad(PYBASE):
 class BaseLerner(nn.Module):
     def __init__(self, **kwargs):
         super().__init__()
+        self.kwargs = kwargs
         self.__start()
 
     def __start(self):
