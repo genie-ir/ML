@@ -202,8 +202,7 @@ class BST(Lerner):
             Activation(**self.kwargs)
         ])
 
-        len(self.bst)
-        assert False
+        print(len(self.bst))
     
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
