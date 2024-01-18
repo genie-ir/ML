@@ -203,6 +203,7 @@ class BST(Lerner):
         ])
 
         len(self.bst)
+        assert False
     
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
