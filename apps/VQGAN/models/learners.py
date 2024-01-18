@@ -276,16 +276,12 @@ class FUM_Disc_Graph(Lerner):
             Node(regressor=False, inch=8,  outch=16,  k=3, s=2, p=1), # 16x64
             Node(regressor=False, inch=16, outch=32,  k=3, s=2, p=1), # 32x32
             Node(regressor=False, inch=32, outch=64,  k=3, s=2, p=1), # 64x16
-            Node(regressor=False, inch=64, outch=128, k=3, s=2, p=1), # 64x8
+            Node(regressor=False, inch=64, outch=128, k=3, s=2, p=1), # 128x8
         ])
     
     def forward(self, x, groundtruth, tag):
         y = self.nodes(x)
-        print(y.shape)
-        loss = self.Loss.binary(y, groundtruth=groundtruth, tag=tag)
-        print(loss)
-        assert False
-        return loss
+        return self.Loss.binary(y, groundtruth=groundtruth, tag=tag)
 
 class FUM_H_Graph(Lerner):
     def __init__(self, **kwargs):
