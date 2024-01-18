@@ -109,7 +109,7 @@ class PLModule(pl.LightningModule):
                 })
                 
                 if optFlag: # TODO
-                    self.manual_backward(self._loss)
+                    self.manual_backward(self._loss.mean())
                     if self.optidx == 0:
                         opt_ae.step()
                     else:
