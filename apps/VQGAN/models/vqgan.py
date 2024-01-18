@@ -174,7 +174,7 @@ class VQModel(PLModule):
         phi_null = self.phi(self.Z.detach())
         Qn = self.H(phi_alpha.detach(), phi_null.detach(), tag)
         xn = self.batch['x'] * Cmue + mue * self.decoder(Qn)
-        xn.register_hook(lambda grad: print(f'xn.grad | {tag}', grad.mean().item()))
+        # xn.register_hook(lambda grad: print(f'xn.grad | {tag}', grad.mean().item()))
 
         # signal_save(torch.cat([
         #     (self.batch['x']+1)*127.5,
@@ -543,7 +543,7 @@ class VQModel(PLModule):
         # lr = self.learning_rate
         lr = 0.02
         opt_ae = torch.optim.Adam(
-                                    list(self.encoder.kernel_regressor.parameters())+
+                                    list(self.encoder.kernel_regressor.graph.parameters())+
                                     # list(self.decoder.parameters())+
                                     list(self.quantize.parameters()),
                                     # list(self.quant_conv.parameters())+
