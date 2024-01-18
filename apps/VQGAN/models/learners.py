@@ -202,8 +202,6 @@ class BST(Lerner):
             Activation(**self.kwargs)
         ])
 
-        print(len(self.bst))
-    
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
         return self.bst(bipolar)
@@ -285,6 +283,8 @@ class FUM_Disc_Graph(Lerner):
     
     def forward(self, x, groundtruth, tag):
         y = self.nodes(x)
+        print(y.requires_grad)
+        assert False
         return self.Loss.binary(y, groundtruth=groundtruth, tag=tag)
 
 class FUM_H_Graph(Lerner):
