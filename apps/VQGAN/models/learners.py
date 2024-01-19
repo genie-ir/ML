@@ -240,14 +240,14 @@ class BSTR(Lerner):
         for b in range(self.β):
             # bst_b = self.binary_decision(self.BST[b](bipolar))
             bst_b = self.bstc[b](bipolar)
-            print('-------->', bst_b)
+            # print('-------->', bst_b)
             bst_B = (bst_b.detach() * (2 ** (-(b+1)))).detach() # 0:ignores the bit position # 1:Keeps the bit position # 0.5: keeps the half bit posotion === here this is a good feature for regression
             bst_B = self.Grad.dzq_dz_eq1(bst_B, bst_b)
             μ = μ + bst_B
         μ_bipolar = μ.detach()
         μ_bipolar = (μ_bipolar * 2 - 1).detach()
-        print('μ_bipolar', μ_bipolar)
-        print('-'*30)
+        # print('μ_bipolar', μ_bipolar)
+        # print('-'*30)
         μ_bipolar = self.Grad.dzq_dz_eq1(μ_bipolar, μ)
         
         return μ_bipolar
