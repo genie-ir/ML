@@ -126,6 +126,8 @@ class Metrics(PYBASE):
         TN = sum(self.metrics[tag][f'{subname}TN:reduction_ignore'])
         FP = sum(self.metrics[tag][f'{subname}FP:reduction_ignore'])
         FN = sum(self.metrics[tag][f'{subname}FN:reduction_ignore'])
+        
+        print('!!!!!!!!!!!!!!', TP, TN, FP, FN)
         return (TP + TN) / (TP + TN + FP + FN)
 
 
