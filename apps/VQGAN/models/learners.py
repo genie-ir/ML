@@ -5,7 +5,7 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 
 
 r = 1.0     # search radius
-e = 0.15    # fault tolerance
+e = 0.3    # fault tolerance
 β = 8       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
 λgs = 1e1     # gradient scaler loss coefficient
@@ -83,8 +83,6 @@ class Loss(BaseLerner):
         
         TP, TN, FP, FN = 0, 0, 0, 0
         
-        print(pred)
-        assert False
         if groundtruth == True: # groundtruth is positive
             TP_Mask = pred == 1.0
             FN_Mask = pred == 0.0
