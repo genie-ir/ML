@@ -321,7 +321,8 @@ class VQModel(PLModule):
             self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['xs'])
         ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
         
-        last_d1_acc = self.metrics.inference(tag, self.regexp_d1_acc)
+        regexp_d1_acc = f'^{tag.upper()}_OPT1_.*\/ACC$'
+        last_d1_acc = self.metrics.inference(tag, regexp_d1_acc)
         self.acc[f'{tag}_'] = {'d1': last_d1_acc, 'd2': 0, 'O': 0}
         print(f'{tag}_', self.acc[f'{tag}_'])
         self.imglogger = [None, None, None]
@@ -459,7 +460,6 @@ class VQModel(PLModule):
             'train_': {'d1': 0, 'd2': 0, 'O': 0},
             'val_': {'d1': 0, 'd2': 0, 'O': 0}
         }
-        self.regexp_d1_acc = '^.*_opt1_.*\/d1ACC$' # BUG
 
         self.freeze()
 
