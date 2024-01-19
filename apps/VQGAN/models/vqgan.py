@@ -304,6 +304,9 @@ class VQModel(PLModule):
         if self.opt.get('condstep', False):
             self.sec0()
         else:
+            if self.optidx == 0 and self.acc[f'{self.TAG}_']['d1'] < 0.8:
+                print('###########', self.acc[f'{self.TAG}_']['d1'])
+                return
             self.secA()
             self.secB()
 
