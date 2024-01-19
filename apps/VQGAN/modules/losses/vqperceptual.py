@@ -248,7 +248,8 @@ class VQLPIPSWithDiscriminator(nn.Module):
     
     def D12(self, x, l1=1, l2=1, flag=False, split=''):
         f = not flag
-        return self.discriminator(x, f, split)
+        λacc = l1
+        return self.discriminator(x, f, λacc, split)
     
 
         if x.requires_grad:

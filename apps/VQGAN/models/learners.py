@@ -8,10 +8,10 @@ r = 1.0     # search radius
 e = 0.15    # fault tolerance
 β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
-λgs = 1     # GSL scaler
-λsl = 0.5   # GSL scaler
+λgs = 1     # gradient scaler loss coefficient
+λts = 0.5   # tanh satisfaction loss coefficient
 λmc = 2.0   # misclassification loss coefficient
-λlc = 4.0   # lazy classification loss coefficient
+λlc = 8.0   # lazy classification loss coefficient
 
 
 class Grad(PYBASE):
@@ -51,20 +51,11 @@ class BaseLerner(nn.Module):
         self.β = int(self.kwargs.get('β', β))
         self.ζ = int(self.kwargs.get('ζ', ζ))
         self.λgs = float(self.kwargs.get('λgs', λgs))
-        self.λsl = float(self.kwargs.get('λsl', λsl))
+        self.λts = float(self.kwargs.get('λts', λts))
         self.λmc = float(self.kwargs.get('λmc', λmc))
         self.λlc = float(self.kwargs.get('λlc', λlc))
 
-    def binary_decision(self, logit):
-        """logit is came from Tanh and output will be a binary decision === 0,1,0.5"""
-        logit_cd = logit.clone().detach()
-        decision = 0.5 * torch.ones_like(logit_cd, requires_grad=False) # every where has init value 0.5 === No Idea
-        decision.masked_fill_((logit_cd - 0.5).abs() <= self.e, 1.0) # +1/2 -> True  === 1.0
-        decision.masked_fill_((logit_cd + 0.5).abs() <= self.e, 0.0) # -1/2 -> False === 0.0
-        decision = decision.clone().detach()
-        # decision.requires_grad = True # DELETE this line shoude be deleted I comment it out, becuse you know that, I understand what i done! :)
-        decision = self.Grad.dzq_dz_eq1(decision, logit)
-        return decision
+    
 
 class Loss(BaseLerner):
     def __init__(self, **kwargs):
@@ -74,18 +65,19 @@ class Loss(BaseLerner):
     def __start(self):
         pass
 
-    def binary(self, logit, groundtruth: bool = True, make_decision=True, tag: str = ''):
+    def bit(self, logit, groundtruth: bool = True, λacc=1, tag: str = ''):
         """
+            ***This is bit loss***
             logit is came from Tanh
+            0<=λacc<=1 ; it gonna be a controller and provide by master!
             groundtruth is single bool:       True===1===positive       False===0===negative
         """
-        if make_decision:
-            prediction = self.binary_decision(logit)
-        else:
-            prediction = logit
-        
-        
+        prediction = logit # NOTE: binary_decision at end of the BSTC has been done.
         pred = prediction.clone().detach()
+
+        print('pred', pred)
+        self.Grad.sethook(pred, lambda grad: print('pred.grad', grad))
+
         loss = self.λlc * torch.ones_like(pred)
         
         TP, TN, FP, FN = 0, 0, 0, 0
@@ -104,7 +96,7 @@ class Loss(BaseLerner):
             loss.masked_fill_(FP_Mask, self.λmc)
             TN = TN + TN_Mask.sum()
             FP = FP + FP_Mask.sum()
-        loss = loss.clone().detach()
+        loss = (λacc * loss).clone().detach()
         loss = self.Grad.dzq_dz_eq1(loss, prediction, w=loss.detach())
         self.Grad.sethook(loss, lambda grad: torch.ones_like(grad))
         
@@ -145,25 +137,23 @@ class System(Lerner):
 
     def __start(self):
         self.F_INIT()
-        setattr(self, 'forward', self.F)
 
     def F_INIT(self):
-        # parameterized by θs
-        self.f = nn.Conv2d(self.kwargs['outch'], self.kwargs['outch'], 3, 1, 1)
+        """changes inside a coordinate system ; parameterized by θs that cames from Bayesian framework""" # TODO
+        self.F = nn.Conv2d(self.kwargs['outch'], self.kwargs['outch'], 3, 1, 1)
     
-    def F(self, bipolar):
-        """
-            changes inside a coordinate system
-            Bipolar current enters and the output is none-band
-        """
-        f = self.f(bipolar)
-        # self.Grad.sethook(f, lambda g: print('f.grad', g.mean().item()))
-        return f
-
+    def forward(self, bipolar):
+        """bipolar current enters and the output is none-band"""
+        F = self.F(bipolar)
+        self.Grad.sethook(F, lambda grad: print('F.grad', grad.mean().item()))
+        return F
 
 class Activation(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.__start()
+
+    def __start(self):
         self.s = float(1.0) # TODO compute it based on r
         self.tanh = nn.Tanh()
     
@@ -191,9 +181,9 @@ class Activation(Lerner):
         γ_new = γ / (γ.abs().max() + 1) # γ_new is in (-1, 1)
         g_new = self.λgs * torch.ldexp(μ, 1+γ_new)
 
-        return (g_new.abs() * (1 + self.λsl * self.S(x_np))) * g_sign
+        return (g_new.abs() * (1 + self.λts * self.S(x_np))) * g_sign
     
-class BST(Lerner):
+class BSTC(Lerner):
     """classifire: # NOTE   0===False     1===True     0.5===Unknown"""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -205,25 +195,36 @@ class BST(Lerner):
             Activation(**self.kwargs)
         ])
 
+    def binary_decision(self, logit):
+        """logit is came from Tanh and output will be a binary decision === 0,1,0.5"""
+        logit_cd = logit.clone().detach()
+        decision = 0.5 * torch.ones_like(logit_cd, requires_grad=False) # every where has init value 0.5 === No Idea
+        decision.masked_fill_((logit_cd - 0.5).abs() <= self.e, 1.0) # +1/2 -> True  === 1.0
+        decision.masked_fill_((logit_cd + 0.5).abs() <= self.e, 0.0) # -1/2 -> False === 0.0
+        decision = decision.clone().detach()
+        # decision.requires_grad = True # DELETE this line shoude be deleted I comment it out, becuse you know that, I understand what i done! :)
+        decision = self.Grad.dzq_dz_eq1(decision, logit)
+        return decision
+    
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
-        return self.bst(bipolar)
+        return self.binary_decision(self.bst(bipolar))
 
-class BST_Regressor(Lerner):
+class BSTR(Lerner):
+    """BST Regressor"""
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.__start()
 
     def __start(self):
-        self.bst = self.List([BST(**self.kwargs) for b in range(self.β)]) # BUG
-        # self.bst = BST(**self.kwargs)
+        self.bstc = self.List([BSTC(**self.kwargs) for b in range(self.β)]) # BUG
 
     def forward(self, bipolar):
         """single bipolar current signal enters and the output is single bipolar signal"""
         μ = torch.zeros_like(bipolar, requires_grad=False, dtype=torch.float32)
         for b in range(self.β):
             # bst_b = self.binary_decision(self.BST[b](bipolar))
-            bst_b = self.binary_decision(self.bst[b](bipolar))
+            bst_b = self.bstc[b](bipolar)
             bst_B = (bst_b.detach() * (2 ** (-(b+1)))).detach() # 0:ignores the bit position # 1:Keeps the bit position # 0.5: keeps the half bit posotion === here this is a good feature for regression
             bst_B = self.Grad.dzq_dz_eq1(bst_B, bst_b)
             μ = μ + bst_B
@@ -242,17 +243,14 @@ class Node(Lerner): # TODO Node -> dim -> (chxhxw)  s.t. h=w
 
     def __start(self):
         if self.regressor:
-            self.bst = BST_Regressor(**self.kwargs)
+            self.bst = BSTR(**self.kwargs)
         else:
-            self.bst = BST(**self.kwargs)
+            self.bst = BSTC(**self.kwargs)
         self.G_INIT()
 
     def G_INIT(self): # TODO
-        self.g = nn.Conv2d(self.kwargs['inch'], self.kwargs['outch'], self.kwargs['k'], self.kwargs['s'], self.kwargs['p'])
-    
-    def G(self, bipolar):
         """changes between coordinate devices"""
-        return self.g(bipolar)
+        self.G = nn.Conv2d(self.kwargs['inch'], self.kwargs['outch'], self.kwargs['k'], self.kwargs['s'], self.kwargs['p'])
     
     def forward(self, bipolar):
         return self.bst(self.G(bipolar))
@@ -278,26 +276,26 @@ class Graph(Lerner): # TODO
 class FUM_Disc_Graph(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        kwargs['ζ'] = 5
         self.nodes = nn.Sequential(*[
-            Node(regressor=False, inch=3,  outch=8,   k=3, s=2, p=1), # 8x128
-            Node(regressor=False, inch=8,  outch=16,  k=3, s=2, p=1), # 16x64
-            Node(regressor=False, inch=16, outch=32,  k=3, s=2, p=1), # 32x32
-            Node(regressor=False, inch=32, outch=64,  k=3, s=2, p=1), # 64x16
-            Node(regressor=False, inch=64, outch=128, k=3, s=2, p=1), # 128x8
+            Node(inch=3,  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
+            Node(inch=8,  outch=16,  k=3, s=2, p=1, **kwargs), # 16x64**2
+            Node(inch=16, outch=32,  k=3, s=2, p=1, **kwargs), # 32x32**2
+            Node(inch=32, outch=64,  k=3, s=2, p=1, **kwargs), # 64x16**2
+            Node(inch=64, outch=64,  k=3, s=2, p=1, **kwargs), # 64x8**2
+            Node(regressor=False, inch=64, outch=4, k=3, s=2, p=1, **kwargs), # 4x4**2 # BSTC => one bit estimator
         ])
     
-    def forward(self, x, groundtruth, tag):
-        y = self.nodes(x)
-        # print(y.requires_grad)
-        # assert False
-        return self.Loss.binary(y, groundtruth=groundtruth, tag=tag)
+    def forward(self, x, groundtruth, λacc, tag):
+        return self.Loss.bit(self.nodes(x), groundtruth=groundtruth, λacc=λacc, tag=tag)
 
 class FUM_H_Graph(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.a = Node(inch=256, outch=256, k=3, s=1, p=1)
-        self.b = Node(inch=256, outch=256, k=3, s=1, p=1) 
-        self.c = Node(inch=256, outch=256, k=3, s=1, p=1)
+        kwargs['ζ'] = 10
+        self.a = Node(inch=256, outch=256, k=3, s=1, p=1, **kwargs)
+        self.b = Node(inch=256, outch=256, k=3, s=1, p=1, **kwargs) 
+        self.c = Node(inch=256, outch=256, k=3, s=1, p=1, **kwargs)
     
     def forward(self, x1, x2):
         y1 = self.a(x1)

@@ -146,10 +146,10 @@ class SQLiteLogger(Metrics):
         self.sqlite = SQLite(db=self.kwargs['db'])
 
     def logger(self, tag: str, **kwargs):
-        print(';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;')
-        print(self.reductions[tag])
-        print(self.reductions[tag]['TRAIN_OPT1_A_IF1_FPSISTM/ACC'])
-        print(';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;')
+        # print(';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;')
+        # print(self.reductions[tag])
+        # print(self.reductions[tag]['TRAIN_OPT1_A_IF1_FPSISTM/ACC'])
+        # print(';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;')
         try:
             self.sqlite.tables[tag].create(**self.reductions[tag])
         except Exception as e:

@@ -88,14 +88,14 @@ class NLayerDiscriminator(BB):
     def d12grad(self, grad, split: str, stag: str):
         print(split, grad.mean().item(), stag)
     
-    def forward(self, input, flag, split):
+    def forward(self, input, flag, λacc, split):
         """
             Standard forward.
             dloss = -Expectation(ln D)
             (D=0 / fake classified) -> dloss=inf
             (D=1 / real classified) -> dloss=0
         """
-        return self.graph(input, flag, split)
+        return self.graph(input, flag, λacc, split)
     
 
         # main_out = self.vgg16(input)
