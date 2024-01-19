@@ -318,7 +318,7 @@ class VQModel(PLModule):
                 self.pack_logdata[f'c{self.idx}_optidx{self.optidx}_pipline'] = {'𝝍s_tp_final': self.batch['xpf'], '𝝍s_tm_final': self.batch['xnf']}
 
     def save(self, tag):
-        super().save(tag)
+        
 
         # self.imglogger --> save!! # TODO
         if self.BAN['G'] == False:
@@ -331,15 +331,17 @@ class VQModel(PLModule):
         
 
         if self.BAN['D'] == False and self.BAN['G'] == True:
+            super().save(tag + '_BAN_DN_GP')
             D1_ACC = self.metrics.inference(tag, f'^{tag.upper()}_OPT1_.*\/ACC$')
             self.acc[f'{tag}_'] = {'d1': D1_ACC, 'd2': 0, 'O': 0}
             self.last_d1_acc = D1_ACC
-            print(f'{tag}_D_ACC', D1_ACC)
+            print(f'{tag}_D1_ACC', D1_ACC)
             if D1_ACC >= 0.8:
                 print('BAN) !G D')
                 self.BAN['G'] = False
                 self.BAN['D'] = True
         elif self.BAN['D'] == True and self.BAN['G'] == False:
+            super().save(tag + '_BAN_DP_GN')
             D0_ACC = self.metrics.inference(tag, f'^{tag.upper()}_OPT0_.*\/ACC$')
             self.acc[f'{tag}_'] = {'d1': self.last_d1_acc, 'd2': 0, 'O': 0}
             if D0_ACC <= 0.4:
