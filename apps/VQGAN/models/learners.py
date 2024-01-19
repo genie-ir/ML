@@ -8,7 +8,7 @@ r = 1.0     # search radius
 e = 0.15    # fault tolerance
 β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
-λgs = 4     # GSL scaler
+λgs = 1     # GSL scaler
 λsl = 0.5   # GSL scaler
 λmc = 2.0   # misclassification loss coefficient
 λlc = 4.0   # lazy classification loss coefficient
@@ -84,7 +84,6 @@ class Loss(BaseLerner):
         else:
             prediction = logit
         
-        self.Grad.sethook(prediction, lambda grad: print('prediction.grad', grad))
         
         pred = prediction.clone().detach()
         loss = self.λlc * torch.ones_like(pred)
