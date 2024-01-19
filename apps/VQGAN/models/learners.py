@@ -25,7 +25,7 @@ class Grad(PYBASE):
     def sethook(self, tensor, callback):
         tensor.register_hook(callback)
     
-    def dzq_dz_eq1(self, zq, z, w=1):
+    def dzq_dz_eq1(self, zq, z, w=1, **kwargs):
         """
             # NOTE: if zq has gradient and z hasnt requires_grad then gradient of zq is fucked:)
             transfer gradients from `zq` to `z`  | (zq -> z)
@@ -106,7 +106,7 @@ class Loss(BaseLerner):
             TN = TN + TN_Mask.sum()
             FP = FP + FP_Mask.sum()
         loss = loss.clone().detach()
-        loss = self.Grad.dzq_dz_eq1(loss, prediction, w=loss.detach())
+        loss = self.Grad.dzq_dz_eq1(loss, prediction, w=6, w0=loss.detach())
         self.Grad.sethook(loss, lambda grad: torch.ones_like(grad))
         
         tag = tag.upper()
