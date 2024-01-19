@@ -459,7 +459,7 @@ class VQModel(PLModule):
             'train_': {'d1': 0, 'd2': 0, 'O': 0},
             'val_': {'d1': 0, 'd2': 0, 'O': 0}
         }
-        self.regexp_d1_acc = '^.*_opt1_.*\/d1ACC$'
+        self.regexp_d1_acc = '^.*_opt1_.*\/d1ACC$' # BUG
 
         self.freeze()
 

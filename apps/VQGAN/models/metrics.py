@@ -107,6 +107,7 @@ class Metrics(PYBASE):
         for rk, rv in R.items():
             if pattern.match(rk):
                 RV.append(rv)
+        assert len(RV) > 0, f'`regexp={regexp}` Not Found in: `{list(R.keys())}`'
         return getattr(self, reduction)(tag, None, RV)
 
     def reduction_sum(self, tag: str, mk: str, mv):
