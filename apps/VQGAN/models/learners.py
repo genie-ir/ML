@@ -215,9 +215,9 @@ class BSTC(Lerner):
     
     def fwd(self, bipolar):
         y = self.bst(bipolar)
-        print('bipolar', bipolar)
-        print('y', y)
-        print('-'*30)
+        print('AAAAAAAAAA) bipolar', bipolar)
+        print('AAAAAAAAAA) y', y)
+        print('AAAAAAAAAA) -'*30)
         return self.binary_decision(y)
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
@@ -246,7 +246,7 @@ class BSTR(Lerner):
         μ_bipolar = μ.detach()
         μ_bipolar = (μ_bipolar * 2 - 1).detach()
         print('μ_bipolar', μ_bipolar)
-        assert False
+        print('-'*30)
         μ_bipolar = self.Grad.dzq_dz_eq1(μ_bipolar, μ)
         
         return μ_bipolar
