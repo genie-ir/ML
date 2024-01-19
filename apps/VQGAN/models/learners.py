@@ -6,12 +6,12 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 
 r = 1.0     # search radius
 e = 0.45    # fault tolerance
-β = 8       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
+β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
 λgs = 1e1     # gradient scaler loss coefficient
 λts = 0.5   # tanh satisfaction loss coefficient
 λmc = 2.0   # misclassification loss coefficient
-λlc = 8.0   # lazy classification loss coefficient
+λlc = 2.0   # lazy classification loss coefficient
 
 
 class Grad(PYBASE):
