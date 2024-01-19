@@ -8,7 +8,7 @@ r = 1.0     # search radius
 e = 0.15    # fault tolerance
 β = 8       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
-λgs = 1e4     # gradient scaler loss coefficient
+λgs = 10     # gradient scaler loss coefficient
 λts = 0.5   # tanh satisfaction loss coefficient
 λmc = 2.0   # misclassification loss coefficient
 λlc = 8.0   # lazy classification loss coefficient
@@ -301,11 +301,10 @@ class FUM_H_Graph(Lerner):
     def forward(self, x1, x2):
         y1 = self.a(x1)
         y2 = self.b(x2)
-        if y1.requires_grad:
-            self.Grad.sethook(y1, lambda grad: print('y1.grad', grad.mean().item()))
-        if y2.requires_grad:
-            self.Grad.sethook(y2, lambda grad: print('y2.grad', grad.mean().item()))
-        y = self.c((y1 + y2) / 2)
+        ymean = (y1 + y2) / 2
+        if ymean.requires_grad:
+            self.Grad.sethook(ymean, lambda grad: print('ymean.grad', grad.mean().item()))
+        y = self.c(ymean)
         return y
     
 
