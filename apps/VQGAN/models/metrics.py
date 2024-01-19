@@ -121,14 +121,20 @@ class Metrics(PYBASE):
     def reduction_accuracy(self, tag: str, mk: str, mv):
         globalname, localname = mk.split('/')
         subname = '{}/{}'.format(globalname, localname.replace('ACC', ''))
-        print('------------>',globalname, localname)
+        
         TP = sum(self.metrics[tag][f'{subname}TP:reduction_ignore'])
         TN = sum(self.metrics[tag][f'{subname}TN:reduction_ignore'])
         FP = sum(self.metrics[tag][f'{subname}FP:reduction_ignore'])
         FN = sum(self.metrics[tag][f'{subname}FN:reduction_ignore'])
         
-        print('!!!!!!!!!!!!!!', TP, TN, FP, FN)
-        return (TP + TN) / (TP + TN + FP + FN)
+        A = TP + TN
+        B = TP + TN + FP + FN
+        
+        ACC = 0
+        if B > 0:
+            ACC = A / B
+        
+        return ACC
 
 
 class SQLiteLogger(Metrics):
