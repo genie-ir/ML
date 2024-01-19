@@ -7,11 +7,11 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 r = 1.0             # search radius
 e = 0.15            # fault tolerance
 β = 4               # bits for regression; 4 supports precision of 0.93 for regression between zero and one
-ζ = 4               # depth of BST
+ζ = 10              # depth of BST
 λgs = 1e1           # gradient scaler loss coefficient
 λts = 0.5           # tanh satisfaction loss coefficient
 λmc = 2.0           # misclassification loss coefficient
-λlc = 2.0           # lazy classification loss coefficient
+λlc = 8.0           # lazy classification loss coefficient
 
 
 class Grad(PYBASE):
@@ -103,7 +103,7 @@ class Loss(BaseLerner):
             TN = TN + TN_Mask.sum()
             FP = FP + FP_Mask.sum()
         loss = (λacc * loss).clone().detach()
-        loss = self.Grad.dzq_dz_eq1(loss, prediction, w=(-loss).detach())
+        loss = self.Grad.dzq_dz_eq1(loss, prediction, w=loss.detach())
         self.Grad.sethook(loss, lambda grad: torch.ones_like(grad))
         
         tag = tag.upper()
@@ -301,7 +301,7 @@ class Graph(Lerner): # TODO
 class FUM_Disc_Graph(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        kwargs['ζ'] = 10
+        # kwargs['ζ'] = 10
         self.nodes = nn.Sequential(*[
             Node(inch=3,  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
             Node(inch=8,  outch=16,  k=3, s=2, p=1, **kwargs), # 16x64**2
@@ -317,7 +317,7 @@ class FUM_Disc_Graph(Lerner):
 class FUM_H_Graph(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        kwargs['ζ'] = 10
+        # kwargs['ζ'] = 10
         self.a = Node(inch=256, outch=256, k=3, s=1, p=1, **kwargs)
         self.b = Node(inch=256, outch=256, k=3, s=1, p=1, **kwargs) 
         self.c = Node(inch=256, outch=256, k=3, s=1, p=1, **kwargs)
