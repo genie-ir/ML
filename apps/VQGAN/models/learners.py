@@ -210,7 +210,9 @@ class BSTC(Lerner):
     
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
-        return self.binary_decision(self.bst(bipolar))
+        y = self.bst(bipolar)
+        print('---------->', y.mean().item())
+        return self.binary_decision(y)
 
 class BSTR(Lerner):
     """BST Regressor"""
