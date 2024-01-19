@@ -17,6 +17,7 @@ class PLModule(pl.LightningModule):
         self.__start()
 
     def __start(self):
+        self.LR = float(1)
         self.IDX = 1
         self.OPT = []
         setattr(self, 'forward', self.pipline)
@@ -541,7 +542,7 @@ class VQModel(PLModule):
     
     def configure_optimizers(self):
         # lr = self.learning_rate
-        lr = 0.02
+        lr = self.LR
         opt_ae = torch.optim.Adam(
                                     list(self.encoder.kernel_regressor.graph.parameters())+
                                     # list(self.decoder.parameters())+

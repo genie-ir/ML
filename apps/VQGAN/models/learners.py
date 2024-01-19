@@ -83,6 +83,9 @@ class Loss(BaseLerner):
             prediction = self.binary_decision(logit)
         else:
             prediction = logit
+        
+        self.Grad.sethook(prediction, lambda grad: print('prediction.grad', grad))
+        
         pred = prediction.clone().detach()
         loss = self.λlc * torch.ones_like(pred)
         
@@ -104,6 +107,7 @@ class Loss(BaseLerner):
             FP = FP + FP_Mask.sum()
         loss = loss.clone().detach()
         loss = self.Grad.dzq_dz_eq1(loss, prediction, w=loss.detach())
+        self.Grad.sethook(loss, lambda grad: print('loss.grad', grad))
         
         tag = tag.upper()
         log = {
@@ -212,8 +216,7 @@ class BST_Regressor(Lerner):
         self.__start()
 
     def __start(self):
-        self.BST = self.List([BST(**self.kwargs) for b in range(self.β)])
-        self.bst = self.List([BST(**self.kwargs) for b in range(50)])
+        self.bst = self.List([BST(**self.kwargs) for b in range(self.β)]) # BUG
         # self.bst = BST(**self.kwargs)
 
     def forward(self, bipolar):
