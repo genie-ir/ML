@@ -331,7 +331,7 @@ class VQModel(PLModule):
         
 
         if self.BAN['D'] == False and self.BAN['G'] == True:
-            super().save(tag + '_BAN_DN_GP')
+            super().save(tag)
             D1_ACC = self.metrics.inference(tag, f'^{tag.upper()}_OPT1_.*\/ACC$')
             self.acc[f'{tag}_'] = {'d1': D1_ACC, 'd2': 0, 'O': 0}
             self.last_d1_acc = D1_ACC
@@ -341,7 +341,7 @@ class VQModel(PLModule):
                 self.BAN['G'] = False
                 self.BAN['D'] = True
         elif self.BAN['D'] == True and self.BAN['G'] == False:
-            super().save(tag + '_BAN_DP_GN')
+            super().save(tag)
             D0_ACC = self.metrics.inference(tag, f'^{tag.upper()}_OPT0_.*\/ACC$')
             self.acc[f'{tag}_'] = {'d1': self.last_d1_acc, 'd2': 0, 'O': 0}
             if D0_ACC <= 0.4:

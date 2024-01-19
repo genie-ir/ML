@@ -5,7 +5,7 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 
 
 r = 1.0             # search radius
-e = 0.15            # fault tolerance
+e = 0.30            # fault tolerance
 β = 4               # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 10              # depth of BST
 λgs = 1e1           # gradient scaler loss coefficient
@@ -221,10 +221,11 @@ class BSTC(Lerner):
         return decision
     
     def fwd(self, bipolar):
+        assert False
         y = self.bst(bipolar)
-        print('AAAAAAAAAA) bipolar', bipolar)
-        print('AAAAAAAAAA) y', y)
-        print('AAAAAAAAAA) -'*30)
+        # print('AAAAAAAAAA) bipolar', bipolar)
+        # print('AAAAAAAAAA) y', y)
+        # print('AAAAAAAAAA) -'*30)
         return self.binary_decision(y)
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
@@ -246,15 +247,15 @@ class BSTR(Lerner):
         μ = torch.zeros_like(bipolar, requires_grad=False, dtype=torch.float32)
         for b in range(self.β):
             bst_b = self.bstc[b](bipolar)
-            print('-------->', bst_b)
+            # print('-------->', bst_b)
             bst_B = (bst_b.detach() * (2 ** (-(b+1)))).detach() # 0:ignores the bit position # 1:Keeps the bit position # 0.5: keeps the half bit posotion === here this is a good feature for regression
             bst_B = self.Grad.dzq_dz_eq1(bst_B, bst_b)
             μ = μ + bst_B
         μ_bipolar = μ.detach()
-        print('μ_bipolar first', μ_bipolar)
+        # print('μ_bipolar first', μ_bipolar)
         μ_bipolar = (μ_bipolar * 2 - 1).detach()
-        print('μ_bipolar second', μ_bipolar)
-        print('-'*30)
+        # print('μ_bipolar second', μ_bipolar)
+        # print('-'*30)
         μ_bipolar = self.Grad.dzq_dz_eq1(μ_bipolar, μ)
         
         return μ_bipolar
@@ -308,7 +309,7 @@ class FUM_Disc_Graph(Lerner):
             Node(inch=16, outch=32,  k=3, s=2, p=1, **kwargs), # 32x32**2
             Node(inch=32, outch=64,  k=3, s=2, p=1, **kwargs), # 64x16**2
             Node(inch=64, outch=64,  k=3, s=2, p=1, **kwargs), # 64x8**2
-            Node(regressor=False, BSTC_FWD='fwd', inch=64, outch=4, k=3, s=2, p=1, **kwargs), # 4x4**2 # BSTC => one bit estimator
+            Node(regressor=False, inch=64, outch=4, k=3, s=2, p=1, **kwargs), # 4x4**2 # BSTC => one bit estimator
         ])
     
     def forward(self, x, groundtruth, λacc, tag):
