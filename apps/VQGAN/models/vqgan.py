@@ -328,17 +328,27 @@ class VQModel(PLModule):
                 self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['xs'])
             ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
         
-        regexp_d1_acc = f'^{tag.upper()}_OPT1_.*\/ACC$'
-        D_ACC = self.metrics.inference(tag, regexp_d1_acc)
-        self.acc[f'{tag}_'] = {'d1': D_ACC, 'd2': 0, 'O': 0}
-        print(f'{tag}_D_ACC', D_ACC)
         
-        if D_ACC < 0.8:
-            self.BAN['G'] = True
-            self.BAN['D'] = False
+
+        if self.BAN['D'] == False and self.BAN['G'] == True:
+            D1_ACC = self.metrics.inference(tag, f'^{tag.upper()}_OPT1_.*\/ACC$')
+            self.acc[f'{tag}_'] = {'d1': D1_ACC, 'd2': 0, 'O': 0}
+            self.last_d1_acc = D1_ACC
+            print(f'{tag}_D_ACC', D1_ACC)
+            if D1_ACC >= 0.8:
+                print('BAN) !G D')
+                self.BAN['G'] = False
+                self.BAN['D'] = True
+        elif self.BAN['D'] == True and self.BAN['G'] == False:
+            D0_ACC = self.metrics.inference(tag, f'^{tag.upper()}_OPT0_.*\/ACC$')
+            self.acc[f'{tag}_'] = {'d1': self.last_d1_acc, 'd2': 0, 'O': 0}
+            if D0_ACC <= 0.4:
+                print('BAN) G !D')
+                self.BAN['G'] = True
+                self.BAN['D'] = False
         else:
-            self.BAN['G'] = False
-            self.BAN['D'] = True
+            assert False
+
         
         self.imglogger = [None, None, None]
         self.counter = [0,0,0]

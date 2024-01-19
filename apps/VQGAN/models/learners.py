@@ -169,13 +169,15 @@ class Activation(Lerner):
     
     def forward(self, x):
         """(None-band current === output of system) enters and the output of this module is bipolar"""
-        x0 = x.clone().detach()
-        y0 = self.normalizer(x0).clone().detach()
-        y = y0.clone().detach()
-        y = self.tanh(y).detach()
+        x0 = x.detach()
+        y0 = self.normalizer(x0).detach()
+        y0_cd = y0.clone().detach()
+
+        y = self.tanh(y0).detach()
         y = self.Grad.dzq_dz_eq1(y, x)
+
         if y.requires_grad:
-            self.Grad.sethook(y, lambda grad: self.GSL(grad.clone().detach(), y0))
+            self.Grad.sethook(y, lambda grad: self.GSL(grad.clone().detach(), y0_cd))
         return y
 
     def S(self, x_np):
