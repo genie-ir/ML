@@ -146,7 +146,7 @@ class System(Lerner):
     def forward(self, bipolar):
         """bipolar current enters and the output is none-band"""
         F = self.F(bipolar)
-        self.Grad.sethook(F, lambda grad: print('F.grad', grad.mean().item()))
+        # self.Grad.sethook(F, lambda grad: print('F.grad', grad.mean().item()))
         return F
 
 class Activation(Lerner):
