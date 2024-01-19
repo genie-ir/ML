@@ -200,7 +200,7 @@ class BSTC(Lerner):
             System(**self.kwargs),
             Activation(**self.kwargs)
         ])
-        setattr(self, 'forward', self.kwargs.get('BSTC_FWD', 'forward'))
+        setattr(self, 'forward', getattr(self, self.kwargs.get('BSTC_FWD', 'forward')))
 
     def binary_decision(self, logit):
         """logit is came from Tanh and output will be a binary decision === 0,1,0.5"""
