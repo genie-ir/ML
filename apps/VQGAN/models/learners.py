@@ -221,12 +221,14 @@ class BSTC(Lerner):
         return decision
     
     def fwd(self, bipolar):
-        assert False
         y = self.bst(bipolar)
-        # print('AAAAAAAAAA) bipolar', bipolar)
-        # print('AAAAAAAAAA) y', y)
-        # print('AAAAAAAAAA) -'*30)
-        return self.binary_decision(y)
+        print('AAAAAAAAAA) bipolar', bipolar)
+        print('AAAAAAAAAA) y', y)
+        out = self.binary_decision(y)
+        print('AAAAAAAAAA) out', out)
+
+        print('AAAAAAAAAA) -'*30)
+        return out
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
         y = self.bst(bipolar)
@@ -304,7 +306,7 @@ class FUM_Disc_Graph(Lerner):
         super().__init__(**kwargs)
         # kwargs['ζ'] = 10
         self.nodes = nn.Sequential(*[
-            Node(inch=3,  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
+            Node(inch=3, BSTC_FWD='fwd',  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
             Node(inch=8,  outch=16,  k=3, s=2, p=1, **kwargs), # 16x64**2
             Node(inch=16, outch=32,  k=3, s=2, p=1, **kwargs), # 32x32**2
             Node(inch=32, outch=64,  k=3, s=2, p=1, **kwargs), # 64x16**2
