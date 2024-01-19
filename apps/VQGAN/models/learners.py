@@ -78,7 +78,7 @@ class Loss(BaseLerner):
         # if prediction.requires_grad:
         #     print('prediction', prediction)
         #     self.Grad.sethook(prediction, lambda grad: print('prediction.grad', grad))
-        # print('prediction', prediction)
+        print('prediction', prediction)
 
         loss = self.λlc * torch.ones_like(pred)
         
@@ -211,7 +211,7 @@ class BSTC(Lerner):
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
         y = self.bst(bipolar)
-        print('---------->', y.mean().item())
+        # print('---------->', y.mean().item())
         return self.binary_decision(y)
 
 class BSTR(Lerner):
