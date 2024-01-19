@@ -150,9 +150,9 @@ class System(Lerner):
     
     def forward(self, bipolar):
         """bipolar current enters and the output is none-band"""
-        print('weight', self.F.weight)
+        # print('weight', self.F.weight)
         F = self.F(bipolar)
-        print('F', F)
+        # print('F', F)
         # self.Grad.sethook(F, lambda grad: print('F.grad', grad.mean().item()))
         return F
 
@@ -225,11 +225,11 @@ class BSTC(Lerner):
     def fwd(self, bipolar):
         y = self.bst(bipolar)
         # print('AAAAAAAAAA) bipolar', bipolar)
-        # print('AAAAAAAAAA) y', y)
+        print('AAAAAAAAAA) y', y)
         out = self.binary_decision(y)
-        # print('AAAAAAAAAA) out', out)
+        print('AAAAAAAAAA) out', out)
 
-        # print('AAAAAAAAAA) -'*30)
+        print('AAAAAAAAAA) -'*30)
         return out
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
