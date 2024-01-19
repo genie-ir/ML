@@ -245,6 +245,8 @@ class BSTR(Lerner):
             μ = μ + bst_B
         μ_bipolar = μ.detach()
         μ_bipolar = (μ_bipolar * 2 - 1).detach()
+        print('μ_bipolar', μ_bipolar)
+        assert False
         μ_bipolar = self.Grad.dzq_dz_eq1(μ_bipolar, μ)
         
         return μ_bipolar
