@@ -301,6 +301,10 @@ class FUM_H_Graph(Lerner):
     def forward(self, x1, x2):
         y1 = self.a(x1)
         y2 = self.b(x2)
+        if y1.requires_grad:
+            self.Grad.sethook(y1, lambda grad: print('y1.grad', grad.mean().item()))
+        if y2.requires_grad:
+            self.Grad.sethook(y2, lambda grad: print('y2.grad', grad.mean().item()))
         y = self.c((y1 + y2) / 2)
         return y
     
