@@ -81,7 +81,7 @@ class Loss(BaseLerner):
         N = pred.numel()
         unk = (pred == 0.5).sum() / N
         neg = (pred == 0.0).sum() / N
-        pos = (pred == 0.1).sum() / N
+        pos = (pred == 1.0).sum() / N
         print('prediction', unk, neg, pos)
 
         loss = self.λlc * torch.ones_like(pred)
