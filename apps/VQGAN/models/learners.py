@@ -107,7 +107,7 @@ class Loss(BaseLerner):
             FP = FP + FP_Mask.sum()
         loss = loss.clone().detach()
         loss = self.Grad.dzq_dz_eq1(loss, prediction, w=loss.detach())
-        self.Grad.sethook(loss, lambda grad: print('loss.grad', grad))
+        self.Grad.sethook(loss, lambda grad: torch.ones_like(grad))
         
         tag = tag.upper()
         log = {
