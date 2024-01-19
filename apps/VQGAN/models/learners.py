@@ -277,7 +277,7 @@ class Graph(Lerner): # TODO
 class FUM_Disc_Graph(Lerner):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        kwargs['ζ'] = 5
+        kwargs['ζ'] = 10
         self.nodes = nn.Sequential(*[
             Node(inch=3,  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
             Node(inch=8,  outch=16,  k=3, s=2, p=1, **kwargs), # 16x64**2
