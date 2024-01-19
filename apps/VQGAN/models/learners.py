@@ -244,8 +244,9 @@ class BSTR(Lerner):
             bst_B = self.Grad.dzq_dz_eq1(bst_B, bst_b)
             μ = μ + bst_B
         μ_bipolar = μ.detach()
+        print('μ_bipolar first', μ_bipolar)
         μ_bipolar = (μ_bipolar * 2 - 1).detach()
-        print('μ_bipolar', μ_bipolar)
+        print('μ_bipolar second', μ_bipolar)
         print('-'*30)
         μ_bipolar = self.Grad.dzq_dz_eq1(μ_bipolar, μ)
         
