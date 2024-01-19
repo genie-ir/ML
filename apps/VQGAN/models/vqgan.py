@@ -449,7 +449,7 @@ class VQModel(PLModule):
         }
         self.IDX = 2
         self.OPT = [
-            [0, {'condstep': True}],
+            # [0, {'condstep': True}],
             [0, {'VgradViewrFlag': True, 'flag_logdata': True}], 
             [1, {}]
         ]
