@@ -152,6 +152,7 @@ class System(Lerner):
         """bipolar current enters and the output is none-band"""
         print('weight', self.F.weight)
         F = self.F(bipolar)
+        print('F', F)
         # self.Grad.sethook(F, lambda grad: print('F.grad', grad.mean().item()))
         return F
 
