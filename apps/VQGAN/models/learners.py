@@ -152,7 +152,7 @@ class System(Lerner):
         """bipolar current enters and the output is none-band"""
         # print('weight', self.F.weight)
         F = self.F(bipolar)
-        if self.kwargs.get('seqidx', 10) == 0:
+        if self.kwargs.get('seqidx', None) == 0:
             print('F', F)
         # self.Grad.sethook(F, lambda grad: print('F.grad', grad.mean().item()))
         return F
@@ -182,6 +182,10 @@ class Activation(Lerner):
 
         if y.requires_grad:
             self.Grad.sethook(y, lambda grad: self.GSL(grad.clone().detach(), y0_cd))
+        
+        if self.kwargs.get('seqidx', None) == 0:
+            print('y', y)
+        
         return y
 
     def S(self, x_np):
