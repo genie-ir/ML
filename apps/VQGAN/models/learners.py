@@ -166,6 +166,7 @@ class Activation(Lerner):
         self.tanh = nn.Tanh()
     
     def normalizer(self, x0):
+        return x0
         """(None-band current === output of system) enters and the output of this module is normalized for Tanh"""
         return 3 * (x0 / (x0.abs().max() + 1))
     
