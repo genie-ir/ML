@@ -5,7 +5,7 @@ from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 
 
 r = 1.0     # search radius
-e = 0.3    # fault tolerance
+e = 0.45    # fault tolerance
 β = 8       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
 λgs = 1e1     # gradient scaler loss coefficient
@@ -78,7 +78,7 @@ class Loss(BaseLerner):
         # if prediction.requires_grad:
         #     print('prediction', prediction)
         #     self.Grad.sethook(prediction, lambda grad: print('prediction.grad', grad))
-        print('pred', pred)
+        print('prediction', prediction)
 
         loss = self.λlc * torch.ones_like(pred)
         
