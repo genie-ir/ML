@@ -78,7 +78,7 @@ class Loss(BaseLerner):
         # if prediction.requires_grad:
         #     print('prediction', prediction)
         #     self.Grad.sethook(prediction, lambda grad: print('prediction.grad', grad))
-        print('prediction', prediction)
+        # print('prediction', prediction)
 
         loss = self.λlc * torch.ones_like(pred)
         
