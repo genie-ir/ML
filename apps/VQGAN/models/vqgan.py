@@ -17,9 +17,10 @@ class PLModule(pl.LightningModule):
         self.__start()
 
     def __start(self):
-        self.LR = float(1)
         self.IDX = 1
         self.OPT = []
+        self.BAN = dict()
+        self.LR = float(1)
         setattr(self, 'forward', self.pipline)
         self.metrics = SQLiteLogger(db='/content/metrics.db') # TODO configurable
 
@@ -305,10 +306,10 @@ class VQModel(PLModule):
             self.sec0()
         else:
             if self.optidx == 0:
-                if self.acc[f'{self.TAG}_']['d1'] < 0.8:
+                if self.BAN['G'] == True:
                     return
                 else:
-                    print('Generator start) D.ACC={}'.format(self.acc[f'{self.TAG}_']['d1']))
+                    print('Welcome Generator: D.ACC={}'.format(self.acc[f'{self.TAG}_']['d1']))
             self.secA()
             self.secB()
 
@@ -320,16 +321,25 @@ class VQModel(PLModule):
         super().save(tag)
 
         # self.imglogger --> save!! # TODO
-        signal_save((torch.cat([
-            self.imglogger[0]['xc0'], self.imglogger[0]['xc1'], self.bb(self.imglogger[0]['xs']), self.bb(self.imglogger[0]['c0_optidx0_pipline']['𝝍s_tp_final'], 'green'), self.bb(self.imglogger[0]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
-            self.imglogger[1]['xc0'], self.imglogger[1]['xc1'], self.bb(self.imglogger[1]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[1]['xs']), self.bb(self.imglogger[1]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
-            self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['xs'])
-        ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
+        if self.BAN['G'] == False:
+            signal_save((torch.cat([
+                self.imglogger[0]['xc0'], self.imglogger[0]['xc1'], self.bb(self.imglogger[0]['xs']), self.bb(self.imglogger[0]['c0_optidx0_pipline']['𝝍s_tp_final'], 'green'), self.bb(self.imglogger[0]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
+                self.imglogger[1]['xc0'], self.imglogger[1]['xc1'], self.bb(self.imglogger[1]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[1]['xs']), self.bb(self.imglogger[1]['c1_optidx0_pipline']['𝝍s_tp_final'], 'green'),
+                self.imglogger[2]['xc0'], self.imglogger[2]['xc1'], self.bb(self.imglogger[2]['c0_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['c1_optidx0_pipline']['𝝍s_tp_final'], 'blue'), self.bb(self.imglogger[2]['xs'])
+            ], dim=0)+1)*127.5, f'/content/export/E{self.current_epoch}.png', stype='img', sparams={'chw2hwc': True, 'nrow': 5})
         
         regexp_d1_acc = f'^{tag.upper()}_OPT1_.*\/ACC$'
-        last_d1_acc = self.metrics.inference(tag, regexp_d1_acc)
-        self.acc[f'{tag}_'] = {'d1': last_d1_acc, 'd2': 0, 'O': 0}
+        D_ACC = self.metrics.inference(tag, regexp_d1_acc)
+        self.acc[f'{tag}_'] = {'d1': D_ACC, 'd2': 0, 'O': 0}
         print(f'{tag}_', self.acc[f'{tag}_'])
+        
+        if D_ACC < 0.8:
+            self.BAN['G'] = True
+            self.BAN['D'] = False
+        else:
+            self.BAN['G'] = False
+            self.BAN['D'] = True
+        
         self.imglogger = [None, None, None]
         self.counter = [0,0,0]
 
@@ -441,6 +451,8 @@ class VQModel(PLModule):
         # print('after self.decoder.up[4]', self.decoder.up[4].attn[1].k.weight.requires_grad)
     
     def __start(self):
+        self.BAN['G'] = True
+        self.BAN['D'] = False
         self.counter = [0,0,0]
         self.HGrad = {
             # 'train_opt0_A_IF': 1e7,
