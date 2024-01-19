@@ -9,7 +9,7 @@ e = 0.45    # fault tolerance
 β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
 ζ = 4       # depth of BST
 λgs = 1e1     # gradient scaler loss coefficient
-λts = 0.5   # tanh satisfaction loss coefficient
+λts = 0 #0.5   # tanh satisfaction loss coefficient
 λmc = 2.0   # misclassification loss coefficient
 λlc = 2.0   # lazy classification loss coefficient
 
