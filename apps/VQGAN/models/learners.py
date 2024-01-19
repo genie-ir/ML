@@ -83,6 +83,8 @@ class Loss(BaseLerner):
         
         TP, TN, FP, FN = 0, 0, 0, 0
         
+        print(pred)
+        assert False
         if groundtruth == True: # groundtruth is positive
             TP_Mask = pred == 1.0
             FN_Mask = pred == 0.0
