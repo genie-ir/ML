@@ -200,6 +200,7 @@ class BSTC(Lerner):
             System(**self.kwargs),
             Activation(**self.kwargs)
         ])
+        setattr(self, 'forward', self.kwargs.get('BSTC_FWD', 'forward'))
 
     def binary_decision(self, logit):
         """logit is came from Tanh and output will be a binary decision === 0,1,0.5"""
@@ -212,6 +213,12 @@ class BSTC(Lerner):
         decision = self.Grad.dzq_dz_eq1(decision, logit)
         return decision
     
+    def fwd(self, bipolar):
+        y = self.bst(bipolar)
+        print('bipolar', bipolar)
+        print('y', y)
+        print('-'*30)
+        return self.binary_decision(y)
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
         y = self.bst(bipolar)
@@ -291,7 +298,7 @@ class FUM_Disc_Graph(Lerner):
             Node(inch=16, outch=32,  k=3, s=2, p=1, **kwargs), # 32x32**2
             Node(inch=32, outch=64,  k=3, s=2, p=1, **kwargs), # 64x16**2
             Node(inch=64, outch=64,  k=3, s=2, p=1, **kwargs), # 64x8**2
-            Node(regressor=False, inch=64, outch=4, k=3, s=2, p=1, **kwargs), # 4x4**2 # BSTC => one bit estimator
+            Node(regressor=False, BSTC_FWD='fwd', inch=64, outch=4, k=3, s=2, p=1, **kwargs), # 4x4**2 # BSTC => one bit estimator
         ])
     
     def forward(self, x, groundtruth, λacc, tag):
