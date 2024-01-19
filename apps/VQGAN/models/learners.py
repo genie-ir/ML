@@ -4,14 +4,14 @@ from torch import nn
 from apps.VQGAN.models.kernel_py_classes.basic import PYBASE
 
 
-r = 1.0     # search radius
-e = 0.45    # fault tolerance
-β = 4       # bits for regression; 4 supports precision of 0.93 for regression between zero and one
-ζ = 4       # depth of BST
-λgs = 1e1     # gradient scaler loss coefficient
-λts = 0 #0.5   # tanh satisfaction loss coefficient
-λmc = 2.0   # misclassification loss coefficient
-λlc = 2.0   # lazy classification loss coefficient
+r = 1.0             # search radius
+e = 0.15            # fault tolerance
+β = 4               # bits for regression; 4 supports precision of 0.93 for regression between zero and one
+ζ = 4               # depth of BST
+λgs = 1e1           # gradient scaler loss coefficient
+λts = 0.5           # tanh satisfaction loss coefficient
+λmc = 2.0           # misclassification loss coefficient
+λlc = 2.0           # lazy classification loss coefficient
 
 
 class Grad(PYBASE):
@@ -163,14 +163,19 @@ class Activation(Lerner):
         self.s = float(1.0) # TODO compute it based on r
         self.tanh = nn.Tanh()
     
+    def normalizer(self, x0):
+        """(None-band current === output of system) enters and the output of this module is normalized for Tanh"""
+        return 3 * (x0 / (x0.abs().max() + 1))
+    
     def forward(self, x):
-        """None-band current enters and the output is bipolar"""
-        x_cd = x.clone().detach() # non_preemptive; hasnt share memory and hasnt derevative path
-        y = self.tanh(x)
-        y = (self.s * y).detach()
+        """(None-band current === output of system) enters and the output of this module is bipolar"""
+        x0 = x.clone().detach()
+        y0 = self.normalizer(x0).clone().detach()
+        y = y0.clone().detach()
+        y = self.tanh(y).detach()
         y = self.Grad.dzq_dz_eq1(y, x)
         if y.requires_grad:
-            self.Grad.sethook(y, lambda grad: self.GSL(grad.clone().detach(), x_cd))
+            self.Grad.sethook(y, lambda grad: self.GSL(grad.clone().detach(), y0))
         return y
 
     def S(self, x_np):
