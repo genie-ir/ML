@@ -109,8 +109,7 @@ class PLModule(pl.LightningModule):
                     'epoch': self.current_epoch
                 })
                 
-                if optFlag: # TODO
-                    print('$$$$$$$$$$$$$$$', self._loss)
+                if optFlag and self._loss != None: # TODO
                     self.manual_backward(self._loss.mean())
                     if self.optidx == 0:
                         opt_ae.step()
