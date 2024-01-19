@@ -157,7 +157,7 @@ class VQModel(PLModule):
     def H(self, phi1, phi2, tag): # NOTE: kernel regressor
         h = self.encoder.kernel_regressor(phi1, phi2)
         # h.register_hook(lambda grad: (self.HGrad.get(tag, 1) * grad) * self.HGrad2.get(tag, 1))
-        # h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
+        h.register_hook(lambda grad: print(f'--------> h.grad | {tag}', grad.mean().item()))
         return h
 
     def phi(self, t): # NOTE: kernel function
