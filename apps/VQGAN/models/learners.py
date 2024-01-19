@@ -129,11 +129,11 @@ class Lerner(BaseLerner):
     def List(self, layers):
         return nn.ModuleList(layers) # layers is pythonic list
     
-    def Seq(self, n, layers):
+    def Seq(self, n, params, layers):
         seq = []
         for i in range(n):
             for layer in layers:
-                seq.append(layer)
+                seq.append(layer(**params, seqidx=i))
         return nn.Sequential(*seq)
 
 class System(Lerner):
@@ -206,11 +206,11 @@ class BSTC(Lerner):
         self.__start()
 
     def __start(self):
-        self.bst = self.Seq(self.ζ, [
-            System(**self.kwargs),
-            Activation(**self.kwargs)
+        self.bst = self.Seq(self.ζ, self.kwargs, [
+            System,
+            Activation
         ])
-        setattr(self, 'forward', getattr(self, self.kwargs.get('BSTC_FWD', 'forward')))
+        setattr(self, 'forward', getattr(self, self.kwargs.get('fwd', 'forward')))
 
     def binary_decision(self, logit):
         """logit is came from Tanh and output will be a binary decision === 0,1,0.5"""
@@ -223,14 +223,14 @@ class BSTC(Lerner):
         decision = self.Grad.dzq_dz_eq1(decision, logit)
         return decision
     
-    def fwd(self, bipolar):
+    def test(self, bipolar):
         y = self.bst(bipolar)
         # print('AAAAAAAAAA) bipolar', bipolar)
         print('AAAAAAAAAA) y', y)
         out = self.binary_decision(y)
         print('AAAAAAAAAA) out', out)
 
-        print('AAAAAAAAAA) -'*30)
+        # print('AAAAAAAAAA) -'*30)
         return out
     def forward(self, bipolar):
         """bipolar current enters and the output is bipolar"""
@@ -309,7 +309,7 @@ class FUM_Disc_Graph(Lerner):
         super().__init__(**kwargs)
         # kwargs['ζ'] = 10
         self.nodes = nn.Sequential(*[
-            Node(inch=3, BSTC_FWD='fwd',  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
+            Node(inch=3, fwd='test',  outch=8,   k=3, s=2, p=1, **kwargs), # 8x128**2
             Node(inch=8,  outch=16,  k=3, s=2, p=1, **kwargs), # 16x64**2
             Node(inch=16, outch=32,  k=3, s=2, p=1, **kwargs), # 32x32**2
             Node(inch=32, outch=64,  k=3, s=2, p=1, **kwargs), # 64x16**2
