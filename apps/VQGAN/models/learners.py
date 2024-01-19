@@ -75,9 +75,10 @@ class Loss(BaseLerner):
         prediction = logit # NOTE: binary_decision at end of the BSTC has been done.
         pred = prediction.clone().detach()
 
-        if pred.requires_grad:
-            print('pred', pred)
-            self.Grad.sethook(pred, lambda grad: print('pred.grad', grad))
+        # if prediction.requires_grad:
+        #     print('prediction', prediction)
+        #     self.Grad.sethook(prediction, lambda grad: print('prediction.grad', grad))
+        print('pred', pred)
 
         loss = self.λlc * torch.ones_like(pred)
         
