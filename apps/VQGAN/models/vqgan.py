@@ -331,7 +331,7 @@ class VQModel(PLModule):
         regexp_d1_acc = f'^{tag.upper()}_OPT1_.*\/ACC$'
         D_ACC = self.metrics.inference(tag, regexp_d1_acc)
         self.acc[f'{tag}_'] = {'d1': D_ACC, 'd2': 0, 'O': 0}
-        print(f'{tag}_', self.acc[f'{tag}_'])
+        print(f'{tag}_D_ACC', D_ACC)
         
         if D_ACC < 0.8:
             self.BAN['G'] = True
